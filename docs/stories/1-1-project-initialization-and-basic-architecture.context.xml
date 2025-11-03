@@ -1,0 +1,131 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>1</storyId>
+    <title>项目初始化和基础架构</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-01</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/1-1-project-initialization-and-basic-architecture.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>开发者</asA>
+    <iWant>建立项目基础架构和开发环境</iWant>
+    <soThat>后续功能开发能够顺利进行</soThat>
+    <tasks>Task 1.1.1: 创建项目目录结构
+Task 1.1.2: 配置前端开发环境
+Task 1.1.3: 配置后端开发环境
+Task 1.1.4: 建立代码规范
+Task 1.1.5: 设置错误处理和日志</tasks>
+  </story>
+
+  <acceptanceCriteria>1. 创建项目目录结构，包含前端、后端、数据和文档目录
+2. 配置开发环境和依赖管理（package.json, requirements.txt等）
+3. 建立基础的代码规范和git仓库
+4. 创建基础的错误处理和日志记录机制</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/tech-spec.md</path>
+        <title>Technical Specification</title>
+        <section>Project Structure</section>
+        <snippet>完整的目录结构定义，包括frontend/、backend/、docs/等主要目录</snippet>
+      </doc>
+      <doc>
+        <path>docs/tech-spec.md</path>
+        <title>Technology Stack</title>
+        <section>Technology Stack</section>
+        <snippet>Next.js 14+, FastAPI, SQLite, Redis, Chart.js 4.4+, Tailwind CSS</snippet>
+      </doc>
+      <doc>
+        <path>docs/tech-spec.md</path>
+        <title>Development Environment Setup</title>
+        <section>Development Environment Setup</section>
+        <snippet>必需工具：Python 3.12+, Node.js 18+, pnpm, Docker, Git</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>frontend/package.json</path>
+        <kind>config</kind>
+        <symbol>dependencies</symbol>
+        <lines>1-50</lines>
+        <reason>前端依赖配置，包括Next.js、TypeScript、Tailwind CSS等核心依赖</reason>
+      </artifact>
+      <artifact>
+        <path>backend/requirements.txt</path>
+        <kind>config</kind>
+        <symbol>packages</symbol>
+        <lines>1-20</lines>
+        <reason>后端Python依赖配置，包括FastAPI、SQLAlchemy、Redis等</reason>
+      </artifact>
+      <artifact>
+        <path>.gitignore</path>
+        <kind>config</kind>
+        <symbol>ignore_patterns</symbol>
+        <lines>1-30</lines>
+        <reason>Git忽略文件配置，排除node_modules、__pycache__等</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <ecosystem name="frontend">
+        <package name="next" version="14+"/>
+        <package name="typescript" version="latest"/>
+        <package name="tailwindcss" version="latest"/>
+        <package name="chart.js" version="4.4+"/>
+        <package name="@types/node" version="latest"/>
+      </ecosystem>
+      <ecosystem name="backend">
+        <package name="fastapi" version="latest"/>
+        <package name="uvicorn" version="latest"/>
+        <package name="sqlalchemy" version="latest"/>
+        <package name="redis" version="latest"/>
+        <package name="akshare" version="latest"/>
+        <package name="pydantic" version="latest"/>
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>使用TypeScript strict mode进行类型安全</constraint>
+    <constraint>遵循技术规格书中定义的目录结构</constraint>
+    <constraint>API端点使用复数形式（/api/v1/strategies）</constraint>
+    <constraint>数据库表名使用snake_case复数形式</constraint>
+    <constraint>前端组件使用PascalCase命名</constraint>
+    <constraint>文件名使用kebab-case</constraint>
+    <constraint>错误处理使用统一响应格式</constraint>
+  </constraints>
+  <interfaces>
+    <interface>
+      <name>FastAPI Application Structure</name>
+      <kind>framework</kind>
+      <signature>main.py -> app/ -> api/v1/endpoints/</signature>
+      <path>backend/main.py</path>
+    </interface>
+    <interface>
+      <name>Next.js App Router Structure</name>
+      <kind>framework</kind>
+      <signature>src/app/ -> page.tsx -> strategy/page.tsx</signature>
+      <path>frontend/src/app</path>
+    </interface>
+    <interface>
+      <name>Error Response Format</name>
+      <kind>api</kind>
+      <signature>{"success": false, "error": {"type": "ERROR_TYPE", "message": "description"}}</signature>
+      <path>docs/tech-spec.md</path>
+    </interface>
+  </interfaces>
+  <tests>
+    <standards>使用pytest进行后端测试，Jest + React Testing Library进行前端测试。目标覆盖率>80%。包括单元测试、集成测试和端到端测试三个层次。</standards>
+    <locations>backend/tests/ - 后端测试目录; frontend/__tests__/ - 前端测试目录; 与源文件同目录的.test.ts文件</locations>
+    <ideas>
+      <test ac="1">验证项目目录结构创建正确性
+      <test ac="2">测试前端package.json依赖安装成功
+      <test ac="3">验证后端requirements.txt安装成功
+      <test ac="4">测试Git仓库初始化和基础配置
+      <test ac="5">验证错误处理机制基础功能</test>
+    </ideas>
+  </tests>
+</story-context>

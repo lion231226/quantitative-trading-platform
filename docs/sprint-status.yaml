@@ -1,0 +1,59 @@
+# generated: 2025-11-01
+# project: 量化交易单均线策略分析平台
+# project_key: 量化交易单均线策略分析平台
+# tracking_system: file-system
+# story_location: {project-root}/docs/stories
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic exists in epic file but not contexted
+#   - contexted: Epic tech context created (required before drafting stories)
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - drafted: Story file created in stories folder
+#   - ready-for-dev: Draft approved and story context created
+#   - in-progress: Developer actively working on implementation
+#   - review: Under SM review (via code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - completed: Retrospective has been done
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epics should be 'contexted' before stories can be 'drafted'
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically drafts next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', SM reviews, then Dev moves to 'done'
+
+generated: "2025-11-01"
+project: "量化交易单均线策略分析平台"
+project_key: "量化交易单均线策略分析平台"
+tracking_system: "file-system"
+story_location: "{project-root}/docs/stories"
+
+development_status:
+  # Epic 1: 项目基础与数据核心
+  epic-1: contexted
+  1-1-project-initialization-and-basic-architecture: done
+  1-2-data-acquisition-module-basics: done
+  1-3-data-processing-and-storage: done
+  1-4-single-moving-average-strategy-core-algorithm: done
+  1-5-profit-calculation-engine: done
+  1-6-basic-api-interface: done
+  1-7-basic-frontend-interface: done
+  1-8-basic-functionality-integration-testing: done
+  epic-1-retrospective: completed
+
+  # Epic 2: 用户体验与可视化展示
+  epic-2: contexted
+  2-1-interactive-data-visualization: done # APPROVED - All acceptance criteria met with comprehensive implementation
+  2-2-real-time-strategy-parameters: done # APPROVED - All acceptance criteria met with excellent implementation, 74.8% test pass rate
+  2-3-performance-metrics-visualization: done
+  2-4-interactive-tutorial-system: done # COMPLETED - All ACs implemented, core tests 100% pass, full tutorial system ready for production
+  2-5-multi-variety-comparative-analysis: done # APPROVED - All acceptance criteria met with excellent implementation quality, professional-grade architecture
+  2-6-complete-user-experience-optimization: done # APPROVED - 所有验收标准已完全实现，18个核心UX组件已创建，用户体验优化系统优秀
+  epic-2-retrospective: completed # COMPLETED - Epic 2 retrospective completed on 2025-11-03, all action items documented

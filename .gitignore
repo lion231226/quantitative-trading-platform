@@ -1,0 +1,139 @@
+# 依赖目录
+node_modules/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Python虚拟环境
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# 前端构建产物
+frontend/build/
+frontend/dist/
+frontend/.next/
+frontend/out/
+
+# 后端产物
+*.egg-info/
+dist/
+build/
+*.so
+
+# 环境变量文件
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE和编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 操作系统
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 日志文件
+*.log
+logs/
+
+# 数据库文件
+*.db
+*.sqlite
+*.sqlite3
+quant_trading.db
+test_quant_trading.db
+
+# 缓存
+.cache/
+.parcel-cache/
+.eslintcache
+
+# 测试覆盖率
+coverage/
+*.lcov
+.nyc_output/
+.coverage
+htmlcov/
+
+# 临时文件
+tmp/
+temp/
+.tmp/
+
+# 上传文件
+uploads/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# PEP 582
+__pypackages__/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Spyder
+.spyderproject
+.spyproject
+
+# Rope
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre
+.pyre/
+
+# Docker
+.dockerignore
+
+# Package files
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Redis dump
+dump.rdb
+
+# PM2
+.pm2

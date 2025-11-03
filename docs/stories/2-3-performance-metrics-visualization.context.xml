@@ -1,0 +1,146 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>3</storyId>
+    <title>绩效指标可视化</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-02</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>D:\Demo\docs\stories\2-3-performance-metrics-visualization.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>量化交易分析师</asA>
+    <iWant>能够通过可视化图表全面查看策略的绩效指标和风险特征</iWant>
+    <soThat>做出更明智的投资决策和策略优化</soThat>
+    <tasks>- [ ] Task 1: 核心绩效指标计算和展示 (AC: 1, 2)
+  - [ ] Subtask 1.1: 创建performanceService.ts服务，集成后端绩效计算API
+  - [ ] Subtask 1.2: 实现PerformanceMetrics.tsx组件，显示关键指标面板
+  - [ ] Subtask 1.3: 创建EquityCurve.tsx组件，实现收益曲线图表
+  - [ ] Subtask 1.4: 添加绩效指标的实时更新和格式化显示
+  - [ ] Subtask 1.5: 实现响应式设计，确保移动端友好显示
+
+- [ ] Task 2: 高级可视化组件 (AC: 3)
+  - [ ] Subtask 2.1: 创建DrawdownChart.tsx组件，实现回撤可视化
+  - [ ] Subtask 2.2: 实现滚动收益计算和动态图表更新
+  - [ ] Subtask 2.3: 添加交互式工具提示和详细数据展示
+  - [ ] Subtask 2.4: 实现图表时间范围选择和缩放功能
+  - [ ] Subtask 2.5: 优化大数据集渲染性能，确保流畅体验
+
+- [ ] Task 3: 绩效对比分析功能 (AC: 4)
+  - [ ] Subtask 3.1: 创建PerformanceComparison.tsx组件
+  - [ ] Subtask 3.2: 实现多策略/参数并行回测数据获取
+  - [ ] Subtask 3.3: 创建对比图表和表格展示界面
+  - [ ] Subtask 3.4: 实现统计显著性测试和对比结果分析
+  - [ ] Subtask 3.5: 添加对比报告的生成和展示功能
+
+- [ ] Task 4: 报告导出和分享功能 (AC: 5)
+  - [ ] Subtask 4.1: 创建PerformanceControls.tsx控制组件
+  - [ ] Subtask 4.2: 实现PDF格式报告生成和下载
+  - [ ] Subtask 4.3: 支持CSV/Excel格式数据导出
+  - [ ] Subtask 4.4: 实现图表截图和图像导出功能
+  - [ ] Subtask 4.5: 添加报告模板自定义和批量生成功能
+
+- [ ] Task 5: 集成测试和性能优化
+  - [ ] Subtask 5.1: 编写完整的单元测试覆盖所有组件
+  - [ ] Subtask 5.2: 实现集成测试验证端到端功能
+  - [ ] Subtask 5.3: 性能优化和大数据集处理测试
+  - [ ] Subtask 5.4: 移动端兼容性和响应式设计测试
+  - [ ] Subtask 5.5: 用户体验优化和错误处理完善</tasks>
+  </story>
+
+  <acceptanceCriteria>1. 实现收益曲线图表，显示策略累计收益随时间变化
+2. 显示关键绩效指标（收益率、最大回撤、夏普比率等），以直观方式展示数值
+3. 实现滚动收益和回撤的可视化，显示动态变化过程
+4. 提供绩效对比功能（不同参数或品种），支持多维度对比
+5. 实现绩效报告导出功能，支持多种格式导出</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/stories/2-1-interactive-data-visualization.md" title="Story 2.1: 交互式数据可视化" section="Chart.js架构、交易信号可视化、图表交互和导出功能" snippet="实现价格走势的交互式图表（Chart.js 4.4.2）、买入/卖出信号点显示、移动平均线动态显示、图表缩放平移操作、图表导出功能。该故事已完全实现，测试覆盖率达标，为绩效可视化提供了Chart.js技术基础。" />
+      <doc path="docs/tech-spec-epic-2.md" title="Epic 2技术规格文档" section="第5章绩效指标图表组件、第6章参数控制组件、第7章数据模型和契约" snippet="定义了Epic 2用户体验与可视化展示的完整技术架构，包括Chart.js 4.4.2图表库、React组件架构、API集成模式和性能要求（图表渲染<2秒、60fps流畅度）。" />
+      <doc path="docs/PRD.md" title="产品需求文档" section="功能需求FR004、FR011、FR012" snippet="定义了量化交易单均线策略分析平台的核心需求，强调可视化优先的设计原则，要求通过图表、动画等可视化方式呈现复杂的金融数据和策略逻辑。" />
+      <doc path="docs/epics.md" title="Epic分解文档" section="Epic 2用户体验与可视化展示、Story 2.3绩效指标可视化" snippet="详细规划了Epic 2的6个故事，其中Story 2.3专门负责绩效指标可视化，包括收益曲线图表、关键绩效指标显示、滚动收益和回撤可视化、绩效对比功能。" />
+      <doc path="docs/stories/2-2-real-time-strategy-parameters.md" title="Story 2.2: 策略参数实时配置" section="参数对比分析功能、优化建议系统、用户偏好管理" snippet="虽然主要关注参数配置，但包含了多参数对比分析和可视化展示功能，为绩效可视化提供了参数对比的技术基础。" />
+    </docs>
+    <code>
+      <artifact path="frontend/src/components/charts/ChartContainer.tsx" kind="component" symbol="ChartContainer" lines="1-50" reason="主要图表容器组件，支持响应式布局、主题管理、导出功能，可复用于绩效图表容器" />
+      <artifact path="frontend/src/components/charts/InteractivePriceChart.tsx" kind="component" symbol="InteractivePriceChart" lines="1-80" reason="交互式价格图表，包含Chart.js配置模式，可作为绩效图表的基础架构" />
+      <artifact path="frontend/src/services/chartDataService.ts" kind="service" symbol="chartDataService" lines="1-100" reason="图表数据服务，包含数据缓存、API集成模式，可扩展用于绩效数据服务" />
+      <artifact path="frontend/src/services/parameterService.ts" kind="service" symbol="parameterService" lines="1-150" reason="参数服务架构模式，包含React Query集成、防抖优化、缓存机制，可直接复用于绩效数据服务" />
+      <artifact path="backend/app/api/v1/endpoints/performance.py" kind="controller" symbol="performance" lines="1-80" reason="后端绩效分析API端点，包含收益率计算、绩效指标获取、报告生成功能" />
+      <artifact path="backend/app/services/performance/analytics_engine.py" kind="service" symbol="AnalyticsEngine" lines="1-120" reason="绩效分析引擎，包含关键指标计算（收益率、夏普比率、最大回撤等），是绩效可视化的数据基础" />
+      <artifact path="frontend/src/types/chart.types.ts" kind="types" symbol="ChartTypes" lines="1-60" reason="图表相关类型定义，包含PricePoint、TradingSignal、ChartData等，可扩展用于绩效数据类型" />
+    </code>
+    <dependencies>
+      <ecosystem name="frontend" packageManager="pnpm@8.15.6">
+        <package name="chart.js" version="4.4.2" usage="图表渲染库，用于绩效指标可视化" />
+        <package name="react-chartjs-2" version="5.2.0" usage="React Chart.js集成" />
+        <package name="chartjs-plugin-zoom" version="2.2.0" usage="图表缩放功能，用于绩效图表交互" />
+        <package name="@tanstack/react-query" version="5.40.0" usage="数据缓存和状态管理，用于绩效数据实时更新" />
+        <package name="axios" version="1.7.2" usage="HTTP客户端，用于API调用" />
+        <package name="next" version="14.2.33" usage="React框架" />
+        <package name="react" version="18" usage="UI库" />
+        <package name="@radix-ui/react-tooltip" version="1.0.7" usage="工具提示组件，用于图表交互" />
+        <package name="lucide-react" version="0.552.0" usage="图标库，用于UI组件" />
+      </ecosystem>
+      <ecosystem name="backend" runtime="python">
+        <package name="fastapi" version="0.111.0" usage="API框架，提供绩效分析端点" />
+        <package name="pandas" version="2.2.2" usage="数据处理，用于绩效指标计算" />
+        <package name="numpy" version="1.26.4" usage="数值计算，用于统计分析" />
+        <package name="akshare" version="1.12.88" usage="金融数据获取，用于市场数据" />
+        <package name="pydantic" version="2.7.3" usage="数据验证，用于API响应格式" />
+        <package name="redis" version="5.0.4" usage="缓存，用于绩效数据缓存" />
+        <package name="pytest" version="8.2.1" usage="测试框架" />
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>使用Chart.js 4.4.2确保与现有架构一致</constraint>
+    <constraint>遵循services/目录的服务层架构模式</constraint>
+    <constraint>实现响应式设计支持桌面和移动端</constraint>
+    <constraint>图表渲染60fps优化，支持大数据集处理</constraint>
+    <constraint>集成统一的API响应格式 {success, data, message}</constraint>
+    <constraint>使用React Query进行数据缓存和实时更新</constraint>
+    <constraint>基于shadcn/ui组件库构建UI组件</constraint>
+    <constraint>测试覆盖率要求80%+，使用Jest + React Testing Library</constraint>
+  </constraints>
+  <interfaces>
+    <interface name="PerformanceMetrics API" kind="REST endpoint" signature="GET /api/v1/performance/metrics/{strategy_id}" path="backend/app/api/v1/endpoints/performance.py" />
+    <interface name="Calculate Returns API" kind="REST endpoint" signature="POST /api/v1/performance/calculate_returns" path="backend/app/api/v1/endpoints/performance.py" />
+    <interface name="Performance Report API" kind="REST endpoint" signature="POST /api/v1/performance/report" path="backend/app/api/v1/endpoints/performance.py" />
+    <interface name="ChartDataService" kind="service" signature="chartDataService.getHistory(symbol, startDate, endDate): Promise<APIResponse<ChartData>>" path="frontend/src/services/chartDataService.ts" />
+    <interface name="APIResponse" kind="type" signature="interface APIResponse<T> { success: boolean; data: T; message: string; }" path="frontend/src/types/api.ts" />
+  </interfaces>
+  <tests>
+    <standards>项目使用Jest + React Testing Library进行前端测试，pytest进行后端测试。测试覆盖率要求80%，质量门禁设置在70%。测试模式包括单元测试、集成测试、性能测试和E2E测试。组件测试遵循渲染-交互-断言模式，后端测试使用setup_method和参数化测试。性能测试要求大数据集处理在2秒内完成，图表渲染60fps优化。</standards>
+    <locations>frontend/src/components/**/__tests__/、frontend/src/lib/__tests__/、frontend/src/services/__tests__/、backend/tests/unit/、backend/tests/integration/、backend/tests/performance/、backend/tests/api/</locations>
+    <ideas>
+      <test ac="1" idea="测试收益曲线图表正确渲染历史价格数据，验证累计收益计算准确性">
+        <scenario>提供历史价格数据，验证图表显示正确的收益曲线和累计收益计算</scenario>
+      </test>
+      <test ac="2" idea="测试关键绩效指标面板显示，验证收益率、最大回撤、夏普比率等指标计算和格式化">
+        <scenario>模拟策略结果数据，验证所有关键指标正确计算并以直观方式展示</scenario>
+      </test>
+      <test ac="3" idea="测试滚动收益和回撤可视化，验证动态图表更新和工具提示显示">
+        <scenario>提供时间序列数据，测试滚动窗口计算和动态图表更新性能</scenario>
+      </test>
+      <test ac="4" idea="测试绩效对比功能，验证多策略/参数并行对比和统计显著性测试">
+        <scenario>模拟多个策略结果，验证对比图表、表格和统计测试准确性</scenario>
+      </test>
+      <test ac="5" idea="测试报告导出功能，验证PDF、CSV、Excel格式和图表截图导出">
+        <scenario>生成完整的绩效分析报告，测试各种格式的导出功能和内容完整性</scenario>
+      </test>
+      <test idea="性能测试：大数据集渲染效率，验证10000+数据点的图表渲染性能">
+        <scenario>使用大型历史数据集测试图表渲染时间应&lt;1秒，交互响应时间&lt;100ms</scenario>
+      </test>
+      <test idea="集成测试：端到端绩效分析流程，从API调用到图表展示的完整流程">
+        <scenario>模拟完整用户操作流程，验证数据获取、处理、可视化的端到端功能</scenario>
+      </test>
+      <test idea="错误处理测试：网络错误和数据异常情况的处理">
+        <scenario>模拟API错误、无效数据、网络中断等异常情况，验证错误处理和用户反馈</scenario>
+      </test>
+    </ideas>
+  </tests>
+</story-context>

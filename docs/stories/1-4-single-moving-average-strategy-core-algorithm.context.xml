@@ -1,0 +1,140 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>4</storyId>
+    <title>单均线策略核心算法</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-01</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/1-4-single-moving-average-strategy-core-algorithm.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>量化交易系统</asA>
+    <iWant>实现单均线策略的核心算法引擎</iWant>
+    <soThat>能够基于移动平均线进行自动化的交易决策</soThat>
+    <tasks>### Task 1.4.1: 移动平均线计算引擎
+- [ ] 实现简单移动平均线（SMA）计算
+- [ ] 实现指数移动平均线（EMA）计算
+- [ ] 支持自定义计算周期参数
+- [ ] 优化计算性能和内存使用
+
+### Task 1.4.2: 交易信号生成逻辑
+- [ ] 实现价格与均线交叉检测
+- [ ] 定义金叉买入信号逻辑
+- [ ] 定义死叉卖出信号逻辑
+- [ ] 实现信号确认和过滤机制
+
+### Task 1.4.3: 交易执行机制
+- [ ] 实现开仓条件和执行逻辑
+- [ ] 实现平仓条件和执行逻辑
+- [ ] 实现止损机制和风险管理
+- [ ] 添加交易成本计算
+
+### Task 1.4.4: 策略配置管理
+- [ ] 设计策略参数配置结构
+- [ ] 实现配置验证和默认值
+- [ ] 支持多种预设策略模板
+- [ ] 实现配置的动态更新
+
+### Task 1.4.5: 策略执行引擎
+- [ ] 实现策略主循环逻辑
+- [ ] 集成数据处理和信号生成
+- [ ] 实现交易决策执行流程
+- [ ] 添加策略状态管理
+
+### Task 1.4.6: 回测基础框架
+- [ ] 实现历史数据回测逻辑
+- [ ] 添加性能指标计算
+- [ ] 实现回测结果分析
+- [ ] 创建回测报告生成
+
+### Task 1.4.7: 测试和验证
+- [ ] 编写移动平均线计算单元测试
+- [ ] 编写信号生成逻辑测试
+- [ ] 编写策略执行集成测试
+- [ ] 创建回测功能验证测试</tasks>
+  </story>
+
+  <acceptanceCriteria>1. 实现多种移动平均线计算（简单移动平均SMA、指数移动平均EMA）
+2. 实现交易信号生成逻辑（金叉买入、死叉卖出）
+3. 实现完整的开仓、平仓和止损机制
+4. 提供灵活的策略参数配置接口
+5. 建立策略回测基础框架
+6. 确保算法计算的准确性和性能
+7. 提供全面的测试覆盖</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/PRD.md" title="产品需求文档" section="Functional Requirements" snippet="FR002: 系统必须实现完整的单均线策略算法，包括自定义均线周期参数、开仓平仓逻辑和止损机制"/>
+      <doc path="docs/tech-spec.md" title="技术规范" section="Technical Architecture Overview" snippet="项目采用 Next.js + FastAPI 现代全栈架构，重点关注快速开发（2天时间线）和教育导向的用户体验"/>
+      <doc path="docs/epic-1-technical-context.md" title="史诗1技术上下文" section="故事技术上下文映射" snippet="Story 1.4: 单均线策略核心算法 - 核心技术组件：移动平均线计算、交易信号生成、止损机制、策略参数配置"/>
+      <doc path="docs/epic-1-technical-context.md" title="史诗1技术上下文" section="关键技术规范" snippet="策略算法标准: def calculate_moving_average(prices: List[float], period: int) -> List[float]"/>
+    </docs>
+    <code>
+      <code path="backend/app/strategy/indicators/moving_average.py" kind="indicator" symbol="MovingAverageCalculator" lines="254-367" reason="移动平均线计算器，支持SMA和EMA算法，提供批量计算和交叉信号检测"/>
+      <code path="backend/app/strategy/indicators/moving_average.py" kind="indicator" symbol="SMA" lines="187-216" reason="简单移动平均线实现，使用循环队列优化计算性能"/>
+      <code path="backend/app/strategy/indicators/moving_average.py" kind="indicator" symbol="EMA" lines="218-252" reason="指数移动平均线实现，支持增量计算"/>
+      <code path="backend/app/strategy/signals/signal_generator.py" kind="signal" symbol="SignalGenerator" lines="257-442" reason="交易信号生成器，实现金叉买入和死叉卖出信号逻辑"/>
+      <code path="backend/app/strategy/signals/signal_generator.py" kind="signal" symbol="CrossDetector" lines="111-200" reason="价格与移动平均线交叉检测器，支持信号确认机制"/>
+      <code path="backend/app/strategy/trading/position_manager.py" kind="trading" symbol="PositionManager" lines="300-554" reason="仓位管理器，实现开仓、平仓和风险管理功能"/>
+      <code path="backend/app/strategy/trading/position_manager.py" kind="trading" symbol="RiskManager" lines="214-298" reason="风险管理器，实现止损、止盈和最大回撤控制"/>
+      <code path="backend/app/strategy/strategy_engine.py" kind="engine" symbol="StrategyEngine" reason="策略执行引擎，集成所有组件"/>
+      <code path="backend/app/strategy/backtesting/backtest_engine.py" kind="backtest" symbol="BacktestEngine" reason="回测引擎，实现历史数据回测和性能分析"/>
+      <code path="backend/app/schemas/strategy.py" kind="schema" symbol="StrategyConfig" reason="策略配置数据模型和验证"/>
+    </code>
+    <dependencies>
+      <ecosystem name="python">
+        <package name="pandas" version="2.2.2" usage="数据处理和分析"/>
+        <package name="numpy" version="1.26.4" usage="数值计算和向量化操作"/>
+        <package name="structlog" version="24.1.0" usage="结构化日志记录"/>
+        <package name="pydantic" version="2.7.3" usage="数据验证和设置管理"/>
+      </ecosystem>
+      <ecosystem name="frontend">
+        <package name="chart.js" version="4.4.2" usage="数据可视化图表"/>
+        <package name="react-chartjs-2" version="5.2.0" usage="React Chart.js 组件"/>
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint name="架构约束" description="必须遵循史诗1定义的技术架构：FastAPI + Next.js 双栈架构"/>
+    <constraint name="算法准确性" description="移动平均线计算必须保证数值精度，支持浮点数运算"/>
+    <constraint name="性能要求" description="策略计算时间必须小于10秒，API响应时间小于500ms"/>
+    <constraint name="测试覆盖" description="单元测试覆盖率必须达到80%以上，包含算法准确性测试"/>
+    <constraint name="错误处理" description="必须实现完整的异常处理机制，包括数据验证和边界条件检查"/>
+    <constraint name="配置验证" description="所有策略参数必须进行有效性验证，防止无效配置导致系统错误"/>
+    <constraint name="日志记录" description="使用structlog进行结构化日志记录，便于调试和监控"/>
+    <constraint name="类型安全" description="使用Python类型注解和Pydantic模型确保类型安全"/>
+  </constraints>
+
+  <interfaces>
+    <interface name="MovingAverageCalculator.calculate_batch" kind="function" signature="def calculate_batch(prices: List[float], timestamps: List[int], ma_type: Union[str, MAType], period: int) -> MAResult" path="backend/app/strategy/indicators/moving_average.py"/>
+    <interface name="SignalGenerator.generate_signals_from_data" kind="function" signature="def generate_signals_from_data(prices: List[float], timestamps: List[int], volumes: Optional[List[float]]) -> List[TradingSignal]" path="backend/app/strategy/signals/signal_generator.py"/>
+    <interface name="PositionManager.open_position" kind="function" signature="def open_position(signal: TradingSignal, current_price: float, symbol: str) -> Optional[Position]" path="backend/app/strategy/trading/position_manager.py"/>
+    <interface name="PositionManager.close_position" kind="function" signature="def close_position(position_id: str, current_price: float, reason: str) -> Optional[Position]" path="backend/app/strategy/trading/position_manager.py"/>
+    <interface name="RiskManager.check_stop_loss" kind="function" signature="def check_stop_loss(position: Position, current_price: float) -> bool" path="backend/app/strategy/trading/position_manager.py"/>
+    <interface name="StrategyConfig" kind="class" signature="dataclass StrategyConfig: ma_type: MAType, ma_period: int, stop_loss_pct: float, take_profit_pct: float" path="backend/app/schemas/strategy.py"/>
+  </interfaces>
+
+  <tests>
+    <standards>使用pytest进行单元测试，覆盖率要求80%以上。测试文件与源文件同目录，命名为.test_*.py。使用结构化断言和清晰的测试用例命名。集成测试覆盖完整的数据获取到策略回测流程。</standards>
+    <locations>
+      <location path="backend/tests/strategy/" pattern="strategy相关测试"/>
+      <location path="backend/tests/test_*.py" pattern="通用测试文件"/>
+      <location path="frontend/src/**/*.test.tsx" pattern="前端组件测试"/>
+    </locations>
+    <ideas>
+      <test idea="test_sma_calculation" mapped_ac="1" description="测试SMA计算的准确性，验证计算结果与预期值一致"/>
+      <test idea="test_ema_calculation" mapped_ac="1" description="测试EMA计算的准确性，包括增量计算和初始化逻辑"/>
+      <test idea="test_golden_cross_signal" mapped_ac="2" description="测试金叉买入信号生成，验证信号检测和确认机制"/>
+      <test idea="test_death_cross_signal" mapped_ac="2" description="测试死叉卖出信号生成，验证信号过滤和强度计算"/>
+      <test idea="test_position_open_close" mapped_ac="3" description="测试开仓和平仓流程，包括手续费计算和盈亏计算"/>
+      <test idea="test_stop_loss_mechanism" mapped_ac="3" description="测试止损机制，验证风险控制和自动平仓"/>
+      <test idea="test_strategy_config_validation" mapped_ac="4" description="测试策略配置验证，确保参数有效性检查"/>
+      <test idea="test_backtest_accuracy" mapped_ac="5" description="测试回测准确性，验证历史数据回测结果"/>
+      <test idea="test_calculation_performance" mapped_ac="6" description="测试计算性能，验证算法执行时间符合要求"/>
+      <test idea="test_integration_workflow" mapped_ac="7" description="集成测试，验证完整的数据处理到信号生成流程"/>
+    </ideas>
+  </tests>
+</story-context>

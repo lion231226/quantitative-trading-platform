@@ -1,0 +1,277 @@
+# Quality Monitoring and Reporting Workflow
+name: quality-monitoring
+description: "Comprehensive quality monitoring and reporting workflow that tracks quality metrics across stories, generates trend analysis, identifies quality issues, and provides actionable insights for continuous improvement. Integrates with all development workflows to provide real-time quality visibility."
+author: "BMad Quality Framework"
+
+# Critical variables from config
+config_source: "{project-root}/bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+user_skill_level: "{config_source}:user_skill_level"
+document_output_language: "{config_source}:document_output_language"
+story_dir: "{config_source}:dev_story_location"
+date: system-generated
+
+# Monitoring configuration
+project_root: "{project-root}"
+reports_dir: "{project-root}/reports/quality"
+metrics_dir: "{project-root}/metrics/quality"
+trends_dir: "{project-root}/trends/quality"
+
+# Workflow components
+installed_path: "{project-root}/bmad/bmm/workflows/quality-assurance/quality-monitoring"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+
+# This is a template workflow (generates reports)
+template: true
+default_output_file: "{reports_dir}/quality-monitoring-report-{{date}}.md"
+
+# Monitoring scope and frequency
+monitoring_scope:
+  stories: true
+  quality_gates: true
+  code_reviews: true
+  development_trends: true
+  quality_compliance: true
+
+  frequency:
+    real_time: true # Continuous monitoring
+    daily_summary: true # Daily quality reports
+    weekly_analysis: true # Weekly trend analysis
+    monthly_review: true # Monthly comprehensive review
+    quarterly_assessment: true # Quarterly strategic review
+
+# Quality metrics collection
+metrics_collection:
+  code_quality:
+    typescript_errors: true
+    eslint_violations: true
+    code_coverage: true
+    test_pass_rate: true
+    build_success_rate: true
+
+  development_quality:
+    story_completion_rate: true
+    false_declaration_rate: true
+    review_cycle_time: true
+    rework_rate: true
+    first_time_approval_rate: true
+
+  quality_assurance:
+    quality_gate_success_rate: true
+    quality_gate_failure_reasons: true
+    automated_catch_rate: true
+    manual_review_findings: true
+    quality_improvement_tracking: true
+
+  performance_metrics:
+    build_time: true
+    test_execution_time: true
+    bundle_size: true
+    runtime_performance: true
+    memory_usage: true
+
+# Data sources
+data_sources:
+  quality_gate_reports: "{reports_dir}/quality-gate-*.md"
+  code_review_reports: "{story_dir}/*/Senior Developer Review*.md"
+  sprint_status: "{output_folder}/sprint-status.yaml"
+  build_logs: "{project_root}/logs/build-*.log"
+  test_reports: "{project-root}/reports/test-*.xml"
+  coverage_reports: "{project-root}/reports/coverage-*.txt"
+
+# Analysis dimensions
+analysis_dimensions:
+  temporal:
+    daily: true
+    weekly: true
+    monthly: true
+    quarterly: true
+
+  categorical:
+    by_epic: true
+    by_developer: true
+    by_story_type: true
+    by_complexity: true
+    by_quality_issue_type: true
+
+  comparative:
+    period_over_period: true
+    baseline_comparison: true
+    target_comparison: true
+    industry_benchmark: true
+
+# Alerting and notifications
+alerting:
+  enabled: true
+  channels:
+    - workflow_output
+    - quality_reports
+    - email_notifications
+    - dashboard_alerts
+
+  alert_conditions:
+    quality_degradation:
+      threshold: 10% # 10% degradation triggers alert
+      metrics:
+        - code_coverage
+        - test_pass_rate
+        - quality_gate_success_rate
+
+    false_declaration_detection:
+      threshold: 1 # Any false declaration triggers immediate alert
+      severity: critical
+      escalation: immediate
+
+    critical_quality_issues:
+      threshold: 1 # Any critical issue triggers alert
+      severity: high
+      escalation: within_24h
+
+    performance_regression:
+      threshold: 20% # 20% performance degradation triggers alert
+      metrics:
+        - build_time
+        - test_execution_time
+        - bundle_size
+
+# Reporting configuration
+reporting:
+  generate_reports: true
+  report_formats:
+    - markdown
+    - html
+    - json
+    - pdf
+
+  report_types:
+    executive_summary: true
+    detailed_analysis: true
+    trend_analysis: true
+    quality_dashboard: true
+    improvement_recommendations: true
+
+  distribution:
+    stakeholders: true
+    development_team: true
+    quality_assurance: true
+    management: true
+
+# Continuous improvement
+continuous_improvement:
+  enabled: true
+  feedback_collection: true
+  best_practice_identification: true
+  process_optimization: true
+
+  improvement_cycles:
+    daily_retrospective: true
+    weekly_improvement: true
+    monthly_optimization: true
+    quarterly_strategic_review: true
+
+# Integration points
+integrations:
+  story_workflows:
+    dev_story: true
+    code_review: true
+    story_done: true
+
+  quality_workflows:
+    quality_gate: true
+    integrated_quality_check: true
+
+  external_systems:
+    cicd_pipelines: true
+    project_management: true
+    code_repositories: true
+    monitoring_systems: true
+
+# Quality targets and thresholds
+quality_targets:
+  code_quality:
+    typescript_errors: 0
+    eslint_errors: 0
+    code_coverage: 80
+    test_pass_rate: 100
+
+  development_quality:
+    false_declaration_rate: 0
+    first_time_approval_rate: 80
+    review_cycle_time: 2 # days
+    rework_rate: 20
+
+  performance:
+    build_time: 300 # seconds
+    test_execution_time: 120 # seconds
+    bundle_size: 5 # MB
+
+# Recommended inputs
+recommended_inputs:
+  - reporting_period: "Time period for quality report (daily, weekly, monthly, quarterly)"
+  - focus_areas: "Specific quality areas to focus on (code_quality, development_quality, performance, etc.)"
+  - include_recommendations: "Whether to include improvement recommendations (default: true)"
+  - target_audience: "Primary audience for the report (executive, technical, management)"
+
+standalone: true
+
+# Output customization
+output_customization:
+  executive_level:
+    focus: high_level_metrics
+    detail_level: summary
+    charts: true
+    recommendations: strategic
+
+  technical_level:
+    focus: detailed_metrics
+    detail_level: comprehensive
+    charts: true
+    recommendations: actionable
+
+  management_level:
+    focus: trend_analysis
+    detail_level: balanced
+    charts: true
+    recommendations: business_impact
+
+# Quality trends and patterns
+trend_analysis:
+  enabled: true
+  predictive_modeling: false # Future enhancement
+  pattern_recognition: true
+  anomaly_detection: true
+
+  trend_metrics:
+    - quality_score_trend
+    - defect_density_trend
+    - productivity_trend
+    - technical_debt_trend
+
+# Benchmarking
+benchmarking:
+  enabled: true
+  internal_baseline: true
+  industry_comparison: false # Future enhancement
+  competitive_analysis: false # Future enhancement
+
+  benchmark_metrics:
+    - code_quality_standards
+    - development_efficiency
+    - quality_assurance_effectiveness
+    - continuous_improvement_rate
+
+# Workflow automation
+automation:
+  enabled: true
+  scheduled_reports: true
+  automatic_alerts: true
+  self_healing: false # Future enhancement
+
+  automation_rules:
+    - daily_quality_summary
+    - weekly_trend_analysis
+    - monthly_performance_review
+    - quality_gate_failure_analysis

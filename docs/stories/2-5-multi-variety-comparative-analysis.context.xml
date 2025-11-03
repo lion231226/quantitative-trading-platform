@@ -1,0 +1,244 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>5</storyId>
+    <title>多品种对比分析</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-03</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/2-5-multi-variety-comparative-analysis.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>量化交易分析师</asA>
+    <iWant>能够比较多品种期货的策略表现并进行对比分析</iWant>
+    <soThat>选择最优的交易品种和参数配置，提高投资决策质量</soThat>
+    <tasks>- [ ] Task 1: 多品种选择界面 (AC: 1)
+  - [ ] Subtask 1.1: 创建VarietySelector.tsx组件，支持多选期货品种
+  - [ ] Subtask 1.2: 实现品种分类筛选（能源、金属、农产品、化工）
+  - [ ] Subtask 1.3: 添加品种搜索和快速选择功能
+  - [ ] Subtask 1.4: 实现选择状态管理和参数同步
+
+- [ ] Task 2: 多品种数据并行处理 (AC: 2)
+  - [ ] Subtask 2.1: 创建comparisonService.ts，管理多品种策略计算
+  - [ ] Subtask 2.2: 实现并行API调用和数据处理优化
+  - [ ] Subtask 2.3: 构建数据标准化和格式统一机制
+  - [ ] Subtask 2.4: 添加计算进度和错误处理
+
+- [ ] Task 3: 绩效对比分析引擎 (AC: 3)
+  - [ ] Subtask 3.1: 实现关键指标对比算法（收益率、夏普比率、最大回撤等）
+  - [ ] Subtask 3.2: 创建排名和评分系统
+  - [ ] Subtask 3.3: 构建统计显著性检验
+  - [ ] Subtask 3.4: 添加风险评估和建议生成
+
+- [ ] Task 4: 对比结果可视化 (AC: 4)
+  - [ ] Subtask 4.1: 创建MultiVarietyComparison.tsx主对比组件
+  - [ ] Subtask 4.2: 实现对比表格组件，支持排序和筛选
+  - [ ] Subtask 4.3: 集成Chart.js多品种对比图表
+  - [ ] Subtask 4.4: 添加交互式数据探索功能
+
+- [ ] Task 5: 报告生成和分享 (AC: 5)
+  - [ ] Subtask 5.1: 实现对比报告生成功能
+  - [ ] Subtask 5.2: 添加PDF导出功能
+  - [ ] Subtask 5.3: 创建分享链接和嵌入代码
+  - [ ] Subtask 5.4: 实现报告模板和自定义选项</tasks>
+  </story>
+
+  <acceptanceCriteria>1. 实现多品种选择界面，支持期货品种分类、搜索筛选和多选功能
+2. 支持同时显示多个品种的策略结果，提供并行数据获取和处理
+3. 提供品种间的绩效对比分析，包含关键指标对比和排名系统
+4. 实现对比结果的表格和图表展示，支持交互式数据探索
+5. 支持对比报告的生成和分享功能，包含PDF导出和分享链接</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/stories/2-5-multi-variety-comparative-analysis.md" title="Story 2.5: 多品种对比分析" section="完整故事定义">
+        作为量化交易分析师，我希望能够比较多品种期货的策略表现并进行对比分析，以便选择最优的交易品种和参数配置，提高投资决策质量。实现多品种选择界面，支持期货品种分类、搜索筛选和多选功能。
+      </doc>
+      <doc path="docs/epics.md" title="Epic Breakdown文档" section="Epic 2: 用户体验与可视化展示">
+        作为用户，我希望能够比较不同期货品种的策略表现，以便选择最适合的交易品种和参数。实现多品种选择界面，支持同时显示多个品种的策略结果，提供品种间的绩效对比分析。
+      </doc>
+      <doc path="docs/tech-spec-epic-2.md" title="Epic 2 技术规格文档" section="系统架构对齐">
+        前端架构: Next.js 14.2.33 + TypeScript 5 + Chart.js 4.4.2。components/comparison/MultiVarietyComparison.tsx - 多品种对比组件。services/comparisonService.ts - 对比分析服务。对比分析流程: 选择多个品种 → 并行获取数据 → 统一参数配置 → 运行策略回测 → 收集结果数据 → 生成对比图表。
+      </doc>
+      <doc path="docs/PRD.md" title="产品需求文档" section="功能需求FR012">
+        FR012: 系统必须支持多品种对比分析，允许用户同时查看不同期货品种的策略表现。可视化优先: 复杂的金融数据和策略逻辑通过图表、动画等可视化方式呈现，降低理解门槛。
+      </doc>
+      <doc path="docs/architecture-backup.md" title="系统架构文档" section="技术栈详情">
+        Chart.js 4.4+ 数据可视化库，React Query服务端状态管理。API响应格式标准: {success, data, message} 统一格式。缓存策略: 市场数据Redis缓存24小时，策略结果缓存1小时。
+      </doc>
+      <doc path="docs/stories/2-3-performance-metrics-visualization.md" title="Story 2.3: 绩效指标可视化" section="学习经验">
+        performanceService.ts已创建 - 包含完整的React Query集成、防抖优化、缓存机制和API响应格式处理。Chart.js 4.4.2版本稳定运行 - 支持复杂图表交互、大数据集优化和响应式设计。60fps优化、数据采样、缓存机制已实现 - 可应用于多品种数据处理和对比分析。
+      </doc>
+      <doc path="docs/stories/2-4-interactive-tutorial-system.md" title="Story 2.4: 交互式教程系统" section="Dev Agent Record">
+        Chart.js动画验证: 4.4.2版本支持复杂动画和多数据集可视化 - 可用于多品种对比图表和并行数据展示。tutorialService.ts已创建 - 包含完整的React Query集成、缓存机制和状态管理。组件结构: components/tutorial/目录已建立 - 对比组件可新增components/comparison/目录并遵循相同结构模式。
+      </doc>
+      <doc path="frontend/package.json" title="前端依赖配置" section="Chart.js依赖版本">
+        chart.js: ^4.4.2 - 核心图表库。react-chartjs-2: ^5.2.0 - Chart.js React封装。@tanstack/react-query: ^5.40.0 - 数据获取和缓存。chartjs-plugin-zoom: ^2.2.0 - 图表缩放功能。
+      </doc>
+      <doc path="docs/quality-assurance-framework.md" title="质量保证框架" section="测试标准">
+        包含测试覆盖率要求(80%+)和代码审查标准。
+      </doc>
+      <doc path="docs/code-review-checklist.md" title="代码审查检查清单" section="前端组件审查">
+        提供前端组件开发的最佳实践指导。
+      </doc>
+    </docs>
+    <code>
+      <code path="frontend/src/components/charts/PerformanceComparison.tsx" kind="component" symbol="PerformanceComparison" lines="1-428" reason="已实现策略绩效对比，包含图表和表格展示，可直接扩展为多品种对比分析">
+        核心可复用组件，包含多策略数据对比图表、策略选择器、关键指标对比表格、颜色配置系统。
+      </code>
+      <code path="frontend/src/components/charts/PriceChart.tsx" kind="component" symbol="PriceChart" lines="1-200" reason="价格图表，可扩展为多品种价格对比">
+        现有价格图表组件，支持Chart.js集成，可用于多品种价格走势对比展示。
+      </code>
+      <code path="frontend/src/components/charts/TradingSignals.tsx" kind="component" symbol="TradingSignals" lines="1-150" reason="交易信号展示，可用于多品种信号对比">
+        交易信号可视化组件，可复用于多品种交易信号对比分析。
+      </code>
+      <code path="frontend/src/components/controls/ParameterComparison.tsx" kind="component" symbol="ParameterComparison" lines="1-439" reason="已实现参数组对比分析，提供多组数据并行处理模式">
+        参数对比组件，包含多组数据并行处理、颜色配置系统、并行API调用和结果管理，架构模式可直接复用。
+      </code>
+      <code path="frontend/src/components/forms/MarketSelector.tsx" kind="component" symbol="MarketSelector" lines="1-138" reason="已实现期货品种选择，支持分类筛选，可扩展为多选模式">
+        期货品种选择器，包含品种列表展示、版块分类筛选，现有单选模式可扩展为多选。
+      </code>
+      <code path="frontend/src/services/performanceService.ts" kind="service" symbol="usePerformanceComparison" lines="1-600" reason="核心数据服务，包含React Query集成、缓存机制、防抖优化，可直接扩展为多品种对比服务">
+        已实现的性能服务，包含usePerformanceComparison Hook、PerformanceChangeDetector、PerformanceServicePreloader，提供完整的React Query集成和缓存配置。
+      </code>
+      <code path="frontend/src/services/tutorialService.ts" kind="service" symbol="TutorialService" lines="1-459" reason="服务架构模式参考，提供React Query集成、缓存配置、状态管理模式">
+        教程服务，提供React Query集成模式、缓存配置和数据管理、进度跟踪和状态管理，架构模式可复用。
+      </code>
+      <code path="frontend/src/lib/api.ts" kind="api" symbol="marketDataAPI" lines="50-120" reason="基础API客户端，提供期货品种列表、历史数据、绩效指标获取接口">
+        API客户端，包含marketDataAPI.getSymbols()、marketDataAPI.getHistory()、marketDataAPI.getPerformanceMetrics()接口，统一错误处理。
+      </code>
+      <code path="frontend/src/types/performance.types.ts" kind="types" symbol="PerformanceMetrics" lines="1-50" reason="核心类型定义，包含绩效指标、对比数据、组件Props结构">
+        性能类型定义，包含PerformanceMetrics、PerformanceComparison、PerformanceComparisonProps接口，可直接复用。
+      </code>
+      <code path="frontend/src/types/api.ts" kind="types" symbol="Symbol" lines="1-30" reason="API数据类型，包含期货品种信息、市场数据请求、策略结果结构">
+        API类型定义，包含Symbol期货品种信息、MarketDataRequest市场数据请求、StrategyResult策略结果结构。
+      </code>
+    </code>
+    <dependencies>
+      <frontend ecosystem="Node.js" packageManager="pnpm@8.15.6">
+        <core_framework name="Next.js" version="^14.2.33" usage="前端框架和路由" />
+        <ui_library name="React" version="^18" usage="UI组件库" />
+        <visualization name="Chart.js" version="^4.4.2" usage="图表渲染，核心依赖" />
+        <visualization_plugin name="react-chartjs-2" version="^5.2.0" usage="Chart.js React封装" />
+        <visualization_plugin name="chartjs-plugin-zoom" version="^2.2.0" usage="图表缩放功能" />
+        <visualization_plugin name="chartjs-plugin-annotation" version="^3.1.0" usage="图表标注功能" />
+        <data_management name="@tanstack/react-query" version="^5.40.0" usage="数据获取和缓存管理" />
+        <ui_components name="@radix-ui/react-dropdown-menu" version="^2.1.16" usage="下拉菜单组件" />
+        <ui_components name="@radix-ui/react-popover" version="^1.1.15" usage="弹出框组件" />
+        <ui_components name="@radix-ui/react-switch" version="^1.2.6" usage="开关组件" />
+        <ui_components name="@radix-ui/react-tooltip" version="^1.0.7" usage="工具提示组件" />
+        <http_client name="axios" version="^1.7.2" usage="HTTP请求客户端" />
+        <utility name="date-fns" version="^4.1.0" usage="日期处理" />
+        <utility name="lodash" version="^4.17.21" usage="工具函数库" />
+        <styling name="tailwindcss" version="^3.4.1" usage="CSS框架" />
+      </frontend>
+      <backend ecosystem="Python" packageManager="pip">
+        <web_framework name="FastAPI" version="0.111.0" usage="后端API框架" />
+        <data_processing name="pandas" version="2.2.2" usage="数据处理和分析" />
+        <data_processing name="numpy" version="1.26.4" usage="数值计算" />
+        <data_source name="akshare" version="1.12.88" usage="期货数据获取" />
+        <cache name="redis" version="5.0.4" usage="数据缓存" />
+        <database name="SQLAlchemy" version="2.0.30" usage="ORM框架" />
+        <validation name="pydantic" version="2.7.3" usage="数据验证" />
+        <http_client name="httpx" version="0.27.0" usage="异步HTTP客户端" />
+      </backend>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint name="技术栈约束" source="docs/tech-spec-epic-2.md">
+      Chart.js 4.4.2必须使用此版本确保与现有可视化架构一致。React Query 5.40.0用于数据缓存和状态管理。TypeScript 5确保类型安全。Next.js 14.2.33前端框架版本。
+    </constraint>
+    <constraint name="架构模式约束" source="docs/stories/2-3-performance-metrics-visualization.md">
+      组件目录结构: components/comparison/新增目录遵循现有模式。服务层模式: 基于Hook的服务架构如performanceService.ts。测试覆盖: Jest + React Testing Library，目标80%+覆盖率。
+    </constraint>
+    <constraint name="API响应格式" source="docs/architecture-backup.md">
+      统一API响应格式: {success, data, message}标准格式。缓存策略: Redis缓存机制，市场数据缓存24小时，策略结果缓存1小时。
+    </constraint>
+    <constraint name="性能优化要求" source="docs/stories/2-3-performance-metrics-visualization.md">
+      缓存机制: 5-30分钟分级缓存策略。防抖优化: 300ms延迟，最大2秒等待。并行处理: Promise.all并行API调用。数据采样: 大数据集的60fps优化。
+    </constraint>
+    <constraint name="用户体验要求" source="docs/PRD.md">
+      响应式设计: 移动端和桌面端适配。加载状态: 优雅的加载和错误状态处理。交互反馈: 实时参数变化和数据更新。颜色系统: 一致的颜色配置和主题。
+    </constraint>
+    <constraint name="复用优先级" source="docs/stories/2-5-multi-variety-comparative-analysis.md">
+      优先复用PerformanceComparison组件和performanceService服务。扩展MarketSelector为多选模式。基于现有Chart.js架构构建对比可视化。
+    </constraint>
+  </constraints>
+  <interfaces>
+    <interface name="PerformanceComparison API" kind="React Hook" signature="usePerformanceComparison(request: PerformanceAnalysisRequest): UseQueryResult&lt;PerformanceComparison&gt;" path="frontend/src/services/performanceService.ts">
+      多策略绩效对比Hook，可直接扩展为多品种对比分析，包含完整的React Query缓存和错误处理。
+    </interface>
+    <interface name="Market Data API" kind="REST endpoint" signature="GET /api/v1/market/symbols - 获取期货品种列表" path="frontend/src/lib/api.ts">
+      市场数据API，提供期货品种列表、历史数据获取、绩效指标计算等基础数据服务。
+    </interface>
+    <interface name="Performance Metrics Interface" kind="TypeScript interface" signature="interface PerformanceMetrics { returnRate: number; sharpeRatio: number; maxDrawdown: number; totalReturn: number; volatility: number; }" path="frontend/src/types/performance.types.ts">
+      绩效指标数据结构，定义收益率、夏普比率、最大回撤、总收益、波动率等关键指标。
+    </interface>
+    <interface name="Symbol Selection Interface" kind="TypeScript interface" signature="interface Symbol { symbol: string; name: string; exchange: string; sector: string; }" path="frontend/src/types/api.ts">
+      期货品种信息结构，包含品种代码、名称、交易所、版块等基础信息，用于品种选择器。
+    </interface>
+    <interface name="Comparison Request Interface" kind="TypeScript interface" signature="interface PerformanceAnalysisRequest { symbols: string[]; startDate: string; endDate: string; strategy: StrategyConfig; }" path="frontend/src/types/performance.types.ts">
+      对比分析请求参数，包含品种列表、时间范围、策略配置等，可扩展为多品种对比请求。
+    </interface>
+  </interfaces>
+  <tests>
+    <standards>
+      Jest + React Testing Library测试框架，目标80%+代码覆盖率。单元测试覆盖组件渲染、交互逻辑、数据处理。集成测试覆盖组件间协作、API调用、数据流。使用@testing-library/jest-dom提供DOM断言扩展。遵循Arrange-Act-Assert模式组织测试结构。Mock外部依赖（API、图表库、时间函数）。
+    </standards>
+    <locations>
+      src/**/__tests__/**/*.{test,spec}.{js,jsx,ts,tsx} - 测试文件主目录。src/**/*.{test,spec}.{js,jsx,ts,tsx} - 组件并行测试文件。jest.config.js配置文件定义覆盖率阈值80%。testEnvironment: jsdom环境支持DOM操作。transformIgnorePatterns处理chart.js等ES模块。
+    </locations>
+    <ideas>
+      <test idea="AC1: 多品种选择界面测试" acceptanceCriteriaId="1">
+        - VarietySelector组件渲染测试：验证品种列表显示、分类筛选功能
+        - 多选功能测试：验证品种选择/取消选择状态管理
+        - 搜索功能测试：验证品种搜索和筛选逻辑
+        - 参数同步测试：验证选中品种与参数配置的同步
+      </test>
+      <test idea="AC2: 并行数据处理测试" acceptanceCriteriaId="2">
+        - comparisonService测试：验证多品种并行API调用
+        - 数据标准化测试：验证不同品种数据格式统一
+        - 错误处理测试：验证单个品种失败不影响整体处理
+        - 进度显示测试：验证计算进度反馈机制
+      </test>
+      <test idea="AC3: 绩效对比分析测试" acceptanceCriteriaId="3">
+        - 指标计算测试：验证收益率、夏普比率、最大回撤等计算准确性
+        - 排名系统测试：验证品种排名和评分逻辑
+        - 统计检验测试：验证统计显著性检验算法
+        - 风险评估测试：验证风险评估和建议生成
+      </test>
+      <test idea="AC4: 结果可视化测试" acceptanceCriteriaId="4">
+        - MultiVarietyComparison组件测试：验证主对比组件渲染
+        - 图表集成测试：验证Chart.js多品种对比图表
+        - 表格功能测试：验证对比表格排序、筛选、分页
+        - 交互测试：验证图表缩放、悬停提示、数据探索
+      </test>
+      <test idea="AC5: 报告生成测试" acceptanceCriteriaId="5">
+        - 报告生成测试：验证对比报告内容完整性
+        - PDF导出测试：验证PDF格式和数据准确性
+        - 分享功能测试：验证分享链接生成和访问
+        - 模板自定义测试：验证报告模板配置功能
+      </test>
+      <test idea="性能测试">
+        - 大数据集测试：验证多品种大量数据的处理性能
+        - 内存泄漏测试：验证组件卸载后的内存清理
+        - 缓存效率测试：验证React Query缓存命中和失效
+        - 响应速度测试：验证用户交互的响应时间
+      </test>
+      <test idea="错误边界测试">
+        - API错误测试：模拟网络错误和服务器错误
+        - 数据异常测试：验证异常数据处理和用户提示
+        - 组件错误测试：验证组件渲染失败的处理
+        - 恢复机制测试：验证错误后的系统恢复能力
+      </test>
+      <test idea="可访问性测试">
+        - 键盘导航测试：验证Tab键导航和快捷键支持
+        - 屏幕阅读器测试：验证ARIA标签和语义化HTML
+        - 色彩对比测试：验证颜色对比度符合WCAG标准
+        - 响应式测试：验证移动端和桌面端适配
+      </test>
+    </ideas>
+  </tests>
+</story-context>

@@ -1,0 +1,139 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>2</storyId>
+    <title>策略参数实时配置</title>
+    <status>ready-for-dev</status>
+    <generatedAt>2025-11-01</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>D:\Demo\docs\stories\2-2-real-time-strategy-parameters.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>用户</asA>
+    <iWant>能够实时调整策略参数并立即看到效果</iWant>
+    <soThat>深入理解不同参数对策略表现的影响</soThat>
+    <tasks>- [ ] Task 1: 参数控制组件开发 (AC: 1)
+  - [ ] Subtask 1.1: 创建ParameterControls.tsx组件基础结构
+  - [ ] Subtask 1.2: 实现移动平均周期滑块组件（5-200范围）
+  - [ ] Subtask 1.3: 实现止损/止盈百分比输入组件
+  - [ ] Subtask 1.4: 添加参数验证和范围限制功能
+  - [ ] Subtask 1.5: 实现参数预设和快速选择功能
+
+- [ ] Task 2: 实时参数更新机制 (AC: 2)
+  - [ ] Subtask 2.1: 创建parameterService.ts服务
+  - [ ] Subtask 2.2: 实现参数变更检测和防抖优化
+  - [ ] Subtask 2.3: 集成现有策略API实现实时回测
+  - [ ] Subtask 2.4: 实现结果数据缓存和增量更新
+  - [ ] Subtask 2.5: 添加加载状态和错误处理
+
+- [ ] Task 3: 多参数对比分析功能 (AC: 3)
+  - [ ] Subtask 3.1: 创建ParameterComparison.tsx组件
+  - [ ] Subtask 3.2: 实现参数组管理（添加、删除、重命名）
+  - [ ] Subtask 3.3: 实现多组参数并行回测逻辑
+  - [ ] Subtask 3.4: 创建对比结果展示界面
+  - [ ] Subtask 3.5: 实现参数组高亮和视觉区分
+
+- [ ] Task 4: 参数优化建议系统 (AC: 4)
+  - [ ] Subtask 4.1: 创建OptimizationSuggestions.tsx组件
+  - [ ] Subtask 4.2: 实现基于历史数据的参数分析算法
+  - [ ] Subtask 4.3: 创建参数建议展示界面
+  - [ ] Subtask 4.4: 实现建议采纳和一键应用功能
+  - [ ] Subtask 4.5: 添加建议可信度评分和解释
+
+- [ ] Task 5: 用户偏好管理 (AC: 5)
+  - [ ] Subtask 5.1: 创建UserPreferences.tsx组件
+  - [ ] Subtask 5.2: 实现配置本地存储机制
+  - [ ] Subtask 5.3: 实现配置导入/导出功能（JSON格式）
+  - [ ] Subtask 5.4: 添加配置同步和备份功能
+  - [ ] Subtask 5.5: 实现多设备配置同步支持</tasks>
+  </story>
+
+  <acceptanceCriteria>1. 实现参数调整滑块和输入框（支持移动平均周期5-200，止损/止盈百分比）
+2. 实时更新策略回测结果（响应时间<500ms）
+3. 支持多组参数对比分析（最多同时显示4组参数）
+4. 提供参数优化建议功能（基于历史回测数据）
+5. 保存用户偏好设置（本地存储，支持配置导入/导出）</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/tech-spec-epic-2.md" title="Epic 2 Technical Specification" section="Services and Modules" snippet="前端可视化模块: components/controls/ParameterControls.tsx - 参数控制组件; 状态管理服务: services/parameterService.ts - 参数配置服务; 参数配置模型: StrategyParameters interface with movingAveragePeriod, stopLoss, takeProfit fields" />
+      <doc path="docs/stories/2-1-interactive-data-visualization.md" title="Story 2.1 Implementation Reference" section="Dev Agent Record" snippet="新服务创建: chartDataService.ts已创建 - 包含数据获取、缓存、错误处理模式，可复用用于参数数据处理; Chart.js架构验证: 4.4.2版本稳定运行 - 可依赖现有图表组件进行参数变化展示; API集成模式: 统一响应格式{success, data, message}处理已验证 - 参数服务可复用此模式" />
+      <doc path="docs/architecture-backup.md" title="Architecture Decision Document" section="Implementation Patterns" snippet="API响应格式标准: 统一的success/data/message格式; 状态管理模式: React Query进行服务端状态管理，useState进行本地状态管理; 错误处理模式: 统一错误类型VALIDATION_ERROR, API_ERROR, STRATEGY_ERROR" />
+    </docs>
+    <code>
+      <code path="frontend/src/types/strategy.ts" kind="types" symbol="MovingAverageStrategyParams" lines="4-7" reason="现有策略参数接口定义，包含window_size和initial_capital字段，需要扩展为支持实时参数配置" />
+      <code path="frontend/src/lib/api.ts" kind="service" symbol="strategyAPI" lines="77-116" reason="现有策略API客户端，包含run、getResults等方法，可复用用于参数实时更新" />
+      <code path="frontend/src/components/charts/PriceChart.tsx" kind="component" symbol="PriceChart" lines="53-325" reason="现有图表组件，已有参数控制界面（均线类型、周期等），可作为参数控制组件的基础" />
+      <code path="backend/app/api/v1/endpoints/strategies.py" kind="controller" symbol="run_strategy" lines="78-148" reason="后端策略运行端点，支持异步执行，可用于实时参数更新和回测" />
+      <code path="backend/app/schemas/strategy.py" kind="schema" symbol="StrategyParameters" lines="10-18" reason="后端策略参数验证模式，定义了参数范围和类型约束" />
+    </code>
+    <dependencies>
+      <dependency ecosystem="Node.js/Frontend" name="next" version="14.2.33" usage="React框架和路由系统" />
+      <dependency ecosystem="Node.js/Frontend" name="react" version="18" usage="用户界面构建和状态管理" />
+      <dependency ecosystem="Node.js/Frontend" name="chart.js" version="4.4.2" usage="数据可视化图表库，支持参数变化展示" />
+      <dependency ecosystem="Node.js/Frontend" name="react-chartjs-2" version="5.2.0" usage="Chart.js的React封装，用于参数响应式图表" />
+      <dependency ecosystem="Node.js/Frontend" name="@tanstack/react-query" version="5.40.0" usage="服务端状态管理和缓存，用于参数数据获取" />
+      <dependency ecosystem="Node.js/Frontend" name="axios" version="1.7.2" usage="HTTP客户端，用于参数API调用" />
+      <dependency ecosystem="Node.js/Frontend" name="tailwindcss" version="3.4.1" usage="CSS框架，用于参数控制界面样式" />
+      <dependency ecosystem="Node.js/Testing" name="jest" version="29.7.0" usage="单元测试框架，测试参数组件功能" />
+      <dependency ecosystem="Node.js/Testing" name="@testing-library/react" version="15.0.7" usage="React组件测试库，测试参数交互" />
+      <dependency ecosystem="Python/Backend" name="fastapi" version="0.111.0" usage="后端API框架，提供参数配置端点" />
+      <dependency ecosystem="Python/Backend" name="pydantic" version="2.7.3" usage="数据验证，用于参数模型定义和验证" />
+      <dependency ecosystem="Python/Backend" name="redis" version="5.0.4" usage="缓存服务，用于参数配置和结果缓存" />
+      <dependency ecosystem="Python/Backend" name="pandas" version="2.2.2" usage="数据处理，用于参数变化计算和分析" />
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture" description="必须遵循Epic 2技术规范的组件架构，使用components/controls/目录下的参数控制组件" />
+    <constraint type="performance" description="参数更新响应时间必须&lt;500ms，需实现防抖优化减少API调用频率" />
+    <constraint type="validation" description="所有参数输入必须进行范围验证：移动平均周期5-200，止损/止盈百分比0-50%" />
+    <constraint type="consistency" description="必须复用现有的API响应格式{success, data, message}和错误处理模式" />
+    <constraint type="ui" description="必须支持响应式设计，兼容移动端触摸交互和手势操作" />
+    <constraint type="state" description="使用React hooks管理本地状态，实现参数历史记录和撤销功能" />
+  </constraints>
+  <interfaces>
+    <interface name="Strategy Parameters API" kind="REST endpoint" signature="POST /api/v1/strategies/configure - 配置策略参数" path="backend/app/api/v1/endpoints/strategies.py:382-458" />
+    <interface name="Strategy Run API" kind="REST endpoint" signature="POST /api/v1/strategies/run - 运行策略回测" path="backend/app/api/v1/endpoints/strategies.py:78-148" />
+    <interface name="Task Status API" kind="REST endpoint" signature="GET /api/v1/strategies/task/{task_id}/status - 获取任务状态" path="backend/app/api/v1/endpoints/strategies.py:150-175" />
+    <interface name="Strategy Results API" kind="REST endpoint" signature="GET /api/v1/strategies/{strategy_id}/results - 获取策略结果" path="backend/app/api/v1/endpoints/strategies.py:196-238" />
+    <interface name="Parameters Schema" kind="data model" signature="StrategyParameters interface with validation rules" path="backend/app/schemas/strategy.py:10-18" />
+  </interfaces>
+  <tests>
+    <standards>项目使用Jest + React Testing Library进行单元测试和集成测试，代码覆盖率要求80%以上。测试文件位置遵循与源文件同目录原则，使用.test.tsx后缀。测试框架配置支持TypeScript和JSX转换，已设置Chart.js相关模块的转换规则。</standards>
+    <locations>frontend/src/components/**/__tests__/*.test.tsx - 组件测试目录；frontend/src/lib/**/__tests__/*.test.ts - 工具函数测试目录；使用npm run test运行单元测试，npm run test:coverage查看覆盖率报告。</locations>
+    <ideas>
+      <test idea="ParameterControls组件测试" ac="AC1">
+        - 测试滑块组件的值变化和边界限制（5-200范围）
+        - 测试输入框组件的数值验证和错误提示
+        - 测试参数预设和快速选择功能
+        - 测试组件响应式设计和移动端交互
+      </test>
+      <test idea="实时更新测试" ac="AC2">
+        - 测试参数变更防抖机制（减少API调用）
+        - 测试参数更新响应时间（&lt;500ms）
+        - 测试异步策略结果获取和状态更新
+        - 测试加载状态和错误处理显示
+      </test>
+      <test idea="参数对比测试" ac="AC3">
+        - 测试多组参数的添加、删除、重命名功能
+        - 测试并行回测结果的数据一致性
+        - 测试对比结果的视觉区分和高亮显示
+        - 测试最多4组参数的限制逻辑
+      </test>
+      <test idea="参数优化建议测试" ac="AC4">
+        - 测试基于历史数据的参数分析算法
+        - 测试建议结果的可信度评分计算
+        - 测试建议采纳和一键应用功能
+        - 测试建议解释文本的准确性
+      </test>
+      <test idea="用户偏好管理测试" ac="AC5">
+        - 测试配置本地存储的读写功能
+        - 测试配置导入/导出的数据格式验证
+        - 测试配置同步和备份的完整性
+        - 测试多设备配置的数据结构兼容性
+      </test>
+    </ideas>
+  </tests>
+</story-context>

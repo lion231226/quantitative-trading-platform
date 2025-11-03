@@ -1,0 +1,167 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 94.1%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Chart.js custom styles */
+.chart-container {
+  position: relative;
+  height: 400px;
+  width: 100%;
+}
+
+/* Loading animation */
+.loading-spinner {
+  @apply animate-spin rounded-full h-8 w-8 border-b-2 border-primary;
+}
+
+/* Error message styles */
+.error-message {
+  @apply bg-destructive/10 border border-destructive/20 text-destructive p-4 rounded-lg;
+}
+
+/* Success message styles */
+.success-message {
+  @apply bg-green-50 border border-green-200 text-green-800 p-4 rounded-lg;
+}
+
+/* Custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* 打印样式 */
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* 隐藏不需要打印的元素 */
+  button:not([onclick*="window.print()"]),
+  .no-print {
+    display: none !important;
+  }
+
+  /* 打印时确保所有内容可见 */
+  .space-y-6 > * + * {
+    margin-top: 1.5rem;
+  }
+
+  /* 卡片样式优化 */
+  .card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* 图表容器 */
+  [style*="height"] {
+    height: auto !important;
+    max-height: 400px !important;
+  }
+
+  /* 确保文本不被截断 */
+  .text-2xl, .text-lg, .text-sm {
+    color: #000 !important;
+  }
+
+  /* 背景色优化 */
+  .bg-blue-50, .bg-green-50, .bg-orange-50, .bg-purple-50 {
+    background-color: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+  }
+
+  /* 打印按钮样式 */
+  button[onclick*="window.print()"] {
+    background: #1e40af !important;
+    color: white !important;
+    border: 1px solid #1e40af !important;
+  }
+
+  /* 页面布局 */
+  @page {
+    margin: 1cm;
+    size: A4;
+  }
+
+  /* 标题和内容 */
+  h1, h2, h3 {
+    color: #000 !important;
+    page-break-after: avoid;
+  }
+
+  /* 图表区域 */
+  canvas {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+}

@@ -1,0 +1,155 @@
+# Pre-commit hooks配置
+# 在提交代码前自动执行代码质量检查
+
+repos:
+  # 基础代码检查
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      # 移除行尾空白字符
+      - id: trailing-whitespace
+        exclude: \.md$
+
+      # 确保文件以换行符结尾
+      - id: end-of-file-fixer
+
+      # 检查大文件
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+
+      # 检查JSON文件语法
+      - id: check-json
+        exclude: package-lock.json
+
+      # 检查YAML文件语法
+      - id: check-yaml
+
+      # 检查TOML文件语法
+      - id: check-toml
+
+      # 检查合并冲突标记
+      - id: check-merge-conflict
+
+      # 检查Python语法
+      - id: check-ast
+        files: ^backend/.*\.py$
+
+      # 检查调试语句
+      - id: debug-statements
+        files: ^backend/.*\.py$
+
+  # Python代码格式化
+  - repo: https://github.com/psf/black
+    rev: 23.11.0
+    hooks:
+      - id: black
+        language_version: python3
+        files: ^backend/.*\.py$
+        args: [--line-length=88]
+
+  # Python导入排序
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        files: ^backend/.*\.py$
+        args: [--profile=black, --line-length=88]
+
+  # Python代码质量检查
+  - repo: https://github.com/pycqa/flake8
+    rev: 6.1.0
+    hooks:
+      - id: flake8
+        files: ^backend/.*\.py$
+        args: [--config=backend/.flake8]
+        additional_dependencies:
+          - flake8-bandit
+          - flake8-bugbear
+          - flake8-comprehensions
+          - flake8-docstrings
+          - flake8-import-order
+          - flake8-print
+          - pyupgrade
+
+  # Python类型检查
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.7.1
+    hooks:
+      - id: mypy
+        files: ^backend/.*\.py$
+        args: [--config-file=backend/pyproject.toml]
+        additional_dependencies:
+          - types-requests
+          - types-redis
+
+  # JavaScript/TypeScript代码检查
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v8.54.0
+    hooks:
+      - id: eslint
+        files: ^frontend/.*\.(js|jsx|ts|tsx)$
+        types: [file]
+        additional_dependencies:
+          - eslint@8.54.0
+          - "@typescript-eslint/eslint-plugin@6.13.1"
+          - "@typescript-eslint/parser@6.13.1"
+          - eslint-plugin-react@7.33.2
+          - eslint-plugin-react-hooks@4.6.0
+          - eslint-plugin-jsx-a11y@6.8.0
+          - eslint-plugin-import@2.29.0
+          - eslint-plugin-security@1.7.1
+
+  # Prettier代码格式化
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.1.0
+    hooks:
+      - id: prettier
+        files: ^frontend/.*\.(js|jsx|ts|tsx|json|css|md)$
+        additional_dependencies:
+          - prettier@3.1.0
+        args: [--config=frontend/.prettierrc]
+
+  # 安全检查
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.5
+    hooks:
+      - id: bandit
+        files: ^backend/.*\.py$
+        args: [-r, backend/, -f, json, -o, bandit-report.json]
+        pass_filenames: false
+
+  # 密钥泄露检查
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        args: [--baseline, .secrets.baseline]
+        exclude: package-lock.json
+
+  # Docker文件检查
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.12.0
+    hooks:
+      - id: hadolint-docker
+        files: ^.*Dockerfile$
+        args: [--ignore, DL3008, --ignore, DL3009]
+
+  # 提交信息检查
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: 3.13.0
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
+
+# CI配置
+ci:
+  autofix_commit_msg: |
+    [pre-commit.ci] auto fixes from pre-commit.com hooks
+
+    for more information, see https://pre-commit.ci
+  autofix_prs: true
+  autoupdate_branch: ''
+  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
+  autoupdate_schedule: weekly
+  skip: []
+  submodules: false

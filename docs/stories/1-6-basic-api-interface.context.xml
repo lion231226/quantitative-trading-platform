@@ -1,0 +1,129 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>6</storyId>
+    <title>基础API接口</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-01</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/1-6-basic-api-interface.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>前端应用</asA>
+    <iWant>访问后端的数据和策略功能</iWant>
+    <soThat>用户能够通过界面使用核心功能</soThat>
+    <tasks>Task 1.6.1: 市场数据API端点
+- 实现获取可用期货品种API [AC: 1]
+- 实现历史数据查询API [AC: 1]
+- 集成数据缓存机制 [AC: 1]
+- 添加数据验证和错误处理 [AC: 5]
+
+Task 1.6.2: 策略回测API端点
+- 实现策略运行API [AC: 2]
+- 实现策略参数配置API [AC: 3]
+- 集成策略引擎和回测引擎 [AC: 2]
+- 添加异步任务处理机制 [AC: 2]
+
+Task 1.6.3: 结果查询API端点
+- 实现策略结果查询API [AC: 4]
+- 实现绩效指标查询API [AC: 4]
+- 集成绩效分析引擎结果 [AC: 4]
+- 实现结果缓存和分页 [AC: 4]
+
+Task 1.6.4: API文档和错误处理
+- 生成自动API文档 [AC: 5]
+- 实现统一错误处理机制 [AC: 5]
+- 添加API版本控制 [AC: 5]
+- 实现请求日志和监控 [AC: 5]
+
+Task 1.6.5: API集成测试
+- 编写API端点单元测试 [AC: 1-5]
+- 编写API集成测试 [AC: 1-5]
+- 验证API响应格式一致性 [AC: 5]
+- 测试错误处理和边界情况 [AC: 5]</tasks>
+  </story>
+
+  <acceptanceCriteria>1. 实现数据获取API（获取指定品种的历史数据）
+2. 实现策略回测API（执行单均线策略回测）
+3. 实现参数配置API（设置策略参数）
+4. 实现结果查询API（获取回测结果）
+5. 提供API文档和错误处理</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/tech-spec.md" title="Technical Specification" section="API Design">
+        REST API端点设计规范，统一响应格式和错误处理机制
+      </doc>
+      <doc path="docs/epics.md" title="Epic Breakdown" section="Story 1.6: 基础API接口">
+        详细的需求描述和验收标准定义
+      </doc>
+      <doc path="docs/stories/1-5-profit-calculation-engine.md" title="Previous Story" section="Dev Notes">
+        已建立的API响应格式和性能分析引擎集成模式
+      </doc>
+    </docs>
+    <code>
+      <code path="backend/app/services/performance/analytics_engine.py" kind="service" symbol="PerformanceAnalytics" lines="1-50" reason="现有的绩效分析引擎，需要提供API访问接口">
+        绩效分析主引擎，提供完整的收益和风险指标计算功能
+      </code>
+      <code path="backend/app/services/strategy_engine.py" kind="service" symbol="StrategyEngine" lines="1-100" reason="策略引擎，需要API端点来触发策略运行">
+        单均线策略核心算法和交易信号生成
+      </code>
+      <code path="backend/app/services/akshare_client.py" kind="service" symbol="AKShareClient" lines="1-80" reason="数据获取客户端，需要API包装器">
+        AKShare API集成，支持期货市场历史数据获取
+      </code>
+      <code path="backend/app/api/v1/endpoints/performance.py" kind="endpoint" symbol="performance_endpoints" lines="1-178" reason="现有的绩效API端点，需要扩展和参考">
+        已建立的绩效分析API模式，统一响应格式示例
+      </code>
+      <code path="backend/app/models/performance.py" kind="model" symbol="PerformanceMetrics" lines="1-30" reason="数据模型，API响应需要使用">
+        绩效指标数据模型，包含所有关键指标定义
+      </code>
+      <code path="backend/app/schemas/performance.py" kind="schema" symbol="PerformanceResponse" lines="1-50" reason="API响应模式，需要遵循相同格式">
+        现有的Pydantic响应模式，保持API一致性
+      </code>
+    </code>
+    <dependencies>
+      <dependency ecosystem="Python" packages="fastapi, uvicorn, pydantic, redis, sqlalchemy, akshare, numpy, pandas">
+        FastAPI框架和相关依赖已在前序故事中建立
+      </dependency>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="api_pattern">必须遵循统一的API响应格式 {success, data, message}</constraint>
+    <constraint type="error_handling">使用FastAPI的异常处理机制，提供详细的错误类型和消息</constraint>
+    <constraint type="caching">集成Redis缓存机制，优化API响应性能</constraint>
+    <constraint type="async_processing">长时间运行的策略回测必须使用异步任务处理</constraint>
+    <constraint type="documentation">自动生成OpenAPI文档，支持Swagger UI</constraint>
+    <constraint type="testing">每个API端点都需要单元测试和集成测试</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="Market Data API" kind="REST" signature="GET /api/v1/market-data/symbols, GET /api/v1/market-data/history" path="backend/app/api/v1/endpoints/market_data.py">
+      获取期货品种列表和历史数据
+    </interface>
+    <interface name="Strategy API" kind="REST" signature="POST /api/v1/strategies/run, GET /api/v1/strategies/{id}/results" path="backend/app/api/v1/endpoints/strategies.py">
+      策略运行和结果查询
+    </interface>
+    <interface name="Configuration API" kind="REST" signature="POST /api/v1/strategies/configure" path="backend/app/api/v1/endpoints/strategies.py">
+      策略参数配置
+    </interface>
+    <interface name="Performance API" kind="REST" signature="GET /api/v1/performance/metrics/{strategy_id}" path="backend/app/api/v1/endpoints/performance.py">
+      绩效指标查询（扩展现有端点）
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      使用pytest进行单元测试，FastAPI TestClient进行API测试。每个端点需要测试正常情况、错误情况和边界条件。集成测试需要验证完整的API工作流程。
+    </standards>
+    <locations>backend/tests/api/, backend/tests/test_market_data.py, backend/tests/test_strategies.py, backend/tests/test_performance.py</locations>
+    <ideas>
+      <test idea="market_data_api" ac="1">测试市场数据API的品种列表和历史数据获取功能</test>
+      <test idea="strategy_api" ac="2">测试策略运行API的参数验证和异步处理</test>
+      <test idea="config_api" ac="3">测试策略配置API的参数更新和验证</test>
+      <test idea="results_api" ac="4">测试结果查询API的数据格式和缓存机制</test>
+      <test idea="error_handling" ac="5">测试统一错误处理和API文档生成</test>
+    </ideas>
+  </tests>
+</story-context>

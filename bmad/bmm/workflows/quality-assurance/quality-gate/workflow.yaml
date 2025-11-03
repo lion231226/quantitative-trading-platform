@@ -1,0 +1,203 @@
+# Quality Gate Assurance Workflow
+name: quality-gate
+description: "Comprehensive quality assurance workflow that enforces zero compilation errors, zero test failures, and prevents false declarations. Integrates with story development and review workflows to ensure code quality standards are met."
+author: "BMad Quality Framework"
+
+# Critical variables from config
+config_source: "{project-root}/bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+user_skill_level: "{config_source}:user_skill_level"
+document_output_language: "{config_source}:document_output_language"
+date: system-generated
+
+# Quality gate configuration
+project_root: "{project-root}"
+frontend_dir: "{project-root}/frontend"
+backend_dir: "{project-root}/backend"
+reports_dir: "{project-root}/reports/quality"
+
+# Quality gate script path
+quality_gate_script: "{project-root}/scripts/quality-gate.sh"
+
+# Workflow components
+installed_path: "{project-root}/bmad/bmm/workflows/quality-assurance/quality-gate"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+
+# This is an action workflow (no output template document)
+template: false
+
+# Quality gate modes
+variables:
+  mode: "review" # Options: dev, review, release, story-specific
+  story_path: "" # Optional: Path to story file for story-specific checks
+  story_key: "" # Auto-derived from story_path
+  strict_mode: true # Enforce strict quality standards
+  require_manual_verification: true # Require manual verification in addition to automated checks
+  quality_threshold:
+    compilation_errors: 0
+    test_failures: 0
+    coverage_threshold: 80
+    eslint_errors: 0
+
+# Quality check categories
+quality_checks:
+  compilation:
+    typescript: true
+    build_verification: true
+
+  code_quality:
+    eslint: true
+    prettier: true
+    security_audit: true
+
+  testing:
+    unit_tests: true
+    integration_tests: true
+    coverage_analysis: true
+    test_stability: true
+
+  performance:
+    bundle_size_analysis: true
+    build_time_analysis: true
+    performance_regression: false # Optional for performance-critical stories
+
+  documentation:
+    story_completeness: true
+    api_documentation: true
+    code_documentation: true
+
+  security:
+    vulnerability_scan: true
+    dependency_check: true
+    code_security_analysis: true
+
+# Integration points
+integrations:
+  story_development:
+    pre_commit_check: true
+    pre_push_check: true
+    development_completion: true
+
+  code_review:
+    review_mandate: true
+    review_verification: true
+    automated_review_support: true
+
+  continuous_integration:
+    ci_gate: true
+    pull_request_validation: true
+    release_gate: true
+
+# Recommended inputs
+recommended_inputs:
+  - story: "Path to story file for story-specific quality checks"
+  - mode: "Quality check mode: dev, review, release, or story-specific"
+  - strict_mode: "Enable strict quality enforcement (default: true)"
+  - manual_verification: "Require manual verification in addition to automated checks"
+
+standalone: true
+
+# Quality gate outcomes and actions
+outcomes:
+  pass:
+    status: "APPROVED"
+    description: "All quality checks passed. Code meets quality standards."
+    action: "Proceed to next workflow stage"
+
+  pass_with_warnings:
+    status: "APPROVED_WITH_WARNINGS"
+    description: "Quality checks passed with minor warnings. Monitor recommended."
+    action: "Proceed but address warnings in future iterations"
+
+  fail:
+    status: "BLOCKED"
+    description: "Quality checks failed. Issues must be resolved before proceeding."
+    action: "Block workflow until quality issues are fixed"
+
+  requires_manual_review:
+    status: "MANUAL_REVIEW_REQUIRED"
+    description: "Automated checks passed but manual verification required."
+    action: "Escalate to manual review process"
+
+# Quality metrics collection
+metrics:
+  collection_enabled: true
+  persist_results: true
+  trend_analysis: true
+  reporting_frequency: "per_story"
+
+  metrics_collected:
+    - compilation_success_rate
+    - test_pass_rate
+    - code_coverage_percentage
+    - eslint_issues_count
+    - security_vulnerabilities_count
+    - build_success_rate
+    - performance_metrics
+    - quality_gate_execution_time
+
+# Quality assurance policies
+policies:
+  zero_tolerance:
+    compilation_errors: true
+    test_failures: false # Allow test failures during development
+    security_vulnerabilities: true # High/Critical vulnerabilities
+
+  continuous_improvement:
+    coverage_trend_analysis: true
+    quality_metrics_tracking: true
+    best_practice_enforcement: true
+
+  accountability:
+    developer_signoff: true
+    reviewer_validation: true
+    quality_attestation: true
+
+# Error handling and recovery
+error_handling:
+  retry_mechanism:
+    enabled: true
+    max_retries: 3
+    retry_delay: 30 # seconds
+
+  escalation:
+    automatic: true
+    escalation_criteria:
+      - consecutive_failures: 3
+      - critical_quality_issues: true
+      - security_vulnerabilities: true
+
+  recovery:
+    automatic_fixes: false # Quality issues require manual intervention
+    guided_fixes: true
+    fix_recommendations: true
+
+# Documentation and reporting
+documentation:
+  generate_reports: true
+  report_format: "markdown"
+  include_evidence: true
+  attach_artifacts: true
+
+  report_sections:
+    - executive_summary
+    - quality_metrics
+    - detailed_findings
+    - recommendations
+    - evidence_attachments
+    - compliance_verification
+
+# Compliance and audit
+compliance:
+  audit_trail: true
+  evidence_preservation: true
+  compliance_reporting: true
+
+  standards:
+    - internal_quality_standards
+    - industry_best_practices
+    - security_compliance
+    - performance_standards

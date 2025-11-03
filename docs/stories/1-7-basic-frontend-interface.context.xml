@@ -1,0 +1,131 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>7</storyId>
+    <title>basic-frontend-interface</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-01</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/1-7-basic-frontend-interface.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>用户</asA>
+    <iWant>有一个基础的用户界面</iWant>
+    <soThat>我能够使用核心的数据获取和策略功能</soThat>
+    <tasks>### Task 1.7.1: 主页布局和基础组件
+- [ ] 创建Next.js主页 `src/app/page.tsx` [AC: 1]
+- [ ] 实现响应式布局组件 `src/components/layout/Layout.tsx` [AC: 1]
+- [ ] 创建通用UI组件(Button, Card, Loading) [AC: 1, 4]
+- [ ] 设置Tailwind CSS样式系统 [AC: 1]
+
+### Task 1.7.2: 市场数据选择界面
+- [ ] 实现期货品种选择组件 `src/components/forms/MarketSelector.tsx` [AC: 2]
+- [ ] 集成市场数据API端点 `/api/v1/market-data/symbols` [AC: 2]
+- [ ] 添加日期范围选择器 `src/components/forms/DateRangePicker.tsx` [AC: 2]
+- [ ] 实现数据验证和错误处理 [AC: 2]
+
+### Task 1.7.3: 策略参数配置界面
+- [ ] 创建策略配置表单 `src/components/forms/StrategyForm.tsx` [AC: 3]
+- [ ] 实现参数输入控件(均线周期、初始资金等) [AC: 3]
+- [ ] 集成参数配置API `/api/v1/strategies/configure` [AC: 3]
+- [ ] 添加参数验证和实时反馈 [AC: 3]
+
+### Task 1.7.4: 结果显示和反馈界面
+- [ ] 创建结果显示组件 `src/components/results/ResultsDisplay.tsx` [AC: 4]
+- [ ] 实现简单的策略结果展示(收益、胜率等) [AC: 4]
+- [ ] 添加加载状态和进度指示器 [AC: 4]
+- [ ] 实现错误状态和用户友好提示 [AC: 4]
+
+### Task 1.7.5: 帮助系统和文档
+- [ ] 创建帮助页面 `src/app/help/page.tsx` [AC: 5]
+- [ ] 实现工具提示和说明信息 [AC: 5]
+- [ ] 添加使用指南和FAQ [AC: 5]
+- [ ] 实现上下文相关的帮助链接 [AC: 5]</tasks>
+  </story>
+
+  <acceptanceCriteria>1. 创建响应式主页布局
+2. 实现期货品种选择界面
+3. 实现基础的参数配置界面
+4. 实现简单的结果显示区域
+5. 提供基础的帮助和说明信息</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/tech-spec.md" title="Technical Specification" section="Frontend Architecture" snippet="项目采用 Next.js + FastAPI 现代全栈架构，重点关注快速开发和教育导向的用户体验。前端使用 Next.js 14 + TypeScript + Tailwind CSS，支持响应式设计和Chart.js数据可视化。" />
+      <doc path="docs/tech-spec.md" title="Technical Specification" section="Project Structure" snippet="前端项目结构包含 app/ 页面、components/ 可复用组件、lib/ 工具函数、types/ TypeScript类型定义。组件层次分为 layout/ 布局组件、forms/ 表单组件、charts/ 图表组件、ui/ 基础UI组件。" />
+      <doc path="docs/PRD.md" title="Product Requirements Document" section="Functional Requirements" snippet="FR005: 系统必须提供响应式 Web 界面，支持桌面和移动端访问，适合不同水平用户使用。FR006: 系统必须支持实时策略参数配置，允许用户调整均线周期并查看相应的回测效果。" />
+      <doc path="docs/stories/1-6-basic-api-interface.md" title="API Interface Documentation" section="API Endpoints" snippet="已实现的API端点包括市场数据查询、策略运行、结果查询和参数配置。统一响应格式为 {success, data, message}，支持异步任务处理和缓存机制。" />
+      <doc path="docs/epic-1-technical-context.md" title="Epic 1 Technical Context" section="System Architecture" snippet="基于Next.js + FastAPI的全栈架构，前端通过REST API与后端通信，使用Chart.js进行数据可视化，支持实时参数配置和结果显示。" />
+    </docs>
+    <code>
+      <artifact path="frontend/src/app/layout.tsx" kind="layout" symbol="RootLayout" lines="33-47" reason="根布局组件，定义HTML结构、字体、错误边界和模态根节点" />
+      <artifact path="frontend/src/app/page.tsx" kind="page" symbol="HomePage" lines="11-123" reason="主页面组件，实现响应式布局和核心功能介绍，已使用Tailwind CSS和现有UI组件" />
+      <artifact path="frontend/src/components/ui/button.tsx" kind="component" symbol="Button" lines="42-53" reason="基础按钮组件，支持多种变体和尺寸，使用Radix UI和CVA构建" />
+      <artifact path="frontend/src/components/ui/card.tsx" kind="component" symbol="Card" lines="1" reason="卡片组件，用于内容分组和展示" />
+      <artifact path="frontend/src/components/ui/error-boundary.tsx" kind="component" symbol="ErrorBoundary" lines="1" reason="错误边界组件，处理React组件错误" />
+      <artifact path="backend/app/api/v1/endpoints/market_data.py" kind="api" symbol="get_available_symbols" lines="21-37" reason="市场数据API端点，获取可用期货品种列表，支持版块筛选" />
+      <artifact path="backend/app/api/v1/endpoints/market_data.py" kind="api" symbol="get_market_data_history" lines="39-50" reason="历史数据API端点，获取指定品种的历史价格数据" />
+      <artifact path="backend/app/api/v1/endpoints/strategies.py" kind="api" symbol="get_strategy_list" lines="34-50" reason="策略列表API端点，返回可用策略及其参数配置" />
+    </code>
+    <dependencies>
+      <ecosystem name="frontend" packageManager="pnpm@8.15.6">
+        <package name="next" version="14.2.5" usage="React全栈框架，支持SSR和API路由" />
+        <package name="react" version="18" usage="用户界面库" />
+        <package name="chart.js" version="4.4.2" usage="数据可视化图表库" />
+        <package name="react-chartjs-2" version="5.2.0" usage="React Chart.js集成" />
+        <package name="@tanstack/react-query" version="5.40.0" usage="服务端状态管理" />
+        <package name="axios" version="1.7.2" usage="HTTP客户端" />
+        <package name="tailwindcss" version="3.4.1" usage="CSS框架" />
+        <package name="@radix-ui/react-slot" version="1.0.2" usage="无样式UI组件基础" />
+        <package name="class-variance-authority" version="0.7.0" usage="组件变体管理" />
+        <package name="typescript" version="5" usage="类型安全" />
+      </ecosystem>
+      <ecosystem name="backend" packageManager="pip">
+        <package name="fastapi" version="0.111.0" usage="Python现代Web框架" />
+        <package name="akshare" version="1.12.88" usage="中国期货市场数据源" />
+        <package name="pandas" version="2.2.2" usage="数据处理和分析" />
+        <package name="pydantic" version="2.7.3" usage="数据验证和设置管理" />
+        <package name="redis" version="5.0.4" usage="内存缓存数据库" />
+        <package name="sqlalchemy" version="2.0.30" usage="Python SQL工具包" />
+        <package name="structlog" version="24.1.0" usage="结构化日志记录" />
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture">必须使用Next.js 14 App Router模式，遵循已建立的项目结构</constraint>
+    <constraint type="styling">必须使用Tailwind CSS实现响应式设计，移动端优先</constraint>
+    <constraint type="typography">必须使用TypeScript确保类型安全，所有组件都需要类型定义</constraint>
+    <constraint type="api">必须遵循统一的API响应格式 {success, data, message} 解析数据</constraint>
+    <constraint type="error-handling">必须实现统一的错误处理，显示用户友好的中文错误提示</constraint>
+    <constraint type="caching">必须利用Redis缓存机制，避免重复API调用</constraint>
+    <constraint type="component-design">组件设计必须模块化，支持复用和组合，保持一致的UI风格</constraint>
+    <constraint type="accessibility">必须支持无障碍访问，遵循WCAG标准</constraint>
+  </constraints>
+  <interfaces>
+    <interface name="市场数据API" kind="REST endpoint" signature="GET /api/v1/market-data/symbols?sector={sector}" path="backend/app/api/v1/endpoints/market_data.py" />
+    <interface name="历史数据API" kind="REST endpoint" signature="GET /api/v1/market-data/history?symbol={symbol}&start_date={date}&end_date={date}" path="backend/app/api/v1/endpoints/market_data.py" />
+    <interface name="策略列表API" kind="REST endpoint" signature="GET /api/v1/strategies/" path="backend/app/api/v1/endpoints/strategies.py" />
+    <interface name="策略运行API" kind="REST endpoint" signature="POST /api/v1/strategies/run" path="backend/app/api/v1/endpoints/strategies.py" />
+    <interface name="策略配置API" kind="REST endpoint" signature="POST /api/v1/strategies/configure" path="backend/app/api/v1/endpoints/strategies.py" />
+    <interface name="策略结果API" kind="REST endpoint" signature="GET /api/v1/strategies/{id}/results" path="backend/app/api/v1/endpoints/strategies.py" />
+    <interface name="API响应类型" kind="TypeScript interface" signature="interface APIResponse&lt;T&gt; { success: boolean; data: T; message: string; }" path="frontend/src/types/api.ts" />
+  </interfaces>
+  <tests>
+    <standards>项目使用Jest + React Testing Library作为主要测试框架，要求80%的代码覆盖率。所有UI组件都需要进行单元测试，测试文件位于__tests__目录或使用.test.tsx后缀。测试遵循AAA模式（Arrange-Act-Assert），重点关注用户行为和组件交互。</standards>
+    <locations>
+      <location path="frontend/src/components/ui/__tests__/" description="UI组件单元测试目录" />
+      <location path="frontend/src/**/*.test.tsx" description="组件测试文件模式" />
+      <location path="frontend/src/**/*.spec.{js,jsx,ts,tsx}" description="规格测试文件模式" />
+    </locations>
+    <ideas>
+      <test idea="主页布局响应式测试" mapped-ac="1">验证HomePage组件在不同屏幕尺寸下的布局表现，测试移动端和桌面版的显示效果" />
+      <test idea="期货品种选择组件测试" mapped-ac="2">测试MarketSelector组件的数据加载、选择功能和错误处理" />
+      <test idea="策略配置表单验证测试" mapped-ac="3">测试StrategyForm组件的参数验证、提交功能和实时反馈" />
+      <test idea="结果显示组件功能测试" mapped-ac="4">测试ResultsDisplay组件的数据展示、加载状态和错误状态" />
+      <test idea="API客户端集成测试" mapped-ac="2,3,4">测试前端API客户端与后端端点的集成，包括成功和失败场景" />
+      <test idea="用户交互流程测试" mapped-ac="1-5">端到端测试，模拟用户从选择品种到查看结果的完整流程" />
+    </ideas>
+  </tests>
+</story-context>

@@ -1,0 +1,195 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>5</storyId>
+    <title>收益计算引擎</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-01</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/1-5-profit-calculation-engine.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>量化交易系统</asA>
+    <iWant>实现全面的收益计算引擎和风险指标分析</iWant>
+    <soThat>用户能够准确评估单均线策略的风险收益表现和交易绩效</soThat>
+    <tasks>### Task 1.5.1: 基础收益计算引擎
+- [ ] 实现收益率计算函数（单期和累计收益）[AC: 1]
+- [ ] 实现基于策略信号的仓位价值计算 [AC: 1]
+- [ ] 支持多种收益计算方法（算术、对数收益） [AC: 1]
+- [ ] 优化计算性能以处理大量历史数据 [AC: 7]
+
+### Task 1.5.2: 风险指标计算模块
+- [ ] 实现最大回撤计算算法 [AC: 2]
+- [ ] 实现回撤期间识别和统计 [AC: 2]
+- [ ] 实现波动率和标准差计算 [AC: 2]
+- [ ] 实现下行风险和上行风险分析 [AC: 2]
+
+### Task 1.5.3: 风险调整收益指标
+- [ ] 实现夏普比率计算（含无风险利率调整） [AC: 3]
+- [ ] 实现Sortino比率计算（聚焦下行风险） [AC: 3]
+- [ ] 实现信息比率和其他风险调整指标 [AC: 3]
+- [ ] 支持不同基准的比较分析 [AC: 3]
+
+### Task 1.5.4: 交易统计分析模块
+- [ ] 实现胜率计算（盈利交易比例） [AC: 4]
+- [ ] 实现盈亏比计算（平均盈利/平均亏损） [AC: 4]
+- [ ] 实现交易频率和持仓时间统计 [AC: 4]
+- [ ] 实现交易成本和滑点影响分析 [AC: 4]
+
+### Task 1.5.5: 绩效报告生成系统
+- [ ] 设计绩效指标数据结构和存储格式 [AC: 5]
+- [ ] 实现综合绩效报告模板 [AC: 5]
+- [ ] 支持不同时间维度的绩效分析 [AC: 5]
+- [ ] 实现绩效对比和基准测试功能 [AC: 5]
+
+### Task 1.5.6: API接口和数据服务
+- [ ] 实现收益计算API端点 [AC: 7]
+- [ ] 实现绩效指标查询API [AC: 7]
+- [ ] 实现历史绩效数据缓存机制 [AC: 7]
+- [ ] 集成错误处理和参数验证 [AC: 7]
+
+### Task 1.5.7: 测试和验证框架
+- [ ] 编写收益计算单元测试（包含边界情况） [AC: 1-7]
+- [ ] 编写风险指标计算准确性测试 [AC: 1-7]
+- [ ] 编写API接口集成测试 [AC: 1-7]
+- [ ] 创建性能验证和压力测试 [AC: 1-7]</tasks>
+  </story>
+
+  <acceptanceCriteria>1. 计算策略收益率和累计收益（支持算术和对数收益计算）
+2. 计算最大回撤和回撤期间分析（识别回撤起止时间和深度）
+3. 计算夏普比率和Sortino比率（包含无风险利率调整）
+4. 计算胜率和盈亏比（交易统计和成本分析）
+5. 提供详细的交易记录统计和绩效报告生成
+6. 集成前序故事的策略信号数据进行准确计算
+7. 提供标准化的API接口供前端调用和可视化展示</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/tech-spec.md</path>
+        <title>Technical Specification</title>
+        <section>Core Technical Components - Backtest Engine</section>
+        <snippet>PerformanceMetrics model with total_return, max_drawdown, sharpe_ratio fields. Risk-adjusted return calculations and API endpoints for backtest functionality.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epic-1-technical-context.md</path>
+        <title>Epic 1 Technical Context</title>
+        <section>System Architecture and Data Flow</section>
+        <snippet>Data flow: AKShare API → DataProcessor → Strategy Engine → Performance Analytics. Integration points between strategy signals and performance calculations.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture-backup.md</path>
+        <title>Decision Architecture</title>
+        <section>Implementation Patterns and API Standards</section>
+        <snippet>Unified error handling with {success, data, message} response format. RESTful API design with OpenAPI 3.0 specification. Caching strategies using Redis + SQLite.</snippet>
+      </doc>
+      <doc>
+        <path>stories/1-4-single-moving-average-strategy-core-algorithm.md</path>
+        <title>Story 1.4 Implementation Details</title>
+        <section>Learnings and Integration Requirements</section>
+        <snippet>Strategy engine provides complete signal generation and trading execution functionality. Vectorized computation and caching mechanisms established for performance optimization.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>backend/app/strategy/strategy_engine.py</path>
+        <kind>service</kind>
+        <symbol>StrategyState</symbol>
+        <lines>42-50</lines>
+        <reason>Contains trade statistics (total_trades, winning_trades, losing_trades) that feed into performance calculations</reason>
+      </artifact>
+      <artifact>
+        <path>backend/app/strategy/backtesting/backtest_engine.py</path>
+        <kind>service</kind>
+        <symbol>BacktestResult</symbol>
+        <lines>32-50</lines>
+        <reason>Existing backtest result structure with performance metrics (total_return, win_rate, profit_factor) to be enhanced</reason>
+      </artifact>
+      <artifact>
+        <path>backend/app/models/market_data.py</path>
+        <kind>model</kind>
+        <symbol>MarketData</symbol>
+        <lines>34-46</lines>
+        <reason>Core market data model providing price data (open, high, low, close) required for return calculations</reason>
+      </artifact>
+      <artifact>
+        <path>backend/app/api/v1/endpoints/strategies.py</path>
+        <kind>api</kind>
+        <symbol>get_strategy_list</symbol>
+        <lines>25-50</lines>
+        <reason>Existing API pattern and response structure to be followed for performance endpoints</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <python>
+        <package name="fastapi" version="0.111.0" />
+        <package name="pandas" version="2.2.2" />
+        <package name="numpy" version="1.26.4" />
+        <package name="pydantic" version="2.7.3" />
+        <package name="redis" version="5.0.4" />
+        <package name="sqlalchemy" version="2.0.30" />
+        <package name="structlog" version="24.1.0" />
+        <package name="pytest" version="8.2.1" />
+        <package name="pytest-cov" version="5.0.0" />
+      </python>
+      <javascript>
+        <package name="chart.js" version="^4.4.2" />
+        <package name="react-chartjs-2" version="^5.2.0" />
+        <package name="@tanstack/react-query" version="^5.40.0" />
+      </javascript>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Must follow existing API response format: {success: boolean, data: object, message: string}</constraint>
+    <constraint>Performance calculations must integrate with existing strategy signal data structures</constraint>
+    <constraint>Use established caching pattern: Redis for temporary results (1-24h TTL), SQLite for persistent storage</constraint>
+    <constraint>Implement vectorized calculations using NumPy for performance optimization</constraint>
+    <constraint>Follow established file structure: backend/app/services/performance/ for new modules</constraint>
+    <constraint>Use Pydantic models for API validation and SQLAlchemy for database models</constraint>
+    <constraint>All calculations must handle large datasets (>10,000 data points) efficiently</constraint>
+    <constraint>Error messages must be user-friendly and in Chinese as per communication language setting</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>Performance Analytics API</name>
+      <kind>REST endpoints</kind>
+      <signature>POST /api/v1/performance/calculate_returns
+GET /api/v1/performance/metrics/{strategy_id}
+POST /api/v1/performance/report</signature>
+      <path>backend/app/api/v1/endpoints/performance.py</path>
+    </interface>
+    <interface>
+      <name>StrategyEngine Integration</name>
+      <kind>class interface</kind>
+      <signature>def calculate_performance_metrics(signals: List[Signal], prices: List[float]) -> PerformanceMetrics</signature>
+      <path>backend/app/services/strategy_engine.py</path>
+    </interface>
+    <interface>
+      <name>BacktestEngine Extension</name>
+      <kind>class method</kind>
+      <signature>def calculate_risk_metrics(self, returns: List[float]) -> RiskMetrics</signature>
+      <path>backend/app/strategy/backtesting/backtest_engine.py</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Use pytest with pytest-asyncio for async testing. Test coverage target >80%. Follow existing pattern: unit tests in backend/tests/strategy/ directory. Use parametrized tests for multiple calculation scenarios. Include edge cases (empty data, single data point, extreme values).</standards>
+    <locations>
+      <directory>backend/tests/performance/</directory>
+      <directory>backend/tests/strategy/test_performance_*.py</directory>
+      <glob>backend/tests/**/test_*performance*.py</glob>
+    </locations>
+    <ideas>
+      <test mapping="1">test_return_calculation_accuracy - Verify simple and log return calculations against known values</test>
+      <test mapping="2">test_max_drawdown_calculation - Test drawdown detection with synthetic peak/valley data</test>
+      <test mapping="3">test_sharpe_ratio_calculation - Validate risk-adjusted return calculations</test>
+      <test mapping="4">test_trading_statistics - Test win rate and profit/loss ratio calculations</test>
+      <test mapping="5">test_performance_report_generation - Verify report structure and content</test>
+      <test mapping="6">test_api_integration - Test performance API endpoints with real strategy data</test>
+      <test mapping="7">test_large_dataset_performance - Stress test with >50k data points</test>
+    </ideas>
+  </tests>
+</story-context>

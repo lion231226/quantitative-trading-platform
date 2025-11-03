@@ -1,0 +1,117 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>6</storyId>
+    <title>complete-user-experience-optimization</title>
+    <status>done</status>
+    <generatedAt>2025-11-03</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/2-6-complete-user-experience-optimization.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>用户</asA>
+    <iWant>有流畅、直观的用户体验</iWant>
+    <soThat>能够专注于学习而不被技术细节困扰</soThat>
+    <tasks>- [ ] Task 1: 性能优化和响应速度提升 (AC: 1)
+  - [ ] Subtask 1.1: 实现组件级别的性能优化，使用React.memo和useMemo减少不必要的重渲染
+  - [ ] Subtask 1.2: 优化API调用响应时间，实现请求预加载和智能缓存
+  - [ ] Subtask 1.3: 添加加载状态指示器和骨架屏，提升等待体验
+  - [ ] Subtask 1.4: 实现图表和数据渲染的性能监控和优化
+
+- [ ] Task 2: 错误处理和用户反馈系统 (AC: 2)
+  - [ ] Subtask 2.1: 创建全局错误边界组件，优雅处理组件错误
+  - [ ] Subtask 2.2: 实现用户友好的错误提示系统，包含错误类型和解决建议
+  - [ ] Subtask 2.3: 添加错误恢复机制，允许用户从错误状态快速恢复
+  - [ ] Subtask 2.4: 创建错误日志记录系统，帮助诊断和改进用户体验
+
+- [ ] Task 3: 使用文档和FAQ系统 (AC: 3)
+  - [ ] Subtask 3.1: 创建全面的帮助文档系统，包含功能介绍和使用指南
+  - [ ] Subtask 3.2: 实现交互式FAQ系统，支持搜索和分类浏览
+  - [ ] Subtask 3.3: 添加上下文相关的帮助提示和工具说明
+  - [ ] Subtask 3.4: 创建视频教程和图文指南，提供多种学习方式
+
+- [ ] Task 4: 移动端适配和响应式设计 (AC: 4)
+  - [ ] Subtask 4.1: 优化移动端布局和交互，确保触摸操作的友好性
+  - [ ] Subtask 4.2: 实现移动端图表适配，支持手势操作和响应式缩放
+  - [ ] Subtask 4.3: 优化移动端性能，减少数据流量和提升加载速度
+  - [ ] Subtask 4.4: 实现移动端特有的用户界面优化，如底部导航和滑动操作
+
+- [ ] Task 5: 用户引导和新手提示 (AC: 5)
+  - [ ] Subtask 5.1: 创建用户引导系统，提供首次使用的步骤指导
+  - [ ] Subtask 5.2: 实现智能提示系统，根据用户行为提供相关建议
+  - [ ] Subtask 5.3: 添加量化交易概念解释和术语说明
+  - [ ] Subtask 5.4: 实现用户进度跟踪和成就系统，激励学习进程</tasks>
+  </story>
+
+  <acceptanceCriteria>1. 优化界面响应速度和交互体验，确保所有操作在1秒内得到反馈
+2. 实现完整的错误处理和用户反馈机制，提供友好的错误提示和恢复指导
+3. 提供详细的使用文档和FAQ，涵盖所有功能的使用方法和常见问题解答
+4. 实现移动端适配和响应式设计，确保在移动设备上的使用体验与桌面端一致
+5. 添加用户引导和新手提示，帮助初学者快速上手并理解量化交易概念</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/tech-spec-epic-2.md" title="Epic Technical Specification: 用户体验与可视化展示" section="Performance Objectives" snippet="页面加载&lt;3秒，图表渲染&lt;2秒，API响应&lt;500ms - 60fps动画流畅度要求，移动端性能优化标准">
+      <doc path="docs/quality-assurance-framework.md" title="质量保证框架" section="开发阶段质量保证" snippet="TypeScript编译100%通过，ESLint检查0错误，代码覆盖率>=80%，单元测试100%通过，集成测试100%通过">
+      <doc path="docs/code-review-checklist.md" title="代码审查检查清单" section="错误处理和用户体验" snippet="错误边界组件实现，用户友好的错误提示，响应式设计检查，性能优化审查">
+      <doc path="docs/PRD.md" title="Product Requirements Document" section="Functional Requirements" snippet="FR005: 系统必须提供响应式Web界面，支持桌面和移动端访问，适合不同水平用户使用">
+      <doc path="docs/epics.md" title="Epic Breakdown" section="Story 2.6" snippet="实现完整的错误处理和用户反馈机制，提供详细的帮助文档和FAQ，优化界面响应速度和交互体验">
+    </docs>
+    <code>
+      <artifact path="frontend/src/components/ui/error-boundary.tsx" kind="component" symbol="ErrorBoundary" lines="1-221" reason="现有的全局错误边界组件，已实现完整的错误捕获、日志记录和用户友好的错误UI，可作为错误处理系统的基础架构">
+      <artifact path="frontend/src/services/performanceService.ts" kind="service" symbol="performanceService" lines="1-50" reason="已实现React Query集成的性能监控服务，包含缓存配置和性能指标追踪，可扩展用于整体用户体验性能优化">
+      <artifact path="frontend/src/components/ui/loading.tsx" kind="component" symbol="LoadingStates" lines="1-50" reason="现有的加载状态组件，可扩展为骨架屏和加载指示器系统">
+      <artifact path="frontend/src/components/tutorial/TutorialSystem.tsx" kind="component" symbol="TutorialSystem" lines="1-100" reason="完整的教程系统架构，可用于实现用户引导和新手提示功能">
+      <artifact path="frontend/src/components/comparison/MultiVarietyComparison.tsx" kind="component" symbol="MultiVarietyComparison" lines="1-200" reason="复杂交互组件的最佳实践，包含性能优化和用户体验设计模式">
+      <artifact path="frontend/src/services/comparisonService.ts" kind="service" symbol="comparisonService" lines="1-100" reason="React Query并行处理和缓存机制的最佳实现，可复用于用户体验优化的数据预加载">
+      <artifact path="frontend/src/components/layout/Layout.tsx" kind="component" symbol="Layout" lines="1-100" reason="现有的响应式布局组件，可作为移动端适配的基础架构">
+    </code>
+    <dependencies>
+      <ecosystem name="frontend">
+        <package name="next" version="14.2.33" purpose="React框架和路由"/>
+        <package name="react" version="18" purpose="UI库，支持并发渲染和自动批处理"/>
+        <package name="@tanstack/react-query" version="5.40.0" purpose="数据获取和状态管理，支持智能缓存"/>
+        <package name="chart.js" version="4.4.2" purpose="图表渲染，支持性能优化和动画"/>
+        <package name="tailwindcss" version="3.4.1" purpose="响应式CSS框架"/>
+        <package name="@testing-library/react" version="15.0.7" purpose="组件测试"/>
+        <package name="jest" version="29.7.0" purpose="单元和集成测试"/>
+        <package name="@playwright/test" version="1.56.1" purpose="端到端测试"/>
+      </ecosystem>
+      <ecosystem name="backend">
+        <package name="fastapi" version="0.104.0" purpose="后端API框架"/>
+        <package name="pytest" version="7.4.0" purpose="Python测试框架"/>
+        <package name="redis" version="5.0.0" purpose="缓存服务"/>
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint source="docs/tech-spec-epic-2.md" type="performance">页面加载时间&lt;3秒，图表渲染时间&lt;2秒，API响应时间&lt;500ms，动画流畅度60fps</constraint>
+    <constraint source="docs/quality-assurance-framework.md" type="quality">代码覆盖率>=80%，TypeScript编译100%通过，ESLint检查0错误，所有测试100%通过</constraint>
+    <constraint source="frontend/package.json" type="technical">使用React 18+性能优化特性，包括并发渲染和自动批处理</constraint>
+    <constraint source="frontend/jest.config.js" type="testing">测试覆盖率目标80%，支持Jest + React Testing Library测试模式</constraint>
+    <constraint source="backend/pyproject.toml" type="performance">后端API性能要求，缓存配置，错误处理机制</constraint>
+    <constraint source="docs/code-review-checklist.md" type="ux">用户友好的错误处理，响应式设计，性能优化，移动端适配</constraint>
+  </constraints>
+  <interfaces>
+    <interface name="错误处理API" kind="React组件" signature="ErrorBoundary: React.Component&lt;ErrorBoundaryProps, ErrorBoundaryState&gt;" path="frontend/src/components/ui/error-boundary.tsx"/>
+    <interface name="性能监控API" kind="React Query Hook" signature="usePerformanceMetrics: (strategyId: string, options?: UseQueryOptions) =&gt; UseQueryResult&lt;PerformanceMetrics&gt;" path="frontend/src/services/performanceService.ts"/>
+    <interface name="缓存管理API" kind="React Query" signature="queryClient: QueryClient" path="frontend/src/services/performanceService.ts"/>
+    <interface name="帮助系统API" kind="React Hook" signature="useHelpSystem: () =&gt; { searchHelp: (query: string) =&gt; Promise&lt;HelpResult[]&gt; }" path="frontend/src/services/helpService.ts"/>
+    <interface name="教程系统API" kind="React Component" signature="TutorialSystem: React.FC&lt;TutorialSystemProps&gt;" path="frontend/src/components/tutorial/TutorialSystem.tsx"/>
+  </interfaces>
+  <tests>
+    <standards>使用Jest + React Testing Library进行单元和集成测试，目标覆盖率80%。使用Playwright进行端到端测试。遵循TDD模式，先写测试再实现功能。所有用户体验组件必须包含可访问性测试。性能测试包括加载时间、响应时间和内存使用监控。</standards>
+    <locations>前端测试位于frontend/src/**/__tests__/目录，后端测试位于backend/tests/目录。E2E测试使用Playwright配置文件。覆盖率报告生成在coverage/目录。</locations>
+    <ideas>
+      <test idea="性能优化测试" ac="1">测试组件渲染时间、API响应时间和用户交互响应时间，确保1秒内反馈要求</test>
+      <test idea="错误处理测试" ac="2">模拟各种错误场景，测试错误边界捕获、错误提示显示和错误恢复机制</test>
+      <test idea="帮助系统测试" ac="3">测试FAQ搜索功能、帮助文档访问和上下文帮助提示</test>
+      <test idea="响应式设计测试" ac="4">在不同设备和屏幕尺寸上测试界面布局和交互功能</test>
+      <test idea="用户引导测试" ac="5">测试教程流程、新手提示和用户进度跟踪功能</test>
+      <test idea="可访问性测试" ac="all">使用axe-core测试可访问性合规性，确保WCAG标准</test>
+      <test idea="集成测试" ac="all">测试用户体验组件与现有系统的集成，确保数据流和状态管理正常</test>
+    </ideas>
+  </tests>
+</story-context>

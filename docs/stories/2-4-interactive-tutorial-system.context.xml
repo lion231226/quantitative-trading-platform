@@ -1,0 +1,138 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>4</storyId>
+    <title>interactive-tutorial-system</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-02</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/2-4-interactive-tutorial-system.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>量化交易初学者</asA>
+    <iWant>有引导式的交互教程系统来学习单均线策略原理和量化交易概念</iWant>
+    <soThat>我能够快速理解量化交易的基本概念并通过实际示例深入掌握策略原理</soThat>
+    <tasks>- [ ] Task 1: 核心教程系统架构 (AC: 1, 4)
+  - [ ] Subtask 1.1: 创建tutorialService.ts服务，管理教程数据和进度
+  - [ ] Subtask 1.2: 实现TutorialSystem.tsx主组件，处理教程流程控制
+  - [ ] Subtask 1.3: 创建TutorialStep.tsx组件，实现单步教程逻辑
+  - [ ] Subtask 1.4: 添加教程进度持久化和恢复功能
+  - [ ] Subtask 1.5: 实现教程导航和步骤跳转逻辑
+
+- [ ] Task 2: 动画演示系统 (AC: 2)
+  - [ ] Subtask 2.1: 集成Chart.js动画能力，创建策略演示组件
+  - [ ] Subtask 2.2: 实现移动平均线计算过程的可视化动画
+  - [ ] Subtask 2.3: 创建金叉死叉交易信号的动画演示
+  - [ ] Subtask 2.4: 添加动画速度控制和交互功能
+  - [ ] Subtask 2.5: 优化动画性能，确保流畅播放
+
+- [ ] Task 3: 概念解释和示例系统 (AC: 3)
+  - [ ] Subtask 3.1: 构建交互式术语库和概念解释组件
+  - [ ] Subtask 3.2: 集成真实市场数据进行案例演示
+  - [ ] Subtask 3.3: 实现参数影响对比的实时展示
+  - [ ] Subtask 3.4: 添加最佳实践指导和错误预防
+  - [ ] Subtask 3.5: 创建示例内容管理和更新机制
+
+- [ ] Task 4: 上下文帮助系统 (AC: 5)
+  - [ ] Subtask 4.1: 开发TutorialTooltip.tsx智能提示组件
+  - [ ] Subtask 4.2: 实现基于上下文的帮助推荐算法
+  - [ ] Subtask 4.3: 构建帮助内容搜索和索引系统
+  - [ ] Subtask 4.4: 集成FAQ系统和快速帮助链接
+  - [ ] Subtask 4.5: 添加帮助内容的使用统计和优化
+
+- [ ] Task 5: 集成测试和用户体验优化
+  - [ ] Subtask 5.1: 编写完整的单元测试覆盖所有教程组件
+  - [ ] Subtask 5.2: 实现集成测试验证教程流程完整性
+  - [ ] Subtask 5.3: 进行用户体验测试和界面优化
+  - [ ] Subtask 5.4: 实现响应式设计确保移动端兼容性
+  - [ ] Subtask 5.5: 性能优化和错误处理完善</tasks>
+  </story>
+
+  <acceptanceCriteria>1. 实现分步骤的交互式教程，支持线性流程导航、前进/后退按钮、步骤跳过功能和完成状态反馈
+2. 提供策略原理的动画演示，包括金叉死叉可视化、移动平均线计算过程展示、交易信号生成动画和速度控制
+3. 实现概念解释和示例展示，包含交互式术语库、真实市场数据案例分析、参数影响实时演示和最佳实践指导
+4. 提供学习进度跟踪，记录完成度和学习时间，支持进度可视化、断点续学和学习成就系统
+5. 集成上下文相关帮助系统，提供嵌入式帮助提示、智能推荐、搜索功能和FAQ链接</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/tech-spec-epic-2.md" title="Epic 2 Technical Specification" section="Services and Modules">
+        前端可视化模块包含components/tutorial/TutorialSystem.tsx - 教程系统组件，services/tutorialService.ts - 教程进度管理
+      </doc>
+      <doc path="docs/tech-spec-epic-2.md" title="Epic 2 Technical Specification" section="Data Models and Contracts">
+        教程进度模型：TutorialProgress interface包含currentStep, completedSteps, totalSteps, startTime, lastAccessTime
+      </doc>
+      <doc path="docs/tech-spec-epic-2.md" title="Epic 2 Technical Specification" section="Workflows and Sequencing">
+        教程执行流程：初始化教程系统 → 加载教程步骤 → 显示第一步 → 用户操作 → 验证完成条件 → 进度更新 → 显示下一步
+      </doc>
+      <doc path="docs/epics.md" title="Epic Breakdown" section="Story 2.4">
+        作为量化交易初学者，希望有引导式的教程来学习策略原理，实现分步骤的交互式教程、策略原理的动画演示
+      </doc>
+    </docs>
+    <code>
+      <artifact path="frontend/src/components/charts/PriceChart.tsx" kind="component" symbol="PriceChart" lines="1-100" reason="Chart.js动画能力复用，包含animationDuration配置，可用于教程动画演示">
+        Chart.js 4.4.2实现，包含动画配置和交互功能
+      </artifact>
+      <artifact path="frontend/src/services/parameterService.ts" kind="service" symbol="parameterService" lines="1-50" reason="React Query服务架构模式，包含缓存配置、防抖机制，可复用于tutorialService.ts">
+        包含完整的API响应格式处理、缓存机制、防抖优化
+      </artifact>
+      <artifact path="frontend/src/components/charts" kind="directory" symbol="charts" reason="现有图表组件目录，教程系统可新增tutorial子目录">
+        包含PriceChart, TradingSignals, PerformanceMetrics等组件
+      </artifact>
+      <artifact path="frontend/src/services" kind="directory" symbol="services" reason="现有服务目录，可添加tutorialService.ts">
+        包含chartDataService, parameterService, performanceService
+      </artifact>
+    </code>
+    <dependencies>
+      <dependency ecosystem="Node.js">
+        <package name="next" version="14.2.33" />
+        <package name="react" version="18" />
+        <package name="chart.js" version="4.4.2" />
+        <package name="react-chartjs-2" version="5.2.0" />
+        <package name="@tanstack/react-query" version="5.40.0" />
+        <package name="@radix-ui/react-tooltip" version="1.0.7" />
+        <package name="lucide-react" version="0.552.0" />
+        <package name="tailwindcss-animate" version="1.0.7" />
+      </dependency>
+      <dependency ecosystem="Testing">
+        <package name="@testing-library/react" version="15.0.7" />
+        <package name="@testing-library/jest-dom" version="6.4.6" />
+        <package name="jest" version="29.7.0" />
+        <package name="@playwright/test" version="1.56.1" />
+      </dependency>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>使用Next.js 14.2.33 + TypeScript 5构建，确保类型安全</constraint>
+    <constraint>基于Chart.js 4.4.2实现动画演示，复用现有图表组件架构</constraint>
+    <constraint>遵循React Query服务架构模式，实现缓存和状态管理</constraint>
+    <constraint>使用Tailwind CSS实现响应式设计，支持桌面和移动端</constraint>
+    <constraint>遵循现有组件目录结构：components/tutorial/、services/、utils/</constraint>
+    <constraint>动画性能要求：60fps优化，流畅播放，支持速度控制</constraint>
+    <constraint>教程进度使用localStorage持久化，支持断点续学</constraint>
+    <constraint>统一API响应格式：{success, data, message}处理</constraint>
+    <constraint>错误处理优雅，提供用户友好的错误反馈</constraint>
+  </constraints>
+  <interfaces>
+    <interface name="TutorialProgress" kind="TypeScript Interface" signature="interface TutorialProgress { currentStep: number; completedSteps: number[]; totalSteps: number; startTime: string; lastAccessTime: string; }" path="docs/tech-spec-epic-2.md" />
+    <interface name="TutorialStepProps" kind="React Component Props" signature="interface TutorialStepProps { step: TutorialStep; isActive: boolean; onComplete: () => void; onNext: () => void; }" path="docs/tech-spec-epic-2.md" />
+    <interface name="StrategyParameters" kind="TypeScript Interface" signature="interface StrategyParameters { movingAveragePeriod: number; movingAverageType: 'SMA' | 'EMA'; stopLoss: number; takeProfit: number; positionSize: number; }" path="docs/tech-spec-epic-2.md" />
+    <interface name="APIResponse" kind="API Response Format" signature="interface APIResponse&lt;T = any&gt; { success?: boolean; data?: T; message?: string; task_id?: string; }" path="frontend/src/services/parameterService.ts" />
+  </interfaces>
+  <tests>
+    <standards>使用Jest + React Testing Library进行单元测试，Playwright进行端到端测试。测试覆盖率目标80%+，遵循现有测试模式，包含Mock Chart.js组件和API服务。</standards>
+    <locations>frontend/src/components/tutorial/__tests__/ - 教程组件测试目录，frontend/src/services/__tests__/ - 服务测试目录，与现有测试结构保持一致。</locations>
+    <ideas>
+      <test idea="AC1: TutorialSystem.test.tsx - 测试教程流程导航、步骤跳过、完成状态反馈" />
+      <test idea="AC1: TutorialStep.test.tsx - 测试单步教程逻辑、用户交互验证" />
+      <test idea="AC2: TutorialAnimation.test.tsx - 测试Chart.js动画演示、速度控制、性能优化" />
+      <test idea="AC3: ConceptExplanation.test.tsx - 测试术语库、案例演示、参数影响展示" />
+      <test idea="AC4: TutorialProgress.test.tsx - 测试进度跟踪、持久化、断点续学" />
+      <test idea="AC5: TutorialTooltip.test.tsx - 测试上下文帮助、智能推荐、搜索功能" />
+      <test idea="Integration: tutorialService.test.ts - 测试教程数据API集成、缓存机制" />
+      <test idea="E2E: complete-tutorial-flow.test.ts - 测试完整教程学习流程" />
+    </ideas>
+  </tests>
+</story-context>

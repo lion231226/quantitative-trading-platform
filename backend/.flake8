@@ -1,0 +1,132 @@
+[flake8]
+# Python代码质量检查配置
+max-line-length = 88
+extend-ignore = E203, W503, E501
+exclude =
+    .git,
+    __pycache__,
+    .venv,
+    venv,
+    build,
+    dist,
+    *.egg-info,
+    .pytest_cache,
+    .mypy_cache,
+    .tox,
+    node_modules
+
+# 启用的检查
+select =
+    E,  # pycodestyle errors
+    W,  # pycodestyle warnings
+    F,  # pyflakes
+    C,  # mccabe complexity
+    B,  # flake8-bugbear
+    I,  # isort
+    S,  # flake8-bandit (security)
+    T,  # flake8-print
+    UP, # pyupgrade
+
+# 错误代码特定配置
+# flake8-bandit (安全)
+S101 = # 使用assert可能被禁用
+S102 = # 不推荐使用exec
+S103 = # 不推荐使用os.chmod设置过宽权限
+S104 = # 硬编码绑定所有接口
+S105 = # 硬编码密码字符串
+S106 = # 硬编码密码在函数参数中
+S107 = # 硬编码密码在默认参数中
+S108 = # 不推荐使用临时文件名
+S110 = # 不推荐使用try-except-pass
+S112 = # 不推荐使用try-except-continue
+S113 = # 不推荐使用低安全性协议
+S201 = # 不推荐使用flask.run调试模式
+S301 = # 不推荐使用pickle
+S302 = # 不推荐使用marshal
+S303 = # 不推荐使用eval
+S304 = # 不推荐使用urllib.urlopen
+S305 = # 不推荐使用六角编解码器
+S306 = # 不推荐使用os.mktemp
+S307 = # 不推荐使用eval
+S308 = # 不推荐使用mark_safe
+S310 = # 不推荐使用urllib.urlopen
+S311 = # 不推荐使用随机模块生成加密数据
+S312 = # 不推荐使用低安全性telnetlib
+S313 = # 不推荐使用低安全性xmlrpc
+S314 = # 不推荐使用低安全性xml.etree
+S315 = # 不推荐使用低安全性xmlrpc
+S316 = # 不推荐使用低安全性xml.etree
+S317 = # 不推荐使用低安全性xmlrpc
+S318 = # 不推荐使用低安全性xml.etree
+S319 = # 不推荐使用低安全性xmlrpc
+S320 = # 不推荐使用低安全性xml.etree
+S321 = # 不推荐使用低安全性ftp
+S323 = # 不推荐使用不安全的YAML加载
+S324 = # 不推荐使用低安全性hash算法
+S401 = # 不推荐使用低安全性tarfile.extract
+S402 = # 不推荐使用低安全性tarfile.extractall
+S403 = # 不推荐使用低安全性pickle
+S404 = # 不推荐使用低安全性subprocess调用
+S405 = # 不推荐使用低安全性XML解析
+S406 = # 不推荐使用低安全性os.startfile
+S407 = # 不推荐使用低安全性subprocess调用
+S408 = # 不推荐使用低安全性ssl.check_hostname
+S409 = # 不推荐使用低安全性ssl.TLSVersion
+S410 = # 不推荐使用低安全性gzip压缩
+S411 = # 不推荐使用低安全性XML解析
+S412 = # 不推荐使用低安全性logging.config.fileConfig
+S413 = # 不推荐使用低安全性pycryptodome
+S501 = # 不推荐使用硬编码密码
+S506 = # 不推荐使用不安全的YAML加载
+S507 = # 不推荐使用低安全性ssh算法
+S508 = # 不推荐使用低安全性SSL配置
+S509 = # 不推荐使用低安全性SSL配置
+S601 = # 不推荐使用shell注入
+S602 = # 不推荐使用subprocess调用shell=True
+S603 = # 不推荐使用subprocess调用shell=True
+S604 = # 不推荐使用shell调用
+S605 = # 不推荐使用shell调用
+S606 = # 不推荐使用shell调用start_new_process
+S607 = # 不推荐使用不安全的进程启动
+S608 = # 不推荐使用不安全的SQL字符串格式化
+S609 = # 不推荐使用通配符通配符模式
+S610 = # 不推荐使用低安全性django的runserver
+S611 = # 不推荐使用低 cryptography
+S612 = # 不推荐使用低安全性日志
+S613 = # 不推荐使用低安全性psycopg2连接字符串
+S614 = # 不推荐使用低安全性smtplib调用
+S615 = # 不推荐使用低安全性shelve调用
+S616 = # 不推荐使用低安全性zipfile调用
+S617 = # 不推荐使用低安全性tarfile调用
+S618 = # 不推荐使用不安全的URL打开
+S619 = # 不推荐使用低安全性multiprocessing
+S620 = # 不推荐使用低安全性字典
+S621 = # 不推荐使用不安全的元组解包
+S622 = # 不推荐使用不安全的循环变量
+S623 = # 不推荐使用不安全的循环变量
+
+# flake8-print
+T001 = # 不推荐使用print语句
+T002 = # 不推荐使用pprint
+T003 = # 不推荐使用print函数
+
+# pyupgrade
+UP001 = # 使用unicode literals
+UP002 = # 使用super()
+UP003 = # 使用list comprehensions
+UP004 = # 使用replaced
+UP005 = # 使用format()
+UP006 = # 使用f-strings
+UP007 = # 使用utf-8编码
+UP008 = # 使用super()
+UP009 = # 使用utf-8编码
+UP010 = # 使用utf-8编码
+UP011 = # 使用utf-8编码
+UP012 = # 使用utf-8编码
+
+# per-file-ignores
+[per-file-ignores]
+__init__.py = F401
+tests/* = S101, S311, S608
+conftest.py = S101
+migrations/* = S101, S608

@@ -1,0 +1,137 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>3</storyId>
+    <title>数据处理和存储</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-01</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/1-3-data-processing-and-storage.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>系统</asA>
+    <iWant>处理和存储获取的期货数据</iWant>
+    <soThat>策略算法能够高效访问和分析数据</soThat>
+    <tasks>Task 1.3.1: 数据清洗和标准化
+Task 1.3.2: 数据库设计和创建
+Task 1.3.3: 数据存储服务
+Task 1.3.4: 查询和过滤接口
+Task 1.3.5: 增量同步和导出</tasks>
+  </story>
+
+  <acceptanceCriteria>1. 实现数据清洗和标准化处理
+2. 建立本地数据存储机制（JSON/SQLite）
+3. 提供数据查询和过滤接口
+4. 支持数据更新和增量同步
+5. 实现数据导出功能</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/tech-spec.md</path>
+        <title>数据库设计</title>
+        <section>Technology Stack</section>
+        <snippet>SQLite 3.44+ 轻量级数据库，适合快速开发，支持复杂查询和事务处理</snippet>
+      </doc>
+      <doc>
+        <path>docs/tech-spec.md</path>
+        <title>数据处理流程</title>
+        <section>Implementation Guidelines</section>
+        <snippet>数据清洗、标准化、存储、查询的完整处理管道，确保数据质量和一致性</snippet>
+      </doc>
+      <doc>
+        <path>docs/tech-spec.md</path>
+        <title>数据模型</title>
+        <section>Core Technical Components</section>
+        <snippet>MarketData模型定义，包含symbol、date、prices、volume等关键字段</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>backend/app/core/database.py</path>
+        <kind>core</kind>
+        <symbol>Database</symbol>
+        <lines>1-80</lines>
+        <reason>数据库连接和会话管理，SQLite配置</reason>
+      </artifact>
+      <artifact>
+        <path>backend/app/models/market_data.py</path>
+        <kind>model</kind>
+        <symbol>MarketData</symbol>
+        <lines>1-50</lines>
+        <reason>市场数据SQLAlchemy模型定义</reason>
+      </artifact>
+      <artifact>
+        <path>backend/app/services/data_processor.py</path>
+        <kind>service</kind>
+        <symbol>DataProcessor</symbol>
+        <lines>1-120</lines>
+        <reason>数据清洗、标准化和质量验证服务</reason>
+      </artifact>
+      <artifact>
+        <path>backend/app/services/data_storage.py</path>
+        <kind>service</kind>
+        <symbol>DataStorageService</symbol>
+        <lines>1-100</lines>
+        <reason>数据存储、查询和同步服务</reason>
+      </artifact>
+      <artifact>
+        <path>backend/app/api/v1/endpoints/data.py</path>
+        <kind>api</kind>
+        <symbol>data_endpoints</symbol>
+        <lines>1-60</lines>
+        <reason>数据查询和导出API端点</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <ecosystem name="backend">
+        <package name="sqlalchemy" version="latest"/>
+        <package name="pandas" version="latest"/>
+        <package name="numpy" version="latest"/>
+        <package name="pydantic" version="latest"/>
+        <package name="sqlite3" version="builtin"/>
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>数据库表名使用snake_case复数形式</constraint>
+    <constraint>所有数据操作必须使用事务</constraint>
+    <constraint>实现数据完整性约束和唯一索引</constraint>
+    <constraint>批量插入操作每次最多1000条记录</constraint>
+    <constraint>查询结果必须进行分页处理</constraint>
+    <constraint>数据导出支持CSV和JSON格式</constraint>
+  </constraints>
+  <interfaces>
+    <interface>
+      <name>Data Processor Interface</name>
+      <kind>class</kind>
+      <signature>class DataProcessor: def clean_data(raw_data: List[Dict]) -> List[MarketData]; def validate_data(data: MarketData) -> bool; def standardize_format(data: List[Dict]) -> List[MarketData]</signature>
+      <path>backend/app/services/data_processor.py</path>
+    </interface>
+    <interface>
+      <name>Data Storage Interface</name>
+      <kind>class</kind>
+      <signature>class DataStorageService: def bulk_insert(data: List[MarketData]) -> int; def query_data(symbol: str, start_date: str, end_date: str) -> List[MarketData]; def sync_incremental(symbol: str) -> int</signature>
+      <path>backend/app/services/data_storage.py</path>
+    </interface>
+    <interface>
+      <name>Data Query API</name>
+      <kind>REST</kind>
+      <signature>GET /api/v1/data/query?symbol={symbol}&start={date}&end={date}&page={page}&size={size}; GET /api/v1/data/export/{symbol}?format={format}</signature>
+      <path>backend/app/api/v1/endpoints/data.py</path>
+    </interface>
+  </interfaces>
+  <tests>
+    <standards>使用pytest测试数据处理、存储和查询功能。重点测试数据质量、性能和并发处理。目标覆盖率>85%。</standards>
+    <locations>backend/tests/test_data_processor.py; backend/tests/test_data_storage.py; backend/tests/test_data_api.py</locations>
+    <ideas>
+      <test ac="1">测试数据清洗和标准化功能
+      <test ac="2">验证数据库创建和连接管理
+      <test ac="3">测试数据批量插入性能
+      <test ac="4">验证查询和过滤接口准确性
+      <test ac="5">测试增量同步和数据导出功能</test>
+    </ideas>
+  </tests>
+</story-context>

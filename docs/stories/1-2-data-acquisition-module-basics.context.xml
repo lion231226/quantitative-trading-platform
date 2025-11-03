@@ -1,0 +1,130 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>2</storyId>
+    <title>数据获取模块基础</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-01</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/1-2-data-acquisition-module-basics.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>系统</asA>
+    <iWant>集成AKShare API获取期货市场历史数据</iWant>
+    <soThat>为策略分析提供可靠的数据源</soThat>
+    <tasks>Task 1.2.1: AKShare API集成
+Task 1.2.2: 多版块数据支持
+Task 1.2.3: 数据缓存机制
+Task 1.2.4: 数据验证和错误处理
+Task 1.2.5: 时间范围查询</tasks>
+  </story>
+
+  <acceptanceCriteria>1. 实现AKShare API集成，支持获取指定期货品种的历史数据
+2. 支持多个版块（能源、金属、农产品、化工）的数据获取
+3. 实现数据缓存机制，避免重复API调用
+4. 提供数据验证和错误处理功能
+5. 支持指定时间范围的数据获取</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/tech-spec.md</path>
+        <title>数据获取模块</title>
+        <section>Core Technical Components</section>
+        <snippet>AKShare客户端实现，支持中国期货市场历史数据获取，多版块支持，数据缓存和错误处理</snippet>
+      </doc>
+      <doc>
+        <path>docs/tech-spec.md</path>
+        <title>AKShare Integration</title>
+        <section>Core Technical Components</section>
+        <snippet>位置: backend/app/services/akshare_client.py，支持获取中国期货市场历史数据，多个版块数据获取</snippet>
+      </doc>
+      <doc>
+        <path>docs/tech-spec.md</path>
+        <title>Caching Strategy</title>
+        <section>Caching Service</section>
+        <snippet>市场数据Redis缓存24小时，策略结果缓存1小时，用户参数缓存30分钟</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>backend/app/services/akshare_client.py</path>
+        <kind>service</kind>
+        <symbol>AKShareClient</symbol>
+        <lines>1-100</lines>
+        <reason>AKShare API客户端核心实现，处理数据获取和缓存</reason>
+      </artifact>
+      <artifact>
+        <path>backend/app/models/market_data.py</path>
+        <kind>model</kind>
+        <symbol>MarketData</symbol>
+        <lines>1-30</lines>
+        <reason>市场数据模型定义，包含价格、成交量等字段</reason>
+      </artifact>
+      <artifact>
+        <path>backend/app/services/cache_service.py</path>
+        <kind>service</kind>
+        <symbol>CacheService</symbol>
+        <lines>1-80</lines>
+        <reason>缓存服务实现，管理Redis缓存策略</reason>
+      </artifact>
+      <artifact>
+        <path>backend/app/api/v1/endpoints/market_data.py</path>
+        <kind>api</kind>
+        <symbol>market_data_endpoints</symbol>
+        <lines>1-60</lines>
+        <reason>市场数据API端点实现</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <ecosystem name="backend">
+        <package name="akshare" version="latest"/>
+        <package name="redis" version="latest"/>
+        <package name="pandas" version="latest"/>
+        <package name="sqlalchemy" version="latest"/>
+        <package name="pydantic" version="latest"/>
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>AKShare API调用必须有重试机制（最多3次）</constraint>
+    <constraint>数据缓存TTL设置为24小时</constraint>
+    <constraint>所有API调用必须有错误处理和日志记录</constraint>
+    <constraint>数据验证必须检查必要字段完整性</constraint>
+    <constraint>时间范围查询最大不超过1年</constraint>
+    <constraint>支持中国期货市场主要版块：能源、金属、农产品、化工</constraint>
+  </constraints>
+  <interfaces>
+    <interface>
+      <name>AKShare Client Interface</name>
+      <kind>class</kind>
+      <signature>class AKShareClient: def get_market_data(symbol: str, start_date: str, end_date: str) -> List[MarketData]; def get_available_symbols(sector: str) -> List[str]; def refresh_data_cache(symbol: str) -> bool</signature>
+      <path>backend/app/services/akshare_client.py</path>
+    </interface>
+    <interface>
+      <name>Cache Service Interface</name>
+      <kind>class</kind>
+      <signature>class CacheService: def get_market_data(symbol: str, start_date: str, end_date: str) -> Optional[List[MarketData]]; def set_market_data(symbol: str, data: List[MarketData], ttl: int = 86400) -> bool</signature>
+      <path>backend/app/services/cache_service.py</path>
+    </interface>
+    <interface>
+      <name>Market Data API</name>
+      <kind>REST</kind>
+      <signature>GET /api/v1/market-data/symbols; GET /api/v1/market-data/history?symbol={symbol}&start={date}&end={date}; POST /api/v1/market-data/refresh</signature>
+      <path>backend/app/api/v1/endpoints/market_data.py</path>
+    </interface>
+  </interfaces>
+  <tests>
+    <standards>使用pytest测试AKShare集成、缓存机制和API端点。测试数据质量、错误处理和性能。目标覆盖率>90%。</standards>
+    <locations>backend/tests/test_akshare_client.py; backend/tests/test_cache_service.py; backend/tests/test_market_data_api.py</locations>
+    <ideas>
+      <test ac="1">测试AKShare API数据获取功能
+      <test ac="2">验证多版块数据支持完整性
+      <test ac="3">测试缓存机制有效性和TTL
+      <test ac="4">验证数据验证和错误处理
+      <test ac="5">测试时间范围查询准确性</test>
+    </ideas>
+  </tests>
+</story-context>

@@ -1,0 +1,199 @@
+# Integrated Quality Check Workflow
+name: integrated-quality-check
+description: "Integrated quality assurance workflow that seamlessly integrates with story development and review workflows. Provides pre-development, in-development, and pre-review quality checks with automatic blocking of quality violations."
+author: "BMad Quality Framework"
+
+# Critical variables from config
+config_source: "{project-root}/bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+user_skill_level: "{config_source}:user_skill_level"
+document_output_language: "{config_source}:document_output_language"
+story_dir: "{config_source}:dev_story_location"
+date: system-generated
+
+# Quality gate integration
+quality_gate_workflow: "{project-root}/bmad/bmm/workflows/quality-assurance/quality-gate/workflow.yaml"
+
+# Integration points
+integration_context:
+  parent_workflow: "" # Will be set by calling workflow (dev-story, code-review, etc.)
+  integration_point: "" # pre-development, during-development, pre-review, post-review
+  story_path: "" # Story file being processed
+  strict_mode: true # Enforce strict quality for integration points
+
+# Quality check timing and triggers
+quality_check_triggers:
+  pre_development:
+    enabled: true
+    quality_gate_mode: "dev"
+    block_on_failure: true
+    check_baseline: true
+
+  during_development:
+    enabled: true
+    quality_gate_mode: "dev"
+    block_on_failure: false # Allow development with warnings
+    incremental_checks: true
+    check_frequency: "on_commit"
+
+  pre_review:
+    enabled: true
+    quality_gate_mode: "review"
+    block_on_failure: true
+    comprehensive_checks: true
+    story_validation: true
+
+  post_review:
+    enabled: true
+    quality_gate_mode: "review"
+    block_on_failure: false
+    regression_checks: true
+
+# Workflow components
+installed_path: "{project-root}/bmad/bmm/workflows/quality-assurance/integrated-quality-check"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+
+# This is an action workflow
+template: false
+
+# Quality integration policies
+integration_policies:
+  automatic_blocking:
+    pre_development: true # Block development if baseline quality issues exist
+    pre_review: true # Block review submission if quality issues exist
+    during_development: false # Allow development with warnings but track
+
+  quality_gates:
+    development:
+      compilation_errors: 0
+      test_failures: 0
+      coverage_threshold: 70 # Lower threshold during development
+      eslint_errors: 0
+
+    review:
+      compilation_errors: 0
+      test_failures: 0
+      coverage_threshold: 80 # Higher threshold for review
+      eslint_errors: 0
+      story_validation: true
+
+  escalation:
+    quality_violations: true
+    false_declarations: true
+    security_issues: true
+    performance_regressions: true
+
+# Integration modes
+integration_modes:
+  story_development:
+    checks:
+      - baseline_quality
+      - development_readiness
+      - environment_validation
+    blocking: true
+
+  story_completion:
+    checks:
+      - comprehensive_quality
+      - story_validation
+      - acceptance_criteria_verification
+    blocking: true
+
+  code_review:
+    checks:
+      - quality_verification
+      - validation_evidence
+      - regression_testing
+    blocking: true
+
+  release_preparation:
+    checks:
+      - production_readiness
+      - security_validation
+      - performance_validation
+    blocking: true
+
+# Quality data collection
+data_collection:
+  collect_metrics: true
+  trend_analysis: true
+  quality_trends: true
+  developer_performance: false # Privacy considerations
+
+  metrics_collected:
+    - quality_gate_results
+    - issue_resolution_time
+    - quality_trend_data
+    - integration_effectiveness
+
+# Notification and reporting
+notifications:
+  enabled: true
+  channels:
+    - workflow_output
+    - quality_reports
+    - stakeholder_alerts
+
+  alert_conditions:
+    - quality_gate_failure
+    - false_declaration_detected
+    - security_vulnerability_found
+    - performance_regression_detected
+
+# Recommended inputs
+recommended_inputs:
+  - parent_workflow: "Name of the parent workflow calling this integration"
+  - integration_point: "When this quality check is being triggered (pre-development, during-development, pre-review, post-review)"
+  - story_path: "Path to the story file being processed"
+  - strict_mode: "Whether to enforce strict quality blocking (default: true)"
+
+standalone: false # Designed to be called from other workflows
+
+# Quality integration workflow outcomes
+outcomes:
+  quality_passed:
+    status: "PROCEED"
+    description: "All quality checks passed. Workflow may proceed."
+    action: "Continue with parent workflow"
+
+  quality_passed_with_warnings:
+    status: "PROCEED_WITH_WARNINGS"
+    description: "Quality checks passed with warnings. May proceed but monitor issues."
+    action: "Continue with parent workflow, track warnings"
+
+  quality_failed:
+    status: "BLOCKED"
+    description: "Quality checks failed. Workflow must pause until issues resolved."
+    action: "Block parent workflow, require quality fixes"
+
+  quality_error:
+    status: "ERROR"
+    description: "Quality check system error. Manual intervention required."
+    action: "Escalate for manual quality validation"
+
+# Quality improvement integration
+continuous_improvement:
+  enabled: true
+  feedback_collection: true
+  process_optimization: true
+
+  improvement_metrics:
+    - quality_gate_efficiency
+    - issue_detection_rate
+    - false_positive_rate
+    - integration_effectiveness
+
+# Integration testing and validation
+integration_testing:
+  validate_integration: true
+  test_quality_scenarios: true
+  regression_testing: true
+
+  test_scenarios:
+    - successful_quality_pass
+    - quality_failure_handling
+    - false_declaration_detection
+    - integration_error_recovery

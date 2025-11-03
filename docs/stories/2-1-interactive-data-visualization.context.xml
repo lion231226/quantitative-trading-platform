@@ -1,0 +1,228 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>1</storyId>
+    <title>交互式数据可视化</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-01</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/2-1-interactive-data-visualization.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>用户</asA>
+    <iWant>能够看到直观的价格走势图和交易信号</iWant>
+    <soThat>更好地理解策略的表现和市场动态</soThat>
+    <tasks>Task 1: Chart.js基础架构和PriceChart组件 (AC: 1)
+  - Subtask 1.1: 配置Chart.js 4.4.2和react-chartjs-2
+  - Subtask 1.2: 实现PriceChart.tsx组件基础结构
+  - Subtask 1.3: 集成ChartData和PricePoint数据模型
+  - Subtask 1.4: 实现API数据获取和缓存优化
+
+- Task 2: 交易信号可视化系统 (AC: 2)
+  - Subtask 2.1: 创建TradingSignals.tsx组件
+  - Subtask 2.2: 实现TradingSignal接口和信号渲染
+  - Subtask 2.3: 添加信号点击交互和详情展示
+  - Subtask 2.4: 实现信号样式配置（买入/卖出颜色区分）
+
+- Task 3: 移动平均线显示功能 (AC: 3)
+  - Subtask 3.1: 创建MovingAverages.tsx组件
+  - Subtask 3.2: 实现MovingAverageLine数据模型
+  - Subtask 3.3: 支持SMA/EMA计算和切换
+  - Subtask 3.4: 实现均线样式和动画效果
+
+- Task 4: 图表交互和性能优化 (AC: 4)
+  - Subtask 4.1: 实现图表缩放功能（鼠标滚轮和手势）
+  - Subtask 4.2: 实现图表平移操作（拖拽支持）
+  - Subtask 4.3: 添加工具提示和数据标签
+  - Subtask 4.4: 性能优化（大数据集处理，60fps目标）
+
+- Task 5: 图表导出和辅助功能 (AC: 5)
+  - Subtask 5.1: 实现PNG图片导出功能
+  - Subtask 5.2: 实现CSV数据导出功能
+  - Subtask 5.3: 添加图表配置选项和用户偏好
+  - Subtask 5.4: 实现响应式设计和移动端适配</tasks>
+  </story>
+
+  <acceptanceCriteria>1. 实现价格走势的交互式图表（Chart.js 4.4.2，渲染时间&lt;2秒）
+2. 在图表上显示买入和卖出信号点（支持点击查看详情）
+3. 实现移动平均线的动态显示（支持SMA/EMA，可配置周期）
+4. 支持图表缩放和平移操作（60fps流畅度）
+5. 提供图表导出功能（PNG图片和CSV数据格式）</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <item>
+        <path>docs/tech-spec-epic-2.md</path>
+        <title>Epic 2 Technical Specification</title>
+        <section>Detailed Design - Services and Modules</section>
+        <snippet>前端可视化模块: components/charts/PriceChart.tsx - 价格走势图表主组件, components/charts/TradingSignals.tsx - 交易信号可视化组件, components/charts/MovingAverages.tsx - 移动平均线组件</snippet>
+      </item>
+      <item>
+        <path>docs/tech-spec-epic-2.md</path>
+        <title>Epic 2 Technical Specification</title>
+        <section>Data Models and Contracts</section>
+        <snippet>interface ChartData { prices: PricePoint[]; signals: TradingSignal[]; movingAverages: MovingAverageLine[]; volume?: VolumeData[]; }, interface TradingSignal { timestamp: string; type: 'buy' | 'sell'; price: number; strategy: string; }</snippet>
+      </item>
+      <item>
+        <path>docs/tech-spec-epic-2.md</path>
+        <title>Epic 2 Technical Specification</title>
+        <section>Non-Functional Requirements - Performance</section>
+        <snippet>图表渲染时间: &lt; 2秒（1000个数据点）, 参数更新响应: &lt; 500ms, 动画流畅度: 60fps, 移动端性能: 图表交互响应时间 &lt; 1秒</snippet>
+      </item>
+      <item>
+        <path>docs/epic-1-technical-context.md</path>
+        <title>Epic 1 Technical Context</title>
+        <section>系统架构图</section>
+        <snippet>前端层 (Next.js): UI[用户界面], Forms[表单组件], Charts[图表组件], API层 (FastAPI): API[REST API], 认证中间件, 数据验证</snippet>
+      </item>
+      <item>
+        <path>docs/stories/1-8-basic-functionality-integration-testing.md</path>
+        <title>Story 1.8 Integration Testing</title>
+        <section>API Integration Requirements</section>
+        <snippet>必须集成市场数据API获取数据, 调用策略运行API获取交易信号数据, 遵循统一的API响应格式解析数据 {success, data, message}</snippet>
+      </item>
+    </docs>
+    <code>
+      <item>
+        <path>frontend/src/app/strategy/page.tsx</path>
+        <kind>React Component</kind>
+        <symbol>StrategyPage</symbol>
+        <lines>1-257</lines>
+        <reason>现有的策略页面组件，展示了API集成模式、状态管理和表单处理，需要集成新的图表组件</reason>
+      </item>
+      <item>
+        <path>frontend/src/components/results/ResultsDisplay.tsx</path>
+        <kind>React Component</kind>
+        <symbol>ResultsDisplay</symbol>
+        <lines>1-100</lines>
+        <reason>现有的结果显示组件，需要扩展或替换以支持交互式图表可视化</reason>
+      </item>
+      <item>
+        <path>frontend/src/lib/api.ts</path>
+        <kind>API Service</kind>
+        <symbol>strategyAPI, marketDataAPI</symbol>
+        <lines>1-50</lines>
+        <reason>现有的API服务层，包含策略运行和市场数据获取接口，图表组件需要复用这些API</reason>
+      </item>
+      <item>
+        <path>frontend/src/types/strategy.ts</path>
+        <kind>TypeScript Types</kind>
+        <symbol>MarketSelectionForm, StrategyConfigForm, StrategyRun</symbol>
+        <lines>1-100</lines>
+        <reason>现有的类型定义，需要扩展以支持图表数据模型和信号类型</reason>
+      </item>
+      <item>
+        <path>frontend/src/components/ui/loading.tsx</path>
+        <kind>UI Component</kind>
+        <symbol>Loading</symbol>
+        <lines>1-20</lines>
+        <reason>现有的加载组件，可以在图表数据加载时复用</reason>
+      </item>
+    </code>
+    <dependencies>
+      <frontend>
+        <package name="chart.js" version="4.4.2" />
+        <package name="react-chartjs-2" version="5.2.0" />
+        <package name="next" version="14.2.33" />
+        <package name="react" version="18" />
+        <package name="typescript" version="5" />
+        <package name="axios" version="1.7.2" />
+        <package name="@tanstack/react-query" version="5.40.0" />
+        <package name="tailwindcss" version="3.4.1" />
+      </frontend>
+      <testing>
+        <package name="jest" version="29.7.0" />
+        <package name="@testing-library/react" version="15.0.7" />
+        <package name="@playwright/test" version="1.56.1" />
+      </testing>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <item>
+      <type>Architecture</type>
+      <description>必须使用Epic 2技术规范定义的组件结构: components/charts/PriceChart.tsx, components/charts/TradingSignals.tsx, components/charts/MovingAverages.tsx</description>
+    </item>
+    <item>
+      <type>Data Models</type>
+      <description>必须遵循Epic 2定义的数据模型: ChartData, PricePoint, TradingSignal, MovingAverageLine接口</description>
+    </item>
+    <item>
+      <type>Performance</type>
+      <description>图表渲染时间必须 &lt; 2秒，交互响应 &lt; 500ms，动画流畅度 60fps</description>
+    </item>
+    <item>
+      <type>API Integration</type>
+      <description>必须使用现有的API服务层: strategyAPI.run(), marketDataAPI.get(), 统一响应格式 {success, data, message}</description>
+    </item>
+    <item>
+      <type>Responsive Design</type>
+      <description>必须支持桌面和移动端，使用Tailwind CSS响应式类</description>
+    </item>
+    <item>
+      <type>Type Safety</type>
+      <description>必须使用TypeScript，所有组件props和状态都要有类型定义</description>
+    </item>
+  </constraints>
+
+  <interfaces>
+    <item>
+      <name>Market Data API</name>
+      <kind>REST Endpoint</kind>
+      <signature>GET /api/v1/market/data/{symbol}</signature>
+      <path>backend/app/api/v1/endpoints/market_data.py</path>
+    </item>
+    <item>
+      <name>Strategy Run API</name>
+      <kind>REST Endpoint</kind>
+      <signature>POST /api/v1/strategy/run</signature>
+      <path>backend/app/api/v1/endpoints/strategy.py</path>
+    </item>
+    <item>
+      <name>Strategy Results API</name>
+      <kind>REST Endpoint</kind>
+      <signature>GET /api/v1/strategy/results/{run_id}</signature>
+      <path>backend/app/api/v1/endpoints/strategy.py</path>
+    </item>
+    <item>
+      <name>Chart.js Configuration</name>
+      <kind>Library Interface</kind>
+      <signature>new Chart(ctx, config: ChartConfig)</signature>
+      <path>frontend/src/utils/chartHelpers.ts</path>
+    </item>
+    <item>
+      <name>PriceChart Component Props</name>
+      <kind>React Interface</kind>
+      <signature>interface PriceChartProps { data: ChartData; parameters: StrategyParameters; onParameterChange: (params: StrategyParameters) => void; onSignalClick: (signal: TradingSignal) => void; }</signature>
+      <path>frontend/src/components/charts/PriceChart.tsx</path>
+    </item>
+  </interfaces>
+
+  <tests>
+    <standards>使用Jest进行单元测试，React Testing Library进行组件测试，Playwright进行E2E测试。测试覆盖率目标 > 80%，关键用户路径覆盖率 100%。所有测试必须遵循现有项目的测试模式和命名规范。</standards>
+    <locations>frontend/src/components/charts/__tests__/ - 图表组件单元测试, frontend/src/components/charts/integration/ - 集成测试, tests/e2e/charts/ - 端到端图表交互测试, tests/performance/chart-rendering.test.ts - 性能基准测试</locations>
+    <ideas>
+      <item>
+        <acId>AC1</acId>
+        <test>测试Chart.js图表渲染性能，验证1000个数据点渲染时间 &lt; 2秒</test>
+      </item>
+      <item>
+        <acId>AC2</acId>
+        <test>测试交易信号点击交互，验证信号详情弹窗正确显示</test>
+      </item>
+      <item>
+        <acId>AC3</acId>
+        <test>测试移动平均线SMA/EMA切换，验证计算正确性和视觉更新</test>
+      </item>
+      <item>
+        <acId>AC4</acId>
+        <test>测试图表缩放和平移手势，验证60fps流畅度和响应性</test>
+      </item>
+      <item>
+        <acId>AC5</acId>
+        <test>测试图表导出功能，验证PNG图片和CSV数据正确生成</test>
+      </item>
+    </ideas>
+  </tests>
+</story-context>

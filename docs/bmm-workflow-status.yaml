@@ -1,0 +1,48 @@
+# Workflow Status Template
+# This tracks progress through phases 1-3 of the BMM methodology
+# Phase 4 (Implementation) is tracked separately in sprint-status.yaml
+
+# generated: 2025-11-01
+# project: 量化交易单均线策略分析平台
+# project_type: software
+# project_level: 2
+# field_type: greenfield
+# workflow_path: greenfield-level-2.yaml
+
+# STATUS DEFINITIONS:
+# ==================
+# Initial Status (before completion):
+#   - required: Must be completed to progress
+#   - optional: Can be completed but not required
+#   - recommended: Strongly suggested but not required
+#   - conditional: Required only if certain conditions met (e.g., if_has_ui)
+#
+# Completion Status:
+#   - {file-path}: File created/found (e.g., "docs/product-brief.md")
+#   - skipped: Optional/conditional workflow that was skipped
+
+generated: "2025-11-01"
+project: "量化交易单均线策略分析平台"
+project_type: "software"
+project_level: 2
+field_type: "greenfield"
+workflow_path: "greenfield-level-2.yaml"
+
+workflow_status: "  # Phase 1: Analysis
+  brainstorm-project: optional
+  research: optional
+  product-brief: D:\Demo\docs\bmm-product-brief-量化交易单均线策略分析平台-2025-11-01.md
+
+  # Phase 2: Planning
+  prd: D:\Demo\docs\PRD.md
+  validate-prd: optional
+  create-design: conditional
+  tech-spec: D:\Demo\docs\tech-spec.md
+
+  # Phase 3: Solutioning
+  create-architecture: D:\Demo\docs\architecture-backup.md
+  validate-architecture: optional
+  solutioning-gate-check: D:\Demo\docs\bmm-implementation-readiness-assessment-2025-11-01.md
+
+  # Phase 4: Implementation
+  sprint-planning: D:\Demo\docs\sprint-status.yaml"
