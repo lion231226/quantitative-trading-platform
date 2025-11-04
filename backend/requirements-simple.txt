@@ -1,0 +1,30 @@
+# FastAPI core - 核心依赖
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+python-multipart==0.0.9
+
+# Database - 数据库
+sqlalchemy==2.0.30
+aiosqlite==0.20.0
+
+# Validation - 数据验证
+pydantic==2.7.3
+pydantic-settings==2.2.1
+
+# HTTP client - HTTP客户端
+httpx==0.27.0
+
+# Utilities - 工具库
+python-dotenv==1.0.1
+python-dateutil==2.9.0.post0
+
+# Logging - 日志
+structlog==24.1.0
+
+# CORS - 跨域
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# Development tools - 开发工具
+pytest==8.2.1
+pytest-asyncio==0.23.6

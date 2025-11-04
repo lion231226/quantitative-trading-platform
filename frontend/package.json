@@ -16,13 +16,8 @@
     "test:e2e:codegen": "playwright codegen",
     "test:e2e:install": "playwright install",
     "test:e2e:report": "playwright show-report",
-    "deploy": "vercel --prod",
-    "deploy:preview": "vercel",
-    "deploy:build": "npm run build",
-    "deploy:static": "npm run build && npm run export:static",
-    "export": "next build",
-    "export:static": "echo 'Static files ready in out/ directory'",
-    "vercel-build": "npm run build"
+    "build:prod": "npm run build",
+    "build:analyze": "ANALYZE=true npm run build"
   },
   "dependencies": {
     "@radix-ui/react-dropdown-menu": "^2.1.16",

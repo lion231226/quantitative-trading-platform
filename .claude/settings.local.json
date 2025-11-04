@@ -55,7 +55,9 @@
       "Bash(netstat:*)",
       "Bash(findstr:*)",
       "Bash(npx next dev:*)",
-      "Bash(kill:*)"
+      "Bash(kill:*)",
+      "mcp__web-search-prime__webSearchPrime",
+      "Bash(git remote:*)"
     ],
     "deny": [],
     "ask": []
