@@ -2,6 +2,16 @@
 
 一个教育导向的量化交易策略分析平台，专注于量化交易策略的学习和实践。
 
+## 🌍 仓库地址
+
+### 🇨🇳 国内用户 (推荐)
+- **Gitee**: https://gitee.com/lion20231226/quantitative-trading-platform
+- 访问速度快，适合国内用户克隆和使用
+
+### 🌍 国际用户
+- **GitHub**: https://github.com/lion231226/quantitative-trading-platform
+- 面向国际用户和开源社区
+
 ## 项目概述
 
 本项目旨在通过直观的界面和详细的教程，帮助用户在30分钟内掌握单均线交易策略的核心概念。平台提供真实的市场数据回测功能，让用户能够深入了解策略的运行机制和风险特征。
@@ -69,76 +79,58 @@ quant-trading-platform/
 
 ### 环境要求
 
+- **Python**: 3.11+
 - **Node.js**: 18.0.0+
-- **Python**: 3.12+
-- **Redis**: 7.2+
 - **Git**: 最新版本
 
-### 安装步骤
+### 🚀 一键启动 (推荐)
 
 1. **克隆项目**
+
+#### 国内用户 (推荐)
 ```bash
-git clone <repository-url>
-cd quant-trading-platform
+git clone https://gitee.com/lion20231226/quantitative-trading-platform.git
+cd quantitative-trading-platform
 ```
 
-2. **环境配置**
+#### 国际用户
 ```bash
-# 复制环境变量模板
-cp .env.example .env
-
-# 编辑环境变量（可选）
-nano .env
+git clone https://github.com/lion231226/quantitative-trading-platform.git
+cd quantitative-trading-platform
 ```
 
-3. **后端设置**
+2. **一键启动**
+
+#### Windows用户
 ```bash
-cd backend
-
-# 创建Python虚拟环境
-python -m venv venv
-
-# 激活虚拟环境
-# Windows
-venv\Scripts\activate
-# macOS/Linux
-source venv/bin/activate
-
-# 安装依赖
-pip install -r requirements.txt
+# 运行增强版启动脚本
+./start-windows-enhanced.bat
 ```
 
-4. **前端设置**
+#### Linux/Mac用户
 ```bash
-cd ../frontend
-
-# 安装依赖
-pnpm install
+# 赋予执行权限
+chmod +x quick-start.sh
+# 启动服务
+./quick-start.sh start
 ```
 
-5. **启动服务**
-
-启动Redis服务：
-```bash
-redis-server
-```
-
-启动后端服务：
-```bash
-cd backend
-uvicorn main:app --reload --port 8000
-```
-
-启动前端服务：
-```bash
-cd frontend
-pnpm dev
-```
-
-6. **访问应用**
-- 前端: http://localhost:3000
+3. **访问应用**
+- 前端应用: http://localhost:3000
 - 后端API: http://localhost:8000
-- API文档: http://localhost:8000/api/v1/docs
+- API文档: http://localhost:8000/docs
+
+🎉 **恭喜！量化交易平台已成功启动！**
+
+### 🔧 手动启动 (可选)
+
+如果需要手动安装或遇到问题，请参考：
+- [QUICK-START.md](QUICK-START.md) - 详细快速启动指南
+- [DEPLOYMENT-LOCAL-PLAN.md](DEPLOYMENT-LOCAL-PLAN.md) - 本地部署方案文档
+
+
+
+
 
 ## 开发指南
 
