@@ -1,0 +1,150 @@
+# 数据库服务配置文件
+# One-Click Launcher Database Configuration
+
+version: "1.0"
+environment: "development"
+generated_at: "2025-11-05T00:00:00Z"
+
+# 全局配置
+global:
+  default_host: "localhost"
+  default_timeout: 60
+  auto_restart: false
+  health_check_interval: 30
+  max_startup_time: 300
+
+# 数据库服务配置
+services:
+  redis:
+    name: "redis"
+    service_type: "cache"
+    host: "localhost"
+    port: 6379
+    enabled: true
+    startup_timeout: 30
+    dependencies: []
+    startup_command: null  # 使用系统服务
+    startup_args: {}
+    environment_variables: {}
+    auto_restart: false
+    metadata:
+      description: "Redis缓存服务"
+      version: "6.0+"
+      max_memory: "256mb"
+      max_connections: 100
+
+  postgresql:
+    name: "postgresql"
+    service_type: "database"
+    host: "localhost"
+    port: 5432
+    enabled: true
+    startup_timeout: 60
+    dependencies: ["redis"]  # 依赖Redis服务
+    startup_command: null  # 使用系统服务
+    startup_args: {}
+    environment_variables:
+      POSTGRES_DB: "app_db"
+      POSTGRES_USER: "app_user"
+      POSTGRES_PASSWORD: null  # 将自动生成
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    working_directory: null
+    auto_restart: false
+    metadata:
+      description: "PostgreSQL数据库服务"
+      version: "13.0+"
+      max_connections: 100
+      shared_buffers: "128MB"
+      effective_cache_size: "4GB"
+
+# 数据库初始化配置
+database_initialization:
+  create_database: true
+  database_name: "app_db"
+  database_user: "app_user"
+  generate_password: true
+  password_length: 16
+  import_base_data: true
+  run_migrations: true
+  performance_check: true
+
+# 迁移配置
+migrations:
+  path: "one-click-launcher/migrations"
+  auto_run: true
+  rollback_on_failure: false
+  migration_table: "schema_migrations"
+
+# 基础数据配置
+base_data:
+  path: "one-click-launcher/data"
+  files:
+    - "base_data.json"
+    - "initial_users.json"
+    - "system_config.json"
+  auto_import: true
+
+# 性能配置
+performance:
+  enable_benchmarks: true
+  benchmark_timeout: 30
+  cache_performance:
+    max_response_time_ms: 100
+    min_memory_efficiency: 0.8
+  database_performance:
+    max_response_time_ms: 500
+    min_connection_pool_efficiency: 0.7
+    max_query_time_ms: 1000
+
+# 健康检查配置
+health_checks:
+  redis:
+    enabled: true
+    interval: 30
+    timeout: 5
+    retries: 3
+    check_type: "connection"
+
+  postgresql:
+    enabled: true
+    interval: 30
+    timeout: 10
+    retries: 3
+    check_type: "connection"
+    test_query: "SELECT 1"
+
+# 错误处理配置
+error_handling:
+  max_retries: 3
+  retry_delay: 2
+  escalation_factor: 1.5
+  notify_on_failure: true
+  log_level: "INFO"
+
+# 日志配置
+logging:
+  level: "INFO"
+  format: "detailed"
+  file: "logs/database_service.log"
+  max_size: "10MB"
+  backup_count: 5
+
+# 监控配置
+monitoring:
+  enabled: true
+  metrics_interval: 60
+  collect_performance_metrics: true
+  collect_connection_metrics: true
+  collect_resource_metrics: true
+
+# 安全配置
+security:
+  generate_secure_passwords: true
+  password_policy:
+    min_length: 12
+    require_uppercase: true
+    require_lowercase: true
+    require_numbers: true
+    require_special_chars: true
+  ssl_mode: "prefer"
+  authentication_timeout: 30

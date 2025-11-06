@@ -1,0 +1,118 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>5</epicId>
+    <storyId>4</storyId>
+    <title>System Monitoring and Log Management</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-05</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/5-4-system-monitoring-and-log-management.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>one-click launch script</asA>
+    <iWant>provide system monitoring and log management functionality</iWant>
+    <soThat>I can help users understand system status and facilitate problem diagnosis</soThat>
+    <tasks>Task 1: Real-time System Monitoring Dashboard (AC: 1)
+- Subtask 1.1: Create SystemMonitor class for comprehensive system metrics collection
+- Subtask 1.2: Implement real-time service status monitoring with health checks
+- Subtask 1.3: Build performance metrics collection (CPU, memory, disk usage)
+- Subtask 1.4: Create monitoring dashboard using rich library with live updates
+- Subtask 1.5: Implement configurable monitoring intervals and thresholds
+
+Task 2: Structured Logging System (AC: 2)
+- Subtask 2.1: Extend existing logger with structured log format and categorization
+- Subtask 2.2: Implement log level management (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+- Subtask 2.3: Create component-based log categorization and tagging
+- Subtask 2.4: Build centralized log collection and aggregation system
+- Subtask 2.5: Implement log formatting standards across all launcher components
+
+Task 3: Log Viewing and Analysis Tools (AC: 3)
+- Subtask 3.1: Create LogAnalyzer class with advanced search and filtering
+- Subtask 3.2: Implement keyword and pattern-based log search functionality
+- Subtask 3.3: Build interactive log viewer with pagination and real-time updates
+- Subtask 3.4: Create log analysis tools with trend identification and statistics
+- Subtask 3.5: Implement log highlighting and error correlation features
+
+Task 4: Log Rotation and Cleanup Mechanisms (AC: 4)
+- Subtask 4.1: Implement automatic log rotation based on size and time
+- Subtask 4.2: Create log compression and archiving system
+- Subtask 4.3: Build configurable cleanup policies with retention periods
+- Subtask 4.4: Implement log storage quota management and alerts
+- Subtask 4.5: Create emergency cleanup procedures for disk space issues
+
+Task 5: Log Export Functionality (AC: 5)
+- Subtask 5.1: Create LogExporter class with multiple export formats (JSON, CSV, TXT)
+- Subtask 5.2: Implement date range and filter-based export functionality
+- Subtask 5.3: Build privacy filtering system to remove sensitive information
+- Subtask 5.4: Create export packaging with ZIP compression and metadata
+- Subtask 5.5: Implement export validation and integrity checking</tasks>
+  </story>
+
+  <acceptanceCriteria>1. Implement real-time system monitoring, displaying service status and performance metrics
+2. Create structured logging system with support for log levels and categorization
+3. Provide log viewing and analysis tools with keyword search capability
+4. Implement log rotation and cleanup mechanisms to control log file sizes
+5. Support log export functionality for technical support and problem reporting</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/epics-one-click-launch.md" title="Epic 3: 错误处理与用户支持" section="Story 3.4: 系统监控与日志管理" snippet="作为一键启动脚本，我需要提供系统监控和日志管理功能，以便帮助用户了解系统状态并便于问题诊断。验收标准包括实时系统监控、结构化日志系统、日志查看和分析工具、日志轮转和清理机制、日志导出功能。" />
+      <doc path="docs/architecture-one-click-launch.md" title="一键启动脚本 Decision Architecture" section="Technology Stack Details" snippet="Python 3.11.14+ (LTS) 作为核心引擎，psutil 7.1.3+ 用于系统监控，rich 13.9.4+ 用于CLI界面，logging 内置用于日志系统。" />
+      <doc path="docs/stories/5-3-user-support-and-guidance-system.md" title="Story 5.3: User Support and Guidance System" section="Support Orchestrator Architecture" snippet="SupportOrchestrator类提供综合系统协调 - 用于监控系统协调和数据收集工作流。EnhancedKnowledgeBase类提供高级搜索和索引 - 扩展用于日志搜索和分析功能。" />
+    </docs>
+    <code>
+      <codeFile path="one-click-launcher/core/performance_monitor.py" kind="monitoring" symbol="PerformanceMonitor" lines="1-50" reason="现有的性能监控器提供了跨层性能监控、延迟测量和趋势分析功能，支持各种系统指标收集" />
+      <codeFile path="one-click-launcher/core/support_orchestrator.py" kind="orchestrator" symbol="SupportOrchestrator" lines="1-50" reason="支持编排器提供综合系统协调，可用于监控系统协调和数据收集工作流" />
+      <codeFile path="one-click-launcher/core/knowledge_base.py" kind="knowledge" symbol="EnhancedKnowledgeBase" lines="1-50" reason="增强知识库提供高级搜索和索引功能，可扩展用于日志搜索和分析" />
+      <codeFile path="one-click-launcher/utils/logger.py" kind="logging" symbol="setup_logger" lines="15-50" reason="现有的日志工具提供统一的日志配置和管理功能，支持结构化日志" />
+      <codeFile path="one-click-launcher/utils/progress_tracker.py" kind="tracking" symbol="ProgressTracker" lines="1-50" reason="进度跟踪器提供实时进度跟踪、日志记录和用户反馈功能" />
+    </code>
+    <dependencies>
+  <dependency ecosystem="python" name="psutil" version="7.1.3+" usage="System monitoring and resource metrics collection" />
+  <dependency ecosystem="python" name="rich" version="13.9.4+" usage="CLI interface for monitoring dashboard and log viewer" />
+  <dependency ecosystem="python" name="logging" version="built-in" usage="Structured logging system foundation" />
+  <dependency ecosystem="python" name="threading" version="built-in" usage="Real-time monitoring and log collection" />
+  <dependency ecosystem="python" name="asyncio" version="built-in" usage="Asynchronous monitoring operations" />
+  <dependency ecosystem="python" name="json" version="built-in" usage="Log export and configuration management" />
+  <dependency ecosystem="python" name="zipfile" version="built-in" usage="Log compression and export packaging" />
+  <dependency ecosystem="python" name="re" version="built-in" usage="Log pattern analysis and search" />
+  <dependency ecosystem="python" name="datetime" version="built-in" usage="Log timestamps and rotation scheduling" />
+  <dependency ecosystem="python" name="pathlib" version="built-in" usage="Cross-platform file path handling" />
+</dependencies>
+  </artifacts>
+
+  <constraints>
+  <constraint id="monitoring-patterns" type="architecture">利用ServiceManager模式进行综合系统监控，扩展到所有服务</constraint>
+  <constraint id="structured-logging" type="implementation">扩展现有的logger.py结构化日志模式，用于综合日志管理和分析</constraint>
+  <constraint id="real-time-monitoring" type="performance">所有监控功能必须提供实时更新，不影响系统性能（< 2%系统资源使用）</constraint>
+  <constraint id="log-format-standardization" type="standardization">所有组件使用一致的日志格式进行统一分析</constraint>
+  <constraint id="storage-efficiency" type="storage">实现日志轮转和压缩以控制磁盘使用</constraint>
+  <constraint id="user-privacy" type="privacy">确保日志导出功能过滤敏感信息</constraint>
+  <constraint id="accessibility" type="usability">监控信息应便于非技术用户理解</constraint>
+  <constraint id="scalability" type="architecture">设计为处理大量日志数据和扩展监控周期</constraint>
+</constraints>
+<interfaces>
+  <interface name="SystemMonitor" kind="class" signature="class SystemMonitor: __init__(self, config: Dict[str, Any]), start_monitoring(self), get_metrics(self) -> Dict[str, Any], stop_monitoring(self)" path="one-click-launcher/core/system_monitor.py" />
+  <interface name="LogManager" kind="class" signature="class LogManager: __init__(self, log_config: Dict[str, Any]), setup_structured_logging(self), collect_logs(self, filters: Dict[str, Any]) -> List[LogEntry], rotate_logs(self), export_logs(self, format: str, filters: Dict[str, Any]) -> bytes" path="one-click-launcher/core/log_manager.py" />
+  <interface name="LogAnalyzer" kind="class" signature="class LogAnalyzer: search_logs(self, query: str, filters: Dict[str, Any]) -> List[LogEntry], analyze_patterns(self, logs: List[LogEntry]) -> AnalysisResult, get_statistics(self) -> Dict[str, Any]" path="one-click-launcher/utils/log_analyzer.py" />
+  <interface name="LogExporter" kind="class" signature="class LogExporter: export_to_json(self, logs: List[LogEntry]) -> str, export_to_csv(self, logs: List[LogEntry]) -> str, export_to_txt(self, logs: List[LogEntry]) -> str, create_export_package(self, logs: List[LogEntry], format: str) -> bytes" path="one-click-launcher/utils/log_exporter.py" />
+  <interface name="MonitoringDashboard" kind="class" signature="class MonitoringDashboard: __init__(self, system_monitor: SystemMonitor), display_dashboard(self), update_metrics(self, metrics: Dict[str, Any]), handle_user_input(self)" path="one-click-launcher/core/monitoring_dashboard.py" />
+</interfaces>
+  <tests>
+    <standards>测试框架使用Python内置的unittest模块。监控系统准确性测试需要验证所有监控指标与系统实际状态对比。日志完整性测试验证日志收集、存储和检索准确性。性能影响测试确保监控不会降低系统性能（< 2%资源使用）。日志轮转测试测试日志清理和压缩机制。导出功能测试验证日志导出格式和隐私过滤。实时更新测试测试监控仪表盘响应性和准确性。搜索功能测试测试日志搜索和分析能力。</standards>
+    <locations>one-click-launcher/tests/test_system_monitoring.py</locations>
+    <ideas>
+      <testIdea acceptanceCriteriaId="1" description="测试实时系统监控显示服务状态和性能指标的准确性" />
+      <testIdea acceptanceCriteriaId="1" description="测试监控仪表盘的实时更新功能" />
+      <testIdea acceptanceCriteriaId="2" description="测试结构化日志系统的日志级别和分类功能" />
+      <testIdea acceptanceCriteriaId="2" description="测试日志格式在所有组件中的一致性" />
+      <testIdea acceptanceCriteriaId="3" description="测试日志查看和分析工具的关键词搜索能力" />
+      <testIdea acceptanceCriteriaId="3" description="测试日志分析工具的模式识别功能" />
+      <testIdea acceptanceCriteriaId="4" description="测试日志轮转基于大小和时间的触发机制" />
+      <testIdea acceptanceCriteriaId="4" description="测试日志压缩和归档系统的功能" />
+      <testIdea acceptanceCriteriaId="5" description="测试日志导出功能支持多种格式（JSON、CSV、TXT）" />
+      <testIdea acceptanceCriteriaId="5" description="测试日志导出时的隐私过滤功能" />
+    </ideas>
+  </tests>
+</story-context>

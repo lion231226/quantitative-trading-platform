@@ -1,6 +1,6 @@
-# generated: 2025-11-01
-# project: 量化交易单均线策略分析平台
-# project_key: 量化交易单均线策略分析平台
+# generated: 2025-11-06
+# project: Demo
+# project_key: Demo
 # tracking_system: file-system
 # story_location: {project-root}/docs/stories
 
@@ -29,14 +29,14 @@
 # - SM typically drafts next story after previous one is 'done' to incorporate learnings
 # - Dev moves story to 'review', SM reviews, then Dev moves to 'done'
 
-generated: "2025-11-01"
-project: "量化交易单均线策略分析平台"
-project_key: "量化交易单均线策略分析平台"
+generated: "2025-11-06"
+project: "Demo"
+project_key: "Demo"
 tracking_system: "file-system"
 story_location: "{project-root}/docs/stories"
 
 development_status:
-  # Epic 1: 项目基础与数据核心
+  # Epic 1: 项目基础与数据核心 (量化交易平台)
   epic-1: contexted
   1-1-project-initialization-and-basic-architecture: done
   1-2-data-acquisition-module-basics: done
@@ -48,12 +48,49 @@ development_status:
   1-8-basic-functionality-integration-testing: done
   epic-1-retrospective: completed
 
-  # Epic 2: 用户体验与可视化展示
+  # Epic 2: 用户体验与可视化展示 (量化交易平台)
   epic-2: contexted
-  2-1-interactive-data-visualization: done # APPROVED - All acceptance criteria met with comprehensive implementation
-  2-2-real-time-strategy-parameters: done # APPROVED - All acceptance criteria met with excellent implementation, 74.8% test pass rate
+  2-1-interactive-data-visualization: done
+  2-2-real-time-strategy-parameters: done
   2-3-performance-metrics-visualization: done
-  2-4-interactive-tutorial-system: done # COMPLETED - All ACs implemented, core tests 100% pass, full tutorial system ready for production
-  2-5-multi-variety-comparative-analysis: done # APPROVED - All acceptance criteria met with excellent implementation quality, professional-grade architecture
-  2-6-complete-user-experience-optimization: done # APPROVED - 所有验收标准已完全实现，18个核心UX组件已创建，用户体验优化系统优秀
-  epic-2-retrospective: completed # COMPLETED - Epic 2 retrospective completed on 2025-11-03, all action items documented
+  2-4-interactive-tutorial-system: done
+  2-5-multi-variety-comparative-analysis: done
+  2-6-complete-user-experience-optimization: done
+  epic-2-retrospective: completed
+
+  # Epic 6: 环境检测与自动配置引擎 (一键启动脚本)
+  epic-6: backlog
+  6-1-operating-system-detection-and-platform-adaptation: done
+  6-2-development-environment-dependency-check: done
+  6-3-automatic-dependency-installation-engine: done
+  6-4-database-environment-configuration: done
+  6-5-project-dependency-automatic-installation: done
+  6-6-environment-configuration-verification: done
+  epic-6-retrospective: optional
+
+  # Epic 7: 服务编排与启动管理 (一键启动脚本)
+  epic-7: backlog
+  7-1-service-dependency-analysis-and-startup-sequence: done
+  7-2-database-service-startup: done
+  7-3-backend-api-service-startup: done
+  7-4-frontend-application-startup: done
+  7-5-system-integration-verification: done
+  epic-7-retrospective: optional
+
+  # Epic 8: 错误处理与用户支持 (一键启动脚本)
+  epic-8: backlog
+  8-1-intelligent-error-detection-and-diagnosis: done
+  8-2-automatic-recovery-mechanism: done
+  8-3-user-support-and-guidance-system: done
+  8-4-system-monitoring-and-log-management: done
+  epic-8-retrospective: optional
+
+  # Epic 6: 系统集成与主启动脚本 (一键启动脚本)
+  epic-9: contexted
+  6-1-main-launcher-script-implementation: done
+  6-2-user-experience-and-documentation: done
+
+  # Epic 10: 项目完善与发布准备
+  epic-10: contexted
+  10-1-project-documentation-and-cleanup: done
+  epic-10-retrospective: optional

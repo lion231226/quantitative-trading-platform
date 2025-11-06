@@ -1,0 +1,287 @@
+{
+  "version": "1.0",
+  "description": "系统配置数据",
+  "created_at": "2025-11-05T00:00:00Z",
+  "categories": {
+    "application": {
+      "name": "应用程序配置",
+      "description": "应用程序相关的配置项",
+      "configs": [
+        {
+          "config_key": "app_name",
+          "config_value": "量化交易平台",
+          "config_type": "string",
+          "description": "应用程序名称",
+          "is_public": true,
+          "validation": {
+            "required": true,
+            "min_length": 1,
+            "max_length": 100
+          }
+        },
+        {
+          "config_key": "app_version",
+          "config_value": "2.0.0",
+          "config_type": "string",
+          "description": "应用程序版本",
+          "is_public": true,
+          "validation": {
+            "required": true,
+            "pattern": "^\\d+\\.\\d+\\.\\d+$"
+          }
+        },
+        {
+          "config_key": "debug_mode",
+          "config_value": "true",
+          "config_type": "boolean",
+          "description": "调试模式",
+          "is_public": false,
+          "validation": {
+            "required": true,
+            "type": "boolean"
+          }
+        },
+        {
+          "config_key": "log_level",
+          "config_value": "INFO",
+          "config_type": "string",
+          "description": "日志级别",
+          "is_public": false,
+          "validation": {
+            "required": true,
+            "enum": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+          }
+        }
+      ]
+    },
+    "security": {
+      "name": "安全配置",
+      "description": "安全和认证相关的配置项",
+      "configs": [
+        {
+          "config_key": "session_timeout",
+          "config_value": "3600",
+          "config_type": "integer",
+          "description": "会话超时时间（秒）",
+          "is_public": false,
+          "validation": {
+            "required": true,
+            "min_value": 300,
+            "max_value": 86400
+          }
+        },
+        {
+          "config_key": "max_login_attempts",
+          "config_value": "5",
+          "config_type": "integer",
+          "description": "最大登录尝试次数",
+          "is_public": false,
+          "validation": {
+            "required": true,
+            "min_value": 3,
+            "max_value": 10
+          }
+        },
+        {
+          "config_key": "account_lockout_duration",
+          "config_value": "1800",
+          "config_type": "integer",
+          "description": "账户锁定时间（秒）",
+          "is_public": false,
+          "validation": {
+            "required": true,
+            "min_value": 300,
+            "max_value": 86400
+          }
+        },
+        {
+          "config_key": "password_min_length",
+          "config_value": "8",
+          "config_type": "integer",
+          "description": "密码最小长度",
+          "is_public": false,
+          "validation": {
+            "required": true,
+            "min_value": 6,
+            "max_value": 128
+          }
+        },
+        {
+          "config_key": "password_require_special_chars",
+          "config_value": "true",
+          "config_type": "boolean",
+          "description": "密码是否要求特殊字符",
+          "is_public": false,
+          "validation": {
+            "required": true,
+            "type": "boolean"
+          }
+        }
+      ]
+    },
+    "database": {
+      "name": "数据库配置",
+      "description": "数据库连接和性能配置",
+      "configs": [
+        {
+          "config_key": "db_max_connections",
+          "config_value": "100",
+          "config_type": "integer",
+          "description": "数据库最大连接数",
+          "is_public": false,
+          "validation": {
+            "required": true,
+            "min_value": 10,
+            "max_value": 1000
+          }
+        },
+        {
+          "config_key": "db_connection_timeout",
+          "config_value": "30",
+          "config_type": "integer",
+          "description": "数据库连接超时时间（秒）",
+          "is_public": false,
+          "validation": {
+            "required": true,
+            "min_value": 5,
+            "max_value": 120
+          }
+        },
+        {
+          "config_key": "db_query_timeout",
+          "config_value": "60",
+          "config_type": "integer",
+          "description": "数据库查询超时时间（秒）",
+          "is_public": false,
+          "validation": {
+            "required": true,
+            "min_value": 10,
+            "max_value": 300
+          }
+        },
+        {
+          "config_key": "enable_query_log",
+          "config_value": "false",
+          "config_type": "boolean",
+          "description": "是否启用查询日志",
+          "is_public": false,
+          "validation": {
+            "required": true,
+            "type": "boolean"
+          }
+        }
+      ]
+    },
+    "notifications": {
+      "name": "通知配置",
+      "description": "通知和消息相关的配置项",
+      "configs": [
+        {
+          "config_key": "email_notifications_enabled",
+          "config_value": "true",
+          "config_type": "boolean",
+          "description": "是否启用邮件通知",
+          "is_public": false,
+          "validation": {
+            "required": true,
+            "type": "boolean"
+          }
+        },
+        {
+          "config_key": "smtp_server",
+          "config_value": "localhost",
+          "config_type": "string",
+          "description": "SMTP服务器地址",
+          "is_public": false,
+          "validation": {
+            "required": false,
+            "max_length": 255
+          }
+        },
+        {
+          "config_key": "smtp_port",
+          "config_value": "587",
+          "config_type": "integer",
+          "description": "SMTP服务器端口",
+          "is_public": false,
+          "validation": {
+            "required": false,
+            "min_value": 1,
+            "max_value": 65535
+          }
+        },
+        {
+          "config_key": "notification_retention_days",
+          "config_value": "30",
+          "config_type": "integer",
+          "description": "通知保留天数",
+          "is_public": false,
+          "validation": {
+            "required": true,
+            "min_value": 1,
+            "max_value": 365
+          }
+        }
+      ]
+    },
+    "performance": {
+      "name": "性能配置",
+      "description": "性能和缓存相关的配置项",
+      "configs": [
+        {
+          "config_key": "cache_enabled",
+          "config_value": "true",
+          "config_type": "boolean",
+          "description": "是否启用缓存",
+          "is_public": false,
+          "validation": {
+            "required": true,
+            "type": "boolean"
+          }
+        },
+        {
+          "config_key": "cache_ttl",
+          "config_value": "3600",
+          "config_type": "integer",
+          "description": "缓存过期时间（秒）",
+          "is_public": false,
+          "validation": {
+            "required": true,
+            "min_value": 60,
+            "max_value": 86400
+          }
+        },
+        {
+          "config_key": "enable_performance_monitoring",
+          "config_value": "true",
+          "config_type": "boolean",
+          "description": "是否启用性能监控",
+          "is_public": false,
+          "validation": {
+            "required": true,
+            "type": "boolean"
+          }
+        },
+        {
+          "config_key": "slow_query_threshold",
+          "config_value": "1000",
+          "config_type": "integer",
+          "description": "慢查询阈值（毫秒）",
+          "is_public": false,
+          "validation": {
+            "required": true,
+            "min_value": 100,
+            "max_value": 10000
+          }
+        }
+      ]
+    }
+  },
+  "metadata": {
+    "import_version": "1.0",
+    "compatibility": ">=1.0.0",
+    "author": "Database Service Manager",
+    "auto_validate": true,
+    "allow_override": false
+  }
+}

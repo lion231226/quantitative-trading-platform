@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 完整部署脚本 - 包含环境检查
+# 完整部署脚本 - 包含环境检查 - 修复版
 set -e
 
 GREEN='\033[0;32m'
@@ -24,6 +24,7 @@ print_warning() {
 print_header() {
     echo -e "${BLUE}=====================================${NC}"
     echo -e "${BLUE}  量化交易平台一键部署脚本          ${NC}"
+    echo -e "${BLUE}  Enhanced Linux/Mac Launcher      ${NC}"
     echo -e "${BLUE}=====================================${NC}"
 }
 
@@ -32,14 +33,23 @@ check_environment() {
     print_message "检查运行环境..."
 
     # 检查 Python
-    if command -v python &> /dev/null; then
-        PYTHON_VERSION=$(python --version | cut -d' ' -f2)
-        print_message "✓ Python 版本: $PYTHON_VERSION"
-    elif command -v python3 &> /dev/null; then
+    if command -v python3 &> /dev/null; then
         PYTHON_VERSION=$(python3 --version | cut -d' ' -f2)
+        print_message "✓ Python 版本: $PYTHON_VERSION"
+    elif command -v python &> /dev/null; then
+        PYTHON_VERSION=$(python --version | cut -d' ' -f2)
         print_message "✓ Python 版本: $PYTHON_VERSION"
     else
         print_error "✗ Python 3 未安装，请先安装 Python 3.11+"
+        exit 1
+    fi
+
+    # 检查Python版本
+    PYTHON_MAJOR=$(echo $PYTHON_VERSION | cut -d. -f1)
+    PYTHON_MINOR=$(echo $PYTHON_VERSION | cut -d. -f2)
+
+    if [ "$PYTHON_MAJOR" -lt 3 ] || ([ "$PYTHON_MAJOR" -eq 3 ] && [ "$PYTHON_MINOR" -lt 11 ]); then
+        print_error "✗ Python 版本过低，需要 3.11+，当前版本: $PYTHON_VERSION"
         exit 1
     fi
 
@@ -64,11 +74,13 @@ check_environment() {
     # 检查项目文件
     if [ ! -f "backend/requirements.txt" ]; then
         print_error "✗ backend/requirements.txt 不存在"
+        print_error "请确保在正确的项目目录中运行此脚本"
         exit 1
     fi
 
     if [ ! -f "frontend/package.json" ]; then
         print_error "✗ frontend/package.json 不存在"
+        print_error "请确保在正确的项目目录中运行此脚本"
         exit 1
     fi
 
@@ -78,23 +90,37 @@ check_environment() {
 # 启动后端服务
 start_backend() {
     print_message "启动后端服务..."
+
+    # 确保在正确的目录
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    cd "$SCRIPT_DIR"
+
+    # 创建必要目录
+    mkdir -p data logs temp
+
     cd backend
 
     # 创建虚拟环境
     if [ ! -d "venv" ]; then
         print_message "创建Python虚拟环境..."
-        if command -v python &> /dev/null; then
-            python -m venv venv
-        else
+        if command -v python3 &> /dev/null; then
             python3 -m venv venv
+        else
+            python -m venv venv
         fi
+
+        if [ $? -ne 0 ]; then
+            print_error "创建虚拟环境失败"
+            print_error "请检查Python安装是否正确"
+            exit 1
+        fi
+        print_message "✓ 虚拟环境创建成功"
     fi
 
     # 激活虚拟环境
     if [ -f "venv/bin/activate" ]; then
         source venv/bin/activate
-    elif [ -f "venv/Scripts/activate" ]; then
-        source venv/Scripts/activate  # Windows
+        print_message "✓ 虚拟环境激活成功"
     else
         print_error "无法激活虚拟环境"
         exit 1
@@ -102,36 +128,52 @@ start_backend() {
 
     # 升级pip
     print_message "升级pip..."
-    pip install --upgrade pip
+    pip install --upgrade pip --quiet
+    if [ $? -ne 0 ]; then
+        print_warning "pip升级失败，继续使用现有版本"
+    fi
 
     # 安装依赖
     print_message "安装Python依赖..."
+    print_warning "首次安装可能需要几分钟，请耐心等待..."
     pip install -r requirements.txt
+    if [ $? -ne 0 ]; then
+        print_error "Python依赖安装失败"
+        print_error "请检查网络连接和Python版本"
+        exit 1
+    fi
+    print_message "✓ Python依赖安装完成"
 
-    # 创建必要目录
-    mkdir -p ../data ../logs
+    # 创建环境变量文件
+    if [ ! -f ".env" ]; then
+        print_message "创建后端环境配置..."
+        cat > .env << EOF
+# 后端配置
+DATABASE_URL=sqlite:///./../data/quant_trading.db
+PYTHONPATH=$(pwd)
+LOG_LEVEL=INFO
+
+# API配置
+API_HOST=0.0.0.0
+API_PORT=8000
+API_RELOAD=true
+
+# AKShare配置
+AKSHARE_TIMEOUT=30
+AKSHARE_RETRY=3
+EOF
+        print_message "✓ 环境配置创建完成"
+    fi
 
     # 启动后端服务
     print_message "启动FastAPI服务..."
+    print_message "后端服务地址: http://localhost:8000"
+    print_message "API文档地址: http://localhost:8000/docs"
 
-    # 检测操作系统
-    if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" || "$OS" == "Windows_NT" ]]; then
-        # Windows - 直接运行不使用后台
-        print_message "在Windows环境中启动后端服务..."
-        print_message "后端服务: http://localhost:8000"
-        print_message "按 Ctrl+C 停止服务"
-
-        # 在新窗口中启动
-        if command -v cmd &> /dev/null; then
-            cmd /c "start cmd /k \"python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload\""
-        else
-            python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload &
-        fi
-    else
-        # Linux/Mac
-        nohup python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload > ../logs/backend.log 2>&1 &
-        print_message "后端服务启动中: http://localhost:8000"
-    fi
+    # 后台启动后端服务
+    nohup python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload > ../logs/backend.log 2>&1 &
+    BACKEND_PID=$!
+    echo "Backend PID: $BACKEND_PID" > ../logs/backend.pid
 
     cd ..
     print_message "后端服务启动中: http://localhost:8000"
@@ -145,20 +187,41 @@ start_frontend() {
     # 安装依赖
     if [ ! -d "node_modules" ]; then
         print_message "安装Node.js依赖..."
+        print_warning "首次安装可能需要几分钟，请耐心等待..."
         npm install
+        if [ $? -ne 0 ]; then
+            print_error "Node.js依赖安装失败"
+            print_error "请检查网络连接和Node.js版本"
+            exit 1
+        fi
+        print_message "✓ Node.js依赖安装完成"
+    fi
+
+    # 创建环境变量文件
+    if [ ! -f ".env.local" ]; then
+        print_message "创建前端环境配置..."
+        cat > .env.local << EOF
+# 前端配置
+NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXT_PUBLIC_NODE_ENV=development
+NEXT_PUBLIC_APP_NAME=量化交易平台
+NEXT_PUBLIC_APP_VERSION=1.0.0
+
+# API配置
+NEXT_PUBLIC_API_TIMEOUT=30000
+NEXT_PUBLIC_API_RETRY=3
+EOF
+        print_message "✓ 前端环境配置创建完成"
     fi
 
     # 启动前端服务
     print_message "启动Next.js服务..."
+    print_message "前端服务地址: http://localhost:3000"
 
-    # 检测操作系统
-    if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
-        # Windows
-        start /b npm run dev
-    else
-        # Linux/Mac
-        nohup npm run dev > ../logs/frontend.log 2>&1 &
-    fi
+    # 后台启动前端服务
+    nohup npm run dev > ../logs/frontend.log 2>&1 &
+    FRONTEND_PID=$!
+    echo "Frontend PID: $FRONTEND_PID" > ../logs/frontend.pid
 
     cd ..
     print_message "前端服务启动中: http://localhost:3000"
@@ -167,7 +230,7 @@ start_frontend() {
 # 检查服务状态
 check_services() {
     print_message "等待服务启动..."
-    sleep 10
+    sleep 15
 
     # 检查后端
     for i in {1..30}; do
@@ -176,6 +239,7 @@ check_services() {
             break
         elif [ $i -eq 30 ]; then
             print_warning "⚠ 后端服务启动超时，请检查日志"
+            print_error "请运行: tail -f logs/backend.log"
         else
             sleep 2
         fi
@@ -188,6 +252,7 @@ check_services() {
             break
         elif [ $i -eq 30 ]; then
             print_warning "⚠ 前端服务启动超时，请检查日志"
+            print_error "请运行: tail -f logs/frontend.log"
         else
             sleep 2
         fi
@@ -207,7 +272,8 @@ show_info() {
     echo -e "${BLUE}管理命令：${NC}"
     echo -e "  • 查看后端日志: ${YELLOW}tail -f logs/backend.log${NC}"
     echo -e "  • 查看前端日志: ${YELLOW}tail -f logs/frontend.log${NC}"
-    echo -e "  • 停止服务: ${YELLOW}./quick-start.sh stop${NC}"
+    echo -e "  • 停止服务: ${YELLOW}./quick-start-fixed.sh stop${NC}"
+    echo -e "  • 查看服务状态: ${YELLOW}./quick-start-fixed.sh status${NC}"
     echo ""
     echo -e "${YELLOW}注意: 首次启动可能需要较长时间来安装依赖${NC}"
     echo ""
@@ -218,17 +284,29 @@ stop_services() {
     print_message "停止所有服务..."
 
     # 停止后端
-    pkill -f "uvicorn main:app" || true
+    if [ -f "logs/backend.pid" ]; then
+        BACKEND_PID=$(cat logs/backend.pid)
+        if kill -0 $BACKEND_PID 2>/dev/null; then
+            kill $BACKEND_PID
+            print_message "后端服务已停止"
+        fi
+        rm -f logs/backend.pid
+    fi
 
     # 停止前端
-    pkill -f "next-server" || true
-    pkill -f "next dev" || true
-
-    # Windows 特定
-    if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
-        taskkill /F /IM python.exe 2>/dev/null || true
-        taskkill /F /IM node.exe 2>/dev/null || true
+    if [ -f "logs/frontend.pid" ]; then
+        FRONTEND_PID=$(cat logs/frontend.pid)
+        if kill -0 $FRONTEND_PID 2>/dev/null; then
+            kill $FRONTEND_PID
+            print_message "前端服务已停止"
+        fi
+        rm -f logs/frontend.pid
     fi
+
+    # 强制停止相关进程
+    pkill -f "uvicorn main:app" 2>/dev/null || true
+    pkill -f "next-server" 2>/dev/null || true
+    pkill -f "next dev" 2>/dev/null || true
 
     print_message "服务已停止"
 }

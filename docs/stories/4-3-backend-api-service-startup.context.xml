@@ -1,0 +1,134 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>3</storyId>
+    <title>Backend API Service Startup</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-05</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>D:\Demo\docs\stories\4-3-backend-api-service-startup.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>one-click launch script</asA>
+    <iWant>start the backend API service automatically</iWant>
+    <soThat>the frontend application has reliable data interfaces ready for use</soThat>
+    <tasks>Task 1: Backend Service Startup Core Functionality (AC: 1, 5)
+- Subtask 1.1: Implement Python process detection and startup logic
+- Subtask 1.2: Configure service startup parameters and environment variables
+- Subtask 1.3: Implement process status monitoring and PID management
+- Subtask 1.4: Create startup logging mechanism
+- Subtask 1.5: Implement startup timeout and error handling
+
+Task 2: API Health Check System (AC: 2)
+- Subtask 2.1: Implement /health endpoint verification logic
+- Subtask 2.2: Implement /api/docs endpoint accessibility check
+- Subtask 2.3: Add API response time validation
+- Subtask 2.4: Create endpoint status reporting mechanism
+- Subtask 2.5: Implement health check retry mechanism
+
+Task 3: Database Connection Integration (AC: 3)
+- Subtask 3.1: Implement Redis connection verification
+- Subtask 3.2: Implement PostgreSQL connection testing
+- Subtask 3.3: Add database permission verification
+- Subtask 3.4: Create connection status monitoring
+- Subtask 3.5: Implement connection error recovery mechanism
+
+Task 4: Application Configuration and State Management (AC: 4)
+- Subtask 4.1: Load and apply environment configuration
+- Subtask 4.2: Initialize application internal state
+- Subtask 4.3: Verify frontend API readiness status
+- Subtask 4.4: Implement configuration validation and error handling
+- Subtask 4.5: Create status reporting interface</tasks>
+  </story>
+
+  <acceptanceCriteria>1. Start Python backend service (FastAPI/Flask) and verify process running status
+2. Verify API endpoints respond normally (/health, /api/docs) with response time < 2 seconds
+3. Load environment configuration and ensure database connections are normal (Redis:6379, PostgreSQL:5432)
+4. Initialize application state and prepare to accept frontend requests
+5. Record service startup logs for problem diagnosis</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/epics-one-click-launch.md" title="一键启动脚本 Epic Breakdown" section="Epic 4: 服务编排与启动管理" snippet="Epic 4 构建在环境基础上构建服务启动能力，包括数据库服务、后端API服务、前端应用的启动和管理"/>
+      <doc path="docs/architecture-one-click-launch.md" title="一键启动脚本 Decision Architecture" section="Project Structure" snippet="采用纯Python + CLI的跨平台部署自动化架构，包含服务管理模块和核心功能组件"/>
+      <doc path="docs/stories/4-1-service-dependency-analysis-and-startup-sequence.md" title="Service Dependency Analysis" section="Acceptance Criteria" snippet="定义服务启动顺序：database → backend API → frontend application"/>
+    </docs>
+    <code>
+      <artifact path="one-click-launcher/services/backend_service.py" kind="service" symbol="BackendService" lines="1" reason="主要后端服务编排器，需要实现核心启动逻辑"/>
+      <artifact path="one-click-launcher/core/health_checker.py" kind="core" symbol="HealthChecker" lines="91-688" reason="现有健康检查器，支持HTTP端点验证和响应时间监控"/>
+      <artifact path="one-click-launcher/services/database_service.py" kind="service" symbol="DatabaseServiceManager" lines="1-50" reason="数据库服务管理器，为后端服务提供数据库连接支持"/>
+      <artifact path="backend/app/api/v1/api.py" kind="api" symbol="api_router" lines="1-32" reason="FastAPI路由器，定义了后端API的端点结构"/>
+      <artifact path="one-click-launcher/core/service_dependency_analyzer.py" kind="core" symbol="ServiceDependencyAnalyzer" reason="服务依赖分析器，用于验证启动顺序"/>
+      <artifact path="one-click-launcher/core/port_manager.py" kind="core" symbol="PortManager" reason="端口管理器，用于Backend:8000端口分配"/>
+      <artifact path="one-click-launcher/core/timeout_manager.py" kind="core" symbol="TimeoutManager" reason="超时管理器，用于后端服务启动超时控制"/>
+      <artifact path="one-click-launcher/core/service_configurator.py" kind="core" symbol="ServiceConfigurator" reason="配置管理器，用于后端服务配置"/>
+      <artifact path="one-click-launcher/utils/progress_tracker.py" kind="utility" symbol="ProgressTracker" reason="进度跟踪器，用于后端启动进度跟踪"/>
+    </code>
+    <dependencies>
+      <backend>
+        <package name="fastapi" version="0.111.0"/>
+        <package name="uvicorn" version="0.29.0"/>
+        <package name="sqlalchemy" version="2.0.30"/>
+        <package name="redis" version="5.0.4"/>
+        <package name="pydantic" version="2.7.3"/>
+        <package name="httpx" version="0.27.0"/>
+        <package name="python-dotenv" version="1.0.1"/>
+        <package name="structlog" version="24.1.0"/>
+      </backend>
+      <frontend>
+        <package name="next" version="14.2.33"/>
+        <package name="react" version="18"/>
+        <package name="axios" version="1.7.2"/>
+      </frontend>
+      <python>
+        <package name="psutil" version="7.1.3+"/>
+        <package name="rich" version="13.9.4+"/>
+        <package name="requests" version="2.32.3+"/>
+      </python>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+  <constraint type="architecture">服务启动序列：遵循 Database → Backend 顺序，使用 ServiceDependencyAnalyzer 验证依赖关系</constraint>
+  <constraint type="health-check">健康检查集成：使用现有 HealthChecker 类进行端点验证，支持 /health 和 /api/docs 端点</constraint>
+  <constraint type="configuration">配置管理：使用 ServiceConfigurator 进行后端特定配置，支持环境特定配置</constraint>
+  <constraint type="progress">进度跟踪：使用 ProgressTracker，component_name="backend_api_startup"</constraint>
+  <constraint type="error-format">统一错误格式：遵循 {code, message, solution, details} 格式</constraint>
+  <constraint type="async">异步操作：使用 asyncio 模式进行并发 API 操作</constraint>
+  <constraint type="ports">端口管理：使用现有 PortManager 分配 Backend:8000 端口</constraint>
+  <constraint type="testing">测试标准：服务启动、API端点验证、数据库集成、性能基准、集成测试、错误处理测试</constraint>
+</constraints>
+<interfaces>
+  <interface name="Health Check Endpoint" kind="REST endpoint" signature="GET /health" path="backend/app/api/v1/endpoints/health.py"/>
+  <interface name="API Documentation" kind="REST endpoint" signature="GET /api/docs" path="backend/app/main.py"/>
+  <interface name="Backend Service Manager" kind="class interface" signature="class BackendServiceManager: start(), stop(), health_check(), get_status()" path="one-click-launcher/services/backend_service.py"/>
+  <interface name="Database Connection" kind="interface" signature="Redis:6379, PostgreSQL:5432" path="one-click-launcher/services/database_service.py"/>
+  <interface name="Progress Tracker" kind="function signature" signature="ProgressTracker(component_name: str, total_steps: int)" path="one-click-launcher/utils/progress_tracker.py"/>
+</interfaces>
+<tests>
+  <standards>服务测试：测试后端启动、API端点验证和关闭场景。端点测试：测试/health和/api/docs可访问性和响应格式。数据库集成测试：测试数据库连接和查询操作。性能测试：API端点响应时间基准测试。集成测试：完整后端服务启动流程测试。错误处理测试：各种失败场景和恢复机制测试。</standards>
+  <locations>
+    <location path="one-click-launcher/tests/test_backend_service.py" pattern="backend_service_test_*.py"/>
+    <location path="one-click-launcher/tests/test_health_checker.py" pattern="health_check_test_*.py"/>
+    <location path="one-click-launcher/tests/" pattern="test_*backend*.py"/>
+    <location path="backend/tests/" pattern="test_*.py"/>
+  </locations>
+  <ideas>
+    <test for="AC1">test_backend_service_startup() - 验证Python后端服务启动和进程状态监控</test>
+    <test for="AC1">test_startup_logging() - 验证启动日志记录功能</test>
+    <test for="AC2">test_api_health_endpoint() - 验证/health端点响应时间&lt;2秒</test>
+    <test for="AC2">test_api_docs_endpoint() - 验证/api/docs端点可访问性</test>
+    <test for="AC2">test_api_response_time_validation() - 验证API响应时间验证机制</test>
+    <test for="AC3">test_redis_connection_verification() - 验证Redis:6379连接</test>
+    <test for="AC3">test_postgresql_connection_testing() - 验证PostgreSQL:5432连接</test>
+    <test for="AC3">test_database_permission_verification() - 验证数据库权限检查</test>
+    <test for="AC4">test_environment_configuration_loading() - 验证环境配置加载</test>
+    <test for="AC4">test_application_state_initialization() - 验证应用状态初始化</test>
+    <test for="AC4">test_frontend_api_readiness() - 验证前端API就绪状态</test>
+    <test for="AC5">test_startup_timeout_handling() - 验证启动超时处理</test>
+    <test for="AC5">test_error_recovery_mechanism() - 验证错误恢复机制</test>
+    <test for="integration">test_complete_backend_startup_flow() - 完整后端启动流程集成测试</test>
+  </ideas>
+</tests>
+</story-context>

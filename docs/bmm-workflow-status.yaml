@@ -35,12 +35,14 @@ workflow_status: "  # Phase 1: Analysis
 
   # Phase 2: Planning
   prd: D:\Demo\docs\PRD.md
+  prd-one-click-launch: D:\Demo\docs\PRD-one-click-launch.md
   validate-prd: optional
   create-design: conditional
   tech-spec: D:\Demo\docs\tech-spec.md
 
   # Phase 3: Solutioning
   create-architecture: D:\Demo\docs\architecture-backup.md
+  architecture-one-click-launch: D:\Demo\docs\architecture-one-click-launch.md
   validate-architecture: optional
   solutioning-gate-check: D:\Demo\docs\bmm-implementation-readiness-assessment-2025-11-01.md
 

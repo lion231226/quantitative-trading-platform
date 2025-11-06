@@ -1,0 +1,66 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>5</epicId>
+    <storyId>1</storyId>
+    <title>Intelligent Error Detection and Diagnosis</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-05</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/5-1-intelligent-error-detection-and-diagnosis.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>one-click launch script</asA>
+    <iWant>intelligently detect common errors and perform diagnostics</iWant>
+    <soThat>I can provide users with accurate error information and solutions</soThat>
+    <tasks>Task 1: Port Occupation Detection and Resolution (AC: 1)
+Task 2: Permission Issue Diagnosis and Guidance (AC: 2)
+Task 3: Network Connectivity and Service Availability Detection (AC: 3)
+Task 4: Dependency Version Conflict Detection and Resolution (AC: 4)
+Task 5: Error Classification and Recovery Assessment System (AC: 5)</tasks>
+  </story>
+
+  <acceptanceCriteria>1. Detect port occupation issues, provide conflicting process information and resolution suggestions
+2. Diagnose permission issues, provide administrator privilege application guidance
+3. Detect network issues, distinguish between network failures and service unavailability
+4. Identify dependency version conflicts, provide upgrade or downgrade recommendations
+5. Implement error classification system, distinguish between recoverable and non-recoverable errors</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/epics-one-click-launch.md" title="Epic Breakdown for One-Click Launch Script" section="Epic 3: 错误处理与用户支持" snippet="建立完善的错误检测、诊断和恢复机制，提供智能化的用户支持。Story 3.1: 智能错误检测与诊断 - 检测端口占用问题，诊断权限问题，检测网络问题，识别依赖版本冲突，实现错误分类系统" />
+      <doc path="docs/architecture-one-click-launch.md" title="One-Click Launch Script Architecture" section="Technology Stack Details & Error Handling" snippet="psutil 7.1.3+ - 跨平台系统监控和进程管理，用途：检测端口占用、监控服务状态、获取系统信息。统一错误格式：{code, message, solution, details}。分级错误处理：WARNING(继续)、ERROR(重试)、FATAL(终止)。自动恢复机制：网络重试、端口清理、服务重启" />
+      <doc path="docs/PRD-one-click-launch.md" title="Product Requirements Document for One-Click Launch" section="Functional Requirements & Error Handling" snippet="FR007: 脚本必须智能检测常见错误（端口占用、权限问题、网络问题），提供具体解决建议。NFR002: 错误处理 - 90%以上的常见环境问题必须能够自动检测并提供解决方案。NFR003: 用户友好性 - 所有错误信息必须用用户能理解的语言表达，避免技术术语" />
+    </docs>
+    <code>
+      <code path="one-click-launcher/core/port_checker.py" kind="service" symbol="PortChecker" lines="1-50" reason="现有端口检查模块提供端口占用检测和进程识别功能，可扩展用于智能端口冲突检测" />
+      <code path="one-click-launcher/core/dependency_checker.py" kind="service" symbol="DependencyChecker" lines="1-30" reason="现有依赖检查模块提供版本检测和状态报告，可扩展用于依赖版本冲突检测" />
+      <code path="one-click-launcher/utils/network_utils.py" kind="utility" symbol="NetworkUtils" lines="1-30" reason="现有网络工具模块提供网络连接检测，可扩展用于网络问题诊断和服务可用性检查" />
+      <code path="one-click-launcher/core/error_handler.py" kind="service" symbol="ErrorHandler" lines="1" reason="错误处理模块基础，可扩展为智能错误检测和诊断核心" />
+      <code path="one-click-launcher/utils/logger.py" kind="utility" symbol="Logger" lines="1" reason="日志系统用于错误检测和诊断过程的记录" />
+      <code path="one-click-launcher/utils/progress_tracker.py" kind="utility" symbol="ProgressTracker" lines="1" reason="进度跟踪系统用于错误检测过程的进度管理" />
+    </code>
+    <dependencies>
+      <dependency ecosystem="python" packages="psutil (7.1.3+), fastapi (0.111.0), uvicorn (0.29.0)" />
+      <dependency ecosystem="built-in" packages="socket, subprocess, platform, asyncio, dataclasses, enum" />
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+  <constraint>Use existing port_checker.py and dependency_checker.py modules as foundation for error detection</constraint>
+  <constraint>Follow unified error format {code, message, solution, details} from architecture</constraint>
+  <constraint>Implement cross-platform compatibility (Windows/macOS/Linux) using psutil</constraint>
+  <constraint>Integrate with existing logger.py and progress_tracker.py for consistent UX</constraint>
+  <constraint>Extend network_utils.py for comprehensive network diagnostics</constraint>
+</constraints>
+  <interfaces>
+    <interface name="ErrorDetector" kind="class" signature="class ErrorDetector: detect_errors() -> List[Error]" path="one-click-launcher/core/error_detector.py" />
+    <interface name="PortConflictResolver" kind="class" signature="class PortConflictResolver: resolve_port_conflict(port: int) -> Resolution" path="one-click-launcher/core/port_detector.py" />
+    <interface name="NetworkDiagnostic" kind="class" signature="class NetworkDiagnostic: diagnose_network() -> NetworkStatus" path="one-click-launcher/core/network_diagnostic.py" />
+  </interfaces>
+  <tests>
+    <standards>Use pytest for unit testing, test error detection across different platforms, mock system resources for isolated testing, validate user-friendly error messages</standards>
+    <locations>one-click-launcher/tests/test_error_detection.py, one-click-launcher/tests/test_port_detection.py, one-click-launcher/tests/test_network_diagnostic.py</locations>
+    <ideas>AC1: Test port occupation detection with mock processes, AC2: Test permission escalation guidance on different OS, AC3: Test network failure vs service unavailable scenarios, AC4: Test dependency version conflict detection, AC5: Test error classification accuracy</ideas>
+  </tests>
+</story-context>

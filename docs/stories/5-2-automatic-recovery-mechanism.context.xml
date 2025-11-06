@@ -1,0 +1,164 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>5</epicId>
+    <storyId>2</storyId>
+    <title>automatic-recovery-mechanism</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-05</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/5-2-automatic-recovery-mechanism.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>one-click launch script</asA>
+    <iWant>implement automatic error recovery mechanisms</iWant>
+    <soThat>I can automatically fix common issues when possible</soThat>
+    <tasks>Task 1: Automatic Service Restart Mechanism (AC: 1)
+- Subtask 1.1: Implement service status monitoring and failure detection
+- Subtask 1.2: Create intelligent restart strategy with exponential backoff
+- Subtask 1.3: Implement retry limit and timeout mechanisms
+- Subtask 1.4: Integrate with existing service managers for restart operations
+- Subtask 1.5: Create restart logging and status tracking
+
+Task 2: Port Conflict Automatic Resolution (AC: 2)
+- Subtask 2.1: Extend PortConflictResolver to support automatic process termination
+- Subtask 2.2: Implement user confirmation interface and permission checks
+- Subtask 2.3: Create safe process termination mechanism (graceful shutdown)
+- Subtask 2.4: Implement port release verification and conflict resolution confirmation
+- Subtask 2.5: Integrate with error knowledge base for resolution guidance
+
+Task 3: Permission Issue Automatic Repair (AC: 3)
+- Subtask 3.1: Extend PermissionDiagnostic to support automatic permission repair
+- Subtask 3.2: Implement permission request interface (UAC, sudo, admin rights)
+- Subtask 3.3: Create file/directory permission automatic repair mechanism
+- Subtask 3.4: Implement permission repair verification and rollback mechanism
+- Subtask 3.5: Integrate platform-specific privilege elevation tools
+
+Task 4: Cache and Temporary File Automatic Cleanup (AC: 4)
+- Subtask 4.1: Implement cache corruption detection algorithms
+- Subtask 4.2: Create safe file cleanup mechanism (avoid deleting important data)
+- Subtask 4.3: Implement multi-platform cache path identification and cleanup
+- Subtask 4.4: Create cleanup operation logging and recovery mechanism
+- Subtask 4.5: Implement periodic cleanup and maintenance tasks
+
+Task 5: Configuration File Automatic Repair (AC: 5)
+- Subtask 5.1: Implement configuration file validation and corruption detection
+- Subtask 5.2: Create default configuration templates and backup mechanism
+- Subtask 5.3: Implement configuration automatic repair and reset functionality
+- Subtask 5.4: Create configuration repair verification and testing mechanism
+- Subtask 5.5: Integrate configuration version management and rollback functionality</tasks>
+  </story>
+
+  <acceptanceCriteria>1. Automatically restart failed services with retry limit support
+2. Automatically terminate processes occupying ports (with user confirmation)
+3. Automatically fix permission issues and provide permission request interface
+4. Automatically clean corrupted cache and temporary files
+5. Implement automatic configuration file repair and restore default settings</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+  <doc path="docs/PRD-one-click-launch.md" title="量化交易平台一键启动脚本 Product Requirements Document (PRD)" section="Epic 3: 错误处理与用户支持" snippet="Epic 3: 建立完善的错误检测、诊断和恢复机制，提供智能化的用户支持。价值主张: 最大化启动成功率，减少用户因技术问题放弃使用的情况。此史诗完成后，系统将能够智能处理各种异常情况，为用户提供清晰的指导和解决方案。" />
+  <doc path="docs/architecture-one-click-launch.md" title="一键启动脚本 Decision Architecture" section="错误处理集成" snippet="错误处理集成: 统一异常格式：{code, message, solution, details}。分级错误处理：WARNING(继续)、ERROR(重试)、FATAL(终止)。自动恢复机制：网络重试、端口清理、服务重启。" />
+  <doc path="docs/epics-one-click-launch.md" title="量化交易平台一键启动脚本 - Epic Breakdown" section="Epic 3: 错误处理与用户支持" snippet="Epic 3的目标是建立完善的错误检测、诊断和恢复机制，提供智能化的用户支持。包含智能错误检测与诊断、自动恢复机制、用户支持与指导系统、系统监控与日志管理四个故事。" />
+  <doc path="docs/stories/5-1-intelligent-error-detection-and-diagnosis.md" title="Story 5.1: Intelligent Error Detection and Diagnosis" section="所有验收标准和任务" snippet="As a one-click launch script, I want to intelligently detect common errors and perform diagnostics, so that I can provide users with accurate error information and solutions. 验收标准包括端口占用检测、权限问题诊断、网络问题检测、依赖版本冲突识别、错误分类系统。" />
+  <doc path="docs/stories/4-2-database-service-startup.md" title="Story 4.2: Database Service Startup" section="错误处理和恢复机制" snippet="实现错误处理和恢复机制。启动Redis服务和验证连接可用性，启动PostgreSQL服务并创建应用数据库，处理数据库服务启动过程中的错误情况。" />
+  <doc path="docs/stories/4-3-backend-api-service-startup.md" title="Story 4.3: Backend API Service Startup" section="错误处理和日志记录" snippet="记录服务启动日志以供问题诊断。启动Python后端服务并验证进程运行状态，验证API端点正常响应，处理服务启动失败情况。" />
+  <doc path="docs/stories/4-4-frontend-application-startup.md" title="Story 4.4: Frontend Application Startup" section="错误处理和恢复机制" snippet="实现错误处理和恢复机制。启动前端开发服务器并验证进程运行状态，验证前端应用可访问性，处理前端启动失败情况。" />
+</docs>
+    <code>
+  <code path="one-click-launcher/core/service_manager.py" kind="service/controller" symbol="ServiceManager" lines="1" reason="核心服务重启和管理功能，需要扩展实现自动重启机制" />
+  <code path="one-click-launcher/core/health_checker.py" kind="service/component" symbol="HealthChecker" lines="91-688" reason="提供服务健康监控和自动重启基础，包含带重试机制的健康检查" />
+  <code path="one-click-launcher/core/health_checker.py" kind="service/component" symbol="check_service_health_with_retry" lines="517" reason="带重试机制的服务健康检查，可用于自动服务重启触发" />
+  <code path="one-click-launcher/core/port_manager.py" kind="service/component" symbol="PortManager" lines="117-647" reason="完整的端口冲突检测和自动解决机制" />
+  <code path="one-click-launcher/core/port_manager.py" kind="service/component" symbol="resolve_conflict" lines="344" reason="端口冲突解决核心方法，支持自动端口分配" />
+  <code path="one-click-launcher/core/error_detector.py" kind="service/component" symbol="ErrorDetector" lines="138-1688" reason="统一的错误检测、分类和恢复计划生成核心" />
+  <code path="one-click-launcher/core/error_detector.py" kind="service/component" symbol="detect_port_conflicts" lines="232" reason="端口冲突检测，用于自动端口冲突解决触发" />
+  <code path="one-click-launcher/core/error_detector.py" kind="service/component" symbol="generate_recovery_plans_for_errors" lines="1422" reason="为错误生成恢复计划，自动恢复策略制定基础" />
+  <code path="one-click-launcher/core/permission_diagnostic.py" kind="service/component" symbol="PermissionDiagnostic" lines="75-609" reason="跨平台权限问题诊断和自动修复指导基础" />
+  <code path="one-click-launcher/core/permission_diagnostic.py" kind="service/component" symbol="check_admin_privileges" lines="107" reason="管理员权限检查，用于权限自动修复触发" />
+  <code path="one-click-launcher/core/permission_diagnostic.py" kind="service/component" symbol="diagnose_permission_issues" lines="371" reason="综合权限诊断，权限自动修复的核心诊断功能" />
+  <code path="one-click-launcher/core/progress_error_handler.py" kind="service/component" symbol="RecoveryStrategy" lines="269-316" reason="错误恢复策略，包含缓存清理机制" />
+  <code path="one-click-launcher/core/progress_error_handler.py" kind="service/component" symbol="ProgressErrorHandler" lines="319-760" reason="完整的进度跟踪和错误处理框架" />
+  <code path="one-click-launcher/core/conflict_handler.py" kind="service/component" symbol="ConflictHandler" lines="91-728" reason="配置冲突检测、修复和回滚机制" />
+  <code path="one-click-launcher/core/conflict_handler.py" kind="service/component" symbol="rollback_solutions" lines="593" reason="解决方案回滚机制，自动恢复的安全保障" />
+  <code path="one-click-launcher/core/conflict_resolver.py" kind="service/component" symbol="VersionConflictResolver" lines="152-762" reason="版本配置冲突解决和依赖管理" />
+  <code path="one-click-launcher/utils/error_knowledge_base.py" kind="utility/service" symbol="ErrorKnowledgeBase" lines="66-856" reason="完整的错误解决方案知识库，支持自动恢复指导" />
+  <code path="one-click-launcher/utils/error_knowledge_base.py" kind="utility/service" symbol="get_solution" lines="624" reason="获取错误解决方案，自动恢复策略查询" />
+  <code path="one-click-launcher/utils/progress_tracker.py" kind="utility/component" symbol="ProgressTracker" lines="609-663" reason="进度跟踪缓存管理，用于恢复操作进度监控" />
+</code>
+    <dependencies>
+  <ecosystem name="Python">
+    <package name="fastapi" version="0.111.0" location="backend/pyproject.toml,one-click-launcher/requirements.txt" />
+    <package name="uvicorn" version="0.29.0" location="backend/pyproject.toml,one-click-launcher/requirements.txt" />
+    <package name="psutil" version="latest" location="one-click-launcher/requirements.txt" relevance="Process monitoring, port checking, system information collection" />
+    <package name="requests" version="2.31.0" location="backend/pyproject.toml,one-click-launcher/requirements.txt" relevance="Network checks and API calls for recovery operations" />
+    <package name="structlog" version="24.1.0" location="backend/pyproject.toml" relevance="Structured logging for recovery operation tracking" />
+    <package name="sqlalchemy" version="2.0.30" location="backend/pyproject.toml" relevance="Database service management and health checks" />
+    <package name="redis" version="5.0.0" location="backend/pyproject.toml" relevance="Redis service management and monitoring" />
+  </ecosystem>
+  <ecosystem name="Node.js">
+    <package name="next" version="14.2.33" location="frontend/package.json" />
+    <package name="react" version="18" location="frontend/package.json" />
+    <package name="@tanstack/react-query" version="5.40.0" location="frontend/package.json" relevance="Server state management for recovery status updates" />
+    <package name="axios" version="1.7.2" location="frontend/package.json" relevance="HTTP client for recovery API calls" />
+    <package name="chart.js" version="4.4.2" location="frontend/package.json" relevance="Recovery progress visualization" />
+  </ecosystem>
+  <ecosystem name="Testing">
+    <package name="pytest" version="8.2.1" location="backend/pyproject.toml" relevance="Testing framework for recovery operations" />
+    <package name="jest" version="29.7.0" location="frontend/package.json" relevance="Frontend testing for recovery UI components" />
+    <package name="@playwright/test" version="1.56.1" location="frontend/package.json" relevance="End-to-end testing for recovery workflows" />
+  </ecosystem>
+  <ecosystem name="Service Management">
+    <package name="docker" version="optional" location="one-click-launcher/requirements.txt" relevance="Container service management and recovery" />
+    <package name="aiosqlite" version="0.20.0" location="backend/pyproject.toml" relevance="Async database operations for recovery checks" />
+  </ecosystem>
+</dependencies>
+  </artifacts>
+
+  <constraints>
+- 恢复编排器模式：利用ErrorDetector模式进行全面的恢复协调
+- 服务管理模式：扩展现有服务启动/停止模式实现自动重启机制
+- 端口管理：使用PortConflictResolver进行自动端口冲突解决，需要用户确认
+- 权限处理：扩展PermissionDiagnostic模式实现自动权限修复和提升
+- 进度跟踪：使用ProgressTracker并设置component_name="automatic_recovery"
+- 恢复策略：实现指数退避和断路器模式进行智能重试
+- 配置管理：利用现有配置模式实现自动配置修复和备份
+- 日志系统：使用结构化日志模式进行恢复操作跟踪
+- 安全第一：所有自动恢复操作必须有安全检查和用户确认破坏性操作
+- 回滚能力：每个恢复操作都应有相应的回滚机制
+- 幂等性：恢复操作应该是幂等的（可以安全地多次运行）
+- 跨平台支持：支持Windows UAC、macOS sudo和Linux sudo场景的权限提升
+- 服务依赖：按正确顺序处理服务重启，并进行依赖验证
+- 用户体验：在恢复操作期间提供清晰的进度指示器和用户指导
+- 错误边界：防止恢复操作造成额外的系统损坏
+- 异步支持：大部分组件支持异步操作（async/await）
+- 跨平台兼容：支持Windows、macOS、Linux
+- 错误分类标准化：使用统一的错误格式和分类体系
+- 日志记录：所有组件都集成了日志记录功能
+</constraints>
+  <interfaces>
+  <interface name="ErrorDetector.run_comprehensive_detection" kind="function signature" signature="async def run_comprehensive_detection(self) -> Dict[str, Any]" path="one-click-launcher/core/error_detector.py" />
+  <interface name="HealthChecker.check_service_health_with_retry" kind="function signature" signature="async def check_service_health_with_retry(self, service_config: Dict, max_retries: int = 3) -> Dict[str, Any]" path="one-click-launcher/core/health_checker.py" />
+  <interface name="PortManager.resolve_conflict" kind="function signature" signature="async def resolve_conflict(self, port: int, preferred_port: Optional[int] = None) -> Dict[str, Any]" path="one-click-launcher/core/port_manager.py" />
+  <interface name="PermissionDiagnostic.diagnose_permission_issues" kind="function signature" signature="async def diagnose_permission_issues(self, target_path: str) -> Dict[str, Any]" path="one-click-launcher/core/permission_diagnostic.py" />
+  <interface name="ConflictHandler.handle_conflicts" kind="function signature" signature="async def handle_conflicts(self, conflicts: List[Dict]) -> Dict[str, Any]" path="one-click-launcher/core/conflict_handler.py" />
+  <interface name="ErrorKnowledgeBase.get_solution" kind="function signature" signature="def get_solution(self, error_code: str, context: Optional[Dict] = None) -> Optional[Dict]" path="one-click-launcher/utils/error_knowledge_base.py" />
+  <interface name="ProgressErrorHandler.retry_error" kind="function signature" signature="async def retry_error(self, error_info: Dict, retry_strategy: str = 'exponential_backoff') -> Dict[str, Any]" path="one-click-launcher/core/progress_error_handler.py" />
+</interfaces>
+  <tests>
+    <standards>Use pytest for backend recovery operations testing with async support and coverage. Use Jest for frontend recovery UI testing. Use Playwright for end-to-end recovery workflow testing. Test all recovery scenarios (service restart, port conflict, permission, cache, config). Validate safety checks and rollback mechanisms work correctly. Test user confirmation interfaces and progress indicators. Validate recovery mechanisms across Windows, macOS, and Linux. Test recovery integration with existing error detection and service management. Test recovery operations under various failure conditions. Validate recovery operations complete within acceptable timeframes.</standards>
+    <locations>one-click-launcher/tests/test_automatic_recovery.py, backend/tests/, frontend/tests/, tests/integration/</locations>
+    <ideas>
+  <test idea="AC1 - Service Restart Test" acceptance_criteria="1">Test automatic service restart with retry limits, exponential backoff, and timeout mechanisms</test>
+  <test idea="AC2 - Port Conflict Resolution Test" acceptance_criteria="2">Test automatic process termination with user confirmation and port release verification</test>
+  <test idea="AC3 - Permission Repair Test" acceptance_criteria="3">Test automatic permission fixes and privilege elevation interfaces (UAC/sudo/admin)</test>
+  <test idea="AC4 - Cache Cleanup Test" acceptance_criteria="4">Test cache corruption detection and safe cleanup mechanisms</test>
+  <test idea="AC5 - Configuration Repair Test" acceptance_criteria="5">Test configuration file validation, backup, and automatic repair</test>
+  <test idea="Integration Test - Recovery Orchestration" acceptance_criteria="all">Test RecoveryOrchestrator coordinating multiple recovery operations</test>
+  <test idea="Safety Test - Rollback Mechanisms" acceptance_criteria="all">Test rollback capabilities for failed recovery operations</test>
+  <test idea="Cross-Platform Test - Multi-OS Support" acceptance_criteria="all">Test recovery mechanisms on Windows, macOS, and Linux</test>
+  <test idea="Performance Test - Recovery Timeframes" acceptance_criteria="all">Validate recovery operations complete within acceptable time limits</test>
+  <test idea="User Experience Test - Progress Indicators" acceptance_criteria="all">Test user confirmation interfaces and progress tracking</test>
+</ideas>
+  </tests>
+</story-context>

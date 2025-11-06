@@ -1,0 +1,166 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>5</storyId>
+    <title>System Integration Verification</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-05</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/4-5-system-integration-verification.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>one-click launch script</asA>
+    <iWant>verify the entire system integration status</iWant>
+    <soThat>all components work together properly and users have a reliable quantitative trading platform</soThat>
+    <tasks>- [ ] Task 1: End-to-End Request Pipeline Verification (AC: 1)
+  - [ ] Subtask 1.1: Implement complete request chain testing (frontend → backend → database)
+  - [ ] Subtask 1.2: Create pipeline integrity validation and bottleneck detection
+  - [ ] Subtask 1.3: Implement request latency measurement across all tiers
+  - [ ] Subtask 1.4: Add pipeline failure point identification and reporting
+  - [ ] Subtask 1.5: Create pipeline health monitoring and status tracking
+
+- [ ] Task 2: Core Functionality Integration Testing (AC: 2)
+  - [ ] Subtask 2.1: Implement data acquisition flow testing (APIs → database)
+  - [ ] Subtask 2.2: Create strategy calculation execution validation
+  - [ ] Subtask 2.3: Test results display pipeline (backend → frontend rendering)
+  - [ ] Subtask 2.4: Add data consistency validation across all components
+  - [ ] Subtask 2.5: Create functional integration regression test suite
+
+- [ ] Task 3: System Performance Metrics Monitoring (AC: 3)
+  - [ ] Subtask 3.1: Implement response time benchmarking for all service endpoints
+  - [ ] Subtask 3.2: Create memory usage tracking and alerting system
+  - [ ] Subtask 3.3: Add database query performance monitoring
+  - [ ] Subtask 3.4: Implement frontend rendering performance measurement
+  - [ ] Subtask 3.5: Create performance trend analysis and reporting
+
+- [ ] Task 4: Error Handling Mechanism Validation (AC: 4)
+  - [ ] Subtask 4.1: Test error propagation across service boundaries
+  - [ ] Subtask 4.2: Validate graceful degradation scenarios (partial service failures)
+  - [ ] Subtask 4.3: Test user error message clarity and actionability
+  - [ ] Subtask 4.4: Implement error recovery mechanism validation
+  - [ ] Subtask 4.5: Create error handling effectiveness measurement
+
+- [ ] Task 5: System Readiness Report Generation (AC: 5)
+  - [ ] Subtask 5.1: Create comprehensive service status dashboard
+  - [ ] Subtask 5.2: Implement health check aggregation and scoring
+  - [ ] Subtask 5.3: Add readiness certificate generation
+  - [ ] Subtask 5.4: Create actionable recommendation system for issues found
+  - [ ] Subtask 5.5: Implement report export and sharing capabilities</tasks>
+  </story>
+
+  <acceptanceCriteria>1. Verify complete user request pipeline (frontend → backend → database)
+2. Test core functionality: data acquisition, strategy calculation, results display
+3. Check system performance metrics (response time, memory usage)
+4. Verify error handling mechanisms ensure proper exception handling
+5. Generate system readiness report showing all service status</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/PRD-one-click-launch.md" title="量化交易平台一键启动脚本 Product Requirements Document (PRD)" section="Epic 2 - 服务编排与启动管理" snippet="定义了一键启动的核心目标和技术要求，包括服务依赖序列（Redis→Backend→Frontend）、错误处理机制和用户体验目标。明确了系统集成的验收标准，如验证完整的用户请求链路、核心功能测试和性能指标检查。"/>
+      <doc path="docs/architecture-one-click-launch.md" title="一键启动脚本 Decision Architecture" section="服务启动序列集成、错误处理集成、配置管理集成" snippet="定义了三层服务启动架构（Redis:6379→Backend:8000→Frontend:3000），包含健康检查API设计、错误响应格式和服务编排模式。为系统集成验证提供了架构基础和技术规范。"/>
+      <doc path="docs/epics-one-click-launch.md" title="量化交易平台一键启动脚本 - Epic Breakdown" section="Epic 2: 服务编排与启动管理，Story 2.5: 系统集成验证" snippet="详细分解了服务依赖分析与启动序列、数据库服务启动、后端API服务启动、前端应用启动和系统集成验证五个故事。系统集成验证故事包含完整的验收标准和任务分解。"/>
+      <doc path="docs/tech-spec.md" title="量化交易单均线策略分析平台 - Technical Specification" section="API设计、前端架构、测试策略、部署配置" snippet="定义了完整的系统技术架构，包括REST API设计、组件层次结构、数据可视化方案和测试策略，为系统集成验证提供技术标准。"/>
+      <doc path="docs/quality-assurance-framework.md" title="质量保证框架 (Quality Assurance Framework)" section="质量门禁原则、验证机制、测试策略" snippet="建立了完整的质量保证体系，包括零容忍原则、验证优先原则、自动化质量门禁和多层次测试策略，为系统集成验证提供质量标准。"/>
+      <doc path="docs/stories/4-1-service-dependency-analysis-and-startup-sequence.md" title="Story 4.1: Service Dependency Analysis and Startup Sequence" section="服务依赖图管理、启动序列计算、健康检查机制" snippet="实现了基于DAG的服务依赖建模和拓扑排序算法，支持多种健康检查策略（HTTP、TCP、Process），为系统集成验证提供了服务管理基础。"/>
+      <doc path="docs/stories/4-2-database-service-startup.md" title="Story 4.2: Database Service Startup" section="Redis和PostgreSQL服务启动、数据库初始化、性能验证" snippet="实现了完整的数据库服务管理，包括服务启动、迁移执行、数据导入和性能基准测试，为系统集成验证提供数据层支持。"/>
+      <doc path="docs/stories/4-3-backend-api-service-startup.md" title="Story 4.3: Backend API Service Startup" section="Python后端服务启动、API端点验证、数据库连接" snippet="实现了FastAPI后端服务的完整生命周期管理，包括进程检测、API健康检查、数据库集成和配置管理，为系统集成验证提供后端服务支持。"/>
+      <doc path="docs/stories/4-4-frontend-application-startup.md" title="Story 4.4: Frontend Application Startup" section="Next.js前端启动、访问性验证、前后端通信" snippet="实现了前端服务的完整管理，包括Node.js进程检测、访问性验证、API通信测试和浏览器集成，为系统集成验证提供前端服务支持。"/>
+    </docs>
+    <code>
+      <code path="one-click-launcher/core/service_orchestrator.py" kind="core/service" symbol="ServiceOrchestrator" lines="135-180" reason="核心服务编排器，整合所有验证组件，控制服务启动序列和依赖关系，协调健康检查、端口管理、超时控制，生成系统集成验证报告"/>
+      <code path="one-click-launcher/core/health_checker.py" kind="core/health" symbol="HealthChecker" lines="125-234" reason="提供多种健康检查方式（HTTP、连接、进程），支持重试机制和超时处理，为系统集成提供健康状态验证"/>
+      <code path="one-click-launcher/core/frontend_backend_communicator.py" kind="core/communication" symbol="FrontendBackendCommunicator" lines="127-193" reason="验证前后端API通信完整性，CORS配置验证，数据流验证和监控"/>
+      <code path="one-click-launcher/core/service_dependency_analyzer.py" kind="core/analysis" symbol="ServiceDependencyAnalyzer" lines="208-249" reason="分析服务间依赖关系，计算最优启动序列，检测循环依赖问题"/>
+      <code path="one-click-launcher/services/database_service.py" kind="service/database" symbol="DatabaseServiceManager" lines="235-299" reason="统一管理Redis和PostgreSQL服务，执行数据库迁移验证，性能基准测试和验证"/>
+      <code path="one-click-launcher/services/backend_service.py" kind="service/backend" symbol="BackendServiceManager" lines="128-167" reason="后端API服务启动和验证，数据库连接验证，API端点健康检查"/>
+      <code path="one-click-launcher/core/backend_manager.py" kind="core/management" symbol="BackendManager" lines="84-149" reason="高级后端服务管理，自动重启和监控，集成健康检查和状态管理"/>
+      <code path="one-click-launcher/core/port_manager.py" kind="core/infrastructure" symbol="PortManager" lines="182-222" reason="端口可用性检查，端口冲突检测和解决，网络基础设施验证"/>
+      <code path="one-click-launcher/core/timeout_manager.py" kind="core/infrastructure" symbol="TimeoutManager" lines="212-294" reason="服务启动超时控制，重试机制和升级策略，性能监控和时间管理"/>
+      <code path="one-click-launcher/utils/progress_tracker.py" kind="util/monitoring" symbol="ProgressTracker" lines="236-348" reason="实时进度跟踪，验证步骤状态管理，用户反馈和日志记录"/>
+      <code path="one-click-launcher/core/service_configurator.py" kind="core/configuration" symbol="ServiceConfigurator" lines="200-259" reason="配置文件解析和验证，环境变量注入，配置完整性检查"/>
+      <code path="one-click-launcher/utils/logger.py" kind="util/logging" symbol="setup_logger" lines="15-73" reason="统一日志记录，验证过程日志跟踪，错误日志和调试信息"/>
+    </code>
+    <dependencies>
+      <dependency ecosystem="Node.js" framework="Next.js 14.2.33, React 18" path="frontend/package.json" version="specific">
+        <package name="@tanstack/react-query" version="5.40.0" relevance="状态管理，用于集成测试状态跟踪"/>
+        <package name="axios" version="1.7.2" relevance="HTTP客户端，用于API通信验证"/>
+        <package name="Chart.js" version="4.4.2" relevance="图表库，用于性能指标可视化"/>
+        <package name="@playwright/test" version="1.56.1" relevance="端到端测试，用于系统集成验证"/>
+        <package name="@testing-library/react" version="14.3.1" relevance="组件测试，用于UI集成验证"/>
+      </dependency>
+      <dependency ecosystem="Python" framework="FastAPI 0.111.0" path="backend/requirements.txt" version="specific">
+        <package name="fastapi" version="0.111.0" relevance="Web框架，后端服务启动和API验证"/>
+        <package name="uvicorn" version="0.29.0" relevance="ASGI服务器，后端服务运行"/>
+        <package name="sqlalchemy" version="2.0.30" relevance="ORM框架，数据库集成和迁移验证"/>
+        <package name="alembic" version="1.13.1" relevance="数据库迁移工具，数据层验证"/>
+        <package name="redis" version="5.0.4" relevance="Redis客户端，缓存服务验证"/>
+        <package name="pydantic" version="2.7.3" relevance="数据验证，API数据完整性检查"/>
+        <package name="httpx" version="0.27.0" relevance="HTTP客户端，API端点测试"/>
+        <package name="pytest-asyncio" version="0.23.6" relevance="异步测试，并发系统验证"/>
+        <package name="pytest-cov" version="5.0.0" relevance="代码覆盖率，测试完整性验证"/>
+      </dependency>
+      <dependency ecosystem="Python" framework="FastAPI 0.111.0" path="one-click-launcher/requirements.txt" version="specific">
+        <package name="fastapi" version="0.111.0" relevance="Web框架，一键启动器后端服务"/>
+        <package name="uvicorn" version="0.29.0" relevance="ASGI服务器，服务运行和健康检查"/>
+      </dependency>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture">集成测试模式：利用 FrontendBackendCommunicator 进行端到端请求测试</constraint>
+    <constraint type="performance">性能监控：扩展现有健康检查模式进行全面指标收集</constraint>
+    <constraint type="error-handling">错误处理：遵循统一错误格式 {code, message, solution, details}</constraint>
+    <constraint type="progress-tracking">进度跟踪：使用 ProgressTracker 并提供 component_name="system_integration_verification"</constraint>
+    <constraint type="async">异步操作：使用 asyncio 模式进行并发系统测试操作</constraint>
+    <constraint type="service-orchestration">服务编排：协调数据库（Redis/PostgreSQL）、后端（Python）、前端（Node.js）服务</constraint>
+    <constraint type="configuration">配置管理：利用 ServiceConfigurator 进行集成测试参数</constraint>
+    <constraint type="reporting">报告系统：基于现有日志模式构建全面的就绪报告</constraint>
+    <constraint type="pipeline-testing">管道测试：实现从用户界面到数据库的完整请求链验证</constraint>
+    <constraint type="benchmarks">性能基准：为响应时间和资源使用建立基线指标</constraint>
+    <constraint type="error-scenarios">错误场景：测试各种失败模式和所有服务的恢复机制</constraint>
+    <constraint type="data-flow">数据流验证：确保整个处理管道中的数据完整性</constraint>
+    <constraint type="user-experience">用户体验测试：验证从交互到结果显示的完整用户旅程</constraint>
+    <constraint type="monitoring">系统监控：为系统健康状态创建实时监控仪表板</constraint>
+    <constraint type="reporting-format">报告格式：为技术和非技术用户生成清晰、可操作的报告</constraint>
+  </constraints>
+  <interfaces>
+    <interface name="ServiceOrchestrator" kind="class" signature="class ServiceOrchestrator: start_services() -> ServiceStartupResult" path="one-click-launcher/core/service_orchestrator.py"/>
+    <interface name="HealthChecker" kind="class" signature="class HealthChecker: check_health(service_config: ServiceConfig) -> HealthCheckResult" path="one-click-launcher/core/health_checker.py"/>
+    <interface name="FrontendBackendCommunicator" kind="class" signature="class FrontendBackendCommunicator: verify_communication(frontend_url: str, backend_url: str) -> CommunicationResult" path="one-click-launcher/core/frontend_backend_communicator.py"/>
+    <interface name="ServiceDependencyAnalyzer" kind="class" signature="class ServiceDependencyAnalyzer: analyze_dependencies(services: List[ServiceInfo]) -> ServiceDependencyGraph" path="one-click-launcher/core/service_dependency_analyzer.py"/>
+    <interface name="DatabaseServiceManager" kind="class" signature="class DatabaseServiceManager: start_all_services() -> DatabaseServiceResult" path="one-click-launcher/services/database_service.py"/>
+    <interface name="ProgressTracker" kind="class" signature="class ProgressTracker: track_step(component_name: str, step: ProgressStep) -> None" path="one-click-launcher/utils/progress_tracker.py"/>
+    <interface name="ServiceConfigurator" kind="class" signature="class ServiceConfigurator: validate_config(config_path: str) -> ValidationResult" path="one-click-launcher/core/service_configurator.py"/>
+    <interface name="PortManager" kind="class" signature="class PortManager: allocate_port(service_name: str) -> PortInfo" path="one-click-launcher/core/port_manager.py"/>
+    <interface name="TimeoutManager" kind="class" signature="class TimeoutManager: wait_for_startup(service_info: ServiceInfo, timeout: int) -> StartupResult" path="one-click-launcher/core/timeout_manager.py"/>
+  </interfaces>
+  <tests>
+    <standards>项目采用多层级测试策略，包含单元测试、集成测试和端到端测试。测试框架包括pytest（后端）、Jest（前端单元测试）、Playwright（E2E测试）。测试质量标准要求确定性、隔离性、明确性、专注性和快速性，每个测试应在1.5分钟内完成。测试优先级分为P0（关键）、P1（高优先级）、P2（中优先级）和P3（低优先级），API响应时间要求&lt;500ms，策略计算时间&lt;10秒，页面加载时间&lt;3秒。</standards>
+    <locations>
+      <location path="tests/e2e/" pattern="端到端测试，包含用户旅程、错误处理、性能测试"/>
+      <location path="tests/integration/" pattern="集成测试，包含API集成测试和性能集成测试"/>
+      <location path="backend/tests/" pattern="后端测试，包含API测试、策略逻辑测试和性能测试"/>
+      <location path="frontend/src/**/__tests__/" pattern="前端组件单元测试"/>
+      <location path="one-click-launcher/tests/" pattern="一键启动器集成测试"/>
+      <location path="tests/performance/" pattern="性能测试和负载测试"/>
+    </locations>
+    <ideas>
+      <idea ac="1">端到端请求链测试：模拟用户从前端发起策略计算请求，验证请求经过API网关到达后端服务，确认后端服务正确查询数据库，验证响应沿原路返回到前端</idea>
+      <idea ac="1">管道完整性验证：测试请求在各服务间的传递完整性，验证数据格式在传输过程中的一致性，检测管道中的瓶颈点</idea>
+      <idea ac="1">延迟测量测试：测量每段请求路径的响应时间，识别性能瓶颈，验证整体响应时间符合要求</idea>
+      <idea ac="2">数据获取流程测试：验证从前端触发数据获取，测试API调用外部数据源，确认数据正确存储到数据库，验证前端能正确显示获取的数据</idea>
+      <idea ac="2">策略计算执行验证：测试完整的策略计算流程，验证计算结果的一致性，测试不同参数配置下的策略执行</idea>
+      <idea ac="2">结果显示管道测试：验证计算结果从后端传递到前端，测试图表和统计数据的正确渲染，确保导出功能的完整性</idea>
+      <idea ac="3">响应时间基准测试：对所有服务端点进行性能基准测试，监控不同负载下的响应时间，验证性能指标符合预期</idea>
+      <idea ac="3">内存使用监控：监控各服务的内存使用情况，测试长时间运行的内存稳定性，验证内存泄漏检测机制</idea>
+      <idea ac="3">数据库查询性能监控：监控数据库查询执行时间，测试复杂查询的性能表现，验证索引优化效果</idea>
+      <idea ac="4">服务边界错误传播测试：测试数据库连接错误的向上传播，验证API错误的正确格式化，测试前端错误显示的用户友好性</idea>
+      <idea ac="4">优雅降级场景测试：模拟部分服务不可用的情况，测试系统的降级处理能力，验证核心功能在故障时仍可用</idea>
+      <idea ac="4">用户错误消息测试：验证错误消息的清晰性和可操作性，测试国际化错误消息的显示，确认错误恢复指导的有效性</idea>
+      <idea ac="5">服务状态聚合测试：测试健康检查端点的聚合功能，验证服务状态评分机制，测试状态数据的实时更新</idea>
+      <idea ac="5">就绪证书生成测试：验证系统就绪证书的生成流程，测试证书内容的准确性，验证证书的导出和分享功能</idea>
+      <idea ac="5">问题建议系统测试：测试问题检测和分析功能，验证解决建议的实用性，测试报告的可读性和完整性</idea>
+    </ideas>
+  </tests>
+</story-context>

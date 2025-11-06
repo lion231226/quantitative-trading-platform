@@ -1,0 +1,112 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>2</storyId>
+    <title>Database Service Startup</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-05</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/4-2-database-service-startup.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>one-click launch script</asA>
+    <iWant>start and initialize database services automatically</iWant>
+    <soThat>the application has reliable data storage support ready for use</soThat>
+    <tasks>
+- Task 1: Redis Service Startup and Verification (AC: 1)
+  - Subtask 1.1: Implement Redis service detection and startup logic
+  - Subtask 1.2: Integrate HealthChecker for Redis connection verification
+  - Subtask 1.3: Implement Redis ready state monitoring
+  - Subtask 1.4: Add Redis service configuration management
+- Task 2: PostgreSQL Service Startup and Configuration (AC: 2)
+  - Subtask 2.1: Implement PostgreSQL service detection and startup logic
+  - Subtask 2.2: Create application database and user permissions
+  - Subtask 2.3: Verify PostgreSQL connection and permissions
+  - Subtask 2.4: Configure PostgreSQL connection parameters
+- Task 3: Database Initialization and Migration (AC: 3)
+  - Subtask 3.1: Implement database migration script execution engine
+  - Subtask 3.2: Create table structure initialization logic
+  - Subtask 3.3: Implement migration version control and rollback mechanism
+  - Subtask 3.4: Verify database structure integrity
+- Task 4: Base Data Import (AC: 4)
+  - Subtask 4.1: Implement base data import logic
+  - Subtask 4.2: Create data validation and integrity checking
+  - Subtask 4.3: Implement data import error handling and recovery
+  - Subtask 4.4: Verify system basic functionality availability
+- Task 5: Database Performance Verification (AC: 5)
+  - Subtask 5.1: Implement database performance benchmark testing
+  - Subtask 5.2: Create response time monitoring mechanism
+  - Subtask 5.3: Add performance metrics collection and reporting
+  - Subtask 5.4: Implement performance optimization suggestion generation
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. Start Redis service and verify connection availability
+2. Start PostgreSQL service and create application database
+3. Execute database migration scripts to initialize table structure
+4. Import base data to ensure system can run normally
+5. Verify database service performance to ensure response times are normal
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/PRD-one-click-launch.md" title="Product Requirements Document" section="Functional Requirements" snippet="FR004: Script must check and configure database services (Redis, PostgreSQL), supporting local installation or Docker container startup"/>
+      <doc path="docs/architecture-one-click-launch.md" title="Architecture Decision Document" section="Project Structure" snippet="services/database_service.py - Database service management with port allocation Redis:6379, Backend:8000, Frontend:3000"/>
+      <doc path="docs/epics-one-click-launch.md" title="Epic Breakdown" section="Story 2.2" snippet="Start Redis service, verify connection availability. Start PostgreSQL service, create application database. Execute database migration scripts to initialize table structure."/>
+      <doc path="docs/stories/3-4-database-environment-configuration.md" title="Database Environment Configuration" section="Service Detection" snippet="RedisServiceManager class in services/redis_service_manager.py. PostgreSQLServiceManager class in services/postgresql_service_manager.py."/>
+      <doc path="docs/stories/4-1-service-dependency-analysis-and-startup-sequence.md" title="Service Dependency Analysis" section="Service Management" snippet="ServiceDependencyAnalyzer class for dependency validation and startup sequence management"/>
+    </docs>
+    <code>
+      <artifact path="one-click-launcher/services/redis_service_manager.py" kind="service" symbol="RedisServiceManager" lines="101-900" reason="Existing Redis service management with cross-platform startup capabilities"/>
+      <artifact path="one-click-launcher/services/postgresql_service_manager.py" kind="service" symbol="PostgreSQLServiceManager" lines="1-800" reason="Existing PostgreSQL service management with connection testing"/>
+      <artifact path="one-click-launcher/core/database_configurator.py" kind="core" symbol="DatabaseConfigurator" lines="1-100" reason="Database configuration management with port detection and secure password generation"/>
+      <artifact path="one-click-launcher/services/database_service.py" kind="service" symbol="DatabaseService" lines="1" reason="Main database service orchestrator (to be implemented)"/>
+      <artifact path="one-click-launcher/core/service_dependency_analyzer.py" kind="core" symbol="ServiceDependencyAnalyzer" lines="1-500" reason="Service dependency validation and startup sequence management"/>
+      <artifact path="one-click-launcher/core/health_checker.py" kind="core" symbol="HealthChecker" lines="1-200" reason="Connection-based health checking for Redis and PostgreSQL"/>
+      <artifact path="one-click-launcher/core/port_manager.py" kind="core" symbol="PortManager" lines="1-300" reason="Port allocation and conflict detection for Redis:6379 and PostgreSQL:5432"/>
+      <artifact path="one-click-launcher/utils/progress_tracker.py" kind="utility" symbol="ProgressTracker" lines="1-100" reason="Progress tracking with component_name parameter"/>
+    </code>
+    <dependencies>
+      <dependency ecosystem="python" package="redis" version="latest" reason="Redis connection testing and management"/>
+      <dependency ecosystem="python" package="psycopg2-binary" version="latest" reason="PostgreSQL database connection and management"/>
+      <dependency ecosystem="python" package="psycopg2.extras" version="latest" reason="PostgreSQL advanced features and connection pooling"/>
+      <dependency ecosystem="python" package="fastapi" version="0.111.0" reason="Backend API framework"/>
+      <dependency ecosystem="python" package="uvicorn" version="0.29.0" reason="ASGI server for FastAPI"/>
+      <dependency ecosystem="python" package="pyyaml" version="latest" reason="Configuration file management"/>
+      <dependency ecosystem="python" package="psutil" version="7.1.3+" reason="System monitoring and process management"/>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Service startup sequence must follow Redis → PostgreSQL order as defined in service dependency analysis</constraint>
+    <constraint>Use existing HealthChecker class for connection-based verification</constraint>
+    <constraint>Follow unified error format {code, message, solution, details}</constraint>
+    <constraint>Use ProgressTracker with component_name="database_service_startup"</constraint>
+    <constraint>Implement async operations using asyncio patterns for concurrent database operations</constraint>
+    <constraint>Port allocation must use existing PortManager for Redis:6379 and PostgreSQL:5432</constraint>
+    <constraint>Configuration management must leverage ServiceConfigurator for database-specific configurations</constraint>
+    <constraint>Maintain snake_case naming convention for files and PascalCase for classes</constraint>
+    <constraint>All database operations must include proper error handling and user-friendly messages</constraint>
+  </constraints>
+  <interfaces>
+    <interface name="RedisServiceManager.start_redis_service" kind="method" signature="def start_redis_service(self) -> Tuple[bool, str]" path="one-click-launcher/services/redis_service_manager.py:807"/>
+    <interface name="PostgreSQLServiceManager.start_postgresql_service" kind="method" signature="def start_postgresql_service(self) -> Tuple[bool, str]" path="one-click-launcher/services/postgresql_service_manager.py"/>
+    <interface name="DatabaseConfigurator.configure_database" kind="method" signature="def configure_database(self, db_type: DatabaseType, mode: ConfigurationMode) -> DatabaseConfig" path="one-click-launcher/core/database_configurator.py"/>
+    <interface name="HealthChecker.check_connection" kind="method" signature="def check_connection(self, host: str, port: int, timeout: int = 30) -> Tuple[bool, str]" path="one-click-launcher/core/health_checker.py"/>
+    <interface name="ProgressTracker.update_progress" kind="method" signature="def update_progress(self, current_step: int, total_steps: int, step_name: str)" path="one-click-launcher/utils/progress_tracker.py"/>
+  </interfaces>
+  <tests>
+    <standards>Comprehensive test suite using pytest with mocking for database connections. Test patterns established in previous stories include service startup testing, connection verification, migration execution, data import validation, and performance benchmarking. Tests must cover cross-platform scenarios and error handling.</standards>
+    <locations>one-click-launcher/tests/test_database_service.py, one-click-launcher/tests/test_database_environment_configuration.py, one-click-launcher/tests/test_database_tester.py</locations>
+    <ideas>
+      <test idea="AC1" description="Test Redis service startup and connection verification using mock Redis service"/>
+      <test idea="AC2" description="Test PostgreSQL service startup and database creation using mock PostgreSQL"/>
+      <test idea="AC3" description="Test database migration script execution with sample migration files"/>
+      <test idea="AC4" description="Test base data import with validation and error recovery"/>
+      <test idea="AC5" description="Test database performance verification with benchmarking"/>
+      <test idea="integration" description="Test complete database service startup flow with service sequence validation"/>
+    </ideas>
+  </tests>
+</story-context>

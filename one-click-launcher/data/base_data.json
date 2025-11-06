@@ -1,0 +1,121 @@
+{
+  "version": "1.0",
+  "description": "基础数据导入文件",
+  "created_at": "2025-11-05T00:00:00Z",
+  "tables": {
+    "users": [
+      {
+        "username": "admin",
+        "email": "admin@localhost",
+        "password_hash": "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj6hsZYmPnMa",
+        "full_name": "系统管理员",
+        "is_admin": true,
+        "is_active": true
+      },
+      {
+        "username": "demo",
+        "email": "demo@localhost",
+        "password_hash": "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj6hsZYmPnMa",
+        "full_name": "演示用户",
+        "is_admin": false,
+        "is_active": true
+      }
+    ],
+    "system_config": [
+      {
+        "config_key": "app_maintenance_message",
+        "config_value": "系统正在维护中，请稍后再试。",
+        "config_type": "string",
+        "description": "维护模式显示消息",
+        "is_public": true
+      },
+      {
+        "config_key": "default_user_role",
+        "config_value": "user",
+        "config_type": "string",
+        "description": "默认用户角色",
+        "is_public": false
+      },
+      {
+        "config_key": "session_security",
+        "config_value": "{\"require_ip_check\": true, \"require_user_agent\": true}",
+        "config_type": "json",
+        "description": "会话安全配置",
+        "is_public": false
+      },
+      {
+        "config_key": "email_config",
+        "config_value": "{\"smtp_host\": \"localhost\", \"smtp_port\": 587, \"use_tls\": true}",
+        "config_type": "json",
+        "description": "邮件配置",
+        "is_public": false
+      },
+      {
+        "config_key": "backup_schedule",
+        "config_value": "{\"enabled\": true, \"frequency\": \"daily\", \"time\": \"02:00\", \"retention_days\": 30}",
+        "config_type": "json",
+        "description": "备份计划配置",
+        "is_public": false
+      }
+    ],
+    "app_configs": [
+      {
+        "config_name": "default_theme",
+        "config_data": {
+          "theme": "light",
+          "primary_color": "#007bff",
+          "sidebar_collapsed": false,
+          "font_size": "medium"
+        },
+        "is_default": true
+      },
+      {
+        "config_name": "notification_settings",
+        "config_data": {
+          "email_notifications": true,
+          "push_notifications": true,
+          "task_notifications": true,
+          "system_notifications": true,
+          "quiet_hours": {
+            "enabled": false,
+            "start": "22:00",
+            "end": "08:00"
+          }
+        },
+        "is_default": true
+      },
+      {
+        "config_name": "ui_preferences",
+        "config_data": {
+          "language": "zh-CN",
+          "timezone": "Asia/Shanghai",
+          "date_format": "YYYY-MM-DD",
+          "time_format": "24h",
+          "currency": "CNY",
+          "number_format": "en-US"
+        },
+        "is_default": true
+      }
+    ]
+  },
+  "sequences": {
+    "user_sequence": {
+      "start_value": 1000,
+      "increment": 1
+    },
+    "file_sequence": {
+      "start_value": 1,
+      "increment": 1
+    }
+  },
+  "metadata": {
+    "import_version": "1.0",
+    "compatibility": ">=1.0.0",
+    "dependencies": [
+      "001_create_initial_tables.sql",
+      "002_add_application_tables.sql"
+    ],
+    "author": "Database Service Manager",
+    "license": "MIT"
+  }
+}

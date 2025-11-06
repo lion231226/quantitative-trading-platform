@@ -1,0 +1,118 @@
+# 服务启动配置文件
+# 用于定义服务的启动顺序、依赖关系和启动参数
+
+version: "1.0"
+environment: "development"
+
+# 全局配置
+global:
+  default_host: "localhost"
+  default_timeout: 60
+  auto_restart: false
+
+# 服务配置
+services:
+  # 数据库服务 (Redis)
+  redis:
+    name: "redis"
+    service_type: "cache"
+    host: "localhost"
+    port: 6379
+    startup_timeout: 30
+    dependencies: []
+    startup_command: "redis-server"
+    startup_args:
+      port: 6379
+      bind: "127.0.0.1"
+      save: "900 1"
+    environment_variables:
+      REDIS_URL: "redis://localhost:6379"
+    enabled: true
+    metadata:
+      description: "Redis缓存服务"
+      version: "7.0"
+
+  # 后端API服务
+  backend-api:
+    name: "backend-api"
+    service_type: "backend_api"
+    host: "localhost"
+    port: 8000
+    health_endpoint: "/health"
+    startup_timeout: 60
+    dependencies:
+      - "redis"
+    startup_command: "python"
+    startup_args:
+      -m: "uvicorn"
+      app.main:app
+      host: "0.0.0.0"
+      port: 8000
+      reload: true
+    environment_variables:
+      PYTHONPATH: "${PYTHONPATH}:."
+      DATABASE_URL: "sqlite:///./app.db"
+      REDIS_URL: "${REDIS_URL}"
+      DEBUG: "true"
+    working_directory: "../backend"
+    enabled: true
+    metadata:
+      description: "FastAPI后端服务"
+      version: "1.0.0"
+
+  # 前端应用服务
+  frontend:
+    name: "frontend"
+    service_type: "frontend"
+    host: "localhost"
+    port: 3000
+    startup_timeout: 120
+    dependencies:
+      - "backend-api"
+    startup_command: "npm"
+    startup_args:
+      start: true
+    environment_variables:
+      REACT_APP_API_URL: "http://localhost:8000"
+      NODE_ENV: "development"
+    working_directory: "../frontend"
+    enabled: true
+    metadata:
+      description: "React前端应用"
+      version: "1.0.0"
+
+# 环境特定配置
+development_config:
+  global:
+    default_timeout: 90
+    auto_restart: true
+
+  services:
+    backend-api:
+      startup_args:
+        reload: true
+      environment_variables:
+        DEBUG: "true"
+        LOG_LEVEL: "debug"
+
+production_config:
+  global:
+    default_timeout: 60
+    auto_restart: false
+
+  services:
+    backend-api:
+      startup_args:
+        reload: false
+        workers: 4
+      environment_variables:
+        DEBUG: "false"
+        LOG_LEVEL: "info"
+        PORT: "8000"
+
+# 元数据
+metadata:
+  created_at: "2025-11-05T00:00:00Z"
+  description: "量化交易平台服务配置"
+  maintainer: "Development Team"
+  version: "1.0.0"

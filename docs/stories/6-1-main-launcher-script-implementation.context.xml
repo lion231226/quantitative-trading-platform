@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<storyContext>
+  <metadata>
+    <storyId>6-1-main-launcher-script-implementation</storyId>
+    <storyVersion>1.0.0</storyVersion>
+    <generatedDate>2025-11-06T00:00:00Z</generatedDate>
+    <lastModified>2025-11-06T00:00:00Z</lastModified>
+    <generatedBy>Claude Sonnet 4.5 (claude-sonnet-4-5-20250929)</generatedBy>
+  </metadata>
+
+  <storyDefinition>
+    <title>Story 6.1: Main Launcher Script Implementation</title>
+    <status>ready-for-dev</status>
+    <userJourney>
+      <asA>user</asA>
+      <iWantTo>double-click launcher.py to start the complete system</iWantTo>
+      <soThat>I can use the quantitative trading platform without understanding technical details</soThat>
+    </userJourney>
+    <acceptanceCriteria>
+      <criteria id="1">The launcher.py script implements a complete startup process</criteria>
+      <criteria id="2">Environment detection and automatic dependency installation</criteria>
+      <criteria id="3">Start all services in the correct order (Redis → Database → Backend → Frontend)</criteria>
+      <criteria id="4">Provide clear progress indication and user feedback</criteria>
+      <criteria id="5">Automatically open browser to http://localhost:3000 when ready</criteria>
+      <criteria id="6">Intelligent error handling and automatic recovery mechanisms</criteria>
+      <criteria id="7">Cross-platform compatibility (Windows/macOS/Linux)</criteria>
+      <criteria id="8">Complete within 5 minutes for subsequent starts, 10 minutes for first-time installation</criteria>
+    </acceptanceCriteria>
+  </storyDefinition>
+
+  <businessContext>
+    <project>
+      <name>量化交易平台一键启动脚本</name>
+      <level>2</level>
+      <phase>Phase 4 - Implementation</phase>
+      <currentEpic>Epic 9: 系统集成与主启动脚本</currentEpic>
+    </project>
+    <userPersona>
+      <name>李经理</name>
+      <role>金融分析师</role>
+      <background>无编程背景，需要快速使用量化交易平台</background>
+      <goal>10分钟内成功启动完整的量化交易平台</goal>
+    </userPersona>
+    <successMetrics>
+      <metric>90%+ first-time launch success rate</metric>
+      <metric>&lt; 5 minute subsequent startup time</metric>
+      <metric>&lt; 10 minute first-time installation time</metric>
+      <metric>Zero technical knowledge required from user</metric>
+    </successMetrics>
+  </businessContext>
+
+  <technicalContext>
+    <technologyStack>
+      <coreEngine>Python 3.11.14+ (LTS)</coreEngine>
+      <systemMonitoring>psutil 7.1.3+</systemMonitoring>
+      <cliInterface>rich 13.9.4+</cliInterface>
+      <httpRequests>requests 2.32.3+</httpRequests>
+      <processManagement>subprocess (built-in)</processManagement>
+      <portAllocation>
+        <redis>6379</redis>
+        <backend>8000</backend>
+        <frontend>3000</frontend>
+      </portAllocation>
+    </technologyStack>
+
+    <projectStructure>
+      <root>one-click-launcher/</root>
+      <mainEntry>launcher.py</mainEntry>
+      <coreModules>
+        <module path="core/environment_detector.py" status="implemented" lines="427">System and dependency detection</module>
+        <module path="core/operating_system_detector.py" status="implemented" lines="742">Platform-specific detection</module>
+        <module path="core/service_manager.py" status="empty" lines="1">Service orchestration - TO IMPLEMENT</module>
+        <module path="core/dependency_installer.py" status="empty" lines="1">Dependency coordination - TO IMPLEMENT</module>
+        <module path="core/progress_tracker.py" status="empty" lines="1">Progress management - TO IMPLEMENT</module>
+        <module path="core/error_handler.py" status="empty" lines="1">Error coordination - TO IMPLEMENT</module>
+      </coreModules>
+      <serviceModules>
+        <module path="services/redis_service_manager.py" status="implemented" lines="887">Redis service management</module>
+        <module path="services/database_service.py" status="implemented" lines="969">Database service management</module>
+        <module path="services/backend_service.py" status="implemented" lines="495">Backend API service</module>
+        <module path="services/frontend_service.py" status="implemented" lines="1319">Frontend application service</module>
+      </serviceModules>
+      <utilityModules>
+        <module path="utils/logger.py" status="implemented">Logging infrastructure</module>
+        <module path="utils/network_utils.py" status="implemented">Network detection tools</module>
+        <module path="utils/config_manager.py" status="implemented">Configuration management</module>
+      </utilityModules>
+    </projectStructure>
+
+    <integrationPoints>
+      <startupSequence>
+        <step order="1" service="Redis" port="6379" timeout="30">Redis startup and health check</step>
+        <step order="2" service="Database" port="5432" timeout="60">Database startup and migration</step>
+        <step order="3" service="Backend" port="8000" timeout="60">Backend API startup and health check</step>
+        <step order="4" service="Frontend" port="3000" timeout="120">Frontend build and startup</step>
+      </startupSequence>
+      <errorHandling>
+        <format>{code, message, solution, details}</format>
+        <levels>
+          <level>WARNING - Continue execution</level>
+          <level>ERROR - Retry with backoff</level>
+          <level>FATAL - Terminate with guidance</level>
+        </levels>
+      </errorHandling>
+    </integrationPoints>
+
+    <existingAssets>
+      <count>15+ service and utility modules</count>
+      <capabilities>
+        <capability>Comprehensive environment detection</capability>
+        <capability>Cross-platform operating system support</capability>
+        <capability>Individual service management</capability>
+        <capability>Rich CLI interface components</capability>
+        <capability>Error detection and classification</capability>
+        <capability>Network diagnostic tools</capability>
+        <capability>Progress tracking infrastructure</capability>
+      </capabilities>
+    </existingAssets>
+  </technicalContext>
+
+  <implementationRequirements>
+    <architecturePatterns>
+      <pattern name="Service Orchestration Pattern">
+        <description>Coordinate multiple services with dependency management</description>
+        <implementation>Create ServiceManager class that handles service startup sequence</implementation>
+      </pattern>
+      <pattern name="Error Recovery Pattern">
+        <description>Automatic recovery with exponential backoff</description>
+        <implementation>Create ErrorHandler class with retry logic and user guidance</implementation>
+      </pattern>
+      <pattern name="Progress Tracking Pattern">
+        <description>Real-time progress with time estimation</description>
+        <implementation>Create ProgressTracker class with rich progress bars</implementation>
+      </pattern>
+    </architecturePatterns>
+
+    <crossPlatformConsiderations>
+      <platform name="Windows">
+        <considerations>UAC elevation, Windows services, .bat wrappers</considerations>
+        <specificHandlers>WindowsServiceManager, BatchInstaller</specificHandlers>
+      </platform>
+      <platform name="macOS">
+        <considerations>Homebrew installations, macOS paths, .sh wrappers</considerations>
+        <specificHandlers>HomebrewInstaller, MacOSServiceManager</specificHandlers>
+      </platform>
+      <platform name="Linux">
+        <considerations>systemd services, distribution packages, permission handling</considerations>
+        <specificHandlers>SystemServiceManager, PackageInstaller</specificHandlers>
+      </platform>
+    </crossPlatformConsiderations>
+
+    <performanceRequirements>
+      <timing>
+        <firstTimeInstallation max="600">10 minutes maximum</firstTimeInstallation>
+        <subsequentStarts max="300">5 minutes maximum</subsequentStarts>
+      </timing>
+      <resourceLimits>
+        <memoryUsage max="512">During startup</memoryUsage>
+        <cpuUsage max="50">During dependency installation</cpuUsage>
+      </resourceLimits>
+    </performanceRequirements>
+
+    <fileEncodingFixes>
+      <issue>UTF-8 encoding problems in environment_detector.py</issue>
+      <solution>Ensure proper Chinese character display across platforms</solution>
+      <priority>High - Affects user experience</priority>
+    </fileEncodingFixes>
+  </implementationRequirements>
+
+  <dependenciesAndConstraints>
+    <externalDependencies>
+      <dependency name="Node.js" version="&gt;= 16.0.0" required="true">Frontend build and development server</dependency>
+      <dependency name="Python" version="&gt;= 3.8" required="true">Backend runtime environment</dependency>
+      <dependency name="Git" version="any" required="true">Version control and project management</dependency>
+      <dependency name="Redis" version="any" required="true">Caching and session storage</dependency>
+      <dependency name="PostgreSQL" version="any" required="true">Primary database storage</dependency>
+    </externalDependencies>
+
+    <developmentConstraints>
+      <constraint>Cross-platform compatibility (Windows/macOS/Linux)</constraint>
+      <constraint>No GUI dependencies - CLI only</constraint>
+      <constraint>Minimal external dependencies for reliability</constraint>
+      <constraint>Self-contained installation packages</constraint>
+      <constraint>Offline-first dependency management</constraint>
+    </developmentConstraints>
+
+    <testingRequirements>
+      <unitTestCoverage>95% for all new code</unitTestCoverage>
+      <integrationTests>Complete launch process validation</integrationTests>
+      <crossPlatformTests>Windows, macOS, Linux functionality</crossPlatformTests>
+      <performanceTests>Timing requirements validation</performanceTests>
+      <errorScenarioTests>Recovery mechanism validation</errorScenarioTests>
+    </testingRequirements>
+  </dependenciesAndConstraints>
+
+  <existingInterfaces>
+    <coreInterfaces>
+      <interface name="EnvironmentDetector" module="core/environment_detector.py">
+        <methods>
+          <method>detect_all() - Complete environment detection</method>
+          <method>get_missing_dependencies() - List missing components</method>
+          <method>get_occupied_ports() - List port conflicts</method>
+          <method>is_environment_ready() - Overall readiness check</method>
+        </methods>
+      </interface>
+
+      <interface name="ServiceManager" module="services/*_service.py">
+        <methods>
+          <method>start_service() - Start individual service</method>
+          <method>stop_service() - Stop individual service</method>
+          <method>health_check() - Verify service health</method>
+          <method>get_status() - Get current service status</method>
+        </methods>
+      </interface>
+    </coreInterfaces>
+
+    <serviceIntegration>
+      <redisService>
+        <module>services/redis_service_manager.py</module>
+        <port>6379</port>
+        <healthCheck>/ping or connection test</healthCheck>
+        <startupTime>&lt; 30 seconds</startupTime>
+      </redisService>
+
+      <databaseService>
+        <module>services/database_service.py</module>
+        <port>5432</port>
+        <healthCheck>Connection test and query execution</healthCheck>
+        <startupTime>&lt; 60 seconds</startupTime>
+      </databaseService>
+
+      <backendService>
+        <module>services/backend_service.py</module>
+        <port>8000</port>
+        <healthCheck>/health endpoint</healthCheck>
+        <startupTime>&lt; 60 seconds</startupTime>
+      </backendService>
+
+      <frontendService>
+        <module>services/frontend_service.py</module>
+        <port>3000</port>
+        <healthCheck>HTTP response and page load</healthCheck>
+        <startupTime>&lt; 120 seconds</startupTime>
+      </frontendService>
+    </serviceIntegration>
+  </existingInterfaces>
+
+  <configurationManagement>
+    <mainConfig>
+      <file>config/config.ini</file>
+      <sections>
+        <section name="default">App configuration and version</section>
+        <section name="paths">Project directory structure</section>
+        <section name="dependencies">Version requirements</section>
+        <section name="platform">Platform-specific settings</section>
+        <section name="features">Feature toggles</section>
+        <section name="advanced">Performance and behavior settings</section>
+      </sections>
+    </mainConfig>
+
+    <runtimeConfiguration>
+      <priority>1. Default config file</priority>
+      <priority>2. Platform-specific config (windows.ini, macos.ini, linux.ini)</priority>
+      <priority>3. Environment variables</priority>
+      <priority>4. Command-line arguments</priority>
+    </runtimeConfiguration>
+  </configurationManagement>
+
+  <errorHandlingStrategy>
+    <errorCategories>
+      <category name="Recoverable">
+        <examples>Port conflicts, temporary network issues, service restarts</examples>
+        <action>Automatic recovery with user notification</action>
+      </category>
+      <category name="UserActionRequired">
+        <examples>Missing permissions, disk space, firewall blocks</examples>
+        <action>Clear user guidance with specific steps</action>
+      </category>
+      <category name="Fatal">
+        <examples>Unsupported OS, incompatible system requirements</examples>
+        <action>Graceful termination with explanation</action>
+      </category>
+    </errorCategories>
+
+    <recoveryMechanisms>
+      <mechanism name="Automatic Port Reallocation">
+        <ports>3001, 8001, 6380 as alternatives</ports>
+        <condition>When primary ports are occupied</condition>
+      </mechanism>
+      <mechanism name="Service Restart with Backoff">
+        <pattern>1s, 2s, 4s, 8s intervals</pattern>
+        <maxAttempts>3 times per service</maxAttempts>
+      </mechanism>
+      <mechanism name="Dependency Repair">
+        <action>Reinstall corrupted packages</action>
+        <condition>When package verification fails</condition>
+      </mechanism>
+    </recoveryMechanisms>
+  </errorHandlingStrategy>
+
+  <userExperienceRequirements>
+    <targetJourney>
+      <step order="1" time="2 minutes">Download and extract launcher package</step>
+      <step order="2" time="5-8 minutes">Automatic environment check and dependency installation</step>
+      <step order="3" time="2-3 minutes">Service startup and data initialization</step>
+      <step order="4" time="instant">Browser opens to localhost:3000</step>
+      <step order="5" time="30 seconds">Subsequent launches via desktop shortcut</step>
+    </targetJourney>
+
+    <interfaceRequirements>
+      <console>Rich CLI with progress bars and color coding</console>
+      <progress>Real-time progress with remaining time estimation</progress>
+      <errors>User-friendly messages with specific solutions</errors>
+      <success>Clear success indicators and browser auto-open</success>
+    </interfaceRequirements>
+  </userExperienceRequirements>
+
+  <testingStandards>
+    <testTypes>
+      <unitTests>
+        <framework>pytest</framework>
+        <coverage>95% minimum</coverage>
+        <focus>Individual module functionality</focus>
+      </unitTests>
+      <integrationTests>
+        <framework>pytest with fixtures</framework>
+        <coverage>All service interactions</coverage>
+        <focus>End-to-end launch process</focus>
+      </integrationTests>
+      <performanceTests>
+        <tools>time measurements, resource monitoring</tools>
+        <criteria>&lt;5min subsequent, &lt;10min first-time</criteria>
+        <focus>Timing requirements validation</focus>
+      </performanceTests>
+      <crossPlatformTests>
+        <environments>Windows 10/11, macOS 10.15+, Ubuntu 18.04+</environments>
+        <focus>Platform-specific functionality</focus>
+      </crossPlatformTests>
+    </testTypes>
+
+    <testDataManagement>
+      <fixtures>Mock service configurations and responses</fixtures>
+      <environments>Isolated test environments for each OS</environments>
+      <cleanup>Automatic cleanup of test services and processes</cleanup>
+    </testDataManagement>
+  </testingStandards>
+
+  <implementationRoadmap>
+    <phases>
+      <phase order="1" name="Core Launcher Structure">
+        <deliverables>launcher.py main entry point, CLI interface, argument parsing</deliverables>
+        <duration>4-6 hours</duration>
+      </phase>
+      <phase order="2" name="Service Integration">
+        <deliverables>ServiceManager implementation, service startup orchestration</deliverables>
+        <duration>6-8 hours</duration>
+      </phase>
+      <phase order="3" name="Progress and Error Handling">
+        <deliverables>ProgressTracker, ErrorHandler integration, user experience polish</deliverables>
+        <duration>4-6 hours</duration>
+      </phase>
+      <phase order="4" name="Testing and Validation">
+        <deliverables>Comprehensive testing, performance optimization, cross-platform validation</deliverables>
+        <duration>3-4 hours</duration>
+      </phase>
+    </phases>
+
+    <totalEstimatedTime>17-24 hours across 2-3 development sessions</totalEstimatedTime>
+  </implementationRoadmap>
+
+  <risksAndMitigations>
+    <risk name="UTF-8 Encoding Issues">
+      <impact>Chinese character display problems</impact>
+      <mitigation>Implement proper encoding detection and handling</mitigation>
+      <priority>High</priority>
+    </risk>
+    <risk name="Service Startup Race Conditions">
+      <impact>Services starting in wrong order or timing out</impact>
+      <mitigation>Implement robust health checks and dependency management</mitigation>
+      <priority>High</priority>
+    </risk>
+    <risk name="Cross-Platform Compatibility">
+      <impact>Platform-specific service management issues</impact>
+      <mitigation>Extensive testing on all target platforms</mitigation>
+      <priority>Medium</priority>
+    </risk>
+    <risk name="Performance Requirements">
+      <impact>Startup times exceed user expectations</impact>
+      <mitigation>Parallel operations where possible, optimize dependency installation</mitigation>
+      <priority>Medium</priority>
+    </risk>
+  </risksAndMitigations>
+
+  <references>
+    <reference type="PRD" path="docs/PRD-one-click-launch.md">Product Requirements Document</reference>
+    <reference type="Architecture" path="docs/architecture-one-click-launch.md">Technical Architecture and Design</reference>
+    <reference type="Epics" path="docs/epics-one-click-launch.md">Epic Breakdown and Story Definitions</reference>
+    <reference type="Config" path="one-click-launcher/config/config.ini">Runtime Configuration</reference>
+  </references>
+
+  <qualityCriteria>
+    <codeQuality>
+      <standard>PEP 8 compliance with Black formatting</standard>
+      <coverage>95% test coverage minimum</coverage>
+      <documentation>Comprehensive docstrings and type hints</documentation>
+    </codeQuality>
+    <functionalQuality>
+      <reliability>90%+ success rate on diverse environments</reliability>
+      <performance>Meets timing requirements consistently</performance>
+      <usability>Non-technical users can complete setup without assistance</usability>
+    </functionalQuality>
+    <maintainability>
+      <modularity>Clear separation of concerns</modularity>
+      <extensibility>Easy to add new services or platforms</extensibility>
+      <debuggability>Comprehensive logging and error reporting</debuggability>
+    </maintainability>
+  </qualityCriteria>
+</storyContext>

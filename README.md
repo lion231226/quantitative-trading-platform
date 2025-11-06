@@ -52,6 +52,10 @@
 
 ```
 quant-trading-platform/
+├── one-click-launcher/       # 🚀 智能启动器
+│   ├── launcher.py           # 主启动器脚本
+│   ├── config/               # 启动器配置
+│   └── utils/                # 启动器工具模块
 ├── frontend/                 # Next.js前端
 │   ├── src/
 │   │   ├── app/             # App Router页面
@@ -71,6 +75,9 @@ quant-trading-platform/
 │   ├── main.py              # 应用入口
 │   └── requirements.txt
 ├── docs/                     # 项目文档
+│   ├── stories/             # BMAD工作流Story文档
+│   ├── epics/               # Epic文档
+│   └── bmm-workflow-status.yaml  # 工作流状态
 ├── data/                     # 数据存储
 └── config/                   # 配置文件
 ```
@@ -84,6 +91,8 @@ quant-trading-platform/
 - **Git**: 最新版本
 
 ### 🚀 一键启动 (推荐)
+
+### 智能启动器 - 最简单的启动方式
 
 1. **克隆项目**
 
@@ -99,28 +108,52 @@ git clone https://github.com/lion231226/quantitative-trading-platform.git
 cd quantitative-trading-platform
 ```
 
-2. **一键启动**
+2. **智能一键启动** ⭐
 
-#### Windows用户
+#### 所有平台统一命令
 ```bash
-# 运行增强版启动脚本
-./start-windows-enhanced.bat
+# 进入启动器目录
+cd one-click-launcher
+
+# 启动量化交易平台
+python launcher.py
+
+# 或者使用调试模式（推荐首次使用）
+python launcher.py --debug
 ```
 
-#### Linux/Mac用户
+#### 启动器功能特性
+- ✅ **自动环境检测** - Python/Node.js版本检查
+- ✅ **智能依赖安装** - 自动安装缺失的依赖包
+- ✅ **服务启动管理** - 按顺序启动后端和前端服务
+- ✅ **健康状态监控** - 实时检查服务运行状态
+- ✅ **自动浏览器打开** - 启动完成后自动访问应用
+- ✅ **优雅关闭机制** - 支持Ctrl+C安全停止所有服务
+
+#### 其他启动器命令
 ```bash
-# 赋予执行权限
-chmod +x quick-start.sh
-# 启动服务
-./quick-start.sh start
+# 查看服务状态
+python launcher.py --status
+
+# 停止所有服务
+python launcher.py --stop
+
+# 仅安装依赖，不启动服务
+python launcher.py --install-only
+
+# 显示帮助信息
+python launcher.py --help
 ```
 
 3. **访问应用**
-- 前端应用: http://localhost:3000
-- 后端API: http://localhost:8000
-- API文档: http://localhost:8000/docs
+- 🌐 前端应用: http://localhost:3000
+- 🔧 后端API: http://localhost:8000
+- 📚 API文档: http://localhost:8000/docs
 
 🎉 **恭喜！量化交易平台已成功启动！**
+- ⚡ 启动时间通常在10-30秒内
+- 🖥️ 支持Windows、macOS、Linux所有平台
+- 🔄 自动处理环境配置和服务依赖
 
 ### 🔧 手动启动 (可选)
 
@@ -233,8 +266,9 @@ docker run -p 8000:8000 quant-trading-backend
 如果您觉得这个项目有用，请给它一个⭐️！
 
 如有问题或建议，请通过以下方式联系：
-- 提交Issue: [GitHub Issues](https://github.com/your-username/quant-trading-platform/issues)
-- 邮箱: your-email@example.com
+- 提交Issue (推荐): [GitHub Issues](https://github.com/lion231226/quantitative-trading-platform/issues)
+- 提交Issue (国内用户): [Gitee Issues](https://gitee.com/lion20231226/quantitative-trading-platform/issues)
+- 邮箱: lion20231226@outlook.com
 
 ---
 

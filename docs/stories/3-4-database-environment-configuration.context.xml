@@ -1,0 +1,221 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>4</storyId>
+    <title>Database Environment Configuration</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-04</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/3-4-database-environment-configuration.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>one-click launch script</asA>
+    <iWant>check and configure database service environment</iWant>
+    <soThat>data storage services can run properly</soThat>
+    <tasks>- Task 1: Redis Service Detection and Configuration (AC: 1)
+  - Create RedisServiceManager class in services/redis_service_manager.py
+  - Implement Windows Redis service detection (sc query, netstat)
+  - Implement macOS Redis service detection (brew services)
+  - Implement Linux Redis service detection (systemctl, service)
+  - Add Redis connection testing and configuration validation
+- Task 2: PostgreSQL Service Detection and Configuration (AC: 2)
+  - Create PostgreSQLServiceManager class in services/postgresql_service_manager.py
+  - Implement PostgreSQL version detection and compatibility checking
+  - Add PostgreSQL connection testing and authentication validation
+  - Implement cross-platform PostgreSQL service detection
+  - Add PostgreSQL configuration file management
+- Task 3: Docker Environment Integration (AC: 3)
+  - Create DockerManager class in services/docker_manager.py
+  - Implement Docker installation detection and version checking
+  - Add Docker container status detection for Redis and PostgreSQL
+  - Implement Docker container startup and management
+  - Add Docker volume and network configuration
+- Task 4: Database Configuration Management (AC: 4)
+  - Create DatabaseConfigurator class in core/database_configurator.py
+  - Implement automatic port detection and conflict resolution
+  - Add secure password generation and management
+  - Implement data directory configuration and permissions
+  - Create configuration file templates and management
+- Task 5: Database Installation Options (AC: 5)
+  - Create DatabaseInstaller class in services/database_installer.py
+  - Implement local database installation (Redis, PostgreSQL)
+  - Add Docker-based database installation
+  - Create installation method selection interface
+  - Add installation progress tracking and error handling
+- Task 6: Integration Testing
+  - Create comprehensive unit tests for all database managers
+  - Test database service detection across different platforms
+  - Validate Docker container management functionality
+  - Test database configuration generation and validation
+  - Add integration tests for complete database setup workflow</tasks>
+  </story>
+
+  <acceptanceCriteria>1. Detect Redis service status, supporting Windows services, macOS Brew services, Linux systemd services
+2. Detect PostgreSQL service status, verifying connection capability and version compatibility
+3. Implement Docker environment detection, supporting Docker container startup for database services
+4. Automatically configure database connection parameters (ports, passwords, data directories)
+5. Provide database service installation options (local installation vs Docker containers)</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/architecture-one-click-launch.md" title="一键启动脚本 Decision Architecture" section="Project Structure, Epic to Architecture Mapping, Technology Stack Details">
+        Defines the technical implementation plan for one-click launch script, using pure Python + CLI cross-platform deployment automation architecture, including database service management module design.
+      </doc>
+      <doc path="docs/epics-one-click-launch.md" title="量化交易平台一键启动脚本 - Epic Breakdown" section="Story 1.4: 数据库环境配置">
+        Defines 5 acceptance criteria for database environment configuration: detect Redis service status, detect PostgreSQL service status, implement Docker environment detection, auto-configure database connection parameters, provide database service installation options.
+      </doc>
+      <doc path="docs/environment-configuration.md" title="环境配置指南" section="数据库配置、Redis配置">
+        Provides detailed database and Redis environment variable configuration, including SQLite, PostgreSQL, MySQL connection configuration, and Redis connection pool configuration.
+      </doc>
+      <doc path="docs/stories/3-3-automatic-dependency-installation-engine.md" title="Story 3.3: Automatic Dependency Installation Engine" section="Installation Patterns, Progress Tracking Systems">
+        Provides installation patterns, progress tracking systems, and error handling patterns that can be used for database service installation implementation.
+      </doc>
+      <doc path="docs/stories/3-2-development-environment-dependency-check.md" title="Story 3.2: Development Environment Dependency Check" section="Dependency Checking Architecture, Status Detection Patterns">
+        Provides dependency checking architecture and status detection patterns that can be reused for database service detection.
+      </doc>
+    </docs>
+    <code>
+      <code path="one-click-launcher/utils/config_manager.py" kind="utility" symbol="ConfigManager" lines="1-239">
+        Configuration manager with INI format support, platform-specific overrides, and global singleton pattern. Provides get(), set(), save(), load_platform_overrides() methods. Reusable for database configuration management.
+      </code>
+      <code path="one-click-launcher/utils/progress_tracker.py" kind="utility" symbol="ProgressTracker" lines="1-732">
+        Real-time progress tracking with step weight calculation, status management (PENDING, IN_PROGRESS, COMPLETED, FAILED), and time statistics. Reusable for database installation progress tracking.
+      </code>
+      <code path="one-click-launcher/core/installation_verifier.py" kind="core" symbol="InstallationVerifier" lines="1-746">
+        Comprehensive installation verification with version compatibility checking, functional verification, performance benchmarking, and detailed verification report generation. Design pattern reusable for database verification.
+      </code>
+      <code path="one-click-launcher/core/operating_system_detector.py" kind="core" symbol="OperatingSystemDetector" lines="1-742">
+        Cross-platform OS detection with Windows, macOS, Linux support, architecture detection (x64, ARM64, x86), and version compatibility checking. Essential for platform-specific database service management.
+      </code>
+      <code path="one-click-launcher/core/dependency_checker.py" kind="core" symbol="DependencyChecker" lines="1-665">
+        Dependency checking with version detection and comparison, path validation, minimum version requirements checking, and executable finding. Pattern reusable for database service detection.
+      </code>
+      <code path="one-click-launcher/core/environment_detector.py" kind="core" symbol="EnvironmentDetector" lines="1-427">
+        Environment detection including system info, development environment detection (Python, Node.js, Git, Redis), port occupancy status, and network connection status. Already includes Redis detection - extendable for other databases.
+      </code>
+      <code path="one-click-launcher/utils/network_utils.py" kind="utility" symbol="NetworkChecker" lines="1-499">
+        Network connection detection, proxy configuration detection, package manager reachability checking, and offline mode detection. Usable for database connection testing.
+      </code>
+      <code path="one-click-launcher/services/database_service.py" kind="service" symbol="DatabaseService" lines="1">
+        Empty service file (1 line) - placeholder for database service implementation to be created as part of this story.
+      </code>
+    </code>
+    <dependencies>
+      <python>
+        <package name="typing" version="builtin" usage="Type hints for interfaces and method signatures" />
+        <package name="dataclasses" version="builtin" usage="Data structure definitions" />
+        <package name="pathlib" version="builtin" usage="Path manipulation and file operations" />
+        <package name="subprocess" version="builtin" usage="System command execution for service management" />
+        <package name="platform" version="builtin" usage="Cross-platform system detection" />
+        <package name="json" version="builtin" usage="Configuration file parsing and generation" />
+        <package name="redis" version="6.0.0+" usage="Redis connection testing and management" />
+        <package name="psycopg2-binary" version="13.0.0+" usage="PostgreSQL connection testing and management" />
+        <package name="docker" version="20.10.0+" usage="Docker container management and integration" />
+        <package name="asyncio" version="builtin" usage="Asynchronous service management and testing" />
+        <package name="configparser" version="builtin" usage="Configuration file management (INI format)" />
+        <package name="socket" version="builtin" usage="Port testing and connection validation" />
+        <package name="secrets" version="builtin" usage="Secure password generation for database services" />
+      </python>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+      <constraint id="platform-specific-service-management" type="architectural">
+        Use appropriate service management commands for each OS (Windows services, macOS Brew, Linux systemd) as defined in story Dev Notes and supported by OperatingSystemDetector
+      </constraint>
+      <constraint id="docker-integration" type="architectural">
+        Support both local installation and Docker container-based database services, ensuring seamless integration with existing configuration management
+      </constraint>
+      <constraint id="security" type="security">
+        Implement secure password generation and management for database services, following existing security patterns in the codebase
+      </constraint>
+      <constraint id="idempotent-operations" type="operational">
+        Design database configuration to be safe to run multiple times, following idempotent operation patterns established in InstallationVerifier
+      </constraint>
+      <constraint id="configuration-management" type="architectural">
+        Maintain consistent configuration file management across platforms, extending existing ConfigManager patterns
+      </constraint>
+      <constraint id="progress-tracking" type="operational">
+        Use ProgressTracker for database installation progress tracking, maintaining consistency with existing installation workflows
+      </constraint>
+      <constraint id="service-detection-patterns" type="implementation">
+        Follow dependency checking patterns from DependencyChecker for database service detection and status verification
+      </constraint>
+    </constraints>
+    <interfaces>
+      <interface name="ConfigManager" kind="class" signature="class ConfigManager: def get(), set(), save(), load_platform_overrides()" path="one-click-launcher/utils/config_manager.py">
+        Configuration management interface with INI format support, platform-specific overrides, and global singleton pattern
+      </interface>
+      <interface name="ProgressTracker" kind="class" signature="class ProgressTracker: def add_step(), update_progress(), get_status()" path="one-click-launcher/utils/progress_tracker.py">
+        Progress tracking interface with step weight calculation, status management, and time statistics
+      </interface>
+      <interface name="InstallationVerifier" kind="class" signature="class InstallationVerifier: def verify_installation(), generate_report()" path="one-click-launcher/core/installation_verifier.py">
+        Installation verification interface with version compatibility checking and detailed verification report generation
+      </interface>
+      <interface name="OperatingSystemDetector" kind="class" signature="class OperatingSystemDetector: def detect_os(), get_platform_info()" path="one-click-launcher/core/operating_system_detector.py">
+        Cross-platform OS detection interface with Windows, macOS, Linux support and architecture detection
+      </interface>
+      <interface name="DependencyChecker" kind="class" signature="class DependencyChecker: def check_dependency(), verify_version()" path="one-click-launcher/core/dependency_checker.py">
+        Dependency checking interface with version detection, path validation, and minimum version requirements checking
+      </interface>
+      <interface name="EnvironmentDetector" kind="class" signature="class EnvironmentDetector: def detect_environment(), check_port_status()" path="one-click-launcher/core/environment_detector.py">
+        Environment detection interface including system info, development environment detection, and port occupancy status
+      </interface>
+      <interface name="NetworkChecker" kind="class" signature="class NetworkChecker: def check_connection(), test_connectivity()" path="one-click-launcher/utils/network_utils.py">
+        Network connection testing interface for database connection testing and service availability verification
+      </interface>
+    </interfaces>
+  <tests>
+      <standards>Testing follows pytest framework with comprehensive unit and integration test coverage. Tests use proper mocking to avoid actual system interactions. Test structure includes Test* classes with descriptive test methods, markers for test categorization (unit, integration, slow, windows, posix), and assertions for cross-platform compatibility. All tests maintain 100% code coverage with proper error scenario testing.</standards>
+      <locations>
+        <location path="one-click-launcher/tests/" pattern="test_*.py" />
+        <location path="one-click-launcher/tests/" pattern="test_*_installer.py" />
+        <location path="one-click-launcher/tests/" pattern="test_*_service.py" />
+      </locations>
+      <ideas>
+        <test idea="AC1 Redis Service Detection" description="Test Redis service detection across Windows (sc query), macOS (brew services), and Linux (systemctl) with proper mocking of system commands">
+          <subtest>Test Redis service status detection for running service</subtest>
+          <subtest>Test Redis service status detection for stopped service</subtest>
+          <subtest>Test Redis connection testing with valid connection</subtest>
+          <subtest>Test Redis connection testing with invalid connection</subtest>
+          <subtest>Test Redis configuration validation</subtest>
+        </test>
+        <test idea="AC2 PostgreSQL Service Detection" description="Test PostgreSQL service detection and version compatibility checking across platforms">
+          <subtest>Test PostgreSQL service detection for different versions</subtest>
+          <subtest>Test PostgreSQL connection testing and authentication</subtest>
+          <subtest>Test PostgreSQL version compatibility validation</subtest>
+          <subtest>Test PostgreSQL configuration file management</subtest>
+          <subtest>Test cross-platform PostgreSQL service commands</subtest>
+        </test>
+        <test idea="AC3 Docker Environment Integration" description="Test Docker installation detection and container management functionality">
+          <subtest>Test Docker installation detection and version checking</subtest>
+          <subtest>Test Docker container status detection for Redis</subtest>
+          <subtest>Test Docker container status detection for PostgreSQL</subtest>
+          <subtest>Test Docker container startup and management</subtest>
+          <subtest>Test Docker volume and network configuration</subtest>
+        </test>
+        <test idea="AC4 Database Configuration Management" description="Test automatic database configuration and port management">
+          <subtest>Test automatic port detection and conflict resolution</subtest>
+          <subtest>Test secure password generation and validation</subtest>
+          <subtest>Test data directory configuration and permissions</subtest>
+          <subtest>Test configuration file template generation</subtest>
+          <subtest>Test configuration parameter validation</subtest>
+        </test>
+        <test idea="AC5 Database Installation Options" description="Test local and Docker-based database installation options">
+          <subtest>Test local Redis installation process</subtest>
+          <subtest>Test local PostgreSQL installation process</subtest>
+          <subtest>Test Docker-based Redis installation</subtest>
+          <subtest>Test Docker-based PostgreSQL installation</subtest>
+          <subtest>Test installation method selection interface</subtest>
+        </test>
+        <test idea="Integration Testing" description="Test complete database setup workflow integration">
+          <subtest>Test end-to-end database service detection and configuration</subtest>
+          <subtest>Test progress tracking during database installation</subtest>
+          <subtest>Test error handling and recovery scenarios</subtest>
+          <subtest>Test cross-platform compatibility of complete workflow</subtest>
+          <subtest>Test configuration persistence and restoration</subtest>
+        </test>
+      </ideas>
+    </tests>
+</story-context>

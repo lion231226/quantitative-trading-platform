@@ -1,0 +1,130 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>4</storyId>
+    <title>Frontend Application Startup</title>
+    <status>ready-for-dev</status>
+    <generatedAt>2025-11-05</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>D:\Demo\docs\stories\4-4-frontend-application-startup.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>a one-click launch script</asA>
+    <iWant>start the frontend application service automatically</iWant>
+    <soThat>users have access to a complete web interface for the quantitative trading platform</soThat>
+    <tasks>- [ ] Task 1: Frontend Service Startup Core Functionality (AC: 1, 5)
+  - [ ] Subtask 1.1: Implement Node.js process detection and frontend startup logic
+  - [ ] Subtask 1.2: Configure frontend service startup parameters and environment variables
+  - [ ] Subtask 1.3: Implement process status monitoring and PID management for frontend
+  - [ ] Subtask 1.4: Create frontend startup logging mechanism
+  - [ ] Subtask 1.5: Implement startup timeout and error handling for frontend service
+  - [ ] Subtask 1.6: Implement automatic browser opening with access link generation
+
+- [ ] Task 2: Frontend Application Access Verification (AC: 2)
+  - [ ] Subtask 2.1: Implement frontend accessibility check on localhost:3000
+  - [ ] Subtask 2.2: Verify frontend page loading and rendering completeness
+  - [ ] Subtask 2.3: Add response time validation for frontend accessibility
+  - [ ] Subtask 2.4: Create frontend status reporting mechanism
+  - [ ] Subtask 2.5: Implement frontend health check retry mechanism
+
+- [ ] Task 3: Frontend-Backend Communication Verification (AC: 3)
+  - [ ] Subtask 3.1: Implement API endpoint connectivity testing (frontend → backend:8000)
+  - [ ] Subtask 3.2: Verify CORS configuration and API request/response flow
+  - [ ] Subtask 3.3: Test data retrieval and display functionality
+  - [ ] Subtask 3.4: Create communication status monitoring
+  - [ ] Subtask 3.5: Implement communication error recovery mechanism
+
+- [ ] Task 4: Static Resource Loading Detection (AC: 4)
+  - [ ] Subtask 4.1: Implement static resource loading verification (CSS, JS, images)
+  - [ ] Subtask 4.2: Detect page rendering completeness and component initialization
+  - [ ] Subtask 4.3: Add resource loading timeout and error handling
+  - [ ] Subtask 4.4: Create resource loading status reporting
+  - [ ] Subtask 4.5: Implement resource loading fallback mechanisms</tasks>
+  </story>
+
+  <acceptanceCriteria>1. Start frontend development server (Next.js/React) and verify process running status
+2. Verify frontend application accessibility (http://localhost:3000)
+3. Ensure frontend-backend API communication is working properly (Backend:8000 API accessible)
+4. Detect static resource loading status and page rendering integrity
+5. Generate frontend access link with automatic browser opening support</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/architecture-one-click-launch.md" title="一键启动脚本 Decision Architecture" section="Integration Points" snippet="服务启动序列集成：1. Redis启动 (端口6379) → 等待就绪 (30秒超时) 2. 后端API启动 (端口8000) → 健康检查通过 (60秒超时) 3. 前端应用启动 (端口3000) → 构建完成 (120秒超时)" />
+      <doc path="docs/architecture-one-click-launch.md" title="一键启动脚本 Decision Architecture" section="Technology Stack Details" snippet="Python 3.11.14+ (LTS) 作为核心引擎，psutil 7.1.3+ 用于进程管理，rich 13.9.4+ 用于CLI界面，requests 2.32.3+ 用于HTTP客户端" />
+      <doc path="docs/stories/4-3-backend-api-service-startup.md" title="Backend API Service Startup" section="Learnings from Previous Story" snippet="BackendServiceManager 类可用，HealthChecker 类支持端点健康检查，Python 进程检测使用 psutil，API 端点验证模式已建立，ServiceConfigurator 类提供配置验证" />
+      <doc path="docs/stories/4-1-service-dependency-analysis-and-startup-sequence.md" title="Service Dependency Analysis and Startup Sequence" section="Service Dependencies" snippet="定义了 Database → Backend → Frontend 的启动序列，服务依赖关系验证" />
+    </docs>
+    <code>
+      <artifact path="one-click-launcher/services/frontend_service.py" kind="service" symbol="FrontendServiceManager" lines="1-10" reason="前端服务主要管理器，需要实现完整功能" />
+      <artifact path="one-click-launcher/services/backend_service.py" kind="service" symbol="BackendServiceManager" lines="92-100" reason="后端服务管理模式，前端服务应遵循相同模式" />
+      <artifact path="one-click-launcher/core/health_checker.py" kind="core" symbol="HealthChecker" lines="27-50" reason="健康检查器，用于前端 localhost:3000 端点验证" />
+      <artifact path="one-click-launcher/core/service_dependency_analyzer.py" kind="core" symbol="ServiceDependencyAnalyzer" reason="服务依赖验证器，确保按顺序启动" />
+      <artifact path="one-click-launcher/core/service_configurator.py" kind="core" symbol="ServiceConfigurator" reason="配置管理器，处理前端特定配置" />
+      <artifact path="one-click-launcher/core/port_manager.py" kind="core" symbol="PortManager" reason="端口管理器，处理 Frontend:3000 端口分配" />
+      <artifact path="one-click-launcher/utils/progress_tracker.py" kind="utility" symbol="ProgressTracker" reason="进度跟踪器，用于前端启动进度跟踪" />
+      <artifact path="one-click-launcher/utils/logger.py" kind="utility" symbol="get_logger" reason="结构化日志记录器，用于前端操作日志" />
+      <artifact path="frontend/package.json" kind="config" symbol="dev" lines="5-6" reason="前端技术栈：Next.js 14.2.33, React 18, Node.js >=18.0.0, 启动命令: npm run dev" />
+    </code>
+    <dependencies>
+      <ecosystem name="Python">
+        <package name="psutil" version="7.1.3+" reason="进程管理和系统监控" />
+        <package name="rich" version="13.9.4+" reason="美观的命令行界面和进度指示" />
+        <package name="requests" version="2.32.3+" reason="HTTP客户端库，用于前端访问性检查" />
+        <package name="aiohttp" version="latest" reason="异步HTTP客户端，用于健康检查" />
+      </ecosystem>
+      <ecosystem name="Node.js">
+        <package name="next" version="14.2.33" reason="React框架，前端开发服务器" />
+        <package name="react" version="18" reason="前端UI库" />
+        <package name="pnpm" version="8.15.6" reason="包管理器" />
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+  <constraint type="architecture">遵循 Database → Backend → Frontend 启动序列，确保服务依赖关系</constraint>
+  <constraint type="pattern">使用 BackendServiceManager 作为模式，保持一致的API和错误处理</constraint>
+  <constraint type="naming">文件命名 snake_case，类命名 PascalCase，函数命名 snake_case</constraint>
+  <constraint type="port-management">使用现有 PortManager 处理 Frontend:3000 端口分配和冲突检测</constraint>
+  <constraint type="error-format">统一异常格式：{code, message, solution, details}</constraint>
+  <constraint type="async">使用 asyncio 模式进行并发前端操作</constraint>
+  <constraint type="timeout">前端启动超时 120秒，健康检查间隔 5秒，最大重试 3次</constraint>
+  <constraint type="progress">使用 ProgressTracker 并提供 component_name="frontend_startup"</constraint>
+  <constraint type="logging">使用结构化日志记录，包含启动进度、错误和状态变化</constraint>
+</constraints>
+  <interfaces>
+    <interface name="FrontendServiceManager" kind="class" signature="class FrontendServiceManager: def __init__(self, config: FrontendServiceConfig) -> None" path="one-click-launcher/services/frontend_service.py" />
+    <interface name="FrontendServiceConfig" kind="dataclass" signature="@dataclass class FrontendServiceConfig: service_name: str = 'frontend', host: str = 'localhost', port: int = 3000" path="one-click-launcher/services/frontend_service.py" />
+    <interface name="start_service" kind="method" signature="async def start_service(self) -> bool: # 启动前端开发服务器并验证状态" path="one-click-launcher/services/frontend_service.py" />
+    <interface name="check_frontend_accessibility" kind="method" signature="async def check_frontend_accessibility(self) -> bool: # 验证 localhost:3000 访问性" path="one-click-launcher/services/frontend_service.py" />
+    <interface name="verify_backend_communication" kind="method" signature="async def verify_backend_communication(self) -> bool: # 测试前端→后端:8000 API通信" path="one-click-launcher/services/frontend_service.py" />
+    <interface name="HealthChecker.check_endpoint" kind="method" signature="async def check_endpoint(self, url: str) -> HealthCheckResult: # HTTP端点健康检查" path="one-click-launcher/core/health_checker.py" />
+    <interface name="PortManager.check_port_availability" kind="method" signature="def check_port_availability(self, port: int) -> bool: # 检查端口可用性" path="one-click-launcher/core/port_manager.py" />
+    <interface name="ProgressTracker.track_progress" kind="method" signature="def track_progress(self, component_name: str, progress: int, message: str) -> None: # 跟踪进度" path="one-click-launcher/utils/progress_tracker.py" />
+  </interfaces>
+  <tests>
+    <standards>使用 pytest 和 asyncio 进行异步测试，遵循测试驱动开发(TDD)方法。测试文件命名 test_*.py，测试类命名 Test*，测试方法命名 test_*。使用 Mock 和 AsyncMock 进行依赖隔离，fixture 进行测试数据管理。测试覆盖：服务启动、前端访问性验证、后端通信测试、资源加载检测、错误处理场景。集成测试应包含完整启动流程测试。</standards>
+    <locations>one-click-launcher/tests/test_frontend_service.py - 前端服务主要测试文件，one-click-launcher/tests/test_integration.py - 集成测试，one-click-launcher/tests/ - 其他相关测试文件</locations>
+    <ideas>
+      <test idea="test_frontend_service_initialization" acceptance_criteria="AC1" description="测试前端服务管理器初始化，验证配置加载和初始状态" />
+      <test idea="test_nodejs_process_detection" acceptance_criteria="AC1" description="测试Node.js进程检测和前端启动逻辑" />
+      <test idea="test_frontend_startup_timeout_handling" acceptance_criteria="AC1" description="测试前端启动超时和错误处理机制" />
+      <test idea="test_frontend_accessibility_check" acceptance_criteria="AC2" description="测试localhost:3000前端访问性验证" />
+      <test idea="test_frontend_page_loading_verification" acceptance_criteria="AC2" description="测试前端页面加载和渲染完整性检查" />
+      <test idea="test_frontend_response_time_validation" acceptance_criteria="AC2" description="测试前端访问响应时间验证" />
+      <test idea="test_frontend_health_check_retry" acceptance_criteria="AC2" description="测试前端健康检查重试机制" />
+      <test idea="test_frontend_backend_api_communication" acceptance_criteria="AC3" description="测试前端→后端:8000 API端点连接性测试" />
+      <test idea="test_cors_configuration_verification" acceptance_criteria="AC3" description="测试CORS配置和API请求/响应流验证" />
+      <test idea="test_data_retrieval_display_functionality" acceptance_criteria="AC3" description="测试数据检索和显示功能验证" />
+      <test idea="test_communication_status_monitoring" acceptance_criteria="AC3" description="测试通信状态监控功能" />
+      <test idea="test_communication_error_recovery" acceptance_criteria="AC3" description="测试通信错误恢复机制" />
+      <test idea="test_static_resource_loading_verification" acceptance_criteria="AC4" description="测试静态资源(CSS, JS, images)加载验证" />
+      <test idea="test_page_rendering_completeness_detection" acceptance_criteria="AC4" description="测试页面渲染完整性和组件初始化检测" />
+      <test idea="test_resource_loading_timeout_handling" acceptance_criteria="AC4" description="测试资源加载超时和错误处理" />
+      <test idea="test_resource_loading_fallback_mechanisms" acceptance_criteria="AC4" description="测试资源加载回退机制" />
+      <test idea="test_automatic_browser_opening" acceptance_criteria="AC5" description="测试自动浏览器打开和访问链接生成功能" />
+      <test idea="test_complete_frontend_startup_flow" acceptance_criteria="AC1-5" description="集成测试：完整前端服务启动流程，包含所有验收标准" />
+    </ideas>
+  </tests>
+</story-context>

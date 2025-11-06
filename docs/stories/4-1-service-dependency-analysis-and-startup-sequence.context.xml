@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<story-context id="bmad/bmm/workflows/4-implementation/story-context" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>1</storyId>
+    <title>Service Dependency Analysis and Startup Sequence</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-05</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/4-1-service-dependency-analysis-and-startup-sequence.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>one-click launch script</asA>
+    <iWant>analyze service dependencies and determine startup sequence</iWant>
+    <soThat>services start in the correct order</soThat>
+    <tasks>Task 1: Service Dependency Analysis System (AC: 1) - Create service dependency graph manager, implement startup sequence calculation algorithm, add service relationship validation and circular dependency detection, create dependency visualization and reporting tools
+Task 2: Service Health Check Implementation (AC: 2) - Implement HTTP-based health check for backend services, create connection-based health check for database services, add process-based health check for application services, implement health check retry logic and timeout handling
+Task 3: Port Conflict Detection and Resolution (AC: 3) - Create port scanning and conflict detection system, implement automatic port allocation algorithm, add port conflict resolution with user confirmation, create port management configuration and persistence
+Task 4: Startup Timeout Management (AC: 4) - Implement configurable timeout mechanisms for each service type, add progressive timeout escalation and retry logic, create timeout monitoring and cancellation capabilities, add timeout event logging and user notification
+Task 5: Service Startup Configuration System (AC: 5) - Create configuration file parser and validator, implement custom startup parameter injection, add environment-specific configuration support, create configuration validation and error reporting</tasks>
+  </story>
+
+  <acceptanceCriteria>1. Define service startup sequence: database → backend API → frontend application
+2. Implement service health check mechanism, verifying service ready status
+3. Detect service port conflicts, providing automatic port allocation functionality
+4. Implement service startup timeout mechanism, avoiding infinite waiting
+5. Create service startup configuration file, supporting custom startup parameters</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/epics-one-click-launch.md</path>
+        <title>Epic Breakdown for One-Click Launch Script</title>
+        <section>Epic 2: Service Orchestration and Startup Management</section>
+        <snippet>Epic 2 focuses on implementing reliable service startup flow management, ensuring all services start in the correct order. Service dependency analysis and startup sequence is Story 2.1, defining the startup sequence as database → backend API → frontend application with health check mechanisms and timeout handling.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture-one-click-launch.md</path>
+        <title>One-Click Launch Decision Architecture</title>
+        <section>Integration Points and Implementation Patterns</section>
+        <snippet>Service startup sequence integration: Redis startup (port 6379) → wait for ready (30s timeout), Backend API startup (port 8000) → health check pass (60s timeout), Frontend application startup (port 3000) → build complete (120s timeout). Configuration management integration with platform-specific configs overriding defaults.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/3-6-environment-configuration-verification.md</path>
+        <title>Environment Configuration Verification</title>
+        <section>Dev Agent Record and File List</section>
+        <snippet>Previous story implemented ProgressTracker class at utils/progress_tracker.py with component_name parameter for progress tracking. Established service-based architecture patterns with unified error format {code, message, solution, details} and comprehensive test suite structure.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/3-4-database-environment-configuration.md</path>
+        <title>Database Environment Configuration</title>
+        <section>Database Service Management</section>
+        <snippet>Database service startup patterns including Redis and PostgreSQL service detection, health check implementation, and connection validation. Service management follows platform-specific patterns for Windows services, macOS Brew services, and Linux systemd services.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>one-click-launcher/utils/progress_tracker.py</path>
+        <kind>utility</kind>
+        <symbol>ProgressTracker</symbol>
+        <lines>1-50</lines>
+        <reason>Progress tracking for dependency analysis workflow with component_name parameter integration</reason>
+      </artifact>
+      <artifact>
+        <path>one-click-launcher/utils/logger.py</path>
+        <kind>utility</kind>
+        <symbol>Logger</symbol>
+        <lines>1-30</lines>
+        <reason>Structured logging for service management and dependency analysis</reason>
+      </artifact>
+      <artifact>
+        <path>one-click-launcher/core/</path>
+        <kind>directory</kind>
+        <symbol>core modules</symbol>
+        <lines>1-100</lines>
+        <reason>Existing core modules to extend for service dependency analysis patterns</reason>
+      </artifact>
+      <artifact>
+        <path>one-click-launcher/tests/</path>
+        <kind>directory</kind>
+        <symbol>test suites</symbol>
+        <lines>1-50</lines>
+        <reason>Existing test patterns and mocking strategies for service testing</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <ecosystem name="python">
+        <package name="psutil" version="7.1.3+" />
+        <package name="rich" version="13.9.4+" />
+        <package name="requests" version="2.32.3+" />
+        <package name="asyncio" version="builtin" />
+        <package name="configparser" version="builtin" />
+        <package name="logging" version="builtin" />
+        <package name="subprocess" version="builtin" />
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture">Service-based architecture with dedicated classes for each functionality</constraint>
+    <constraint type="error-handling">Unified exception handling with user-friendly error messages format {code, message, solution, details}</constraint>
+    <constraint type="patterns">Use directed acyclic graph (DAG) for service dependency modeling</constraint>
+    <constraint type="async">Use asyncio for concurrent health checks and service monitoring</constraint>
+    <constraint type="cross-platform">Platform-specific command handling (Windows/macOS/Linux) for service management</constraint>
+    <constraint type="configuration">YAML/JSON-based configuration with validation and schema checking</constraint>
+    <constraint type="testing">Comprehensive test suite with proper mocking for service endpoints</constraint>
+    <constraint type="progress-tracking">Use ProgressTracker with component_name="service_dependency_analysis" for user feedback</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="ServiceDependencyAnalyzer" kind="class">
+      <signature>class ServiceDependencyAnalyzer:
+    def __init__(self, config: Dict[str, Any])
+    async def analyze_dependencies(self) -> ServiceDependencyGraph
+    async def calculate_startup_sequence(self) -> List[str]
+    def validate_dependencies(self) -> ValidationResult</signature>
+      <path>one-click-launcher/core/service_dependency_analyzer.py</path>
+    </interface>
+    <interface name="HealthChecker" kind="class">
+      <signature>class HealthChecker:
+    def __init__(self, timeout: int = 60)
+    async def check_http_health(self, endpoint: str) -> HealthStatus
+    async def check_connection_health(self, host: str, port: int) -> HealthStatus
+    async def check_process_health(self, process_name: str) -> HealthStatus</signature>
+      <path>one-click-launcher/core/health_checker.py</path>
+    </interface>
+    <interface name="PortManager" kind="class">
+      <signature>class PortManager:
+    def __init__(self, port_range: Tuple[int, int] = (8000, 9000))
+    async def scan_ports(self) -> List[PortInfo]
+    async def allocate_port(self, preferred_port: int = None) -> int
+    async def resolve_conflict(self, occupied_port: int) -> int</signature>
+      <path>one-click-launcher/core/port_manager.py</path>
+    </interface>
+    <interface name="TimeoutManager" kind="class">
+      <signature>class TimeoutManager:
+    def __init__(self, default_timeout: int = 60)
+    async def wait_with_timeout(self, coro, timeout: int = None) -> Any
+    def set_service_timeout(self, service_type: str, timeout: int)
+    async def monitor_startup(self, service_name: str) -> StartupResult</signature>
+      <path>one-click-launcher/core/timeout_manager.py</path>
+    </interface>
+    <interface name="ServiceConfigurator" kind="class">
+      <signature>class ServiceConfigurator:
+    def __init__(self, config_path: str)
+    def load_configuration(self) -> ServiceConfig
+    def validate_configuration(self) -> ValidationResult
+    def inject_parameters(self, service_name: str, params: Dict[str, Any]) -> Dict[str, Any]</signature>
+      <path>one-click-launcher/core/service_configurator.py</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Follow established testing patterns from previous stories with comprehensive test suite at tests/. Use proper mocking for service endpoints, test failure scenarios, and maintain 80%+ test coverage. Test dependency graphs with various structures, health check scenarios, port management cycles, timeout handling, and configuration validation.</standards>
+    <locations>one-click-launcher/tests/test_service_dependency_analyzer.py, one-click-launcher/tests/test_health_checker.py, one-click-launcher/tests/test_port_manager.py, one-click-launcher/tests/test_timeout_manager.py, one-click-launcher/tests/test_service_configurator.py</locations>
+    <ideas>
+      <test idea="Dependency graph testing" ac="1">Test various dependency structures including linear, branching, and complex graphs with edge cases for circular dependency detection</test>
+      <test idea="Health check scenarios" ac="2">Mock HTTP endpoints, database connections, and processes to test success, timeout, and failure scenarios</test>
+      <test idea="Port allocation cycles" ac="3">Test port scanning, allocation, conflict detection, and resolution with real port operations</test>
+      <test idea="Timeout management" ac="4">Test different timeout scenarios with fast, slow, and hanging service startups</test>
+      <test idea="Configuration validation" ac="5">Test configuration parsing, validation, error handling, and parameter injection</test>
+      <test idea="Integration testing" ac="1-5">Test complete startup sequence with mock services and verify correct ordering</test>
+    </ideas>
+  </tests>
+</story-context>

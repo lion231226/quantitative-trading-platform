@@ -1,0 +1,80 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>1</storyId>
+    <title>Operating System Detection and Platform Adaptation</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-04</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>D:\Demo\docs\stories\3-1-operating-system-detection-and-platform-adaptation.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>one-click launch script</asA>
+    <iWant>to automatically detect the user's operating system type and version</iWant>
+    <soThat>I can execute platform-specific installation and configuration processes</soThat>
+    <tasks>Task 1: Core OS Detection Module (AC: 1, 2, 3)
+- Subtask 1.1: Create OperatingSystemDetector class in core/environment_detector.py
+- Subtask 1.2: Implement Windows version detection (Windows 10/11)
+- Subtask 1.3: Implement macOS version detection (10.15+)
+- Subtask 1.4: Implement Linux distribution detection (Ubuntu 18.04+)
+- Subtask 1.5: Add architecture detection (x64, ARM64)
+Task 2: Platform-Specific Path Handling (AC: 4)
+- Subtask 2.1: Create path utilities for different platforms
+- Subtask 2.2: Implement file operation abstractions
+- Subtask 2.3: Handle path separators and case sensitivity
+Task 3: System Information Collection (AC: 5)
+- Subtask 3.1: Design system info data structure
+- Subtask 3.2: Collect hardware and software information
+- Subtask 3.3: Format system info for diagnostic use
+Task 4: Testing and Validation
+- Subtask 4.1: Create unit tests for OS detection
+- Subtask 4.2: Test on multiple platforms (mocked)
+- Subtask 4.3: Validate architecture detection accuracy</tasks>
+  </story>
+
+  <acceptanceCriteria>1. Implement cross-platform operating system detection (Windows 10/11, macOS 10.15+, Ubuntu 18.04+)
+2. Detect system architecture (x64, ARM64) and select corresponding installation packages
+3. Verify system version compatibility and provide clear prompts for unsupported systems
+4. Implement platform-specific path handling and file operations
+5. Provide system information collection functionality for subsequent environment diagnostics</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/PRD-one-click-launch.md" title="Product Requirements Document" section="Functional Requirements" snippet="FR001: 脚本必须自动检测操作系统类型（Windows/macOS/Linux）并执行相应的安装和启动流程" />
+      <doc path="docs/architecture-one-click-launch.md" title="Architecture Document" section="Project Structure" snippet="one-click-launcher/core/ - Core business logic modules" />
+      <doc path="docs/epics-one-click-launch.md" title="Epic Breakdown" section="Story 1.1" snippet="实现跨平台操作系统检测（Windows 10/11、macOS 10.15+、Ubuntu 18.04+）" />
+    </docs>
+    <code>
+      <code path="one-click-launcher/core/environment_detector.py" kind="core-module" symbol="EnvironmentDetector" lines="56-378" reason="现有的环境检测器类，包含系统信息检测逻辑" />
+      <code path="one-click-launcher/utils/config_manager.py" kind="utility" symbol="ConfigManager" lines="19-191" reason="配置管理器，支持平台特定配置加载" />
+      <code path="one-click-launcher/utils/file_utils.py" kind="utility" symbol="ensure_dir" lines="17-24" reason="文件工具函数，用于跨平台路径处理" />
+    </code>
+    <dependencies>
+      <dep ecosystem="Python" packages="psutil>=7.1.3,rich>=13.9.4,requests>=2.32.3" />
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+      <constraint>必须使用Python 3.8+作为运行环境</constraint>
+      <constraint>代码必须遵循项目架构中定义的模块化设计</constraint>
+      <constraint>平台特定配置必须通过config_manager.py加载</constraint>
+      <constraint>所有路径操作必须使用file_utils.py中的跨平台函数</constraint>
+      <constraint>错误处理必须使用统一的异常格式</constraint>
+    </constraints>
+  <interfaces>
+      <interface name="OperatingSystemDetector" kind="class" signature="class OperatingSystemDetector: detect_os_info() -> SystemInfo" path="one-click-launcher/core/environment_detector.py" />
+      <interface name="SystemInfo" kind="dataclass" signature="@dataclass class SystemInfo: platform: str, architecture: str, version: str" path="one-click-launcher/core/environment_detector.py" />
+    </interfaces>
+  <tests>
+    <standards>使用pytest进行单元测试，要求测试覆盖率达到80%以上。使用mock进行跨平台功能的模拟测试。所有测试必须支持异步操作测试。</standards>
+    <locations>one-click-launcher/tests/</locations>
+    <ideas>
+      <idea ac="1">测试Windows、macOS、Linux系统检测的准确性</idea>
+      <idea ac="2">测试x64和ARM64架构检测功能</idea>
+      <idea ac="3">测试系统版本兼容性验证逻辑</idea>
+      <idea ac="4">测试路径处理的跨平台兼容性</idea>
+      <idea ac="5">测试系统信息收集的完整性</idea>
+    </ideas>
+  </tests>
+</story-context>

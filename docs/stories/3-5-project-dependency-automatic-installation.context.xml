@@ -1,0 +1,207 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>5</storyId>
+    <title>Project Dependency Automatic Installation</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-04</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/3-5-project-dependency-automatic-installation.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>one-click launch script</asA>
+    <iWant>automatically detect and install all project dependencies</iWant>
+    <soThat>users can set up the complete development environment without manual intervention</soThat>
+    <tasks>Task 1: Dependency List Detection and Analysis (AC: 1)
+  - [ ] Subtask 1.1: Create DependencyAnalyzer class to detect Python/Node.js dependency files
+  - [ ] Subtask 1.2: Implement dependency version conflict detection algorithm
+  - [ ] Subtask 1.3: Add database service dependency detection (Redis, PostgreSQL)
+  - [ ] Subtask 1.4: Create dependency priority and installation order analysis
+
+- [ ] Task 2: Intelligent Installation Method Selection (AC: 2)
+  - [ ] Subtask 2.1: Extend DependencyInstaller to support online/offline mode switching
+  - [ ] Subtask 2.2: Implement network connection detection and automatic mirror source selection
+  - [ ] Subtask 2.3: Add offline package integrity verification and fallback mechanism
+  - [ ] Subtask 2.4: Create installation strategy decision engine
+
+- [ ] Task 3: Batch Dependency Installation Engine (AC: 3)
+  - [ ] Subtask 3.1: Implement Python package batch installation (pip, conda)
+  - [ ] Subtask 3.2: Implement Node.js module batch installation (npm, yarn)
+  - [ ] Subtask 3.3: Add system dependency automatic installation (platform-specific)
+  - [ ] Subtask 3.4: Implement parallel installation optimization and resource management
+
+- [ ] Task 4: Version Conflict Handling (AC: 4)
+  - [ ] Subtask 4.1: Create version compatibility checker
+  - [ ] Subtask 4.2: Implement automatic version resolution and upgrade recommendations
+  - [ ] Subtask 4.3: Add dependency locking mechanism and rollback functionality
+  - [ ] Subtask 4.4: Create conflict report and solution generator
+
+- [ ] Task 5: Progress Tracking and Error Handling (AC: 5)
+  - [ ] Subtask 5.1: Integrate ProgressTracker to track installation progress
+  - [ ] Subtask 5.2: Implement detailed error diagnosis and recovery recommendations
+  - [ ] Subtask 5.3: Add installation logging and status persistence
+  - [ ] Subtask 5.4: Create user-friendly progress display and feedback interface</tasks>
+  </story>
+
+  <acceptanceCriteria>1. Automatically detect project dependency lists (Python requirements.txt, Node.js package.json, database services)
+2. Intelligently select installation methods (online package managers vs offline installation packages)
+3. Batch install Python packages, Node.js modules, and system dependencies
+4. Handle version conflicts and dependency compatibility issues
+5. Provide detailed installation progress feedback and error recovery mechanisms</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/architecture-one-click-launch.md</path>
+        <title>一键启动脚本架构文档</title>
+        <section>Epic to Architecture Mapping</section>
+        <snippet>Epic 1: 环境检测与自动配置引擎负责模块core/environment_detector.py, core/dependency_installer.py, utils/，检测系统环境、安装依赖、配置基础设置</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/3-3-automatic-dependency-installation-engine.md</path>
+        <title>自动依赖安装引擎</title>
+        <section>Dev Agent Record</section>
+        <snippet>实现了完整的依赖自动安装引擎，包括ProgressTracker进度跟踪、DependencyChecker依赖检测、跨平台支持等功能</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/3-4-database-environment-configuration.md</path>
+        <title>数据库环境配置</title>
+        <section>Learnings from Previous Story</section>
+        <snippet>ProgressTracker类在utils/progress_tracker.py中可用，用于安装进度跟踪，确保提供component_name参数</snippet>
+      </doc>
+      <doc>
+        <path>one-click-launcher/README.md</path>
+        <title>一键启动器使用指南</title>
+        <section>功能特性</section>
+        <snippet>支持Python、Node.js、Git等开发环境的自动检测和安装，提供跨平台兼容性和离线安装支持</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>one-click-launcher/core/dependency_installer.py</path>
+        <kind>core_module</kind>
+        <symbol>DependencyInstaller</symbol>
+        <lines>1-200</lines>
+        <reason>现有依赖安装器，需要扩展支持项目依赖检测和批量安装功能</reason>
+      </artifact>
+      <artifact>
+        <path>one-click-launcher/utils/progress_tracker.py</path>
+        <kind>utility</kind>
+        <symbol>ProgressTracker</symbol>
+        <lines>1-100</lines>
+        <reason>进度跟踪器，用于安装进度显示，需要提供component_name参数</reason>
+      </artifact>
+      <artifact>
+        <path>one-click-launcher/core/dependency_checker.py</path>
+        <kind>core_module</kind>
+        <symbol>DependencyChecker</symbol>
+        <lines>1-150</lines>
+        <reason>依赖检测器，提供依赖状态检测和版本管理功能</reason>
+      </artifact>
+      <artifact>
+        <path>one-click-launcher/services/python_installer.py</path>
+        <kind>service</kind>
+        <symbol>PythonInstaller</symbol>
+        <lines>1-300</lines>
+        <reason>Python安装器，提供跨平台Python安装和配置功能</reason>
+      </artifact>
+      <artifact>
+        <path>one-click-launcher/services/nodejs_installer.py</path>
+        <kind>service</kind>
+        <symbol>NodeJSInstaller</symbol>
+        <lines>1-250</lines>
+        <reason>Node.js安装器，支持Node.js和npm的自动安装和配置</reason>
+      </artifact>
+      <artifact>
+        <path>backend/requirements.txt</path>
+        <kind>dependency_file</kind>
+        <symbol>PythonDependencies</symbol>
+        <lines>1-45</lines>
+        <reason>项目Python依赖清单，包含FastAPI、数据库、数据处理等核心依赖</reason>
+      </artifact>
+      <artifact>
+        <path>frontend/package.json</path>
+        <kind>dependency_file</kind>
+        <symbol>NodeJSDependencies</symbol>
+        <lines>1-75</lines>
+        <reason>项目Node.js依赖配置，包含React、Next.js、图表库等前端依赖</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <ecosystem name="python">
+        <package name="fastapi" version="0.111.0" />
+        <package name="uvicorn" version="0.29.0" />
+        <package name="sqlalchemy" version="2.0.30" />
+        <package name="redis" version="5.0.4" />
+        <package name="pandas" version="2.2.2" />
+        <package name="akshare" version="1.12.88" />
+        <package name="pydantic" version="2.7.3" />
+      </ecosystem>
+      <ecosystem name="nodejs">
+        <package name="next" version="14.2.33" />
+        <package name="react" version="18" />
+        <package name="chart.js" version="4.4.2" />
+        <package name="@tanstack/react-query" version="5.40.0" />
+        <package name="axios" version="1.7.2" />
+        <package name="@radix-ui/react-dropdown-menu" version="2.1.16" />
+      </ecosystem>
+      <ecosystem name="launcher">
+        <package name="psutil" version="7.1.3+" />
+        <package name="rich" version="13.9.4+" />
+        <package name="requests" version="2.32.3+" />
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint name="architecture_pattern">服务化架构，每个功能独立类，遵循core/services/utils分层结构</constraint>
+    <constraint name="error_handling">统一异常处理格式{code, message, solution, details}，用户友好的错误消息</constraint>
+    <constraint name="cross_platform">支持Windows/macOS/Linux，平台特定的包管理器适配</constraint>
+    <constraint name="progress_tracking">使用ProgressTracker并确保提供component_name参数</constraint>
+    <constraint name="idempotent_operations">设计为可安全多次运行的幂等操作</constraint>
+    <constraint name="naming_convention">文件名snake_case，类名PascalCase，函数名snake_case</constraint>
+    <constraint name="security">官方源下载和校验和验证，临时文件安全管理</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="DependencyAnalyzer" kind="class_interface">
+      <signature>class DependencyAnalyzer:
+    def __init__(self, project_root: str, config_manager: ConfigManager)
+    def detect_dependency_files(self) -> Dict[str, List[str]]
+    def analyze_dependencies(self) -> DependencyAnalysis
+    def detect_conflicts(self) -> List[DependencyConflict]</signature>
+      <path>one-click-launcher/core/dependency_analyzer.py</path>
+    </interface>
+    <interface name="BatchInstaller" kind="class_interface">
+      <signature>class BatchInstaller:
+    def __init__(self, progress_tracker: ProgressTracker)
+    async def install_python_packages(self, requirements_file: str) -> InstallationResult
+    async def install_nodejs_packages(self, package_json: str) -> InstallationResult
+    async def install_batch(self, dependencies: List[DependencyInfo]) -> InstallationResult</signature>
+      <path>one-click-launcher/core/batch_installer.py</path>
+    </interface>
+    <interface name="VersionConflictResolver" kind="class_interface">
+      <signature>class VersionConflictResolver:
+    def detect_conflicts(self, dependencies: List[DependencyInfo]) -> List[VersionConflict]
+    def resolve_conflicts(self, conflicts: List[VersionConflict]) -> ResolutionResult
+    def generate_lock_file(self, dependencies: List[DependencyInfo]) -> str</signature>
+      <path>one-click-launcher/core/conflict_resolver.py</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>使用pytest进行Python测试，Jest进行Node.js测试。测试文件按test_*.py命名，放在tests/目录下。使用Mock模拟系统调用和外部依赖。目标测试覆盖率80%以上。使用parameterized测试进行多平台测试场景覆盖。</standards>
+    <locations>tests/test_dependency_analyzer.py, tests/test_batch_installer.py, tests/test_conflict_resolver.py, tests/integration/test_complete_workflow.py</locations>
+    <ideas>
+      <test idea="test_dependency_file_detection" ac="1">测试Python requirements.txt和Node.js package.json的自动检测功能</test>
+      <test idea="test_version_conflict_detection" ac="1,4">测试版本冲突检测算法，包括语义化版本比较</test>
+      <test idea="test_offline_installation_fallback" ac="2">测试网络不可用时的离线安装包回退机制</test>
+      <test idea="test_batch_python_installation" ac="3">测试Python包的批量安装，包括虚拟环境创建</test>
+      <test idea="test_batch_nodejs_installation" ac="3">测试Node.js模块的批量安装，包括npm/yarn支持</test>
+      <test idea="test_parallel_installation" ac="3">测试并行安装优化和资源管理</test>
+      <test idea="test_progress_tracking_integration" ac="5">测试ProgressTracker集成和详细进度反馈</test>
+      <test idea="test_error_recovery_mechanisms" ac="5">测试安装失败时的错误恢复和重试机制</test>
+    </ideas>
+  </tests>
+</story-context>

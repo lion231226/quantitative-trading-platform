@@ -1,0 +1,120 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>5</epicId>
+    <storyId>3</storyId>
+    <title>User Support and Guidance System</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-05</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/5-3-user-support-and-guidance-system.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>one-click launch script</asA>
+    <iWant>provide user support functionality and operational guidance</iWant>
+    <soThat>I can help users solve problems and successfully use the system</soThat>
+    <tasks>- [ ] Task 1: Error Knowledge Base System (AC: 1)
+  - [ ] Subtask 1.1: Extend ErrorKnowledgeBase to support comprehensive error documentation
+  - [ ] Subtask 1.2: Create structured error categorization and tagging system
+  - [ ] Subtask 1.3: Implement solution templates and step-by-step resolution guides
+  - [ ] Subtask 1.4: Build knowledge base search and indexing functionality
+  - [ ] Subtask 1.5: Create knowledge base update and version management system
+
+- [ ] Task 2: Interactive Problem Diagnosis Wizard (AC: 2)
+  - [ ] Subtask 2.1: Extend UserConfirmation interface for diagnostic wizard functionality
+  - [ ] Subtask 2.2: Implement decision tree-based problem identification logic
+  - [ ] Subtask 2.3: Create symptom-based diagnosis algorithms
+  - [ ] Subtask 2.4: Build guided troubleshooting step sequences
+  - [ ] Subtask 2.5: Implement diagnosis progress tracking and result reporting
+
+- [ ] Task 3: Technical Support Contact System (AC: 3)
+  - [ ] Subtask 3.1: Create diagnostic information collection module
+  - [ ] Subtask 3.2: Implement system environment snapshot generation
+  - [ ] Subtask 3.3: Build log and error report packaging functionality
+  - [ ] Subtask 3.4: Create support contact interface with multiple channels
+  - [ ] Subtask 3.5: Implement diagnostic data transmission and privacy protection
+
+- [ ] Task 4: Operation Guides and FAQ System (AC: 4)
+  - [ ] Subtask 4.1: Create structured operation guide content management
+  - [ ] Subtask 4.2: Implement FAQ search and recommendation system
+  - [ ] Subtask 4.3: Build interactive guide navigation and progress tracking
+  - [ ] Subtask 4.4: Create context-sensitive help integration
+  - [ ] Subtask 4.5: Implement guide content versioning and updates
+
+- [ ] Task 5: User Feedback Collection System (AC: 5)
+  - [ ] Subtask 5.1: Create feedback collection interface and forms
+  - [ ] Subtask 5.2: Implement feedback categorization and priority assignment
+  - [ ] Subtask 5.3: Build feedback analysis and trend identification
+  - [ ] Subtask 5.4: Create improvement recommendation engine
+  - [ ] Subtask 5.5: Implement feedback-driven system optimization workflows</tasks>
+  </story>
+
+  <acceptanceCriteria>1. Create a detailed error knowledge base containing common problems and solutions
+2. Implement interactive problem diagnosis wizard to guide users through troubleshooting
+3. Provide one-click technical support contact functionality with automatic diagnostic information collection
+4. Create operation guides and FAQ to help users understand system functionality
+5. Implement user feedback collection mechanism for continuous system experience improvement</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/epics-one-click-launch.md" title="One-Click Launch Epic Breakdown" section="Story 3.3: 用户支持与指导系统" snippet="作为 一键启动脚本，我需要 提供用户支持功能和操作指导，以便 帮助用户解决问题并成功使用系统。包含5个验收标准：错误知识库、问题诊断向导、技术支持联系、操作指南FAQ、用户反馈收集机制。" />
+      <doc path="docs/architecture-one-click-launch.md" title="One-Click Launch Decision Architecture" section="Project Structure and Dependencies" snippet="采用纯Python + CLI的跨平台部署自动化架构，使用psutil、rich、requests等核心库，通过智能环境检测、依赖管理和服务编排实现非技术用户10分钟内完成部署。" />
+    </docs>
+    <code>
+      <artifact path="one-click-launcher/core/recovery_orchestrator.py" kind="orchestrator" symbol="RecoveryOrchestrator" lines="1-50" reason="Provides comprehensive automatic recovery coordination patterns that can be extended for support system orchestration" />
+      <artifact path="one-click-launcher/utils/error_knowledge_base.py" kind="knowledge-base" symbol="ErrorKnowledgeBase" lines="1-30" reason="Provides existing error categorization and solution storage patterns for extending to comprehensive support knowledge base" />
+    </code>
+    <dependencies>
+      <ecosystem name="python">
+        <package name="psutil" version="7.1.3+" />
+        <package name="rich" version="13.9.4+" />
+        <package name="requests" version="2.32.3+" />
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+  <constraint type="architecture-pattern">Support Orchestrator Pattern - Leverage RecoveryOrchestrator patterns from Story 5.2 for comprehensive support coordination</constraint>
+  <constraint type="knowledge-management">Knowledge Base Management - Extend existing ErrorKnowledgeBase patterns for comprehensive solution and guide storage</constraint>
+  <constraint type="user-interface">Interactive Wizard Pattern - Extend UserConfirmation patterns for guided problem diagnosis and troubleshooting</constraint>
+  <constraint type="progress-tracking">Progress Tracking - Use ProgressTracker with component_name="user_support" for support operation workflow</constraint>
+  <constraint type="logging">Structured Logging - Use structured logging patterns for support session tracking and analysis</constraint>
+  <constraint type="content-management">Content Management - Follow established configuration and content management patterns</constraint>
+  <constraint type="ui-library">User Interface - Use rich library for beautiful and intuitive support interfaces</constraint>
+  <constraint type="data-collection">Data Collection - Leverage existing diagnostic and monitoring patterns for support data gathering</constraint>
+  <constraint type="user-experience">User Experience First - All support features must be intuitive and accessible to non-technical users</constraint>
+  <constraint type="comprehensive-coverage">Comprehensive Coverage - Support system should cover all aspects of the one-click launcher functionality</constraint>
+  <constraint type="real-time-assistance">Real-time Assistance - Provide immediate help and guidance during user operations</constraint>
+  <constraint type="privacy-protection">Privacy Protection - Ensure all user data and diagnostic information is handled with proper privacy safeguards</constraint>
+  <constraint type="multilingual-support">Multilingual Support - Design for future localization and internationalization</constraint>
+  <constraint type="performance-optimization">Performance Optimization - Support operations should not impact main launcher performance</constraint>
+  <constraint type="continuous-learning">Continuous Learning - System should improve from user feedback and support interactions</constraint>
+</constraints>
+  <interfaces>
+  <interface name="RecoveryOrchestrator" kind="class interface" signature="class RecoveryOrchestrator: Provides comprehensive system coordination for support orchestration and user assistance workflows" path="one-click-launcher/core/recovery_orchestrator.py" />
+  <interface name="ErrorKnowledgeBase" kind="class interface" signature="class ErrorKnowledgeBase: Provides solutions database and categorization for extending to comprehensive support knowledge base" path="one-click-launcher/utils/error_knowledge_base.py" />
+  <interface name="UserConfirmation" kind="class interface" signature="class UserConfirmation: Provides interactive user interaction patterns for extending to interactive diagnosis wizard and support guidance" path="one-click-launcher/utils/user_confirmation.py" />
+  <interface name="ProgressTracker" kind="class interface" signature="class ProgressTracker: Use for support operation progress tracking with component_name parameter" path="one-click-launcher/utils/progress_tracker.py" />
+  <interface name="SupportOrchestrator" kind="new class interface" signature="class SupportOrchestrator: Main support coordination system extending RecoveryOrchestrator patterns" path="one-click-launcher/core/support_orchestrator.py" />
+  <interface name="KnowledgeBase" kind="new class interface" signature="class KnowledgeBase: Extended error knowledge base and guide management system" path="one-click-launcher/core/knowledge_base.py" />
+  <interface name="DiagnosticWizard" kind="new class interface" signature="class DiagnosticWizard: Interactive problem diagnosis system extending UserConfirmation patterns" path="one-click-launcher/core/diagnostic_wizard.py" />
+  <interface name="SupportContact" kind="new class interface" signature="class SupportContact: Technical support contact system with multiple channels" path="one-click-launcher/core/support_contact.py" />
+  <interface name="FeedbackSystem" kind="new class interface" signature="class FeedbackSystem: User feedback collection and analysis system" path="one-click-launcher/core/feedback_system.py" />
+</interfaces>
+  <tests>
+    <standards>Support Workflow Testing - Test all support scenarios (knowledge base search, diagnosis wizard, support contact, guides, feedback). User Experience Testing - Validate support interfaces are intuitive and helpful for non-technical users. Content Management Testing - Test knowledge base content updates, version management, and search functionality. Integration Testing - Test support integration with existing error detection, recovery, and service management. Privacy Testing - Validate data collection and privacy protection mechanisms. Performance Testing - Ensure support operations don't impact launcher performance. Usability Testing - Validate support system effectiveness with real user scenarios.</standards>
+    <locations>one-click-launcher/tests/test_user_support.py - Comprehensive support system tests</locations>
+    <ideas>
+      <test-idea for-ac="1" description="Test error knowledge base with comprehensive error documentation and search functionality" />
+      <test-idea for-ac="1" description="Test error categorization and tagging system with structured categorization" />
+      <test-idea for-ac="2" description="Test interactive problem diagnosis wizard with decision tree logic" />
+      <test-idea for-ac="2" description="Test symptom-based diagnosis algorithms and guided troubleshooting" />
+      <test-idea for-ac="3" description="Test technical support contact system with diagnostic data collection" />
+      <test-idea for-ac="3" description="Test diagnostic data transmission and privacy protection mechanisms" />
+      <test-idea for-ac="4" description="Test operation guides and FAQ system with search and navigation" />
+      <test-idea for-ac="4" description="Test context-sensitive help integration and guide versioning" />
+      <test-idea for-ac="5" description="Test user feedback collection system with categorization and analysis" />
+      <test-idea for-ac="5" description="Test feedback-driven improvement recommendation engine" />
+    </ideas>
+  </tests>
+</story-context>

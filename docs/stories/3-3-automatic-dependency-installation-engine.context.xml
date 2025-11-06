@@ -1,0 +1,68 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>3.3</storyId>
+    <title>Automatic Dependency Installation Engine</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-04</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/3-3-automatic-dependency-installation-engine.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>one-click launch script</asA>
+    <iWant>to automatically install missing development dependencies</iWant>
+    <soThat>users can set up the complete development environment without manual intervention</soThat>
+    <tasks>1. Node.js Installation Engine, 2. Python Installation Engine, 3. Git Installation and Configuration, 4. Package Manager Setup, 5. Progress Feedback and Error Handling, 6. Installation Verification, 7. Integration Testing</tasks>
+  </story>
+
+  <acceptanceCriteria>1. Implement automatic installation of Node.js (LTS version) for Windows/macOS/Linux, 2. Implement automatic installation of Python 3.8+ for Windows/macOS/Linux, 3. Implement automatic Git installation and basic configuration, 4. Support package manager installation (npm, pip) and initial setup, 5. Provide installation progress feedback and error handling for failed installations, 6. Verify installation success and update system environment variables</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/stories/3-1-operating-system-detection-and-platform-adaptation.md" title="Operating System Detection and Platform Adaptation" section="Platform detection and adaptation patterns" snippet="Platform-specific path handling and file operations, system information collection functionality for environment diagnostics"/>
+      <doc path="docs/stories/3-2-development-environment-dependency-check.md" title="Development Environment Dependency Check" section="Dependency checking architecture and data structures" snippet="Create DependencyChecker class in core/dependency_checker.py, implement network status checker in utils/network_utils.py"/>
+      <doc path="docs/architecture-one-click-launch.md" title="One-Click Launch Architecture" section="Architecture decisions and constraints" snippet="Platform-specific installation methods, elevation handling, security requirements for package verification"/>
+    </docs>
+    <code>
+      <artifact path="one-click-launcher/core/dependency_checker.py" kind="service" symbol="DependencyChecker" lines="1-50" reason="Reuse dependency detection results for installation planning"/>
+      <artifact path="one-click-launcher/utils/network_utils.py" kind="utility" symbol="NetworkUtils" lines="1-30" reason="Use network connectivity checking for download operations"/>
+      <artifact path="one-click-launcher/core/environment_detector.py" kind="core" symbol="OperatingSystemDetector" lines="1-40" reason="Integrate with existing OS detection for platform-specific installations"/>
+    </code>
+    <dependencies>
+      <python ecosystem="python" packages="pytest>=7.0.0, requests>=2.25.0, psutil>=5.8.0"/>
+      <python ecosystem="tools" packages="pip, setuptools, wheel"/>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    - Platform-Specific Installation: Use appropriate installation methods for each OS (Windows installers, macOS Homebrew, Linux package managers)
+    - Elevation Handling: Request administrator privileges only when necessary for system-wide installations
+    - Idempotent Operations: Design installations to be safe to run multiple times
+    - Rollback Capability: Maintain ability to undo partial installations if errors occur
+    - Security: Verify downloaded packages using official sources and checksums
+    - Service-based architecture with dedicated classes for each functionality
+    - Follow existing dependency injection and configuration patterns
+  </constraints>
+  <interfaces>
+    <interface name="NodeJSInstaller" kind="class" signature="class NodeJSInstaller: def __init__(self, os_detector, network_utils); def install(self, version='lts') -> bool" path="services/nodejs_installer.py"/>
+    <interface name="PythonInstaller" kind="class" signature="class PythonInstaller: def __init__(self, os_detector, network_utils); def install(self, min_version='3.8') -> bool" path="services/python_installer.py"/>
+    <interface name="GitInstaller" kind="class" signature="class GitInstaller: def __init__(self, os_detector, network_utils); def install_and_configure(self) -> bool" path="services/git_installer.py"/>
+    <interface name="PackageManagerSetup" kind="class" signature="class PackageManagerSetup: def configure_npm(self) -> bool; def configure_pip(self) -> bool" path="services/package_manager.py"/>
+    <interface name="ProgressTracker" kind="class" signature="class ProgressTracker: def start_installation(self, component: str); def update_progress(self, progress: int); def complete_installation(self, success: bool)" path="utils/progress_tracker.py"/>
+    <interface name="InstallationVerifier" kind="class" signature="class InstallationVerifier: def verify_nodejs(self) -> bool; def verify_python(self) -> bool; def verify_git(self) -> bool" path="core/installation_verifier.py"/>
+  </interfaces>
+  <tests>
+    <standards>Mock installation testing without actual software installation, integration testing for complete workflows, platform-specific testing across Windows/macOS/Linux, error scenario testing for network failures and permission errors, progress reporting verification</standards>
+    <locations>one-click-launcher/tests/, tests/unit/, tests/integration/</locations>
+    <ideas>
+      <test idea="Test NodeJSInstaller.download_and_install() method with mocked download" ac="1"/>
+      <test idea="Test PythonInstaller.install() method with different OS platforms" ac="2"/>
+      <test idea="Test GitInstaller.install_and_configure() with mocked system calls" ac="3"/>
+      <test idea="Test PackageManagerSetup.configure_npm() and configure_pip()" ac="4"/>
+      <test idea="Test ProgressTracker real-time progress reporting" ac="5"/>
+      <test idea="Test InstallationVerifier verification methods" ac="6"/>
+      <test idea="Test complete installation workflow integration" ac="1,2,3,4,5,6"/>
+    </ideas>
+  </tests>
+</story-context>

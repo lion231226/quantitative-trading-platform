@@ -1,0 +1,91 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>6</storyId>
+    <title>Environment Configuration Verification</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-04</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/3-6-environment-configuration-verification.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>one-click launch script</asA>
+    <iWant>verify the correctness of all environment configurations</iWant>
+    <soThat>the system is ready to start services</soThat>
+    <tasks>Task 1: Node.js Build Verification
+Task 2: Python Module Import Verification
+Task 3: Database Connection Testing
+Task 4: Port Availability Checking
+Task 5: Environment Ready Report Generation</tasks>
+  </story>
+
+  <acceptanceCriteria>1. Verify Node.js project builds successfully (npm run build executes successfully)
+2. Verify Python module imports normally, with no syntax errors
+3. Test database connections, verifying read/write permissions
+4. Check port availability (3000, 8000, 5432, 6379, etc.)
+5. Generate environment ready report, displaying configuration summary to user</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/epics-one-click-launch.md" title="One-Click Launch Epic Breakdown" section="Story 1.6: 环境配置验证" snippet="验证 Node.js 项目构建成功（npm run build 成功执行），验证 Python 模块导入正常，测试数据库连接，检查端口可用性，生成环境就绪报告" />
+      <doc path="docs/architecture-one-click-launch.md" title="One-Click Launch Decision Architecture" section="Project Structure and Dependencies" snippet="采用纯Python + CLI的跨平台部署自动化架构，使用psutil、rich、requests等核心库" />
+    </docs>
+    <code>
+      <component path="one-click-launcher/utils/progress_tracker.py" kind="utility" symbol="ProgressTracker" lines="1-100" reason="Use for verification progress tracking with component_name parameter" />
+      <component path="one-click-launcher/core/environment_checker.py" kind="core" symbol="EnvironmentChecker" lines="1-50" reason="Existing environment checking patterns and integrated verification approach" />
+      <component path="one-click-launcher/utils/logger.py" kind="utility" symbol="get_logger" reason="Structured logging for verification processes" />
+      <component path="one-click-launcher/utils/network_utils.py" kind="utility" symbol="NetworkChecker" reason="Network connectivity and port checking functionality" />
+      <component path="one-click-launcher/services/database_service.py" kind="service" symbol="DatabaseService" lines="1-50" reason="Database connection testing and health check patterns" />
+      <component path="one-click-launcher/core/operating_system_detector.py" kind="core" symbol="OperatingSystemDetector" reason="Platform-specific command handling for verification" />
+    </code>
+    <dependencies>
+      <python name="psutil" version="7.1.3+" />
+      <python name="rich" version="13.9.4+" />
+      <python name="requests" version="2.32.3+" />
+      <python name="asyncio" version="built-in" />
+      <python name="subprocess" version="built-in" />
+      <python name="importlib" version="built-in" />
+      <python name="configparser" version="built-in" />
+      <nodejs name="npm" version="latest" />
+      <nodejs name="next" version="14.0+" />
+      <nodejs name="@radix-ui/react-dropdown-menu" version="^2.1.16" />
+      <nodejs name="@tanstack/react-query" version="^5.40.0" />
+      <database name="postgresql" version="13+" />
+      <database name="redis" version="6+" />
+      <ports default="3000,8000,5432,6379" />
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture">Environment Verification Pipeline: Implement sequential verification pipeline with early termination on critical failures</constraint>
+    <constraint type="platform">Cross-Platform Build Verification: Use platform-specific commands for build verification (npm/yarn/pnpm)</constraint>
+    <constraint type="database">Database Health Checking: Implement connection pooling and timeout handling for database verification</constraint>
+    <constraint type="network">Port Scanning Strategy: Use efficient port scanning with proper error handling and process identification</constraint>
+    <constraint type="progress">Progress Tracking Integration: Use ProgressTracker with component_name="environment_verification" for user feedback</constraint>
+    <constraint type="error">Unified Error Format: Follow established error format {code, message, solution, details}</constraint>
+    <constraint type="async">Async Operations: Use asyncio for parallel verification where appropriate</constraint>
+    <constraint type="timeout">Timeout Handling: Implement timeout handling for build processes and database connections</constraint>
+  </constraints>
+  <interfaces>
+    <interface name="ProgressTracker" kind="class" signature="ProgressTracker(component_name: str)" path="one-click-launcher/utils/progress_tracker.py" />
+    <interface name="EnvironmentChecker" kind="class" signature="EnvironmentChecker()" path="one-click-launcher/core/environment_checker.py" />
+    <interface name="NetworkChecker" kind="class" signature="NetworkChecker()" path="one-click-launcher/utils/network_utils.py" />
+    <interface name="DatabaseService" kind="class" signature="DatabaseService()" path="one-click-launcher/services/database_service.py" />
+    <interface name="npm build" kind="command" signature="npm run build" path="frontend/" />
+    <interface name="python import" kind="function" signature="importlib.util.find_spec(module_name)" path="built-in" />
+    <interface name="postgres connection" kind="database" signature="postgresql://user:pass@host:port/db" path="database" />
+    <interface name="redis connection" kind="database" signature="redis://host:port" path="database" />
+  </interfaces>
+  <tests>
+    <standards>Mock System Commands: Mock npm, python, database connections for unit testing. Test port checking with actual port allocation/release cycles. Build Process Testing: Test build verification with both success and failure scenarios. Database Testing: Mock database connections and test failure scenarios. Report Generation Testing: Validate report format and content accuracy. Integration Testing: Test complete verification pipeline with real environment scenarios.</standards>
+    <locations>one-click-launcher/tests/test_*.py for unit tests, one-click-launcher/tests/test_integration.py for integration tests</locations>
+    <ideas>
+      <test idea="Node.js build verification" ac="1">Test npm run build execution with timeout handling and error analysis</test>
+      <test idea="Python module validation" ac="2">Test importlib.util for dynamic module loading and syntax validation</test>
+      <test idea="Database connectivity" ac="3">Test database service health check with connection pooling</test>
+      <test idea="Port availability" ac="4">Test port scanning and conflict detection with process identification</test>
+      <test idea="Report generation" ac="5">Test environment ready report with rich formatting</test>
+    </ideas>
+  </tests>
+</story-context>

@@ -1,0 +1,101 @@
+# Frontend Service Configuration
+# Generated for one-click launcher frontend service management
+
+service:
+  name: "frontend"
+  type: "frontend"
+  description: "Next.js/React frontend application service"
+
+network:
+  host: "localhost"
+  port: 3000
+  protocol: "http"
+
+paths:
+  project_root: "../../"
+  frontend_dir: "frontend"
+  log_file: "logs/frontend.log"
+  pid_file: "logs/frontend.pid"
+
+startup:
+  command: "npm run dev"
+  build_command: "npm run build"
+  timeout: 120
+  max_retries: 3
+  health_check_interval: 5
+  auto_open_browser: true
+
+runtime:
+  node_version_required: ">=18.0.0"
+  environment: "development"
+
+process_management:
+  process_name_patterns:
+    - "node"
+    - "next"
+    - "npm"
+
+  restart_on_failure: true
+  graceful_shutdown_timeout: 10
+
+health_check:
+  endpoint: "/health"
+  expected_status: 200
+  timeout: 10
+
+environment_variables:
+  NODE_ENV: "development"
+  PORT: "3000"
+  HOST: "localhost"
+
+logging:
+  level: "INFO"
+  format: "structured"
+  file_rotation: true
+  max_file_size: "10MB"
+  backup_count: 5
+
+features:
+  hot_reload: true
+  error_overlay: true
+  source_maps: true
+  api_proxy: true
+  cors_enabled: true
+
+security:
+  cors_origins:
+    - "http://localhost:3000"
+    - "http://localhost:8000"
+  cors_methods:
+    - "GET"
+    - "POST"
+    - "PUT"
+    - "DELETE"
+    - "OPTIONS"
+  cors_headers:
+    - "Content-Type"
+    - "Authorization"
+
+monitoring:
+  metrics_enabled: true
+  performance_tracking: true
+  error_tracking: true
+
+dependencies:
+  required_services:
+    - name: "backend"
+      port: 8000
+      required: true
+  required_tools:
+    - "node"
+    - "npm"
+
+error_handling:
+  retry_attempts: 3
+  retry_delay: 5
+  exponential_backoff: true
+
+notifications:
+  startup_success: true
+  startup_failure: true
+  health_check_failure: true

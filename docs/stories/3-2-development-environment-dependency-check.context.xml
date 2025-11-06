@@ -1,0 +1,110 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>2</storyId>
+    <title>Development Environment Dependency Check</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-04</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>D:\Demo\docs\stories\3-2-development-environment-dependency-check.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>one-click launch script</asA>
+    <iWant>check the installation status and versions of development environment dependencies</iWant>
+    <soThat>I can determine which components need to be installed or updated</soThat>
+    <tasks>- [ ] Task 1: Core Dependency Detection Engine (AC: 1, 2, 3)
+  - [ ] Subtask 1.1: Create DependencyChecker class in core/dependency_checker.py
+  - [ ] Subtask 1.2: Implement Node.js version detection and path verification
+  - [ ] Subtask 1.3: Implement Python version detection and pip status check
+  - [ ] Subtask 1.4: Implement Git toolchain detection and configuration check
+  - [ ] Subtask 1.5: Add version comparison logic for minimum requirements
+- [ ] Task 2: Network Connectivity Validation (AC: 4)
+  - [ ] Subtask 2.1: Create network status checker in utils/network_utils.py
+  - [ ] Subtask 2.2: Test package manager accessibility (npm, pip, git repositories)
+  - [ ] Subtask 2.3: Implement proxy detection and configuration validation
+  - [ ] Subtask 2.4: Add offline mode detection capabilities
+- [ ] Task 3: Dependency Report Generation (AC: 5)
+  - [ ] Subtask 3.1: Design dependency status data structure
+  - [ ] Subtask 3.2: Create formatted report generator with missing components
+  - [ ] Subtask 3.3: Implement user-friendly display with installation suggestions
+  - [ ] Subtask 3.4: Add export functionality for dependency reports
+- [ ] Task 4: Integration and Testing
+  - [ ] Subtask 4.1: Integrate with existing OperatingSystemDetector
+  - [ ] Subtask 4.2: Create comprehensive unit tests for dependency checking
+  - [ ] Subtask 4.3: Test on different environments with various dependency states
+  - [ ] Subtask 4.4: Validate error handling for edge cases</tasks>
+  </story>
+
+  <acceptanceCriteria>1. Check Node.js >= 16.0.0, record version number and installation path
+2. Check Python >= 3.8, record version number and pip status
+3. Check Git toolchain, verify git command availability
+4. Check network connection status, determine if package managers are accessible
+5. Generate dependency check report, display missing components list to users</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/PRD-one-click-launch.md" title="Product Requirements Document" section="Functional Requirements" snippet="FR002: 脚本必须检查系统环境依赖（Node.js >= 16、Python >= 3.8、Git等），缺失时自动安装或提示用户" />
+      <doc path="docs/architecture-one-click-launch.md" title="Technical Architecture" section="Project Structure" snippet="core/environment_detector.py, utils/network_utils.py - 环境检测和网络工具模块已建立" />
+      <doc path="docs/epics-one-click-launch.md" title="Epic Breakdown" section="Story 1.2" snippet="检查Node.js >= 16.0.0，记录版本号和安装路径；检查Python >= 3.8，记录版本号和pip状态；检查Git工具链，验证git命令可用性" />
+      <doc path="docs/stories/3-1-operating-system-detection-and-platform-adaptation.md" title="Previous Story Learnings" section="Dev Agent Record" snippet="Python标准库验证：platform, subprocess, psutil模块使用已验证 - 可用于Node.js、Python、Git的工具检测和版本解析" />
+    </docs>
+    <code>
+      <artifact path="one-click-launcher/core/operating_system_detector.py" kind="class" symbol="OperatingSystemDetector" lines="89-150" reason="已建立的跨平台检测模式，可用于依赖工具检测" />
+      <artifact path="one-click-launcher/core/system_info_collector.py" kind="class" symbol="SystemInfoCollector" lines="1-50" reason="系统信息收集模式，可复用于依赖状态收集" />
+      <artifact path="one-click-launcher/utils/network_utils.py" kind="function" symbol="check_internet_connection" lines="18-39" reason="已建立的网络连接检测，可用于包管理器可达性检查" />
+      <artifact path="one-click-launcher/utils/network_utils.py" kind="function" symbol="check_port_available" lines="42-58" reason="端口检查功能，可用于服务冲突检测" />
+      <artifact path="one-click-launcher/core/environment_detector.py" kind="class" symbol="DependencyStatus" lines="38-44" reason="依赖状态数据结构，可直接用于依赖检查结果" />
+    </code>
+    <dependencies>
+  <ecosystem name="python">
+    <package name="psutil" version=">=7.1.3" usage="系统进程和资源监控，用于检测工具运行状态" />
+    <package name="rich" version=">=13.9.4" usage="CLI界面美化，进度条和表格显示" />
+    <package name="requests" version=">=2.32.3" usage="HTTP请求，用于网络连接和包管理器可达性检查" />
+  </ecosystem>
+  <ecosystem name="node">
+    <package name="npm" version=">=8.0.0" usage="Node.js包管理器，需要检测其可用性" />
+    <package name="node" version=">=16.0.0" usage="JavaScript运行时，核心依赖项" />
+  </ecosystem>
+  <ecosystem name="python-dev">
+    <package name="pip" version=">=21.0.0" usage="Python包管理器，需要检测其状态" />
+    <package name="python" version=">=3.8" usage="Python解释器，核心依赖项" />
+  </ecosystem>
+  <ecosystem name="git">
+    <package name="git" version=">=2.30" usage="版本控制工具，需要检测命令行可用性" />
+  </ecosystem>
+  <ecosystem name="testing">
+    <package name="pytest" version=">=7.4.0" usage="单元测试框架" />
+    <package name="pytest-asyncio" version=">=0.21.1" usage="异步测试支持" />
+    <package name="pytest-mock" version=">=3.10.0" usage="Mock和patch支持" />
+  </ecosystem>
+</dependencies>
+  </artifacts>
+
+  <constraints>
+  <constraint type="development-pattern">使用已建立的OperatingSystemDetector跨平台检测模式，遵循subprocess + platform模块组合</constraint>
+  <constraint type="version-comparison">实现语义化版本比较，支持Node.js (>=16.0.0)、Python (>=3.8)、Git (>=2.30)的版本验证</constraint>
+  <constraint type="error-handling">遵循已建立的优雅错误处理模式，提供用户友好的错误消息和恢复建议</constraint>
+  <constraint type="testing-coverage">目标80%+测试覆盖率，使用pytest框架，遵循已建立的测试模式和mock验证</constraint>
+  <constraint type="code-structure">扩展one-click-launcher/core/结构，创建dependency_checker.py模块，复用现有utils/工具函数</constraint>
+  <constraint type="platform-specific">支持Windows、macOS、Linux的平台特定依赖检测和路径处理</constraint>
+</constraints>
+  <interfaces>
+    <interface name="DependencyChecker.check_dependency" kind="class-method" signature="check_dependency(tool_name: str, min_version: str) -> DependencyStatus" path="one-click-launcher/core/dependency_checker.py" />
+    <interface name="NetworkChecker.check_package_manager_access" kind="function" signature="check_package_manager_access(package_manager: str) -> bool" path="one-click-launcher/utils/network_utils.py" />
+    <interface name="DependencyReport.generate_report" kind="class-method" signature="generate_report(dependencies: List[DependencyStatus]) -> Dict" path="one-click-launcher/core/dependency_checker.py" />
+    <interface name="VersionComparator.compare_versions" kind="function" signature="compare_versions(version1: str, version2: str) -> int" path="one-click-launcher/utils/version_utils.py" />
+  </interfaces>
+  <tests>
+    <standards>使用pytest框架进行单元测试，遵循已建立的测试模式。目标80%+测试覆盖率。使用mock验证外部工具调用和跨平台兼容性。测试文件命名模式：test_dependency_checker.py。测试应覆盖正常情况、异常情况和边界条件。</standards>
+    <locations>one-click-launcher/tests/test_dependency_checker.py - 核心依赖检查测试；one-click-launcher/tests/test_integration.py - 集成测试扩展；one-click-launcher/tests/ - 测试目录，遵循现有项目结构</locations>
+    <ideas>
+      <test-idea ac="1" description="测试Node.js版本检测功能，包括版本比较和路径验证">mock node --version 命令，测试不同版本字符串的解析和比较逻辑</test-idea>
+      <test-idea ac="2" description="测试Python版本检测和pip状态检查">验证python --version和pip --version命令的解析，包括虚拟环境检测</test-idea>
+      <test-idea ac="3" description="测试Git工具链检测和配置验证">mock git --version和git config命令，测试工具可用性检测</test-idea>
+      <test-idea ac="4" description="测试网络连接和包管理器可达性检查">使用network_utils中的check_internet_connection，测试npm、pip仓库访问</test-idea>
+      <test-idea ac="5" description="测试依赖报告生成和格式化输出">验证DependencyReport类的报告生成功能，包括缺失组件列表显示</test-idea>
+      <test-idea ac="all" description="跨平台兼容性测试">在Windows、macOS、Linux环境下验证依赖检测的一致性</test-idea>
+    </ideas>
+  </tests>
+</story-context>

@@ -1,0 +1,93 @@
+{
+  "minimum_requirements": {
+    "nodejs": "16.0.0",
+    "python": "3.8.0",
+    "git": "2.30.0",
+    "npm": "8.0.0",
+    "pip": "21.0.0"
+  },
+  "optional_dependencies": {
+    "docker": "20.10.0",
+    "redis": "6.0.0",
+    "postgresql": "13.0.0"
+  },
+  "package_managers": {
+    "npm": {
+      "registry_urls": [
+        "https://registry.npmjs.org",
+        "https://www.npmjs.com"
+      ],
+      "test_packages": ["lodash", "express"]
+    },
+    "pip": {
+      "registry_urls": [
+        "https://pypi.org/simple",
+        "https://pypi.org"
+      ],
+      "test_packages": ["requests", "numpy"]
+    },
+    "git": {
+      "repository_urls": [
+        "https://github.com",
+        "https://gitlab.com",
+        "https://bitbucket.org"
+      ],
+      "test_repos": ["octocat/Hello-World"]
+    }
+  },
+  "platform_specific": {
+    "windows": {
+      "executable_paths": {
+        "nodejs": ["C:\\Program Files\\nodejs", "C:\\Program Files (x86)\\nodejs"],
+        "python": ["C:\\Python3*", "C:\\Python39", "C:\\Python38"],
+        "git": ["C:\\Program Files\\Git\\cmd", "C:\\Program Files (x86)\\Git\\cmd"]
+      }
+    },
+    "macos": {
+      "executable_paths": {
+        "nodejs": ["/usr/local/bin", "/opt/homebrew/bin", "/usr/bin"],
+        "python": ["/usr/local/bin", "/opt/homebrew/bin", "/usr/bin"],
+        "git": ["/usr/local/bin", "/usr/bin", "/opt/homebrew/bin"]
+      }
+    },
+    "linux": {
+      "executable_paths": {
+        "nodejs": ["/usr/local/bin", "/usr/bin", "/snap/bin"],
+        "python": ["/usr/local/bin", "/usr/bin", "/snap/bin"],
+        "git": ["/usr/local/bin", "/usr/bin", "/snap/bin"]
+      }
+    }
+  },
+  "installation_sources": {
+    "nodejs": {
+      "official": "https://nodejs.org/en/download/",
+      "package_managers": {
+        "windows": ["winget install OpenJS.NodeJS", "choco install nodejs", "scoop install node"],
+        "macos": ["brew install node", "brew install node@18"],
+        "linux": ["curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - && sudo apt-get install -y nodejs"]
+      }
+    },
+    "python": {
+      "official": "https://www.python.org/downloads/",
+      "package_managers": {
+        "windows": ["winget install Python.Python.3.11", "choco install python"],
+        "macos": ["brew install python@3.11", "brew install python"],
+        "linux": ["sudo apt-get install -y python3.11 python3-pip", "sudo yum install -y python3 python3-pip"]
+      }
+    },
+    "git": {
+      "official": "https://git-scm.com/downloads",
+      "package_managers": {
+        "windows": ["winget install Git.Git", "choco install git", "scoop install git"],
+        "macos": ["brew install git", "xcode-select --install"],
+        "linux": ["sudo apt-get install -y git", "sudo yum install -y git", "sudo dnf install -y git"]
+      }
+    }
+  },
+  "health_checks": {
+    "network_timeout": 15,
+    "command_timeout": 10,
+    "retry_attempts": 3,
+    "critical_dependencies": ["nodejs", "python", "git"]
+  }
+}

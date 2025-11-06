@@ -3,23 +3,23 @@ chcp 65001 >nul
 setlocal enabledelayedexpansion
 
 :: ========================================
-:: 🚀 量化交易平台增强版启动脚本 (Windows)
+:: 🚀 量化交易平台增强版启动脚本 (Windows) - 修复版
 :: ========================================
 
 :: 颜色定义
 set "RED=[91m"
 set "GREEN=[92m"
-set "YELLOW=[93m"
-set "BLUE=[94m"
-set "MAGENTA=[95m"
-set "CYAN=[96m"
-set "WHITE=[97m"
+set "YELLOW="[93m"
+set "BLUE="[94m"
+set "MAGENTA="[95m"
+set "CYAN="[96m"
+set "WHITE="[97m"
 set "NC=[0m"
 
 :: 标题显示
 echo %CYAN%======================================%NC%
 echo %CYAN%  量化交易平台增强版启动脚本        %NC%
-echo %CYAN%  Enhanced Windows Launcher          %NC%
+echo %CYAN%  Enhanced Windows Launcher - Fixed   %NC%
 echo %CYAN%======================================%NC%
 echo.
 
@@ -88,45 +88,22 @@ if %errorlevel% equ 0 (
     echo %YELLOW%[WARNING]%NC% Git 未安装 (可选，不影响运行)
 )
 
-:: 检查端口占用
-echo %GREEN%[INFO]%NC% 检查端口占用情况...
-
-netstat -an | findstr ":3000" >nul 2>&1
-if %errorlevel% equ 0 (
-    echo %YELLOW%[WARNING]%NC% 端口 3000 已被占用
-    choice /M "是否要停止占用端口3000的进程"
-    if !errorlevel! equ 1 (
-        for /f "tokens=5" %%i in ('netstat -ano ^| findstr ":3000"') do (
-            taskkill /F /PID %%i >nul 2>&1
-        )
-        echo %GREEN%[INFO]%NC% 已停止占用端口3000的进程
-    )
-)
-
-netstat -an | findstr ":8000" >nul 2>&1
-if %errorlevel% equ 0 (
-    echo %YELLOW%[WARNING]%NC% 端口 8000 已被占用
-    choice /M "是否要停止占用端口8000的进程"
-    if !errorlevel! equ 1 (
-        for /f "tokens=5" %%i in ('netstat -ano ^| findstr ":8000"') do (
-            taskkill /F /PID %%i >nul 2>&1
-        )
-        echo %GREEN%[INFO]%NC% 已停止占用端口8000的进程
-    )
-)
-
 echo %GREEN%✅%NC% 环境检查通过
 echo.
 
 :: 启动后端服务
 :start_backend
 echo %GREEN%[INFO]%NC% 启动后端服务...
-cd backend
+
+:: 确保在正确的目录
+cd /d "%~dp0"
 
 :: 创建必要目录
-if not exist "..\data" mkdir "..\data"
-if not exist "..\logs" mkdir "..\logs"
-if not exist "..\temp" mkdir "..\temp"
+if not exist "data" mkdir "data"
+if not exist "logs" mkdir "logs"
+if not exist "temp" mkdir "temp"
+
+cd backend
 
 :: 检查虚拟环境
 if not exist "venv" (
@@ -134,6 +111,7 @@ if not exist "venv" (
     python -m venv venv
     if %errorlevel% neq 0 (
         echo %RED%[ERROR]%NC% 创建虚拟环境失败
+        echo %YELLOW%[HELP]%NC% 请检查Python安装是否正确
         pause
         exit /b 1
     )
@@ -146,6 +124,7 @@ if exist "venv\Scripts\activate.bat" (
     echo %GREEN%✓%NC% 虚拟环境激活成功
 ) else (
     echo %RED%[ERROR]%NC% 无法激活虚拟环境
+    echo %YELLOW%[HELP]%NC% 虚拟环境可能创建失败，请检查权限
     pause
     exit /b 1
 )
@@ -160,6 +139,7 @@ if %errorlevel% neq 0 (
 :: 检查requirements文件
 if not exist "requirements.txt" (
     echo %RED%[ERROR]%NC% requirements.txt 文件不存在
+    echo %YELLOW%[HELP]%NC% 请确保在正确的项目目录中运行此脚本
     pause
     exit /b 1
 )
@@ -167,10 +147,11 @@ if not exist "requirements.txt" (
 :: 安装依赖
 echo %GREEN%[INFO]%NC% 安装Python依赖...
 echo %YELLOW%[INFO]%NC% 首次安装可能需要几分钟，请耐心等待...
-pip install -r requirements.txt --quiet
+pip install -r requirements.txt
 if %errorlevel% neq 0 (
     echo %RED%[ERROR]%NC% Python依赖安装失败
     echo %YELLOW%[HELP]%NC% 尝试手动运行: pip install -r requirements.txt
+    echo %YELLOW%[HELP]%NC% 如果失败，请检查网络连接和Python版本
     pause
     exit /b 1
 )
@@ -182,7 +163,6 @@ if not exist ".env" (
     (
         echo # 后端配置
         echo DATABASE_URL=sqlite:///./../data/quant_trading.db
-        echo REDIS_URL=redis://localhost:6379
         echo PYTHONPATH=%CD%
         echo LOG_LEVEL=INFO
         echo.
@@ -209,19 +189,19 @@ start "量化交易-后端服务" cmd /k "title 量化交易-后端服务 && cd 
 
 :: 等待后端启动
 echo %GREEN%[INFO]%NC% 等待后端服务启动...
-timeout /t 15 /nobreak >nul
+timeout /t 10 /nobreak >nul
 
-cd ..
+cd ..\frontend
 
 :: 启动前端服务
 :start_frontend
 echo.
 echo %GREEN%[INFO]%NC% 启动前端服务...
-cd frontend
 
 :: 检查package.json
 if not exist "package.json" (
     echo %RED%[ERROR]%NC% package.json 文件不存在
+    echo %YELLOW%[HELP]%NC% 请确保在正确的项目目录中运行此脚本
     pause
     exit /b 1
 )
@@ -247,10 +227,11 @@ if not exist ".env.local" (
 if not exist "node_modules" (
     echo %GREEN%[INFO]%NC% 安装Node.js依赖...
     echo %YELLOW%[INFO]%NC% 首次安装可能需要几分钟，请耐心等待...
-    npm install --silent
+    npm install
     if %errorlevel% neq 0 (
         echo %RED%[ERROR]%NC% Node.js依赖安装失败
         echo %YELLOW%[HELP]%NC% 尝试手动运行: npm install
+        echo %YELLOW%[HELP]%NC% 如果失败，请检查网络连接和Node.js版本
         pause
         exit /b 1
     )
@@ -267,7 +248,7 @@ start "量化交易-前端服务" cmd /k "title 量化交易-前端服务 && cd 
 
 :: 等待前端启动
 echo %GREEN%[INFO]%NC% 等待前端服务启动...
-timeout /t 20 /nobreak >nul
+timeout /t 15 /nobreak >nul
 
 cd ..
 
@@ -277,21 +258,37 @@ echo.
 echo %GREEN%[INFO]%NC% 验证服务状态...
 
 :: 检查后端服务
+echo %GREEN%[INFO]%NC% 检查后端服务...
 timeout /t 5 /nobreak >nul
 curl -s http://localhost:8000/health >nul 2>&1
 if %errorlevel% equ 0 (
     echo %GREEN%✓%NC% 后端服务运行正常
 ) else (
     echo %YELLOW%⚠%NC% 后端服务启动中，请稍等...
+    timeout /t 10 /nobreak >nul
+    curl -s http://localhost:8000 >nul 2>&1
+    if %errorlevel% equ 0 (
+        echo %GREEN%✓%NC% 后端服务启动成功
+    ) else (
+        echo %YELLOW%⚠%NC% 后端服务可能还在启动，请稍后手动检查
+    )
 )
 
 :: 检查前端服务
+echo %GREEN%[INFO]%NC% 检查前端服务...
 timeout /t 5 /nobreak >nul
 curl -s http://localhost:3000 >nul 2>&1
 if %errorlevel% equ 0 (
     echo %GREEN%✓%NC% 前端服务运行正常
 ) else (
     echo %YELLOW%⚠%NC% 前端服务启动中，请稍等...
+    timeout /t 10 /nobreak >nul
+    curl -s http://localhost:3000 >nul 2>&1
+    if %errorlevel% equ 0 (
+        echo %GREEN%✓%NC% 前端服务启动成功
+    ) else (
+        echo %YELLOW%⚠%NC% 前端服务可能还在启动，请稍后手动检查
+    )
 )
 
 :: 显示成功信息

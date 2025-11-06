@@ -57,7 +57,8 @@
       "Bash(npx next dev:*)",
       "Bash(kill:*)",
       "mcp__web-search-prime__webSearchPrime",
-      "Bash(git remote:*)"
+      "Bash(git remote:*)",
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": []

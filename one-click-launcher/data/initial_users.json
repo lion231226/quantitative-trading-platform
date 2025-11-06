@@ -1,0 +1,107 @@
+{
+  "version": "1.0",
+  "description": "初始用户数据",
+  "created_at": "2025-11-05T00:00:00Z",
+  "users": [
+    {
+      "username": "administrator",
+      "email": "administrator@demo.local",
+      "password": "admin123",
+      "full_name": "系统管理员",
+      "is_admin": true,
+      "is_active": true,
+      "profile": {
+        "department": "IT",
+        "position": "系统管理员",
+        "phone": "+86-0000-0000000",
+        "avatar_url": null,
+        "bio": "系统默认管理员账户"
+      },
+      "permissions": [
+        "user_management",
+        "system_config",
+        "database_management",
+        "audit_logs",
+        "api_management",
+        "file_management",
+        "task_management"
+      ]
+    },
+    {
+      "username": "developer",
+      "email": "developer@demo.local",
+      "password": "dev123",
+      "full_name": "开发者账户",
+      "is_admin": false,
+      "is_active": true,
+      "profile": {
+        "department": "Development",
+        "position": "全栈开发工程师",
+        "phone": "+86-0000-0000001",
+        "avatar_url": null,
+        "bio": "系统开发者账户"
+      },
+      "permissions": [
+        "database_read",
+        "api_full_access",
+        "file_upload",
+        "task_management",
+        "system_monitor"
+      ]
+    },
+    {
+      "username": "operator",
+      "email": "operator@demo.local",
+      "password": "op123",
+      "full_name": "操作员账户",
+      "is_admin": false,
+      "is_active": true,
+      "profile": {
+        "department": "Operations",
+        "position": "系统操作员",
+        "phone": "+86-0000-0000002",
+        "avatar_url": null,
+        "bio": "系统日常操作和维护账户"
+      },
+      "permissions": [
+        "user_read",
+        "system_monitor",
+        "basic_config",
+        "report_view"
+      ]
+    },
+    {
+      "username": "guest",
+      "email": "guest@demo.local",
+      "password": "guest123",
+      "full_name": "访客账户",
+      "is_admin": false,
+      "is_active": true,
+      "profile": {
+        "department": "Guest",
+        "position": "访客",
+        "phone": null,
+        "avatar_url": null,
+        "bio": "只读访客账户"
+      },
+      "permissions": [
+        "public_view"
+      ]
+    }
+  ],
+  "password_policy": {
+    "min_length": 6,
+    "require_uppercase": false,
+    "require_lowercase": false,
+    "require_numbers": false,
+    "require_special_chars": false,
+    "allowed_special_chars": "!@#$%^&*"
+  },
+  "metadata": {
+    "import_version": "1.0",
+    "compatibility": ">=1.0.0",
+    "auto_generate_passwords": true,
+    "default_password_expiry": 90,
+    "author": "Database Service Manager"
+  }
+}

@@ -1,0 +1,276 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>10</epicId>
+    <storyId>1</storyId>
+    <title>项目文档完善与清理</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-06</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/10-1-project-documentation-and-cleanup.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>项目维护者</asA>
+    <iWant>完成项目的最终文档完善和清理工作</iWant>
+    <soThat>项目达到发布状态，用户能够顺利使用项目</soThat>
+    <tasks>### 任务1: 更新README.md (估时: 1小时)
+1. **分析当前README内容**
+   - 检查现有启动说明
+   - 识别需要更新的部分
+   - 确认一键启动器的工作状态
+
+2. **更新启动方式章节**
+   - 替换手动启动说明为一键启动说明
+   - 保留环境要求信息
+   - 更新故障排除指南
+   - 添加启动脚本的使用说明
+
+3. **验证更新效果**
+   - 测试按照新README是否能够成功启动
+   - 确认所有链接和命令正确
+   - 检查格式和排版
+
+### 任务2: 创建开发教程 (估时: 3小时)
+1. **教程结构设计**
+   ```
+   # AI辅助量化交易平台开发教程
+   ## 1. 项目概述与目标
+   ## 2. BMAD V6工作流介绍
+   ## 3. GLM 4.6模型应用
+   ## 4. 开发环境搭建
+   ## 5. 项目架构设计
+   ## 6. 核心功能开发
+   ## 7. 一键启动系统开发
+   ## 8. 测试与验证
+   ## 9. 经验总结与最佳实践
+   ```
+
+2. **内容编写**
+   - 记录项目初始化过程
+   - 详细描述BMAD V6工作流的使用
+   - 分享GLM 4.6模型的协作经验
+   - 包含具体的代码示例和命令
+   - 添加遇到的问题和解决方案
+
+3. **教程完善**
+   - 添加截图和图表
+   - 创建目录和索引
+   - 校对内容和格式
+   - 添加参考链接
+
+### 任务3: 更新参赛项目介绍.md (估时: 2小时)
+1. **内容规划**
+   ```
+   # 量化交易单均线策略分析平台
+   ## 项目背景
+   ## 问题陈述
+   ## 解决方案
+   ## 技术架构
+   ## 核心功能
+   ## 创新点
+   ## 开发过程
+   ## 测试结果
+   ## 未来规划
+   ```
+
+2. **文档更新**
+   - 更新项目最新状态
+   - 添加一键启动特性
+   - 完善技术架构说明
+   - 突出AI辅助开发特色
+   - 添加性能指标和数据
+
+3. **内容优化**
+   - 确保内容准确完整
+   - 优化语言表达
+   - 添加项目亮点
+   - 完善格式排版
+
+### 任务4: 清理无用测试文件 (估时: 2小时)
+1. **全面扫描项目**
+   - 扫描所有测试文件
+   - 识别demo和临时文件
+   - 检查重复或过时的文件
+   - 分析文件依赖关系
+
+2. **分类评估**
+   - 必要的测试文件：保留
+   - Demo文件：评估是否需要
+   - 临时文件：删除
+   - 重复文件：合并或删除
+
+3. **安全清理**
+   - 备份重要文件
+   - 逐步删除确认的无用文件
+   - 验证删除后项目仍正常工作
+   - 更新相关文档中的引用</tasks>
+  </story>
+
+  <acceptanceCriteria>### 功能验收标准
+- [x] README.md已更新为使用智能启动器（one-click-launcher/launcher.py）
+- [ ] 创建详细的开发教程文档，记录使用BMAD V6和GLM 4.6进行本项目开发的实际实现过程和经验
+- [ ] 参赛项目介绍.md文档完整，包含项目特性、技术栈、创新点、AI辅助开发特色等
+- [ ] 项目中无用的测试文件已识别并安全清理
+- [ ] 所有文档格式正确，无语法错误
+- [x] 智能启动器功能验证正常工作（已验证启动成功）
+
+### 质量验收标准
+- [ ] 文档内容准确，与实际项目状态一致
+- [ ] 开发教程包含足够的细节，便于其他开发者学习
+- [ ] 清理过程安全，未删除重要文件
+- [ ] 文档结构清晰，易于阅读和维护</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>README.md</path>
+        <title>项目主文档</title>
+        <section>启动方式</section>
+        <snippet>需要更新为一键启动器使用说明</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD-one-click-launch.md</path>
+        <title>一键启动产品需求文档</title>
+        <section>功能需求</section>
+        <snippet>一键启动系统的PRD文档，包含完整的功能规格</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture-one-click-launch.md</path>
+        <title>一键启动架构文档</title>
+        <section>系统架构</section>
+        <snippet>详细的技术架构设计，包含环境检测、依赖管理、服务编排</snippet>
+      </doc>
+      <doc>
+        <path>docs/bmm-workflow-status.yaml</path>
+        <title>BMAD工作流状态</title>
+        <section>史诗状态</section>
+        <snippet>所有史诗的完成状态，Epic 10当前为contexted状态</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-status.yaml</path>
+        <title>Sprint状态跟踪</title>
+        <section>开发状态</section>
+        <snippet>项目开发进度状态，当前Story 10-1状态为drafted</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>one-click-launcher/launcher.py</path>
+        <kind>主启动器</kind>
+        <symbol>main</symbol>
+        <lines>1-50</lines>
+        <reason>智能启动器的主入口，包含环境检查、服务启动、状态验证功能</reason>
+      </artifact>
+      <artifact>
+        <path>one-click-launcher/launcher_real.py</path>
+        <kind>实际启动器</kind>
+        <symbol>EnvironmentDetector</symbol>
+        <lines>1-100</lines>
+        <reason>环境检测模块，自动检测操作系统和开发环境</reason>
+      </artifact>
+      <artifact>
+        <path>backend/main.py</path>
+        <kind>FastAPI应用</kind>
+        <symbol>app</symbol>
+        <lines>1-30</lines>
+        <reason>后端API服务的入口点，提供策略分析和数据管理功能</reason>
+      </artifact>
+      <artifact>
+        <path>frontend/src/app/page.tsx</path>
+        <kind>Next.js页面</kind>
+        <symbol>Home</symbol>
+        <lines>1-50</lines>
+        <reason>前端主页面，提供用户界面和数据可视化功能</reason>
+      </artifact>
+      <artifact>
+        <path>demo_backend_basic.py</path>
+        <kind>演示文件</kind>
+        <symbol>main</symbol>
+        <lines>1-50</lines>
+        <reason>基础后端演示文件，可能需要评估是否保留</reason>
+      </artifact>
+      <artifact>
+        <path>demo_backend_service.py</path>
+        <kind>演示文件</kind>
+        <symbol>create_app</symbol>
+        <lines>1-30</lines>
+        <reason>后端服务演示文件，可能需要评估是否保留</reason>
+      </artifact>
+      <artifact>
+        <path>demo_backend_simple.py</path>
+        <kind>演示文件</kind>
+        <symbol>app</symbol>
+        <lines>1-40</lines>
+        <reason>简单后端演示文件，可能需要评估是否保留</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <ecosystem name="frontend">
+        <package name="next" version="14+"/>
+        <package name="react" version="18+"/>
+        <package name="typescript" version="5+"/>
+        <package name="tailwindcss" version="3+"/>
+        <package name="chart.js" version="4+"/>
+      </ecosystem>
+      <ecosystem name="backend">
+        <package name="fastapi" version="0.104+"/>
+        <package name="uvicorn" version="0.24+"/>
+        <package name="sqlalchemy" version="2+"/>
+        <package name="akshare" version="1.12+"/>
+        <package name="pandas" version="2.1+"/>
+        <package name="numpy" version="1.25+"/>
+      </ecosystem>
+      <ecosystem name="development">
+        <package name="python" version="3.11+"/>
+        <package name="node.js" version="18+"/>
+        <package name="git" version="2+"/>
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>文档必须使用中文编写，符合中文技术文档规范</constraint>
+    <constraint>所有代码示例必须经过测试验证，确保可执行性</constraint>
+    <constraint>文档更新必须与项目实际状态保持一致</constraint>
+    <constraint>清理文件前必须进行备份，确保重要数据不丢失</constraint>
+    <constraint>使用BMAD V6工作流标准格式，确保文档结构一致</constraint>
+    <constraint>遵循GLM 4.6模型协作的最佳实践，记录AI辅助开发过程</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>智能启动器API</name>
+      <kind>命令行接口</kind>
+      <signature>python launcher.py [--debug] [--help]</signature>
+      <path>one-click-launcher/launcher.py</path>
+    </interface>
+    <interface>
+      <name>后端API服务</name>
+      <kind>REST API</kind>
+      <signature>GET /api/strategy/analyze</signature>
+      <path>backend/main.py</path>
+    </interface>
+    <interface>
+      <name>前端用户界面</name>
+      <kind>React组件</kind>
+      <signature>Component: StrategyAnalyzer</signature>
+      <path>frontend/src/components/StrategyAnalyzer.tsx</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>使用Python pytest框架进行后端测试，Jest进行前端测试，确保代码覆盖率80%以上。测试文件命名遵循test_*.py和*.test.tsx规范。测试内容包括功能测试、集成测试和性能测试。</standards>
+    <locations>
+      <location>backend/tests/</location>
+      <location>frontend/src/__tests__/</location>
+      <location>one-click-launcher/tests/</location>
+    </locations>
+    <ideas>
+      <test idea="AC1">测试README.md更新后的启动指引是否准确有效</test>
+      <test idea="AC2">验证开发教程中的代码示例是否可以正常运行</test>
+      <test idea="AC3">检查参赛项目介绍.md中的链接和图片是否正常显示</test>
+      <test idea="AC4">验证文件清理后项目功能完整性</test>
+      <test idea="AC5">测试智能启动器在不同环境下的兼容性</test>
+    </ideas>
+  </tests>
+</story-context>
