@@ -8,6 +8,7 @@
 
 import os
 import sys
+import json
 import asyncio
 import argparse
 import signal
@@ -28,12 +29,27 @@ sys.path.insert(0, str(PROJECT_ROOT))
 if platform.system() == "Windows":
     import locale
     try:
+        # 设置PYTHONIOENCODING环境变量 - 必须在任何输出之前设置
+        os.environ['PYTHONIOENCODING'] = 'utf-8'
         # 尝试设置UTF-8编码
         os.system("chcp 65001 >nul 2>&1")
-        locale.setlocale(locale.LC_ALL, 'zh_CN.UTF-8')
+        # 使用更安全的locale设置
+        try:
+            locale.setlocale(locale.LC_ALL, 'Chinese')
+        except locale.Error:
+            try:
+                locale.setlocale(locale.LC_ALL, 'zh_CN.UTF-8')
+            except locale.Error:
+                pass  # 使用默认locale
     except:
         # 如果设置失败，继续使用默认编码
         pass
+
+# 确保所有后续输出都使用UTF-8编码
+import sys
+if sys.version_info[0] >= 3:
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 
 # 导入必要的模块
 try:
@@ -54,6 +70,10 @@ except ImportError:
 # 导入项目模块
 from utils.logger import get_logger
 from utils.config_manager import ConfigManager
+from core.dependency_installer import DependencyInstaller
+from services.redis_service_manager import RedisServiceManager
+from core.enhanced_service_orchestrator import EnhancedServiceOrchestrator, create_enhanced_service_configs
+from core.error_diagnostic_system import diagnostic_system
 
 logger = get_logger(__name__)
 
@@ -92,8 +112,21 @@ class RealLauncher:
         self.mode = mode
         self.console = Console(force_terminal=True, legacy_windows=False) if Console else None
         self.config = ConfigManager()
+
+        # 初始化依赖管理器
+        self.dependency_installer = DependencyInstaller()
+        self.redis_manager = RedisServiceManager()
+
+        # 初始化增强服务编排器
+        self.service_orchestrator = EnhancedServiceOrchestrator()
+
+        # 从配置文件读取Redis必需性设置
+        redis_required = self.config.get("dependencies", "redis_required", True)
+        if isinstance(redis_required, str):
+            redis_required = redis_required.lower() in ('true', '1', 'yes', 'on')
+
         self.services = {
-            "redis": ServiceConfig("Redis", 6379, 30, False),  # Redis设为可选
+            "redis": ServiceConfig("Redis", 6379, 30, redis_required),  # 从配置读取Redis必需性
             "database": ServiceConfig("Database", 5432, 60, False),  # Database设为可选
             "backend": ServiceConfig("Backend", 8000, 60, True, "/health"),
             "frontend": ServiceConfig("Frontend", 3000, 120, True)
@@ -186,46 +219,50 @@ class RealLauncher:
 
             self._print(f"Python版本: {python_version}", "success")
 
-            # 检查Node.js（前端需要）
-            try:
-                node_process = await asyncio.create_subprocess_exec(
-                    "node", "--version",
-                    stdout=asyncio.subprocess.PIPE,
-                    stderr=asyncio.subprocess.PIPE
-                )
-                node_stdout, _ = await node_process.communicate()
+            # 使用DependencyInstaller进行全面的依赖检测和安装
+            self._print("执行全面依赖检测...", "info")
+            env_result = await self.dependency_installer.check_and_install_dependencies()
 
-                if node_process.returncode == 0:
-                    node_version = node_stdout.decode('utf-8', errors='ignore').strip()
-                    self._print(f"Node.js版本: {node_version}", "success")
+            if not env_result.success:
+                self._print("环境依赖检测失败", "error")
+                if env_result.missing_required:
+                    self._print(f"缺失必需依赖: {', '.join(env_result.missing_required)}", "error")
+                    # 检查是否只有Redis缺失，如果是则继续启动（启动器会自动安装Redis）
+                    redis_only_missing = (
+                        len(env_result.missing_required) == 1 and
+                        "redis" in env_result.missing_required
+                    )
+                    if redis_only_missing:
+                        self._print("检测到仅Redis缺失，启动器将自动安装Redis服务", "info")
+                    else:
+                        return False
                 else:
-                    self._print("Node.js未安装，前端可能无法启动", "warning")
-            except Exception:
-                self._print("Node.js不可用，前端可能无法启动", "warning")
+                    self._print("部分可选依赖缺失，但将继续启动", "warning")
+            else:
+                self._print("环境依赖检测完成", "success")
 
-            # 检查必要的包
-            required_packages = ['psutil']
-            if self.console:
-                required_packages.extend(['rich'])
+            # 显示依赖检测结果
+            for result in env_result.dependency_results:
+                if result.status.value == "installed":
+                    self._print(f"[OK] {result.dependency_name} ({result.version or 'unknown'})", "success")
+                elif result.status.value == "not_installed":
+                    level = "error" if self.dependency_installer.requirements.get(result.dependency_name).required else "warning"
+                    self._print(f"[FAIL] {result.dependency_name} - {result.error_message or '未安装'}", level)
 
-            missing_packages = []
-            for package in required_packages:
-                try:
-                    __import__(package)
-                    self._print(f"{package} 已安装", "success")
-                except ImportError:
-                    missing_packages.append(package)
-                    self._print(f"{package} 未安装", "error")
+            # 特别检查Redis服务状态
+            redis_config = self.services.get("redis")
+            if redis_config and redis_config.required:
+                self._print("检查Redis服务状态...", "info")
+                redis_info = self.redis_manager.detect_redis_service()
 
-            if missing_packages:
-                self._print(f"正在安装缺失的包: {', '.join(missing_packages)}", "info")
-                try:
-                    subprocess.run([sys.executable, '-m', 'pip', 'install'] + missing_packages,
-                                 check=True, capture_output=True)
-                    self._print("包安装完成", "success")
-                except subprocess.CalledProcessError as e:
-                    self._print(f"包安装失败: {e}", "error")
-                    return False
+                if redis_info.status.value == "running":
+                    self._print(f"[OK] Redis服务运行中 (端口: {redis_info.port})", "success")
+                elif redis_info.status.value == "stopped":
+                    self._print("[WARN] Redis服务已停止，将尝试启动", "warning")
+                elif redis_info.status.value == "not_installed":
+                    self._print("[WARN] Redis未安装，将尝试自动安装", "warning")
+                else:
+                    self._print(f"[WARN] Redis状态未知: {redis_info.status.value}", "warning")
 
             return True
 
@@ -234,11 +271,66 @@ class RealLauncher:
             return False
 
     async def _start_real_services(self) -> Tuple[List[str], List[str]]:
-        """启动所有真实服务"""
+        """启动所有真实服务 - 使用增强的服务编排器"""
         started_services = []
         failed_services = []
 
-        self._print("开始启动真实服务...", "info")
+        self._print("使用增强服务编排器启动服务...", "info")
+
+        try:
+            # 创建增强的服务配置
+            enhanced_configs = create_enhanced_service_configs()
+
+            # 根据当前配置调整服务
+            redis_required = self.services.get("redis", {}).required if hasattr(self.services.get("redis", {}), 'required') else True
+            enhanced_configs["redis"].required = redis_required
+
+            # 使用增强服务编排器启动服务
+            startup_results = await self.service_orchestrator.start_services(enhanced_configs)
+
+            # 处理启动结果
+            for service_name, result in startup_results.items():
+                if result.success:
+                    started_services.append(service_name)
+                    self._print(f"{result.service_name} 启动成功 (PID: {result.process_id}, 耗时: {result.start_time:.2f}s)", "success")
+
+                    # 更新进程引用
+                    if result.process_id:
+                        # 这里可以添加进程管理逻辑
+                        pass
+                else:
+                    failed_services.append(service_name)
+                    self._print(f"{result.service_name} 启动失败: {result.error_message}", "error")
+
+                    # 生成详细诊断报告
+                    if result.diagnostics:
+                        diagnostic = await diagnostic_system.diagnose_service_failure(
+                            service_name, result.error_message
+                        )
+                        user_report = diagnostic_system.generate_user_report(diagnostic)
+                        self._print("\n" + user_report, "warning")
+
+                    # 如果是必需服务失败，停止后续启动
+                    if enhanced_configs[service_name].required:
+                        self._print(f"必需服务 {service_name} 启动失败，停止后续服务启动", "error")
+                        break
+
+        except Exception as e:
+            self._print(f"服务编排器启动失败: {str(e)}", "error")
+            logger.error(f"服务编排器启动异常: {str(e)}")
+
+            # 回退到原始启动方法
+            self._print("回退到原始启动方法...", "warning")
+            return await self._start_real_services_fallback()
+
+        return started_services, failed_services
+
+    async def _start_real_services_fallback(self) -> Tuple[List[str], List[str]]:
+        """回退的原始服务启动方法"""
+        started_services = []
+        failed_services = []
+
+        self._print("使用原始方法启动服务...", "info")
 
         # 按顺序启动服务
         service_order = ["redis", "database", "backend", "frontend"]
@@ -250,8 +342,19 @@ class RealLauncher:
                 self._print(f"启动 {service_config.name}...", "info")
 
                 try:
-                    if service_name in ["redis", "database"]:
-                        # 检查这些服务是否已在运行
+                    if service_name == "redis" and service_config.required:
+                        # 处理Redis服务：检测、安装、启动
+                        redis_result = await self._handle_redis_service(service_config)
+                        if redis_result["success"]:
+                            started_services.append(service_name)
+                            self._print(f"{service_config.name} {redis_result.get('message', '就绪')}", "success")
+                        else:
+                            failed_services.append(service_name)
+                            self._print(f"{service_config.name} 处理失败: {redis_result.get('error', 'unknown error')}", "error")
+                            # 如果Redis必需且启动失败，停止后续服务启动
+                            break
+                    elif service_name == "database":
+                        # 检查数据库服务是否已在运行
                         if self._check_service_availability(service_name, service_config.port):
                             started_services.append(service_name)
                             self._print(f"{service_config.name} 检测到运行中", "success")
@@ -430,15 +533,78 @@ class RealLauncher:
                         "error": "npm install超时（超过5分钟）"
                     }
 
-            # 启动前端开发服务器
+            # 检查是否需要构建生产版本
+            next_build_path = os.path.join(frontend_path, ".next")
+            package_json_path = os.path.join(frontend_path, "package.json")
+
+            # 读取package.json来确定使用哪种启动方式
+            start_command = "run"  # 默认使用开发模式
+            build_needed = False
+
+            if os.path.exists(package_json_path):
+                try:
+                    with open(package_json_path, 'r', encoding='utf-8') as f:
+                        package_config = json.load(f)
+                        scripts = package_config.get("scripts", {})
+
+                        # 如果有start脚本但缺少构建文件，需要先构建
+                        if "start" in scripts and not os.path.exists(next_build_path):
+                            self._print("检测到生产模式启动，但缺少构建文件，正在执行构建...", "info")
+                            build_needed = True
+                            start_command = "start"
+                        elif "dev" in scripts:
+                            start_command = "dev"
+                        elif "start" in scripts:
+                            start_command = "start"
+
+                except (json.JSONDecodeError, IOError):
+                    self._print("无法读取package.json，使用默认启动方式", "warning")
+
+            # 如果需要构建，先执行构建
+            if build_needed:
+                try:
+                    npm_cmd = "npm.cmd" if platform.system() == "Windows" else "npm"
+                    build_process = subprocess.run(
+                        [npm_cmd, "run", "build"],
+                        cwd=frontend_path,
+                        capture_output=True,
+                        text=True,
+                        timeout=300  # 5分钟构建超时
+                    )
+
+                    if build_process.returncode != 0:
+                        return {
+                            "success": False,
+                            "error": f"前端构建失败: {build_process.stderr}"
+                        }
+                    self._print("前端构建完成", "success")
+
+                except subprocess.TimeoutExpired:
+                    return {
+                        "success": False,
+                        "error": "前端构建超时（超过5分钟）"
+                    }
+
+            # 启动前端服务
             # 在Windows上使用npm.cmd，在Unix上使用npm
             npm_cmd = "npm.cmd" if platform.system() == "Windows" else "npm"
-            process = subprocess.Popen(
-                [npm_cmd, "run", "dev"],
-                cwd=frontend_path,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
-            )
+
+            if start_command == "start":
+                # 生产模式
+                process = subprocess.Popen(
+                    [npm_cmd, "start"],
+                    cwd=frontend_path,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE
+                )
+            else:
+                # 开发模式
+                process = subprocess.Popen(
+                    [npm_cmd, "run", "dev"],
+                    cwd=frontend_path,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE
+                )
 
             # 保存进程引用
             self.service_processes["frontend"] = process
@@ -605,6 +771,629 @@ class RealLauncher:
         }
 
         return status
+
+    async def _handle_redis_service(self, service_config) -> Dict[str, Any]:
+        """处理Redis服务：检测、安装、启动"""
+        start_time = time.time()
+
+        try:
+            # 1. 检测Redis服务状态
+            self._print("检测Redis服务状态...", "info")
+            redis_info = self.redis_manager.detect_redis_service()
+
+            # 2. 根据状态采取相应行动
+            if redis_info.status.value == "running":
+                return {
+                    "success": True,
+                    "message": f"服务运行中 (端口: {redis_info.port}, 版本: {redis_info.version or 'unknown'})",
+                    "status": "already_running",
+                    "port": redis_info.port,
+                    "version": redis_info.version,
+                    "start_time": time.time() - start_time
+                }
+
+            elif redis_info.status.value == "stopped":
+                self._print("Redis服务已停止，尝试启动...", "info")
+                start_success, start_message = self.redis_manager.start_redis_service()
+
+                if start_success:
+                    # 验证启动成功
+                    await asyncio.sleep(2)  # 等待服务启动
+                    new_redis_info = self.redis_manager.detect_redis_service()
+
+                    if new_redis_info.status.value == "running":
+                        return {
+                            "success": True,
+                            "message": f"服务启动成功 (端口: {new_redis_info.port})",
+                            "status": "started",
+                            "port": new_redis_info.port,
+                            "start_time": time.time() - start_time
+                        }
+                    else:
+                        return {
+                            "success": False,
+                            "error": "Redis服务启动后验证失败",
+                            "start_message": start_message,
+                            "start_time": time.time() - start_time
+                        }
+                else:
+                    return {
+                        "success": False,
+                        "error": f"Redis服务启动失败: {start_message}",
+                        "status": "start_failed",
+                        "start_time": time.time() - start_time
+                    }
+
+            elif redis_info.status.value == "not_installed":
+                self._print("Redis未安装，尝试自动安装...", "info")
+
+                # 尝试自动安装Redis
+                install_result = await self._auto_install_redis()
+
+                if install_result["success"]:
+                    self._print("Redis安装成功，尝试启动服务...", "info")
+                    start_success, start_message = self.redis_manager.start_redis_service()
+
+                    if start_success:
+                        # 验证启动成功
+                        await asyncio.sleep(3)  # 等待服务启动
+                        new_redis_info = self.redis_manager.detect_redis_service()
+
+                        if new_redis_info.status.value == "running":
+                            return {
+                                "success": True,
+                                "message": f"安装并启动成功 (端口: {new_redis_info.port})",
+                                "status": "installed_and_started",
+                                "port": new_redis_info.port,
+                                "install_time": install_result.get("install_time", 0),
+                                "start_time": time.time() - start_time
+                            }
+                        else:
+                            return {
+                                "success": False,
+                                "error": "Redis安装成功但启动验证失败",
+                                "start_message": start_message,
+                                "start_time": time.time() - start_time
+                            }
+                    else:
+                        return {
+                            "success": False,
+                            "error": f"Redis安装成功但启动失败: {start_message}",
+                            "install_result": install_result,
+                            "start_time": time.time() - start_time
+                        }
+                else:
+                    return {
+                        "success": False,
+                        "error": f"Redis安装失败: {install_result.get('error', 'unknown error')}",
+                        "install_result": install_result,
+                        "status": "install_failed",
+                        "start_time": time.time() - start_time
+                    }
+
+            else:
+                return {
+                    "success": False,
+                    "error": f"Redis服务状态异常: {redis_info.status.value}",
+                    "status": "unknown_status",
+                    "start_time": time.time() - start_time
+                }
+
+        except Exception as e:
+            logger.error(f"处理Redis服务时发生错误: {str(e)}")
+            return {
+                "success": False,
+                "error": f"Redis服务处理异常: {str(e)}",
+                "start_time": time.time() - start_time
+            }
+
+    async def _auto_install_redis(self) -> Dict[str, Any]:
+        """
+        自动安装Redis（Docker优先的多层回退机制）
+
+        实现现代容器化优先的安装策略，确保在各种环境下都能成功安装Redis。
+        采用三层回退机制：Docker -> 系统包管理器 -> 手动指导。
+        """
+        start_time = time.time()
+
+        try:
+            # 第一层：Docker容器化安装（推荐方式）
+            # Docker提供环境隔离、版本一致性和易于管理的优势
+            self._print("尝试使用Docker安装Redis（推荐方式）...", "info")
+            docker_result = await self._install_redis_with_docker()
+
+            if docker_result["success"]:
+                return {
+                    "success": True,
+                    "method": "docker",
+                    "message": "Docker安装成功 - Redis将在容器中运行",
+                    "install_time": time.time() - start_time,
+                    "details": docker_result
+                }
+
+            # 第二层：系统包管理器安装（Windows/macOS/Linux原生方式）
+            # 当Docker不可用时，回退到系统原生的包管理器
+            self._print("Docker安装失败，尝试系统包管理器...", "info")
+            package_result = await self._install_redis_with_package_manager()
+
+            if package_result["success"]:
+                return {
+                    "success": True,
+                    "method": "package_manager",
+                    "message": "系统包管理器安装成功 - Redis将在系统中直接运行",
+                    "install_time": time.time() - start_time,
+                    "details": package_result
+                }
+
+            # 第三层：所有自动安装失败，提供详细的手动安装指导
+            # 当自动方式都失败时，为用户提供清晰的手动安装步骤
+            return {
+                "success": False,
+                "error": "所有自动安装方式都失败，请参考手动安装指南",
+                "docker_error": docker_result.get("error", "unknown"),
+                "package_error": package_result.get("error", "unknown"),
+                "install_time": time.time() - start_time,
+                "manual_guide": "docs/redis-installation-guide.md"
+            }
+
+        except Exception as e:
+            logger.error(f"Redis自动安装过程中发生错误: {str(e)}")
+            return {
+                "success": False,
+                "error": f"自动安装异常: {str(e)}",
+                "install_time": time.time() - start_time
+            }
+
+    async def _install_redis_with_docker(self) -> Dict[str, Any]:
+        """使用Docker安装Redis"""
+        try:
+            # 检查Docker是否可用
+            docker_check = subprocess.run(
+                ["docker", "--version"],
+                capture_output=True,
+                text=True,
+                timeout=10
+            )
+
+            if docker_check.returncode != 0:
+                return {
+                    "success": False,
+                    "error": "Docker不可用"
+                }
+
+            # 尝试拉取并运行Redis容器
+            self._print("拉取Redis Docker镜像...", "info")
+
+            # 检查是否已有Redis容器
+            check_container = subprocess.run(
+                ["docker", "ps", "-a", "--filter", "name=redis", "--format", "{{.Names}}"],
+                capture_output=True,
+                text=True,
+                timeout=10
+            )
+
+            if check_container.returncode == 0 and "redis" in check_container.stdout:
+                # 容器已存在，尝试启动
+                self._print("发现现有Redis容器，尝试启动...", "info")
+                start_result = subprocess.run(
+                    ["docker", "start", "redis"],
+                    capture_output=True,
+                    text=True,
+                    timeout=30
+                )
+
+                if start_result.returncode == 0:
+                    return {
+                        "success": True,
+                        "message": "现有Redis容器启动成功"
+                    }
+                else:
+                    # 启动失败，尝试重新创建
+                    subprocess.run(["docker", "rm", "-f", "redis"], capture_output=True, timeout=10)
+
+            # 创建并启动新的Redis容器
+            self._print("创建新的Redis容器...", "info")
+            run_result = subprocess.run([
+                "docker", "run", "-d",
+                "--name", "redis",
+                "-p", "6379:6379",
+                "redis:latest"
+            ], capture_output=True, text=True, timeout=60)
+
+            if run_result.returncode == 0:
+                container_id = run_result.stdout.strip()
+                return {
+                    "success": True,
+                    "message": "Redis Docker容器创建成功",
+                    "container_id": container_id
+                }
+            else:
+                return {
+                    "success": False,
+                    "error": f"Docker容器创建失败: {run_result.stderr}"
+                }
+
+        except subprocess.TimeoutExpired:
+            return {
+                "success": False,
+                "error": "Docker操作超时"
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "error": f"Docker安装异常: {str(e)}"
+            }
+
+    async def _install_redis_with_package_manager(self) -> Dict[str, Any]:
+        """使用系统包管理器安装Redis"""
+        try:
+            system = platform.system().lower()
+
+            if system == "windows":
+                return await self._install_redis_windows()
+            elif system == "darwin":  # macOS
+                return await self._install_redis_macos()
+            elif system == "linux":
+                return await self._install_redis_linux()
+            else:
+                return {
+                    "success": False,
+                    "error": f"不支持的操作系统: {system}"
+                }
+
+        except Exception as e:
+            return {
+                "success": False,
+                "error": f"包管理器安装异常: {str(e)}"
+            }
+
+    async def _install_redis_windows(self) -> Dict[str, Any]:
+        """Windows Redis安装"""
+        try:
+            self._print("Windows Redis安装选项:", "info")
+
+            # 1. 尝试Chocolatey安装
+            choco_result = await self._try_chocolatey_install()
+            if choco_result["success"]:
+                return choco_result
+
+            # 2. 尝试检查并启动Docker
+            docker_result = await self._try_docker_install()
+            if docker_result["success"]:
+                return docker_result
+
+            # 3. 提供详细的手动安装指导
+            self._print("自动安装失败，提供手动安装指导:", "warning")
+            manual_guide = self._generate_redis_installation_guide("windows")
+
+            return {
+                "success": False,
+                "error": "Windows需要手动安装Redis",
+                "requires_manual": True,
+                "manual_guide": manual_guide,
+                "guide_file": "docs/redis-installation-guide.md"
+            }
+
+        except Exception as e:
+            return {
+                "success": False,
+                "error": f"Windows Redis安装检查异常: {str(e)}"
+            }
+
+    async def _install_redis_macos(self) -> Dict[str, Any]:
+        """macOS Redis安装"""
+        try:
+            # 检查Homebrew是否可用
+            brew_check = subprocess.run(
+                ["brew", "--version"],
+                capture_output=True,
+                text=True,
+                timeout=10
+            )
+
+            if brew_check.returncode != 0:
+                return {
+                    "success": False,
+                    "error": "Homebrew不可用，请先安装Homebrew"
+                }
+
+            # 使用Homebrew安装Redis
+            self._print("使用Homebrew安装Redis...", "info")
+            install_result = subprocess.run(
+                ["brew", "install", "redis"],
+                capture_output=True,
+                text=True,
+                timeout=300  # 5分钟超时
+            )
+
+            if install_result.returncode == 0:
+                return {
+                    "success": True,
+                    "message": "Redis通过Homebrew安装成功"
+                }
+            else:
+                return {
+                    "success": False,
+                    "error": f"Homebrew安装失败: {install_result.stderr}"
+                }
+
+        except subprocess.TimeoutExpired:
+            return {
+                "success": False,
+                "error": "Homebrew安装超时"
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "error": f"macOS Redis安装异常: {str(e)}"
+            }
+
+    async def _install_redis_linux(self) -> Dict[str, Any]:
+        """Linux Redis安装"""
+        try:
+            # 尝试检测包管理器
+            package_managers = [
+                {"cmd": "apt-get", "install": "sudo apt-get update && sudo apt-get install -y redis-server"},
+                {"cmd": "yum", "install": "sudo yum install -y redis"},
+                {"cmd": "dnf", "install": "sudo dnf install -y redis"},
+                {"cmd": "pacman", "install": "sudo pacman -S redis"}
+            ]
+
+            for manager in package_managers:
+                # 检查包管理器是否可用
+                try:
+                    subprocess.run(
+                        [manager["cmd"], "--version"],
+                        capture_output=True,
+                        check=True,
+                        timeout=10
+                    )
+
+                    # 使用找到的包管理器安装Redis
+                    self._print(f"使用 {manager['cmd']} 安装Redis...", "info")
+                    install_result = subprocess.run(
+                        manager["install"].split(),
+                        capture_output=True,
+                        text=True,
+                        timeout=300
+                    )
+
+                    if install_result.returncode == 0:
+                        return {
+                            "success": True,
+                            "message": f"Redis通过 {manager['cmd']} 安装成功"
+                        }
+
+                except (subprocess.CalledProcessError, FileNotFoundError):
+                    continue
+
+            return {
+                "success": False,
+                "error": "未找到支持的包管理器，请手动安装Redis"
+            }
+
+        except Exception as e:
+            return {
+                "success": False,
+                "error": f"Linux Redis安装异常: {str(e)}"
+            }
+
+    async def _try_chocolatey_install(self) -> Dict[str, Any]:
+        """尝试使用Chocolatey安装Redis"""
+        try:
+            self._print("检查Chocolatey可用性...", "info")
+            choco_check = subprocess.run(
+                ["choco", "--version"],
+                capture_output=True,
+                text=True,
+                timeout=10
+            )
+
+            if choco_check.returncode != 0:
+                return {
+                    "success": False,
+                    "error": "Chocolatey不可用"
+                }
+
+            self._print("使用Chocolatey安装Redis...", "info")
+            install_result = subprocess.run(
+                ["choco", "install", "redis-64", "-y"],
+                capture_output=True,
+                text=True,
+                timeout=300
+            )
+
+            if install_result.returncode == 0:
+                return {
+                    "success": True,
+                    "message": "Redis通过Chocolatey安装成功"
+                }
+            else:
+                return {
+                    "success": False,
+                    "error": f"Chocolatey安装失败: {install_result.stderr}"
+                }
+
+        except subprocess.TimeoutExpired:
+            return {
+                "success": False,
+                "error": "Chocolatey安装超时"
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "error": f"Chocolatey安装异常: {str(e)}"
+            }
+
+    async def _try_docker_install(self) -> Dict[str, Any]:
+        """尝试使用Docker安装Redis（作为备选方案）"""
+        try:
+            self._print("检查Docker可用性...", "info")
+            docker_check = subprocess.run(
+                ["docker", "--version"],
+                capture_output=True,
+                text=True,
+                timeout=10
+            )
+
+            if docker_check.returncode != 0:
+                return {
+                    "success": False,
+                    "error": "Docker不可用"
+                }
+
+            # 使用已有的Docker安装方法
+            return await self._install_redis_with_docker()
+
+        except Exception as e:
+            return {
+                "success": False,
+                "error": f"Docker检查异常: {str(e)}"
+            }
+
+    def _generate_redis_installation_guide(self, platform: str) -> Dict[str, str]:
+        """生成特定平台的Redis安装指导"""
+        guides = {
+            "windows": {
+                "title": "Windows Redis手动安装指南",
+                "steps": [
+                    "方法1: 使用Chocolatey包管理器",
+                    "  1. 安装Chocolatey: 访问 https://chocolatey.org/install",
+                    "  2. 以管理员身份运行PowerShell",
+                    "  3. 执行: choco install redis-64",
+                    "",
+                    "方法2: 使用WSL (Windows Subsystem for Linux)",
+                    "  1. 启用WSL: wsl --install",
+                    "  2. 在WSL中按照Linux指南安装Redis",
+                    "",
+                    "方法3: 下载官方Windows版本",
+                    "  1. 访问 https://github.com/microsoftarchive/redis/releases",
+                    "  2. 下载Redis-x64-*.msi文件",
+                    "  3. 运行安装程序",
+                    "  4. 配置防火墙允许6379端口"
+                ],
+                "verification": [
+                    "验证安装: redis-cli ping",
+                    "检查服务: Get-Service redis64",
+                    "查看端口: netstat -ano | findstr 6379"
+                ]
+            },
+            "macos": {
+                "title": "macOS Redis手动安装指南",
+                "steps": [
+                    "方法1: 使用Homebrew",
+                    "  1. 安装Homebrew: /bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"",
+                    "  2. 安装Redis: brew install redis",
+                    "  3. 启动服务: brew services start redis",
+                    "",
+                    "方法2: 下载源码编译",
+                    "  1. 下载Redis源码: curl -O http://download.redis.io/redis-stable.tar.gz",
+                    "  2. 解压: tar xvzf redis-stable.tar.gz",
+                    "  3. 编译: cd redis-stable && make",
+                    "  4. 启动: src/redis-server"
+                ],
+                "verification": [
+                    "验证安装: redis-cli ping",
+                    "检查服务: brew services list | grep redis",
+                    "查看端口: lsof -i :6379"
+                ]
+            },
+            "linux": {
+                "title": "Linux Redis手动安装指南",
+                "steps": [
+                    "Ubuntu/Debian:",
+                    "  sudo apt update && sudo apt install redis-server",
+                    "  sudo systemctl start redis-server",
+                    "",
+                    "CentOS/RHEL:",
+                    "  sudo yum install epel-release",
+                    "  sudo yum install redis",
+                    "  sudo systemctl start redis",
+                    "",
+                    "Fedora:",
+                    "  sudo dnf install redis",
+                    "  sudo systemctl start redis",
+                    "",
+                    "Arch Linux:",
+                    "  sudo pacman -S redis",
+                    "  sudo systemctl start redis"
+                ],
+                "verification": [
+                    "验证安装: redis-cli ping",
+                    "检查服务: sudo systemctl status redis",
+                    "查看端口: sudo netstat -tlnp | grep 6379"
+                ]
+            }
+        }
+
+        return guides.get(platform, guides["linux"])
+
+    def _print_redis_failure_summary(self, install_result: Dict[str, Any]):
+        """打印Redis安装失败的详细总结"""
+        self._print("=== Redis自动安装失败总结 ===", "error")
+        self._print(f"主要错误: {install_result.get('error', 'unknown')}", "error")
+
+        if "docker_error" in install_result:
+            self._print(f"Docker安装错误: {install_result['docker_error']}", "warning")
+
+        if "package_error" in install_result:
+            self._print(f"包管理器安装错误: {install_result['package_error']}", "warning")
+
+        self._print("\n=== 推荐解决方案 ===", "info")
+        self._print("1. 检查网络连接", "info")
+        self._print("2. 确保有足够的磁盘空间", "info")
+        self._print("3. 检查系统权限（可能需要管理员权限）", "info")
+        self._print("4. 查看详细安装指南: docs/redis-installation-guide.md", "info")
+
+        system = platform.system().lower()
+        if system == "windows":
+            self._print("5. Windows用户推荐使用Docker Desktop", "info")
+        elif system == "darwin":
+            self._print("5. macOS用户推荐使用Homebrew", "info")
+        else:
+            self._print("5. Linux用户使用系统包管理器（apt/yum/dnf）", "info")
+
+    async def _validate_redis_installation(self) -> Dict[str, Any]:
+        """验证Redis安装是否成功"""
+        try:
+            # 1. 检查Redis服务状态
+            redis_info = self.redis_manager.detect_redis_service()
+
+            if redis_info.status.value == "running":
+                return {
+                    "success": True,
+                    "message": "Redis服务运行正常",
+                    "redis_info": redis_info
+                }
+
+            # 2. 如果服务未运行，尝试启动
+            if redis_info.status.value == "stopped":
+                self._print("Redis服务已停止，尝试启动...", "info")
+                start_success, start_message = self.redis_manager.start_redis_service()
+
+                if start_success:
+                    await asyncio.sleep(2)  # 等待服务启动
+                    new_redis_info = self.redis_manager.detect_redis_service()
+
+                    if new_redis_info.status.value == "running":
+                        return {
+                            "success": True,
+                            "message": "Redis服务启动成功",
+                            "redis_info": new_redis_info
+                        }
+
+            # 3. 验证失败
+            return {
+                "success": False,
+                "error": f"Redis验证失败，当前状态: {redis_info.status.value}",
+                "redis_info": redis_info
+            }
+
+        except Exception as e:
+            return {
+                "success": False,
+                "error": f"Redis验证异常: {str(e)}"
+            }
 
     async def shutdown(self):
         """优雅关闭"""

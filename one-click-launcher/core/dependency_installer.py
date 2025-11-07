@@ -82,10 +82,16 @@ class DependencyInstaller:
         self.env_detector = EnvironmentDetector()
         self.os_detector = OperatingSystemDetector()
         self.system_info = None
+        self.config = ConfigManager()
         self._setup_dependency_requirements()
 
     def _setup_dependency_requirements(self):
         """设置依赖需求"""
+        # 从配置文件读取Redis必需性设置
+        redis_required = self.config.get("dependencies", "redis_required", True)
+        if isinstance(redis_required, str):
+            redis_required = redis_required.lower() in ('true', '1', 'yes', 'on')
+
         self.requirements = {
             # Python 依赖
             "python": DependencyRequirement(
@@ -152,7 +158,7 @@ class DependencyInstaller:
             "redis": DependencyRequirement(
                 name="redis",
                 dependency_type=DependencyType.SERVICE,
-                required=False,
+                required=redis_required,  # 从配置读取Redis必需性
                 check_command="redis-server --version",
                 version_extract_pattern=r"Redis server v=(\d+\.\d+\.\d+)"
             ),
@@ -217,10 +223,11 @@ class DependencyInstaller:
             # 获取基本系统信息
             system_info = self.env_detector.detect_all()
 
-            # 检测操作系统详细信息
-            os_info = self.os_detector.detect_system()
+            # 检测操作系统详细信息 - 修复：调用静态方法而不是实例方法
+            from core.operating_system_detector import detect_system
+            os_info = detect_system()
 
-            logger.info(f"系统环境: {system_info.platform} {system_info.python_version}")
+            logger.info(f"系统环境: {system_info.system_info.os_name} {system_info.system_info.python_version}")
             return system_info
 
         except Exception as e:

@@ -58,7 +58,10 @@
       "Bash(kill:*)",
       "mcp__web-search-prime__webSearchPrime",
       "Bash(git remote:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "mcp__exa__web_search_exa",
+      "Bash(wmic:*)",
+      "Bash(nul)"
     ],
     "deny": [],
     "ask": []

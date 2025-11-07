@@ -56,6 +56,7 @@ development_status:
   2-4-interactive-tutorial-system: done
   2-5-multi-variety-comparative-analysis: done
   2-6-complete-user-experience-optimization: done
+  2-5-1-fix-one-click-launcher-redis-dependency: done
   epic-2-retrospective: completed
 
   # Epic 6: 环境检测与自动配置引擎 (一键启动脚本)
@@ -94,3 +95,6 @@ development_status:
   epic-10: contexted
   10-1-project-documentation-and-cleanup: done
   epic-10-retrospective: optional
+
+  # Epic 11: 一键启动器故障排除与优化
+  11-1-fix-one-click-launcher-startup-sequence: done

@@ -1,0 +1,95 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>11</epicId>
+    <storyId>1</storyId>
+    <title>修复一键启动器启动序列和服务依赖问题</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-07</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/fix-one-click-launcher-startup-sequence.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>量化交易平台开发者</asA>
+    <iWant>全面排查和修复一键启动器的启动顺序、依赖管理和环境配置问题</iWant>
+    <soThat>用户能够通过一键启动器正常使用策略页面渲染和期货品种加载功能，确保与手动启动方式的一致性</soThat>
+    <tasks>Task 1: 问题诊断和根因分析 (AC1) - 分析启动差异，诊断策略页面渲染和期货品种加载失败问题
+Task 2: 启动顺序和服务依赖优化 (AC2, AC3) - 优化服务启动序列，实现智能依赖等待，端口冲突管理
+Task 3: 环境配置一致性保障 (AC2, AC4) - 统一环境变量设置，配置文件验证，错误处理增强
+Task 4: 诊断工具和监控系统 (AC4) - 启动过程监控，故障排除指导，诊断报告生成
+Task 5: 验证测试和回归防护 (AC5) - 功能验证测试，回归测试套件，一致性验证</tasks>
+  </story>
+
+  <acceptanceCriteria>AC1: 启动顺序和服务依赖管理诊断 - 全面分析服务启动序列（Redis→Backend→Frontend），识别竞争条件和依赖冲突，诊断策略页面渲染失败和期货品种加载失败的根本原因
+AC2: 环境配置和端口冲突检测 - 检测端口占用冲突（6379/8000/3000），分析环境变量和配置文件一致性，验证服务健康检查机制，确保手动启动与一键启动环境差异分析
+AC3: 启动时序和依赖等待机制优化 - 实现智能服务就绪状态检测，优化启动间隔和超时配置，添加服务启动失败自动重试机制，确保服务启动顺序严格依赖管理
+AC4: 错误诊断和日志系统增强 - 提供详细启动失败诊断信息，实现结构化错误日志记录，添加服务状态监控报告，为用户提供清晰故障排除指导
+AC5: 验证修复和回归测试 - 验证修复后一键启动器与手动启动一致性，确保策略页面渲染正常，确保期货品种加载和策略分析功能正常，建立回归测试防止问题重现</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/architecture-one-click-launch.md" title="一键启动脚本决策架构" section="服务启动序列集成" snippet="Redis启动 (端口6379) → 等待就绪 (30秒超时), 后端API启动 (端口8000) → 健康检查通过 (60秒超时), 前端应用启动 (端口3000) → 构建完成 (120秒超时)"/>
+      <doc path="docs/architecture-one-click-launch.md" title="一键启动脚本决策架构" section="错误处理集成" snippet="统一异常格式：{code, message, solution, details}, 分级错误处理：WARNING(继续)、ERROR(重试)、FATAL(终止), 自动恢复机制：网络重试、端口清理、服务重启"/>
+      <doc path="docs/stories/fix-one-click-launcher-redis-dependency.md" title="修复一键启动器Redis依赖管理缺陷" section="开发完成总结" snippet="Redis依赖动态配置读取, 智能环境检测和依赖管理, Docker优先的多层安装回退机制, 跨平台Redis自动安装支持, 完善的错误处理和用户指导"/>
+    </docs>
+    <code>
+      <file path="one-click-launcher/launcher.py" kind="main_launcher" symbol="main_startup_sequence" lines="1-800" reason="核心启动逻辑，包含服务启动序列、环境配置、错误处理等主要功能"/>
+      <file path="one-click-launcher/config/config.ini" kind="configuration" symbol="app_configuration" lines="1-63" reason="应用配置文件，包含端口设置、超时配置、依赖配置等关键参数"/>
+      <file path="one-click-launcher/core/service_orchestrator.py" kind="core_service" symbol="ServiceOrchestrator" lines="1-30" reason="服务编排器，整合依赖分析、健康检查、端口管理、超时管理和配置管理的核心编排器"/>
+      <file path="one-click-launcher/services/redis_service_manager.py" kind="service_manager" symbol="RedisServiceManager" lines="1-30" reason="Redis服务检测和管理模块，提供跨平台服务状态检测、连接测试和配置管理"/>
+      <file path="backend/requirements.txt" kind="dependencies" symbol="backend_deps" lines="1-45" reason="后端Python依赖列表，包含FastAPI、Redis、pandas、akshare等核心依赖"/>
+      <file path="frontend/package.json" kind="dependencies" symbol="frontend_deps" lines="1-20" reason="前端Node.js项目配置，包含Next.js、构建脚本和测试配置"/>
+    </code>
+    <dependencies>
+      <ecosystem name="python">
+        <package name="fastapi" version="0.111.0"/>
+        <package name="uvicorn" version="0.29.0"/>
+        <package name="redis" version="5.0.4"/>
+        <package name="pandas" version="2.2.2"/>
+        <package name="akshare" version="1.12.88"/>
+        <package name="psutil" version="7.1.3+"/>
+        <package name="rich" version="13.9.4+"/>
+        <package name="requests" version="2.32.3+"/>
+      </ecosystem>
+      <ecosystem name="node">
+        <package name="next" version="latest"/>
+        <package name="react" version="latest"/>
+        <package name="chart.js" version="4.4.2"/>
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="service_sequence">必须严格按照 Redis→Backend→Frontend 顺序启动，每个服务必须通过健康检查才能启动下一个服务</constraint>
+    <constraint type="port_management">端口使用必须避免冲突：Redis:6379, Backend:8000, Frontend:3000，需要检测端口占用并提供清理机制</constraint>
+    <constraint type="timeout_handling">服务启动必须设置合理超时：Redis 30秒，Backend 60秒，Frontend 120秒，超时后需要重试或提供诊断信息</constraint>
+    <constraint type="error_reporting">所有启动失败必须提供详细的错误诊断信息和用户友好的解决方案指导</constraint>
+    <constraint type="environment_consistency">一键启动器必须与手动启动保持环境一致性，包括环境变量、工作目录和配置参数</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="ServiceHealthCheck" kind="REST_endpoint" signature="GET /health" path="backend/main.py"/>
+    <interface name="RedisConnection" kind="client_interface" signature="redis.Redis(host='localhost', port=6379, db=0)" path="backend/app/core/redis.py"/>
+    <interface name="FrontendAPI" kind="REST_endpoint" signature="GET /api/*" path="backend/app/api/"/>
+    <interface name="ServiceOrchestrator" kind="class_interface" signature="ServiceOrchestrator.start_services() -> bool" path="one-click-launcher/core/service_orchestrator.py"/>
+    <interface name="RedisServiceManager" kind="class_interface" signature="RedisServiceManager.detect_and_start() -> bool" path="one-click-launcher/services/redis_service_manager.py"/>
+  </interfaces>
+
+  <tests>
+    <standards>使用pytest进行Python后端测试，Jest进行前端单元测试，Playwright进行端到端测试。测试必须覆盖服务启动序列、健康检查、端口管理、错误处理等关键路径。所有测试必须支持多平台运行（Windows/macOS/Linux）。</standards>
+    <locations>
+      <location path="one-click-launcher/tests/" pattern="test_*.py"/>
+      <location path="backend/tests/" pattern="test_*.py"/>
+      <location path="frontend/tests/" pattern="*.test.js"/>
+      <location path="frontend/tests/e2e/" pattern="*.spec.ts"/>
+    </locations>
+    <ideas>
+      <test idea="test_service_startup_sequence" mapped_ac="AC1,AC3" description="测试Redis→Backend→Frontend启动序列，验证依赖等待机制"/>
+      <test idea="test_port_conflict_detection" mapped_ac="AC2" description="测试端口占用检测和自动清理功能"/>
+      <test idea="test_environment_consistency" mapped_ac="AC2,AC5" description="对比一键启动和手动启动的环境一致性"/>
+      <test idea="test_error_diagnosis" mapped_ac="AC4" description="测试启动失败时的错误诊断和用户指导功能"/>
+      <test idea="test_strategy_page_rendering" mapped_ac="AC5" description="端到端测试策略页面渲染功能"/>
+      <test idea="test_commodity_data_loading" mapped_ac="AC5" description="测试期货品种加载和策略分析功能"/>
+    </ideas>
+  </tests>
+</story-context>

@@ -42,7 +42,7 @@ class Settings(BaseSettings):
 
     # 数据库设置
     DATABASE_URL: Optional[str] = None
-    SQLITE_DB_PATH: str = "quant_trading.db"
+    SQLITE_DB_PATH: str = str(Path(__file__).parent.parent.parent / "quant_trading.db")
 
     # Redis设置
     REDIS_URL: str = "redis://localhost:6379/0"

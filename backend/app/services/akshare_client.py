@@ -112,8 +112,9 @@ class AKShareClient:
         """获取能源版块期货品种"""
         symbols = []
         try:
-            # 获取原油期货
-            df = ak.futures_main_sina(symbol="SC0")  # 原油主力合约
+            # 获取原油期货 - 使用异步方式避免阻塞事件循环
+            loop = asyncio.get_event_loop()
+            df = await loop.run_in_executor(None, lambda: ak.futures_main_sina(symbol="SC0"))  # 原油主力合约
             if not df.empty:
                 symbols.append(SymbolResponse(
                     symbol="SC",
