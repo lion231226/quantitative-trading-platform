@@ -16,6 +16,20 @@
 
 本项目旨在通过直观的界面和详细的教程，帮助用户在30分钟内掌握单均线交易策略的核心概念。平台提供真实的市场数据回测功能，让用户能够深入了解策略的运行机制和风险特征。
 
+## 📸 界面预览
+
+### 主页面 - 策略概览
+![主页面](docs/screenshots/homepage.png)
+
+### 策略分析页面
+![策略分析](docs/screenshots/strategy-analysis.png)
+
+### 策略分析结果页面
+![策略分析结果](docs/screenshots/strategy-results.png)
+
+### 帮助文档页面
+![帮助文档](docs/screenshots/help-page.png)
+
 ### 核心特性
 
 - 📊 **实时数据分析**: 基于AKShare获取真实期货市场数据
