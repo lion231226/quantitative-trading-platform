@@ -143,22 +143,38 @@ class EnhancedServiceOrchestrator:
 
                 # 检查依赖
                 if not await self._wait_for_dependencies(service_cfg, results):
-                    results[service_name] = ServiceStartupResult(
-                        service_name=service_name,
-                        success=False,
-                        status=ServiceStatus.DEPENDENCY_FAILED,
-                        start_time=0,
-                        error_message=f"服务 {service_name} 的依赖启动失败"
-                    )
-                    break
+                    if service_cfg.required:
+                        results[service_name] = ServiceStartupResult(
+                            service_name=service_name,
+                            success=False,
+                            status=ServiceStatus.DEPENDENCY_FAILED,
+                            start_time=0,
+                            error_message=f"必需服务 {service_name} 的依赖启动失败"
+                        )
+                        break
+                    else:
+                        logger.warning(f"可选服务 {service_name} 的依赖失败，跳过此服务")
+                        results[service_name] = ServiceStartupResult(
+                            service_name=service_name,
+                            success=False,
+                            status=ServiceStatus.DEPENDENCY_FAILED,
+                            start_time=0,
+                            error_message=f"可选服务 {service_name} 的依赖启动失败，但跳过此服务继续启动"
+                        )
+                        # 继续下一个服务，不中断流程
+                        continue
 
                 # 启动服务
                 result = await self.start_single_service(service_name, service_cfg)
                 results[service_name] = result
 
                 if not result.success:
-                    logger.error(f"服务 {service_name} 启动失败，停止后续服务启动")
-                    break
+                    if service_cfg.required:
+                        logger.error(f"必需服务 {service_name} 启动失败，停止后续服务启动")
+                        break
+                    else:
+                        logger.warning(f"可选服务 {service_name} 启动失败，继续启动其他服务")
+                        # 继续启动其他服务，不中断流程
 
         self.startup_history.append({
             "timestamp": datetime.now().isoformat(),
@@ -672,7 +688,7 @@ def create_enhanced_service_configs() -> Dict[str, ServiceConfig]:
             name="Redis",
             service_type="redis",
             port=6379,
-            required=True,
+            required=False,  # Redis可选，后端有内存缓存回退机制
             startup_timeout=30,
             health_check=HealthCheckConfig(
                 check_type=HealthCheckType.CUSTOM_CHECK,
@@ -687,7 +703,7 @@ def create_enhanced_service_configs() -> Dict[str, ServiceConfig]:
             port=8000,
             required=True,
             startup_timeout=60,
-            dependencies=["redis"],
+            dependencies=[],  # 移除Redis依赖，后端有回退机制
             health_check=HealthCheckConfig(
                 check_type=HealthCheckType.HTTP_ENDPOINT,
                 endpoint="http://localhost:8000/health",
