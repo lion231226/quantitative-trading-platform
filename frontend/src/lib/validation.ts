@@ -55,6 +55,7 @@ export function validateSymbol(symbol: string): boolean {
 // 验证策略参数
 export function validateStrategyParams(params: {
   ma_period?: number
+  window_size?: number
   initial_capital?: number
 }): {
   isValid: boolean
@@ -62,7 +63,9 @@ export function validateStrategyParams(params: {
 } {
   const errors: string[] = [];
 
-  if (!params || typeof params.ma_period === 'undefined' || params.ma_period < 5 || params.ma_period > 200) {
+  // 支持 ma_period 或 window_size 参数名
+  const period = params.ma_period || params.window_size;
+  if (!params || typeof period === 'undefined' || period < 5 || period > 200) {
     errors.push('均线周期必须在5-200天之间');
   }
 
@@ -85,10 +88,8 @@ export function validateStrategyForm(form: {
   symbol: string
   startDate: string
   endDate: string
-  params: {
-    ma_period: number
-    initial_capital: number
-  }
+  strategyType?: string
+  params: any
 }): {
   isValid: boolean
   errors: string[]
@@ -107,9 +108,20 @@ export function validateStrategyForm(form: {
   }
 
   // 验证策略参数
-  const paramsValidation = validateStrategyParams(form.params);
-  if (!paramsValidation.isValid) {
-    errors.push(...paramsValidation.errors);
+  if (form.params) {
+    // 提取通用参数进行验证
+    const commonParams = {
+      ma_period: form.params.ma_period || form.params.window_size,
+      window_size: form.params.window_size || form.params.ma_period,
+      initial_capital: form.params.initial_capital
+    };
+
+    const paramsValidation = validateStrategyParams(commonParams);
+    if (!paramsValidation.isValid) {
+      errors.push(...paramsValidation.errors);
+    }
+  } else {
+    errors.push('策略参数不能为空');
   }
 
   return {

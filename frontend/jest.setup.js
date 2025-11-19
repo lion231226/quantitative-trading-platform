@@ -58,6 +58,32 @@ jest.mock('chart.js', () => ({
   registerables: [],
 }))
 
+// Mock Lightweight Charts
+jest.mock('lightweight-charts', () => ({
+  createChart: jest.fn(() => ({
+    addCandlestickSeries: jest.fn(() => ({
+      setData: jest.fn(),
+      update: jest.fn(),
+      priceScale: jest.fn(),
+      applyOptions: jest.fn(),
+    })),
+    addLineSeries: jest.fn(() => ({
+      setData: jest.fn(),
+      update: jest.fn(),
+      priceScale: jest.fn(),
+      applyOptions: jest.fn(),
+    })),
+    timeScale: jest.fn(() => ({
+      fitContent: jest.fn(),
+      scrollToPosition: jest.fn(),
+      setVisibleRange: jest.fn(),
+    })),
+    remove: jest.fn(),
+    resize: jest.fn(),
+    applyOptions: jest.fn(),
+  })),
+}))
+
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
   constructor() {}
@@ -124,6 +150,43 @@ Object.defineProperty(window, 'matchMedia', {
     dispatchEvent: jest.fn(),
   })),
 })
+
+// Mock DOM methods for file operations
+global.URL.createObjectURL = jest.fn(() => 'mocked-url')
+global.URL.revokeObjectURL = jest.fn()
+
+// Mock File and FileReader
+global.File = class File {
+  constructor(chunks, filename, options = {}) {
+    this.chunks = chunks
+    this.name = filename
+    this.type = options.type || ''
+    this.size = chunks.reduce((acc, chunk) => acc + chunk.length, 0)
+  }
+}
+
+global.FileReader = class FileReader {
+  constructor() {
+    this.readyState = 0
+    this.result = null
+  }
+
+  readAsText() {
+    setTimeout(() => {
+      this.readyState = 2
+      this.result = '{"test": "data"}'
+      this.onload && this.onload()
+    }, 0)
+  }
+
+  readAsDataURL() {
+    setTimeout(() => {
+      this.readyState = 2
+      this.result = 'data:application/json;base64,mocked'
+      this.onload && this.onload()
+    }, 0)
+  }
+}
 
 // Suppress console warnings for tests
 const originalError = console.error
