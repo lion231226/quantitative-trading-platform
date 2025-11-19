@@ -12,6 +12,17 @@ jobs:
     name: 后端测试
     runs-on: ubuntu-latest
 
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     strategy:
       matrix:
         python-version: ['3.9', '3.10', '3.11']
@@ -31,6 +42,12 @@ jobs:
         python3 --version
         echo "Matrix Python version: ${{ matrix.python-version }}"
 
+    - name: 设置测试环境变量
+      run: |
+        echo "TESTING=true" >> $GITHUB_ENV
+        echo "REDIS_URL=redis://localhost:6379" >> $GITHUB_ENV
+        echo "DATABASE_URL=sqlite:///./test.db" >> $GITHUB_ENV
+
     - name: 缓存pip依赖
       uses: actions/cache@v4
       with:
@@ -44,12 +61,15 @@ jobs:
         cd backend
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        pip install pytest pytest-cov pytest-asyncio
+        pip install pytest pytest-cov pytest-asyncio pytest-mock
 
     - name: 运行测试并生成覆盖率报告
       run: |
         cd backend
-        pytest --cov=app --cov-report=json --cov-report=xml --cov-report=html || true  # 允许测试失败但继续生成覆盖率
+        echo "Running pytest with verbose output..."
+        pytest --version
+        pytest --collect-only -q
+        pytest --cov=app --cov-report=json --cov-report=xml --cov-report=html -v --tb=short || true  # 允许测试失败但继续生成覆盖率
 
     - name: 上传覆盖率报告到Codecov
       uses: codecov/codecov-action@v4
