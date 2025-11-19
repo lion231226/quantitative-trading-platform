@@ -59,6 +59,13 @@ development_status:
   2-5-1-fix-one-click-launcher-redis-dependency: done
   epic-2-retrospective: completed
 
+  # Epic 3: 专业K线图表与智能可视化系统 (量化交易平台)
+  epic-3: contexted
+  3-1-high-performance-kline-chart-rendering-engine: done
+  3-2-intelligent-strategy-signal-dynamic-update-system: done
+  3-3-personalized-color-configuration-and-accessibility-support: backlog
+  3-4-fund-curve-and-kline-chart-integrated-analysis: backlog
+
   # Epic 6: 环境检测与自动配置引擎 (一键启动脚本)
   epic-6: backlog
   6-1-operating-system-detection-and-platform-adaptation: done
