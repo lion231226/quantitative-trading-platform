@@ -1,0 +1,135 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>3</storyId>
+    <title>个性化颜色配置与可访问性支持</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-20</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/3-3-personalized-color-configuration-and-accessibility-support.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>to be able to adjust chart colors and styles according to my personal habits</iWant>
+    <soThat>I can obtain a comfortable visual experience that matches my usage preferences</soThat>
+    <tasks>- [ ] Task 1: Market Mode Color System (AC: 1)
+  - [ ] Subtask 1.1: Create configurable color scheme system supporting Chinese and international market modes
+  - [ ] Subtask 1.2: Implement market mode toggle with automatic color palette switching
+  - [ ] Subtask 1.3: Apply market-specific colors to K-line chart rendering
+  - [ ] Subtask 1.4: Ensure consistent color application across all chart components
+
+- [ ] Task 2: Colorblind Accessibility Features (AC: 2)
+  - [ ] Subtask 2.1: Design colorblind-friendly visual differentiation system using shapes and patterns
+  - [ ] Subtask 2.2: Implement texture-based rise/fall indicators for different types of colorblindness
+  - [ ] Subtask 2.3: Create colorblind mode toggle with multiple accessibility profiles
+  - [ ] Subtask 2.4: Test and validate accessibility with WCAG color contrast standards
+
+- [ ] Task 3: Custom Color Configuration (AC: 3)
+  - [ ] Subtask 3.1: Create color picker interface for user-defined chart colors
+  - [ ] Subtask 3.2: Implement color scheme management with preview functionality
+  - [ ] Subtask 3.3: Add preset color schemes for different user preferences
+  - [ ] Subtask 3.4: Validate color combinations for visibility and user experience
+
+- [ ] Task 4: Theme Switching System (AC: 4)
+  - [ ] Subtask 4.1: Implement light and dark theme infrastructure
+  - [ ] Subtask 4.2: Create theme-aware component styling system
+  - [ ] Subtask 4.3: Add smooth theme transition animations
+  - [ ] Subtask 4.4: Ensure theme persistence across browser sessions
+
+- [ ] Task 5: Color Scheme Import/Export (AC: 5)
+  - [ ] Subtask 5.1: Create color scheme JSON serialization and export functionality with schema validation
+  - [ ] Subtask 5.2: Implement color scheme import with comprehensive validation and error handling
+  - [ ] Subtask 5.3: Add shareable color scheme URL parameter and code generation
+  - [ ] Subtask 5.4: Create community color scheme gallery with preview and one-click apply functionality</tasks>
+  </story>
+
+  <acceptanceCriteria>1. Support both Chinese market mode (red for rise, green for fall) and international market mode (green for rise, red for fall)
+2. Implement colorblind-friendly mode, using shapes and textures to distinguish rise and fall
+3. Provide user-defined color configuration functionality
+4. Support light/dark theme switching
+5. Implement color scheme saving and importing functionality</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/tech-spec.md" title="Technical Specification" section="Project Structure and Architecture Patterns">
+        <snippet>Frontend Component Structure: New theme configuration should extend existing UserPreferences patterns for chart preferences; Create new ThemeProvider component using React Context API for global theme state</snippet>
+      </doc>
+      <doc path="docs/epics.md" title="Epic Breakdown" section="Epic 3 Story 3.3">
+        <snippet>Story 3.3: 个性化颜色配置与可访问性支持 - 作为用户，我希望能够根据个人习惯调整图表颜色和样式，以便获得舒适且符合使用习惯的视觉体验</snippet>
+      </doc>
+      <doc path="frontend/src/types/strategySignal.types.ts" title="Strategy Signal Types" section="Signal Type and Shape Definitions">
+        <snippet>Strategy signal types include buy, sell, hold, stop_loss, take_profit with marker shapes like circle, square, triangle, arrow_up, arrow_down, diamond, star for colorblind accessibility</snippet>
+      </doc>
+      <doc path="frontend/src/types/kline.types.ts" title="Kline Chart Types" section="Chart Data Structure">
+        <snippet>Kline data structure with candlesticks, signals, and moving averages supports theme-based color configuration for different market modes</snippet>
+      </doc>
+      <doc url="https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum" title="WCAG 2.1 AA Contrast Guidelines" section="Minimum Contrast Requirements">
+        <snippet>Normal text requires contrast ratio of at least 4.5:1, large text requires 3:1; exceptions for logotypes, disabled controls, and decorative content</snippet>
+      </doc>
+      <doc url="https://accessibility.actumdigital.com/docs/wcag-documents/perceivable/1.4-distinguishable/1.4.3-contrast-minimum" title="Color Contrast Implementation Guide" section="Practical Color Accessibility">
+        <snippet>Color contrast helps people with low vision, colorblindness, and various lighting conditions; use tools like WebAIM Contrast Checker and Chrome DevTools for validation</snippet>
+      </doc>
+      <doc url="https://www.rmcad.edu/blog/the-science-of-accessibility" title="Colorblind Accessibility Design" section="Designing for Visual Impairments">
+        <snippet>Color blindness affects 1 in 12 men and 1 in 200 women; use shapes, patterns, and textures in addition to colors for effective visual differentiation</snippet>
+      </doc>
+      <doc url="https://accessibe.com/blog/knowledgebase/accessible-website-for-people-with-color-blindness" title="Color Blind Web Design Guide" section="Implementation Best Practices">
+        <snippet>Don't rely solely on color to convey information; use icons, patterns, text labels, and high contrast combinations for colorblind-friendly design</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact path="frontend/src/components/controls/UserPreferences.tsx" kind="component" symbol="UserPreferences" lines="23-28, 102-131, 228-237">
+        <reason>现有用户偏好设置组件包含图表偏好配置基础架构，包括 localStorage 集成、导入导出功能、图表偏好更新模式，可直接扩展支持主题和颜色配置</reason>
+      </artifact>
+      <artifact path="frontend/src/services/styleConfigService.ts" kind="service" symbol="StyleConfigService" lines="12-47, 312-399">
+        <reason>专业样式配置服务，包含主题系统、信号样式管理、用户自定义样式支持，提供完整的样式主题基础设施，可直接扩展支持图表颜色主题</reason>
+      </artifact>
+      <artifact path="frontend/src/components/charts/KlineChart.tsx" kind="component" symbol="KlineChart" lines="1-50">
+        <reason>核心K线图表组件，使用Lightweight Charts渲染引擎，支持配置化样式，需要集成主题系统以支持动态颜色配置</reason>
+      </artifact>
+      <artifact path="frontend/src/services/klineService.ts" kind="service" symbol="KlineDataValidator" lines="28-50">
+        <reason>K线数据验证和管理服务，提供数据完整性和有效性检查，需要扩展支持颜色和样式配置验证</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <ecosystem name="frontend">
+        <package name="lightweight-charts" version="5.0.9" usage="专业K线图表渲染引擎，支持高度定制化的样式和主题配置"/>
+        <package name="@radix-ui/react-select" version="2.2.6" usage="主题切换器和颜色选择器的UI组件"/>
+        <package name="@radix-ui/react-switch" version="1.2.6" usage="明暗主题切换开关组件"/>
+        <package name="@radix-ui/react-tooltip" version="1.0.7" usage="颜色配置帮助提示组件"/>
+        <package name="tailwindcss" version="3.4.1" usage="CSS框架，支持动态主题切换和样式定制"/>
+        <package name="lucide-react" version="0.552.0" usage="图标库，提供设置、调色板等UI图标"/>
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>遵循现有主题系统模式，扩展 UserPreferences 组件的 localStorage 集成和状态管理模式</constraint>
+    <constraint>确保与 Lightweight Charts 自定义 API 兼容，使用 layoutOptions 和 overlayOptions 进行颜色方案配置</constraint>
+    <constraint>保持与现有性能监控系统缓存策略的兼容性（performanceService.ts:44-49）</constraint>
+    <constraint>遵循 WCAG 2.1 AA 标准，确保颜色对比度比例达到 4.5:1 最小要求</constraint>
+    <constraint>使用 React Context API 模式实现全局主题状态管理，类似于 UserPreferences 模式</constraint>
+    <constraint>中国市场模式（红涨绿跌）和国际市场模式（绿涨红跌）的颜色配置必须符合各地区用户习惯</constraint>
+    <constraint>色盲友好模式必须使用形状和纹理组合来区分涨跌，不仅依赖颜色</constraint>
+  </constraints>
+  <interfaces>
+    <interface name="Theme Configuration API" kind="function signature" signature="setTheme(marketMode: 'chinese' | 'international', colorblindMode: boolean, theme: 'light' | 'dark')" path="frontend/src/services/styleConfigService.ts"/>
+    <interface name="Color Validation API" kind="function signature" signature="validateColorContrast(foreground: string, background: string): boolean" path="frontend/src/utils/colorValidation.ts"/>
+    <interface name="UserPreference Storage" kind="interface" signature="UserPreferences { theme: ThemeConfig, colorblind: ColorblindConfig, customColors: CustomColorConfig }" path="frontend/src/types/parameter.types"/>
+    <interface name="Lightweight Charts Layout Options" kind="class interface" signature="layoutOptions { background: Color, textColor: Color, fontSize: number }" path="frontend/src/types/kline.types"/>
+  </interfaces>
+  <tests>
+    <standards>测试框架使用 Jest + React Testing Library，遵循现有测试模式。测试覆盖组件渲染、主题切换功能、颜色配置验证、可访问性合规性检查、localStorage 集成、导入导出功能。所有测试必须使用 mock 避免真实 DOM 操作和存储调用。</standards>
+    <locations>frontend/src/components/**/__tests__/ 目录 - 组件测试；frontend/src/services/**/__tests__/ 目录 - 服务测试；frontend/src/__tests__/ 目录 - 集成测试；使用 .test.tsx 后缀表示 React 组件测试，.test.ts 表示纯逻辑测试</locations>
+    <ideas>
+      <test idea="AC1: 测试中国市场模式（红涨绿跌）和国际市场模式（绿涨红跌）的颜色切换功能" acceptanceCriteriaId="1"/>
+      <test idea="AC2: 测试色盲友好模式，验证使用形状和纹理区分涨跌而非仅依赖颜色" acceptanceCriteriaId="2"/>
+      <test idea="AC3: 测试用户自定义颜色配置功能，验证颜色选择器和实时预览" acceptanceCriteriaId="3"/>
+      <test idea="AC4: 测试明暗主题切换功能，验证主题持久化和平滑过渡" acceptanceCriteriaId="4"/>
+      <test idea="AC5: 测试配色方案的保存和导入功能，验证JSON序列化和错误处理" acceptanceCriteriaId="5"/>
+      <test idea="可访问性测试：验证WCAG 2.1 AA颜色对比度标准，确保4.5:1最小对比度"/>
+      <test idea="性能测试：验证主题切换不会导致图表重渲染，确保交互性能"/>
+      <test idea="集成测试：验证主题系统与现有UserPreferences组件的无缝集成"/>
+    </ideas>
+  </tests>
+</story-context>

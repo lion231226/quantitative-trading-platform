@@ -63,7 +63,7 @@ development_status:
   epic-3: contexted
   3-1-high-performance-kline-chart-rendering-engine: done
   3-2-intelligent-strategy-signal-dynamic-update-system: done
-  3-3-personalized-color-configuration-and-accessibility-support: backlog
+  3-3-personalized-color-configuration-and-accessibility-support: ready-for-dev
   3-4-fund-curve-and-kline-chart-integrated-analysis: backlog
 
   # Epic 6: 环境检测与自动配置引擎 (一键启动脚本)
