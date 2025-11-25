@@ -45,7 +45,8 @@
       "@/hooks/*": [
         "./src/hooks/*"
       ]
-    }
+    },
+    "strictNullChecks": true
   },
   "include": [
     "next-env.d.ts",

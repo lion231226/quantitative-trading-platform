@@ -17,6 +17,7 @@ import { formatValidationErrors } from '@/lib/validation';
 import {
   StrategyType,
   SingleMovingAverageParams,
+  StrategyParams,
   StrategyParameterMeta
 } from '@/types/strategy';
 import { StrategyConfig } from '@/types/api';
@@ -38,9 +39,9 @@ import { ParameterInput } from './ParameterInput';
 import { StrategyTypeSelectorSimple } from './StrategyTypeSelectorSimple';
 
 interface StrategyFormProps {
-  onParamsChange: (strategyType: StrategyType, params: SingleMovingAverageParams) => void
+  onParamsChange: (strategyType: StrategyType, params: StrategyParams) => void
   initialStrategyType?: StrategyType
-  initialParams?: SingleMovingAverageParams
+  initialParams?: StrategyParams
   className?: string
 }
 

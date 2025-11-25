@@ -1,36 +1,31 @@
 // Add any custom config to be passed to Jest
+const coverageConfig = require('./jest.coverage.config')
+
 const customJestConfig = {
+  testEnvironment: '<rootDir>/jest.env.happy-dom.js',
+  testEnvironmentOptions: {
+    url: 'http://localhost:3000',
+    resources: 'usable',
+    runScripts: 'dangerously',
+    width: 1024,
+    height: 768,
+    deviceScaleFactor: 1,
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+  },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   moduleNameMapper: {
     // Handle module aliases (this will be automatically configured for you based on your tsconfig.json paths)
     '^@/(.*)$': '<rootDir>/src/$1',
+    // Mock lightweight-charts
+    'lightweight-charts': '<rootDir>/src/__mocks__/lightweight-charts.js',
   },
-  testEnvironment: 'jest-environment-jsdom',
   // 优化内存使用
   maxWorkers: 1, // 单线程运行以减少内存使用
   maxConcurrency: 1,
   clearMocks: true,
   resetMocks: true,
   restoreMocks: true,
-  collectCoverageFrom: [
-    'src/**/*.{js,jsx,ts,tsx}',
-    '!src/**/*.d.ts',
-    '!src/app/**/layout.tsx',
-    '!src/app/**/loading.tsx',
-    '!src/app/**/not-found.tsx',
-    '!src/app/**/error.tsx',
-    '!src/app/**/*.stories.{js,jsx,ts,tsx}',
-    '!src/**/__tests__/**',
-    '!src/**/__mocks__/**',
-  ],
-  coverageThreshold: {
-    global: {
-      branches: 70, // 降低覆盖率要求
-      functions: 70,
-      lines: 70,
-      statements: 70,
-    },
-  },
+  ...coverageConfig,
   testMatch: [
     '<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}',
     '<rootDir>/src/**/*.{test,spec}.{js,jsx,ts,tsx}',

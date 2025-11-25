@@ -191,6 +191,7 @@ export function PercentageInput({
               onClick={() => handleStep('decrease')}
               disabled={disabled || value <= min}
               className="px-3"
+              aria-label={`减少${label}`}
             >
               -
             </Button>
@@ -207,6 +208,13 @@ export function PercentageInput({
                   hasError ? 'border-red-500 text-red-600' : 'border-gray-300'
                 } focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 placeholder="0.0"
+                aria-label={`${label}输入`}
+                aria-describedby={hasError ? `${type}-error` : undefined}
+                aria-invalid={hasError}
+                inputMode="decimal"
+                step={step}
+                min={min}
+                max={max}
               />
               <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
                 %
@@ -219,6 +227,7 @@ export function PercentageInput({
               onClick={() => handleStep('increase')}
               disabled={disabled || value >= max}
               className="px-3"
+              aria-label={`增加${label}`}
             >
               +
             </Button>
@@ -238,6 +247,11 @@ export function PercentageInput({
               style={{
                 background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((value - min) / (max - min)) * 100}%, #e5e7eb ${((value - min) / (max - min)) * 100}%, #e5e7eb 100%)`,
               }}
+              aria-label={`${label}滑块`}
+              aria-valuemin={min}
+              aria-valuemax={max}
+              aria-valuenow={value}
+              aria-valuetext={`${label}: ${value}%`}
             />
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>{min}%</span>

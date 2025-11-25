@@ -1,0 +1,241 @@
+<story-context id="3-1-high-performance-kline-chart-rendering-engine" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>1</storyId>
+    <title>高性能K线图表渲染引擎</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-15</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/3-1-high-performance-kline-chart-rendering-engine.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>用户</asA>
+    <iWant>看到流畅、专业的K线图表</iWant>
+    <soThat>能够清晰分析价格走势和策略表现</soThat>
+    <tasks>- [ ] Task 1: Lightweight Charts集成和性能优化 (AC: 1)
+  - [ ] Subtask 1.1: 安装和配置Lightweight Charts库，替代现有Chart.js实现
+  - [ ] Subtask 1.2: 实现性能基准测试，验证5-8倍性能提升
+  - [ ] Subtask 1.3: 优化大数据集渲染，支持10000+数据点的流畅显示
+  - [ ] Subtask 1.4: 实现渲染性能监控和自适应优化
+
+- [ ] Task 2: 专业K线图表组件开发 (AC: 2)
+  - [ ] Subtask 2.1: 创建K线图表组件，支持OHLC数据显示
+  - [ ] Subtask 2.2: 实现成交量柱状图与K线图的组合显示
+  - [ ] Subtask 2.3: 添加价格标签、网格线和坐标轴配置
+  - [ ] Subtask 2.4: 实现K线图的专业视觉效果（红涨绿跌等）
+
+- [ ] Task 3: 多时间周期支持 (AC: 3)
+  - [ ] Subtask 3.1: 实现数据聚合算法，支持日K、周K、月K转换
+  - [ ] Subtask 3.2: 创建时间周期切换界面组件
+  - [ ] Subtask 3.3: 实现周期切换时的数据缓存和预加载
+  - [ ] Subtask 3.4: 添加周期切换动画和过渡效果
+
+- [ ] Task 4: 图表交互功能 (AC: 4)
+  - [ ] Subtask 4.1: 实现图表缩放功能（鼠标滚轮、按钮控制）
+  - [ ] Subtask 4.2: 实现图表平移功能（鼠标拖拽、触摸滑动）
+  - [ ] Subtask 4.3: 添加十字光标和数据点提示
+  - [ ] Subtask 4.4: 实现图表重置和自适应布局
+
+- [ ] Task 5: 键盘快捷键支持 (AC: 5)
+  - [ ] Subtask 5.1: 实现方向键平移功能（左右移动时间轴）
+  - [ ] Subtask 5.2: 实现+/-键缩放功能
+  - [ ] Subtask 5.3: 实现K键快速切换时间周期
+  - [ ] Subtask 5.4: 添加快捷键提示和帮助文档</tasks>
+  </story>
+
+  <acceptanceCriteria>1. 集成Lightweight Charts替代Chart.js，实现5-8倍性能提升
+2. 支持专业的K线图表显示（开盘、收盘、最高、最低、成交量）
+3. 实现多种时间周期的切换（日K、周K、月K）
+4. 支持图表的缩放、平移等基础交互操作
+5. 提供键盘快捷键支持（方向键移动、+/-缩放、K切换周期）</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>Epic 3: 专业K线图表与智能可视化系统</title>
+        <section>Epic 3 完整需求描述</section>
+        <snippet>史诗目标: 实现专业级K线图表和策略标记点动态更新系统，推动平台从教育工具向实用量化工具升级</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD.md</path>
+        <title>量化交易单均线策略分析平台 Product Requirements Document</title>
+        <section>Functional Requirements</section>
+        <snippet>FR004: 系统必须提供交互式数据可视化组件，展示价格走势、交易信号和策略收益曲线</snippet>
+      </doc>
+      <doc>
+        <path>frontend/src/components/ux/LoadingStates.tsx</path>
+        <title>用户体验优化 - 性能监控和加载状态</title>
+        <section>性能优化经验</section>
+        <snippet>React.memo、useMemo、懒加载等性能优化策略可直接应用于Lightweight Charts集成</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>frontend/src/components/charts/PriceChart.tsx</path>
+        <kind>component</kind>
+        <symbol>PriceChart</symbol>
+        <lines>1-50</lines>
+        <reason>现有的Chart.js价格图表组件，需要替换为Lightweight Charts实现</reason>
+      </artifact>
+      <artifact>
+        <path>frontend/src/services/performanceService.ts</path>
+        <kind>service</kind>
+        <symbol>PERFORMANCE_QUERY_KEYS</symbol>
+        <lines>29-42</lines>
+        <reason>性能监控服务，可集成图表性能监控功能</reason>
+      </artifact>
+      <artifact>
+        <path>frontend/src/types/chart.types.ts</path>
+        <kind>types</kind>
+        <symbol>PricePoint</symbol>
+        <lines>1-8</lines>
+        <reason>现有的价格数据类型定义，包含OHLC数据结构，可直接用于K线图</reason>
+      </artifact>
+      <artifact>
+        <path>frontend/src/types/chart.types.ts</path>
+        <kind>types</kind>
+        <symbol>TradingSignal</symbol>
+        <lines>10-15</lines>
+        <reason>交易信号类型定义，用于K线图上的买卖标记点</reason>
+      </artifact>
+      <artifact>
+        <path>frontend/src/components/charts/ChartControls.tsx</path>
+        <kind>component</kind>
+        <symbol>ChartControls</symbol>
+        <lines>1</lines>
+        <reason>现有的图表控制组件，可扩展为K线图的缩放、平移控制</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <dependency>
+        <ecosystem>Node.js</ecosystem>
+        <package>react</package>
+        <version>^18</version>
+        <purpose>React 18+ 并发特性和性能优化支持</purpose>
+      </dependency>
+      <dependency>
+        <ecosystem>Node.js</ecosystem>
+        <package>@tanstack/react-query</package>
+        <version>^5.40.0</version>
+        <purpose>数据管理和缓存架构兼容性</purpose>
+      </dependency>
+      <dependency>
+        <ecosystem>Node.js</ecosystem>
+        <package>chart.js</package>
+        <version>^4.4.2</version>
+        <purpose>现有Chart.js实现，将被Lightweight Charts替代</purpose>
+      </dependency>
+      <dependency>
+        <ecosystem>Node.js</ecosystem>
+        <package>react-chartjs-2</package>
+        <version>^5.2.0</version>
+        <purpose>Chart.js React绑定，将被Lightweight Charts替代</purpose>
+      </dependency>
+      <dependency>
+        <ecosystem>Node.js</ecosystem>
+        <package>typescript</package>
+        <version>^5</version>
+        <purpose>TypeScript完整类型安全和智能提示</purpose>
+      </dependency>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+  <constraint>
+    <pattern>Performance Standards</pattern>
+    <description>必须实现5-8倍性能提升，支持10000+数据点的流畅显示</description>
+    <source>Story AC1和Dev Notes</source>
+  </constraint>
+  <constraint>
+    <pattern>Architecture Compatibility</pattern>
+    <description>保持与React Query 5.40.0数据管理架构的兼容性</description>
+    <source>Dev Notes - 技术架构对齐</source>
+  </constraint>
+  <constraint>
+    <pattern>TypeScript Safety</pattern>
+    <description>基于TypeScript类型系统确保图表数据的安全性</description>
+    <source>Dev Notes - 技术实现要求</source>
+  </constraint>
+  <constraint>
+    <pattern>Component Design Patterns</pattern>
+    <description>遵循已建立的组件设计模式和错误处理机制</description>
+    <source>Dev Notes - 技术架构对齐</source>
+  </constraint>
+  <constraint>
+    <pattern>Responsive Design</pattern>
+    <description>响应式设计支持桌面端和移动端，统一交互处理</description>
+    <source>Dev Notes - 技术实现要求</source>
+  </constraint>
+  <constraint>
+    <pattern>Performance Monitoring</pattern>
+    <description>集成现有的performanceService.ts性能监控体系</description>
+    <source>Dev Notes - 技术架构对齐</source>
+  </constraint>
+</constraints>
+<interfaces>
+  <interface>
+    <name>PricePoint</name>
+    <kind>TypeScript Interface</kind>
+    <signature>interface PricePoint { timestamp: string; open: number; high: number; low: number; close: number }</signature>
+    <path>frontend/src/types/chart.types.ts:1-8</path>
+  </interface>
+  <interface>
+    <name>TradingSignal</name>
+    <kind>TypeScript Interface</kind>
+    <signature>interface TradingSignal { timestamp: string; type: 'buy' | 'sell'; price: number; strategy: string }</signature>
+    <path>frontend/src/types/chart.types.ts:10-15</path>
+  </interface>
+  <interface>
+    <name>KlineChartProps</name>
+    <kind>React Component Props</kind>
+    <signature>interface KlineChartProps { data: KlineData; config?: KlineConfig; onSignalClick?: (signal: TradingSignal) => void; timePeriod?: TimePeriod }</signature>
+    <path>frontend/src/types/kline.types.ts (新文件)</path>
+  </interface>
+  <interface>
+    <name>PerformanceService</name>
+    <kind>React Query Service</kind>
+    <signature>const PERFORMANCE_QUERY_KEYS = { metrics: (strategyId, startDate, endDate, benchmarkId) => [...] }</signature>
+    <path>frontend/src/services/performanceService.ts:29-42</path>
+  </interface>
+</interfaces>
+<tests>
+  <standards>使用Jest + React Testing Library测试框架，遵循已建立的测试模式。包含组件渲染测试、性能基准测试、键盘快捷键测试和响应式设计测试。需要Mock Lightweight Charts库以避免DOM依赖问题。</standards>
+  <locations>
+    <location>frontend/src/components/charts/__tests__/</location>
+    <location>frontend/src/components/kline/__tests__/ (新目录)</location>
+    <location>frontend/src/services/__tests__/</location>
+  </locations>
+  <ideas>
+    <test>
+      <ac>1</ac>
+      <idea>性能基准测试：验证Lightweight Charts相比Chart.js的5-8倍性能提升</idea>
+    </test>
+    <test>
+      <ac>2</ac>
+      <idea>K线图渲染测试：验证OHLC数据和成交量柱状图正确显示</idea>
+    </test>
+    <test>
+      <ac>3</ac>
+      <idea>时间周期切换测试：验证日K、周K、月K数据聚合和缓存机制</idea>
+    </test>
+    <test>
+      <ac>4</ac>
+      <idea>交互功能测试：验证缩放、平移、十字光标等用户交互</idea>
+    </test>
+    <test>
+      <ac>5</ac>
+      <idea>键盘快捷键测试：验证方向键平移、+/-缩放、K键切换周期功能</idea>
+    </test>
+    <test>
+      <ac>All</ac>
+      <idea>大数据集性能测试：验证10000+数据点的流畅渲染能力</idea>
+    </test>
+    <test>
+      <ac>All</ac>
+      <idea>响应式设计测试：验证桌面端和移动端的一致体验</idea>
+    </test>
+  </ideas>
+</tests>
+</story-context>

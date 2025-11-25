@@ -1,0 +1,153 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>1.5</storyId>
+    <title>React 18 JSDOM兼容性修复</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-25</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/4-1-5-react-18-jsdom-compatibility-fix.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>development team</asA>
+    <iWant>have a React 18 compatible testing environment</iWant>
+    <soThat>all event handling tests can run without errors and we can effectively diagnose and fix business logic test failures</soThat>
+    <tasks>### Task 1: 环境准备和实验验证 (AC: 1, 3)
+- [ ] **Subtask 1.1**: 备份当前测试环境配置
+  - [ ] 备份`frontend/jest.config.js`和`frontend/package.json`
+  - [ ] 创建feature分支`feature/happy-dom-migration`
+  - [ ] 建立当前测试执行时间和通过率基准
+
+- [ ] **Subtask 1.2**: 安装和配置happy-dom
+  - [ ] 执行`npm install --save-dev happy-dom@^14.0.0` (最新稳定版本)
+  - [ ] 更新`frontend/jest.config.js`: `testEnvironment: 'happy-dom'`
+  - [ ] 运行小规模测试验证基础兼容性
+
+- [ ] **Subtask 1.3**: 事件处理兼容性验证
+  - [ ] 运行UserPreferences组件测试 (核心事件处理测试)
+  - [ ] 验证表单控件测试不再出现target属性错误
+  - [ ] 确认React 18并发渲染在happy-dom下正常工作
+
+### Task 2: 全面迁移和配置调整 (AC: 1, 2)
+- [ ] **Subtask 2.1**: Jest配置更新
+  - [ ] 完整更新`frontend/jest.config.js`配置
+  - [ ] 调整testEnvironment相关设置
+  - [ ] 优化moduleNameMapping以适配happy-dom
+
+- [ ] **Subtask 2.2**: 依赖版本对齐
+  - [ ] 检查并更新Jest到最新兼容版本 (^29.7.0+)
+  - [ ] 验证@testing-library/react兼容性 (^15.0.7+)
+  - [ ] 确保所有测试相关依赖版本协调，建立依赖锁定版本
+
+- [ ] **Subtask 2.3**: Mock配置适配
+  - [ ] 更新`frontend/jest.setup.js`中的DOM相关mock
+  - [ ] 调整lightweight-charts等外部库mock配置
+  - [ ] 修复可能的环境特定mock问题
+
+### Task 3: 测试验证和问题修复 (AC: 2, 3, 4)
+- [ ] **Subtask 3.1**: 核心事件处理测试验证
+  - [ ] 运行所有UserPreferences测试 (预期: 0个事件相关错误)
+  - [ ] 验证表单控件测试 (onChange, onClick, onSubmit等)
+  - [ ] 确认组件状态管理测试正常运行
+
+- [ ] **Subtask 3.2**: 受影响测试修复
+  - [ ] 修复因环境变化导致的测试失败
+  - [ ] 更新不兼容的DOM操作代码
+  - [ ] 调整特定于JSDOM的测试假设
+
+- [ ] **Subtask 3.3**: 性能和稳定性验证
+  - [ ] 测量测试执行时间变化 (目标: 不超过基准20%增长)
+  - [ ] 验证测试覆盖率报告正常生成
+  - [ ] 确认CI/CD pipeline兼容性
+
+### Task 4: 验收和质量保证 (AC: 4)
+- [ ] **Subtask 4.1**: 完整测试套件验证
+  - [ ] 运行完整测试套件 (目标: 消除所有事件处理错误)
+  - [ ] 验证测试稳定性 (多次运行结果一致)
+  - [ ] 确认85%+测试运行稳定性达成
+
+- [ ] **Subtask 4.2**: 回归测试和文档更新
+  - [ ] 更新测试环境文档
+  - [ ] 记录happy-dom特定配置和注意事项
+  - [ ] 为团队提供迁移指南和最佳实践
+
+- [ ] **Subtask 4.3**: 清理和交付
+  - [ ] 移除JSDOM相关依赖 (如果不再需要)
+  - [ ] 提交所有配置更改
+  - [ ] 创建迁移总结报告</tasks>
+  </story>
+
+  <acceptanceCriteria>1. **解决JSDOM事件处理兼容性问题** - 完全消除`Cannot read properties of undefined (reading 'target')`错误，实现100%事件相关测试通过率
+2. **确保所有事件相关测试可以正常运行** - 表单控件、用户交互、组件状态管理测试正常执行，零事件处理错误
+3. **验证现有测试逻辑不受影响** - 90%+现有测试在迁移后无需修改即可正常运行，保持测试覆盖率≥85%
+4. **达到85%+的测试运行稳定性** - 事件处理错误完全解决，测试执行可靠，CI/CD稳定性≥99%</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4 技术规格文档" section="Story 4.1 验收标准" snippet="本故事验收标准与Epic 4技术规格文档中的Story 4.1验收标准完全对齐，支持Epic 4整体技术健康度目标。包括测试基础设施全面重构、JSDOM兼容性问题系统性解决方案、happy-dom迁移策略。"/>
+      <doc path="docs/stories/4-1-test-infrastructure-overhaul.md" title="测试基础设施概览" section="JSDOM兼容性问题识别和分析" snippet="基于Story 4.1的发现和验证，JSDOM在与React 18的并发渲染配合时存在系统性兼容性问题，影响100-120个涉及事件处理的测试。"/>
+      <doc path="docs/sprint-status.yaml" title="项目状态追踪" section="Epic 4 进度" snippet="Epic 4当前状态为contexted，Story 4.1已完成，Story 4.1.5状态为drafted，需要生成上下文后准备开发。"/>
+      <doc path="docs/epics.md" title="史诗分解文档" section="Epic 4 技术债务清理" snippet="Epic 4专注于将项目的技术健康度从当前评估全面提升到企业级生产就绪标准的10分满分，包含8个递进的故事。"/>
+      <doc path="docs/test-layering-strategy.md" title="测试分层策略文档" section="单元测试标准" snippet="定义了项目测试分层架构，包括单元测试(70%)、集成测试(20%)和端到端测试(10%)的实施标准，覆盖率要求90%以上，使用Jest + React Testing Library。"/>
+      <doc path="frontend/package.json" title="前端依赖配置" section="开发依赖" snippet="当前使用jest-environment-jsdom^29.7.0，@testing-library/react^15.0.7，@testing-library/user-event^14.5.2，为happy-dom迁移提供版本兼容性基础。"/>
+      <doc path="frontend/jest.config.js" title="Jest测试配置" section="测试环境设置" snippet="当前配置testEnvironment: 'jest-environment-jsdom'，包含完整的模块映射和转换配置，为happy-dom迁移提供配置参考。"/>
+      <doc path="frontend/jest.setup.js" title="Jest环境设置" section="DOM兼容性修复" snippet="已包含JSDOM事件处理问题的临时修复方案，包括Event类重定义和错误过滤，这些需要在happy-dom迁移中清理。"/>
+      <doc path="frontend/jest.coverage.config.js" title="Jest覆盖率配置" section="覆盖率阈值设置" snippet="定义了85%的全局覆盖率阈值，关键目录要求90%，包含详细的收集规则和报告格式配置，为happy-dom迁移后的覆盖率验证提供基准。"/>
+      <doc path="frontend/.eslintrc.json" title="ESLint配置" section="Jest测试环境规则" snippet="包含针对测试文件的ESLint规则配置，特别是Jest环境设置和TypeScript规则，确保happy-dom迁移后代码质量标准保持一致。"/>
+      <doc path=".github/workflows/coverage.yml" title="CI/CD测试工作流" section="前端测试集成" snippet="GitHub Actions工作流配置，包含前端测试执行和覆盖率报告生成，需要在happy-dom迁移后验证CI/CD兼容性和稳定性。"/>
+      <doc path="frontend/tsconfig.json" title="TypeScript配置" section="测试文件排除" snippet="TypeScript编译配置，明确排除测试文件，确保happy-dom迁移不影响生产构建和类型检查。"/>
+      <doc path="frontend/next.config.js" title="Next.js配置" section="构建环境设置" snippet="Next.js构建配置，包含环境变量和构建优化设置，确保测试环境变更不影响生产构建流程。"/>
+    </docs>
+    <code>
+      <artifact path="frontend/jest.config.js" kind="config" symbol="testEnvironment" lines="12" reason="需要将testEnvironment从'jest-environment-jsdom'改为'happy-dom'以解决React 18兼容性问题"/>
+      <artifact path="frontend/package.json" kind="config" symbol="jest-environment-jsdom" lines="63" reason="需要将jest-environment-jsdom替换为happy-dom@^14.0.0并确保版本兼容性"/>
+      <artifact path="frontend/jest.setup.js" kind="setup" symbol="Event Mock" lines="178-188" reason="当前JSDOM事件处理问题的临时修复方案，happy-dom迁移后可以清理这些mock"/>
+      <artifact path="frontend/jest.setup.js" kind="setup" symbol="Error Filtering" lines="190-207" reason="针对JSDOM特定错误的过滤机制，happy-dom迁移后不再需要这些过滤"/>
+      <artifact path="frontend/src/components/controls/__tests__/UserPreferences.test.tsx" kind="test" symbol="Event Handling Tests" lines="80-100" reason="核心事件处理测试，包含fireEvent.change和userEvent.click，是验证happy-dom兼容性的关键测试用例"/>
+      <artifact path="frontend/src/components/controls/__tests__/ParameterControls.test.tsx" kind="test" symbol="Form Control Tests" lines="137-174" reason="表单控件交互测试，包含多种事件处理场景，用于验证happy-dom的事件系统兼容性"/>
+      <artifact path="frontend/src/components/ui/__tests__/button.test.tsx" kind="test" symbol="Button Event Tests" lines="25-44" reason="基础UI组件事件处理测试，验证click事件和disabled状态处理，确保happy-dom基础事件功能正常"/>
+      <artifact path="frontend/src/components/ui/__tests__/error-boundary.test.tsx" kind="test" symbol="Error Event Handling" lines="60-96" reason="错误边界组件事件处理测试，包含click事件和用户交互，验证happy-dom下的错误处理兼容性"/>
+      <artifact path="frontend/src/__mocks__/lightweight-charts.js" kind="mock" symbol="Chart Library Mock" reason="外部图表库mock配置，需要确保在happy-dom环境下正常工作"/>
+    </code>
+    <dependencies>
+      <ecosystem name="npm">
+        <package name="happy-dom" version="^14.0.0" reason="JSDOM的现代替代品，支持React 18并发渲染和事件处理"/>
+        <package name="jest" version="^29.7.0" reason="与happy-dom兼容的Jest版本"/>
+        <package name="@testing-library/react" version="^15.0.7" reason="React 18兼容的测试库版本"/>
+        <package name="@testing-library/user-event" version="^14.5.2" reason="增强的用户交互测试支持"/>
+        <package name="jest-environment-jsdom" version="^29.7.0" reason="将被happy-dom替代的当前环境"/>
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="testing" description="测试环境必须支持React 18并发渲染特性"/>
+    <constraint type="compatibility" description="所有现有测试应尽量保持兼容，目标90%+无需修改"/>
+    <constraint type="performance" description="测试执行时间增长应控制在20%以内"/>
+    <constraint type="coverage" description="测试覆盖率必须保持≥85%"/>
+    <constraint type="stability" description="CI/CD流水线稳定性≥99%"/>
+    <constraint type="migration" description="采用分阶段迁移策略，确保可回滚"/>
+    <constraint type="version" description="happy-dom版本应选择稳定版本(^14.0.0)"/>
+  </constraints>
+
+  <interfaces>
+    <interface name="Jest Configuration" kind="config" signature="testEnvironment: 'happy-dom'" path="frontend/jest.config.js" description="主要配置接口，将Jest测试环境从JSDOM切换到happy-dom，解决React 18并发渲染兼容性问题。需要同时调整testEnvironmentOptions、setupFilesAfterEnv等相关配置，确保happy-dom环境正确初始化。"/>
+    <interface name="Test Environment Setup" kind="setup" signature="custom happy-dom configuration" path="frontend/jest.setup.js" description="测试环境设置接口，需要移除现有的JSDOM特定修复代码，包括Event类重定义和错误过滤机制。可以添加happy-dom特定的全局配置，如虚拟窗口设置、默认事件行为等。"/>
+    <interface name="Package Dependencies" kind="dependencies" signature="happy-dom replacement for jsdom" path="frontend/package.json" description="依赖管理接口，需要在devDependencies中将jest-environment-jsdom替换为happy-dom@^14.0.0，确保与Jest @testing-library/react的版本兼容性，可能需要调整相关依赖版本约束。"/>
+  </interfaces>
+
+  <tests>
+    <standards>测试基于Jest + React Testing Library + User Event，采用分层测试策略。当前环境使用JSDOM，存在React 18并发渲染兼容性问题。迁移到happy-dom后应保持相同的测试框架和断言方法，确保测试逻辑的连续性。测试执行环境需支持现代DOM API和事件处理机制。</standards>
+    <locations>frontend/src/**/__tests__/**/*.{test,spec}.{js,jsx,ts,tsx}, frontend/src/**/*.{test,spec}.{js,jsx,ts,tsx}, 测试配置文件位于frontend/jest.config.js和frontend/jest.setup.js</locations>
+    <ideas>
+      <test idea-id="AC1-1" mapped-ac="1">验证UserPreferences组件中的fireEvent.change事件不再出现target属性错误</test>
+      <test idea-id="AC1-2" mapped-ac="1">测试ParameterControls组件中的表单控件交互功能</test>
+      <test idea-id="AC2-1" mapped-ac="2">运行完整的事件处理测试套件，确认零事件处理错误</test>
+      <test idea-id="AC3-1" mapped-ac="3">验证现有测试在happy-dom环境下的兼容性，目标90%+无需修改</test>
+      <test idea-id="AC3-2" mapped-ac="3">测试覆盖率报告生成正常，保持≥85%</test>
+      <test idea-id="AC4-1" mapped-ac="4">多次运行测试套件验证稳定性，目标85%+稳定性</test>
+      <test idea-id="AC4-2" mapped-ac="4">CI/CD pipeline集成测试，确保生产环境兼容性</test>
+    </ideas>
+  </tests>
+</story-context>

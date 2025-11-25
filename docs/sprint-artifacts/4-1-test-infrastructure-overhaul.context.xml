@@ -1,0 +1,208 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>1</storyId>
+    <title>Test Infrastructure Overhaul</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-24</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/4-1-test-infrastructure-overhaul.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>development team</asA>
+    <iWant>to have a stable and reliable testing infrastructure</iWant>
+    <soThat>all features can work correctly and support rapid iteration</soThat>
+    <tasks>Task 1 (AC: 1, 3): Fix failing tests and component import issues
+  - Subtask 1.1: Analyze and fix lightweight-charts dependency and Mock configuration issues
+  - Subtask 1.2: Fix the other 16 failing tests across chart components
+  - Subtask 1.3: Verify all tests pass (59/59)
+- Task 2 (AC: 2): Refactor test Mock configuration
+  - Subtask 2.1: Establish complete component Mock system with lightweight-charts integration
+  - Subtask 2.2: Configure API Mock and data Mock with MSW
+  - Subtask 2.3: Optimize Jest configuration and transformIgnorePatterns
+- Task 3 (AC: 4): Establish test layering strategy
+  - Subtask 3.1: Define unit test responsibility scope (70% coverage)
+  - Subtask 3.2: Define integration test strategy (20% coverage)
+  - Subtask 3.3: Set up E2E test framework with Playwright (10% coverage)
+- Task 4 (AC: 5): Implement test reporting and coverage monitoring
+  - Subtask 4.1: Configure test coverage reports with 70% baseline, 85% target
+  - Subtask 4.2: Set up automated test report generation and CI integration
+  - Subtask 4.3: Integrate GitHub Actions coverage checks and reporting</tasks>
+  </story>
+
+  <acceptanceCriteria>1. Fix all failing tests (59/59 tests pass, 100% pass rate)
+2. Refactor test Mock configuration - complete component Mock, API Mock, data Mock with proper lightweight-charts integration
+3. Fix lightweight-charts dependency Mock issues and transformIgnorePatterns configuration
+4. Establish test layering strategy - clear responsibilities for unit tests (70%), integration tests (20%), E2E tests (10%)
+5. Add test reporting and coverage monitoring - automated test reports, 85%+ coverage target with CI integration</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-4.md</path>
+        <title>Epic 4 Technical Specification</title>
+        <section>测试基础设施模块设计</section>
+        <snippet>多层次测试策略金字塔式架构: E2E Tests (10%), Integration Tests (20%), Unit Tests (70%)</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>Epic Breakdown Document</title>
+        <section>Epic 4: 技术债务清理与质量保障全面提升</section>
+        <snippet>当前技术健康度评估：架构设计9/10、代码质量7/10、文档完整性10/10、自动化程度9/10、测试覆盖6/10</snippet>
+      </doc>
+      <doc>
+        <path>frontend/jest.config.js</path>
+        <title>Jest Configuration File</title>
+        <section>Test Configuration and Mock Setup</section>
+        <snippet>transformIgnorePatterns: ['/node_modules/(?!(chart.js|react-chartjs-2|lightweight-charts)/'], coverageThreshold: { global: { branches: 70, functions: 70, lines: 70, statements: 70 } }</snippet>
+      </doc>
+      <doc>
+        <path>frontend/jest.setup.js</path>
+        <title>Jest Setup File</title>
+        <section>Test Environment and Global Mocks</section>
+        <snippet>mockLightweightCharts configuration with proper ES module mocking and test environment setup</snippet>
+      </doc>
+      <doc>
+        <path>frontend/package.json</path>
+        <title>Package Configuration</title>
+        <section>Test Scripts and Dependencies</section>
+        <snippet>"scripts": { "test": "jest", "test:coverage": "jest --coverage", "test:e2e": "playwright test" }, dependencies: { "lightweight-charts": "^5.0.9", "jest": "^29.7.0" }</snippet>
+      </doc>
+      <doc>
+        <path>frontend/tsconfig.json</path>
+        <title>TypeScript Configuration</title>
+        <section>Compiler Options for Testing</section>
+        <snippet>"strict": false, "noImplicitAny": false, "noImplicitReturns": false, "noUnusedLocals": false - lenient configuration for testing environment</snippet>
+      </doc>
+      <doc>
+        <path>docs/quality-assurance-framework.md</path>
+        <title>Quality Assurance Framework</title>
+        <section>Testing Standards and Requirements</section>
+        <snippet>测试质量: 单元测试通过率: 目标 = 100%, 代码覆盖率: 目标 >= 80%, 测试稳定性: 目标 >= 95%</snippet>
+      </doc>
+      <doc>
+        <path>docs/quality-assurance-workflows-integration.md</path>
+        <title>Quality Assurance Workflows Integration</title>
+        <section>Integrated Quality Check Workflow</section>
+        <snippet>质量标准配置: development coverage_threshold: 70, review coverage_threshold: 80, release coverage_threshold: 85</snippet>
+      </doc>
+      <doc>
+        <path>.github/workflows/coverage.yml</path>
+        <title>GitHub Actions Coverage Workflow</title>
+        <section>CI/CD Test Integration</section>
+        <snippet>frontend-tests: npm run test:coverage || true, upload coverage report to Codecov with frontend flag</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>frontend/jest.config.js</path>
+        <kind>test-config</kind>
+        <symbol>Jest Configuration</symbol>
+        <lines>41-50</lines>
+        <reason>transformIgnorePatterns配置正确处理lightweight-charts等ES模块，覆盖率阈值设置为70%</reason>
+      </artifact>
+      <artifact>
+        <path>frontend/jest.setup.js</path>
+        <kind>test-config</kind>
+        <symbol>mockLightweightCharts</symbol>
+        <lines>62-95</lines>
+        <reason>lightweight-charts Mock配置需要优化，处理ES模块导入问题</reason>
+      </artifact>
+      <artifact>
+        <path>frontend/package.json</path>
+        <kind>config</kind>
+        <symbol>Test Scripts and Dependencies</symbol>
+        <lines>11-20, 37, 62-63</lines>
+        <reason>测试脚本配置，lightweight-charts依赖版本^5.0.9已正确安装，Jest版本^29.7.0</reason>
+      </artifact>
+      <artifact>
+        <path>frontend/tsconfig.json</path>
+        <kind>config</kind>
+        <symbol>TypeScript Configuration</symbol>
+        <lines>10, 20-24</lines>
+        <reason>TypeScript配置宽松模式，strict: false, noImplicitAny: false，适合测试环境</reason>
+      </artifact>
+      <artifact>
+        <path>frontend/src/components/charts/__tests__/</path>
+        <kind>test-directory</kind>
+        <symbol>Chart Test Suites</symbol>
+        <lines>multiple files</lines>
+        <reason>图表组件测试套件，主要问题是lightweight-charts的Mock配置和ES模块转换</reason>
+      </artifact>
+      <artifact>
+        <path>frontend/src/components/tutorial/__tests__/TutorialSystemImport.test.tsx</path>
+        <kind>test</kind>
+        <symbol>TutorialSystem Import Test</symbol>
+        <lines>47-69</lines>
+        <reason>组件导入测试，验证Mock配置和依赖解析</reason>
+      </artifact>
+      <artifact>
+        <path>.github/workflows/coverage.yml</path>
+        <kind>ci-config</kind>
+        <symbol>GitHub Actions Test Workflow</symbol>
+        <lines>142-158</lines>
+        <reason>CI/CD集成测试配置，自动运行覆盖率报告并上传到Codecov</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <ecosystem name="frontend">
+        <package name="@testing-library/jest-dom" version="^6.4.6" />
+        <package name="@testing-library/react" version="^15.0.7" />
+        <package name="@testing-library/user-event" version="^14.5.2" />
+        <package name="jest" version="^29.7.0" />
+        <package name="jest-environment-jsdom" version="^29.7.0" />
+        <package name="@playwright/test" version="^1.56.1" />
+        <package name="lightweight-charts" version="^5.0.9" missing="false" />
+        <package name="chart.js" version="^4.4.2" />
+        <package name="typescript" version="^5" strict="false" />
+        <package name="node" version=">=18.0.0" />
+        <package name="pnpm" version=">=8.0.0" />
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+  <constraint type="testing-architecture">必须建立金字塔式测试架构：单元测试70%、集成测试20%、E2E测试10%</constraint>
+  <constraint type="test-coverage">必须达到85%以上的代码覆盖率，100%测试通过率（当前配置70%为起点）</constraint>
+  <constraint type="mock-completeness">所有外部依赖必须完整Mock：API、组件、数据，特别是lightweight-charts ES模块</constraint>
+  <constraint type="dependency-management">lightweight-charts依赖版本^5.0.9已正确安装，需要优化transformIgnorePatterns配置</constraint>
+  <constraint type="import-integrity">所有组件导入必须正确，解决ES模块导入和Mock配置问题</constraint>
+  <constraint type="typescript-strict">当前TypeScript配置为宽松模式（strict: false），后续故事考虑启用严格模式</constraint>
+  <constraint type="test-isolation">测试必须完全隔离，使用clearMocks: true, resetMocks: true, restoreMocks: true</constraint>
+  <constraint type="ci-integration">测试必须集成到CI/CD流程，支持自动覆盖率报告和质量门禁</constraint>
+</constraints>
+  <interfaces>
+  <interface name="Jest Test Runner" kind="test-framework">
+    <signature>jest --watchAll=false --passWithNoTests --coverage --maxWorkers=1</signature>
+    <path>frontend/package.json</path>
+  </interface>
+  <interface name="React Testing Library" kind="component-testing">
+    <signature>render(screen, fireEvent, waitFor)</signature>
+    <path>frontend/src/components/**/__tests__/</path>
+  </interface>
+  <interface name="Mock Service Layer" kind="test-mock">
+    <signature>jest.mock('lightweight-charts', () => ({ createChart: jest.fn() }))</signature>
+    <path>frontend/jest.setup.js</path>
+  </interface>
+  <interface name="ES Module Transform" kind="module-transform">
+    <signature>transformIgnorePatterns: ['/node_modules/(?!(chart.js|react-chartjs-2|lightweight-charts)/']</signature>
+    <path>frontend/jest.config.js</path>
+  </interface>
+  <interface name="Coverage Reporter" kind="coverage-reporting">
+    <signature>npm run test:coverage -- --coverageReporters=json,html,lcov</signature>
+    <path>frontend/package.json</path>
+  </interface>
+</interfaces>
+  <tests>
+    <standards>多层次测试策略：单元测试(Jest+React Testing Library)覆盖70%，集成测试覆盖20%，E2E测试(Playwright)覆盖10%。测试必须完全隔离，使用完整的Mock配置。当前覆盖率目标70%，逐步提升至85%。遵循AAA模式(Arrange-Act-Assert)，使用BDD语法的describe/it结构。所有外部依赖(特别是lightweight-charts)必须正确Mock。</standards>
+    <locations>frontend/src/**/__tests__/ - 组件级测试，frontend/src/__tests__/ - 集成测试，frontend/src/components/**/__tests__/ - UI组件测试，frontend/src/services/__tests__/ - 服务层测试，frontend/src/hooks/__tests__/ - 自定义Hook测试</locations>
+    <ideas>
+      <test-idea ac="1">优化lightweight-charts Mock配置，解决ES模块导入问题，使用transformIgnorePatterns正确处理</test-idea>
+      <test-idea ac="2">建立MSW API Mock服务，模拟所有外部API调用和依赖</test-idea>
+      <test-idea ac="3">创建测试数据工厂，生成一致的测试数据和场景</test-idea>
+      <test-idea ac="4">设置分层覆盖率报告：开发70%、审查80%、发布85%，集成CI/CD质量门禁</test-idea>
+      <test-idea ac="5">建立测试分层策略文档，明确定义单元测试、集成测试、E2E测试的职责边界</test-idea>
+    </ideas>
+  </tests>
+</story-context>

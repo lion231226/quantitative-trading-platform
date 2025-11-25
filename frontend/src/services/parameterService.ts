@@ -413,7 +413,7 @@ export async function pollStrategyResult(taskId: string, maxAttempts: number = 3
 
       if (status === 'completed') {
         const result = await strategyAPI.getResults(taskId);
-        return transformApiResultToStrategyResult(result);
+        return transformApiResultToStrategyResult(result.data);
       } else if (status === 'failed') {
         throw new Error(`策略执行失败: ${statusResponse.data.error || '未知错误'}`);
       }

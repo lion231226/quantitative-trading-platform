@@ -3,7 +3,7 @@ import { APIError, APIResponse, MarketDataPoint, MarketDataRequest, StrategyConf
 
 // 创建axios实例
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api/v1',
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
@@ -58,10 +58,18 @@ apiClient.interceptors.response.use(
 export const marketDataAPI = {
   // 获取可用期货品种
   getSymbols: async (sector?: string): Promise<Symbol[]> => {
-    const response = await apiClient.get<APIResponse<Symbol[]>>('/market-data/symbols', {
+    const response = await apiClient.get('/api/v1/market-data/symbols', {
       params: { sector },
     });
-    return response.data.data;
+    // 适配后端返回格式：{success: true, data: [...]}
+    const rawData = response.data.data || [];
+    // 直接使用后端返回的完整数据
+    return rawData.map((item: any) => ({
+      symbol: item.symbol,
+      name: item.name,
+      sector: item.sector,
+      exchange: item.exchange
+    }));
   },
 
   // 获取历史数据
@@ -105,7 +113,7 @@ export const marketDataAPI = {
 export const strategyAPI = {
   // 获取策略列表
   getStrategies: async (): Promise<StrategyConfig[]> => {
-    const response = await apiClient.get('/strategies/');
+    const response = await apiClient.get('/api/v1/strategies/');
     // API返回格式: {"strategies": [...], "total": 1}
     return response.data.strategies || [];
   },
@@ -128,7 +136,7 @@ export const strategyAPI = {
   // 运行策略
   run: async (request: any): Promise<{ strategy_id: string }> => {
     const response = await apiClient.post<APIResponse<{ strategy_id: string }>>(
-      '/strategies/run',
+      '/api/v1/strategies/run',
       request,
     );
     // 处理可能的响应格式变化
@@ -164,7 +172,7 @@ export const strategyAPI = {
 
   // 获取任务状态
   getTaskStatus: async (taskId: string): Promise<any> => {
-    const response = await apiClient.get(`/strategies/task/${taskId}/status`);
+    const response = await apiClient.get(`/api/v1/strategies/task/${taskId}/status`);
     return response.data;
   },
 };

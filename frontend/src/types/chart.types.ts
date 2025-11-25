@@ -8,10 +8,19 @@ export interface PricePoint {
 }
 
 export interface TradingSignal {
-  timestamp: string
-  type: 'buy' | 'sell'
+  id: string
+  timestamp: number
   price: number
-  strategy: string
+  signalType: 'buy' | 'sell' | 'hold'
+  strategyId: string
+  strategyName?: string
+  confidence: number
+  volume: number
+  metadata?: {
+    indicator?: string
+    period?: number
+    description?: string
+  }
 }
 
 export interface MovingAverageLine {

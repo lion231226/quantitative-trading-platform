@@ -36,19 +36,19 @@ describe('Layout Component', () => {
     expect(screen.getByText(/Built with Next.js, FastAPI, and Tailwind CSS/)).toBeInTheDocument();
   });
 
-  it('navigation links have correct href attributes', () => {
+  it('navigation elements are clickable buttons', () => {
     render(
       <Layout>
         <div>Test Content</div>
       </Layout>,
     );
 
-    expect(screen.getByText('首页').closest('a')).toHaveAttribute('href', '/');
-    expect(screen.getByText('策略分析').closest('a')).toHaveAttribute('href', '/strategy');
-    expect(screen.getByText('帮助').closest('a')).toHaveAttribute('href', '/help');
+    expect(screen.getByText('首页').closest('button')).toBeInTheDocument();
+    expect(screen.getByText('策略分析').closest('button')).toBeInTheDocument();
+    expect(screen.getByText('帮助').closest('button')).toBeInTheDocument();
   });
 
-  it('start analysis button links to strategy page', () => {
+  it('start analysis button is clickable', () => {
     render(
       <Layout>
         <div>Test Content</div>
@@ -56,6 +56,6 @@ describe('Layout Component', () => {
     );
 
     const startButton = screen.getByText('开始分析');
-    expect(startButton.closest('a')).toHaveAttribute('href', '/strategy');
+    expect(startButton.closest('button')).toBeInTheDocument();
   });
 });

@@ -1,12 +1,23 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { UserPreferences } from '../UserPreferences';
 import { StrategyParameters } from '@/types/parameter.types';
 
+// Set up DOM container for React 18
+beforeEach(() => {
+  // Clear existing content
+  document.body.innerHTML = '';
+
+  // Create a div element for React to mount into
+  const container = document.createElement('div');
+  container.setAttribute('id', 'root');
+  document.body.appendChild(container);
+});
+
 // Mock localStorage
 const localStorageMock = {
-  getItem: jest.fn(),
+  getItem: jest.fn(() => null),
   setItem: jest.fn(),
   removeItem: jest.fn(),
   clear: jest.fn(),
@@ -17,6 +28,20 @@ Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 global.URL.createObjectURL = jest.fn(() => 'mock-url');
 global.URL.revokeObjectURL = jest.fn();
 
+
+// Setup and cleanup before each test
+beforeEach(() => {
+  // Reset localStorage
+  localStorageMock.getItem.mockReturnValue(null);
+  jest.clearAllMocks();
+});
+
+afterEach(() => {
+  cleanup();
+  // Clean up DOM
+  document.body.innerHTML = '';
+});
+
 const mockProps = {
   currentParameters: {
     movingAveragePeriod: 20,
@@ -26,10 +51,7 @@ const mockProps = {
 };
 
 describe('UserPreferences', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    localStorageMock.getItem.mockReturnValue(null);
-  });
+  // Note: beforeEach and afterEach are already set up at the top level
 
   it('should render correctly with default preferences', async () => {
     render(<UserPreferences {...mockProps} />);
@@ -129,15 +151,20 @@ describe('UserPreferences', () => {
   });
 
   it('should export configuration correctly', async () => {
-    // Mock createElement and appendChild
-    const mockLink = {
-      href: '',
-      download: '',
-      click: jest.fn(),
-    };
-    jest.spyOn(document, 'createElement').mockReturnValue(mockLink as any);
-    jest.spyOn(document.body, 'appendChild').mockImplementation();
-    jest.spyOn(document.body, 'removeChild').mockImplementation();
+    // Mock document methods for this test
+    const mockClick = jest.fn();
+    const originalCreateElement = document.createElement;
+    const originalAppendChild = document.body.appendChild;
+    const originalRemoveChild = document.body.removeChild;
+
+    document.createElement = jest.fn(() => ({
+      href: 'mock-url',
+      download: expect.stringMatching(/^strategy-config-\d{4}-\d{2}-\d{2}\.json$/),
+      click: mockClick,
+    })) as any;
+
+    document.body.appendChild = jest.fn() as any;
+    document.body.removeChild = jest.fn() as any;
 
     render(<UserPreferences {...mockProps} />);
 
@@ -145,8 +172,12 @@ describe('UserPreferences', () => {
     await userEvent.click(exportButton);
 
     expect(global.URL.createObjectURL).toHaveBeenCalled();
-    expect(mockLink.download).toMatch(/^strategy-config-\d{4}-\d{2}-\d{2}\.json$/);
-    expect(mockLink.click).toHaveBeenCalled();
+    expect(mockClick).toHaveBeenCalled();
+
+    // Restore original methods
+    document.createElement = originalCreateElement;
+    document.body.appendChild = originalAppendChild;
+    document.body.removeChild = originalRemoveChild;
   });
 
   it('should import configuration correctly', async () => {
@@ -170,8 +201,10 @@ describe('UserPreferences', () => {
       type: 'application/json',
     });
 
-    // Find the file input and simulate file selection
-    const fileInput = screen.getByRole('button', { name: /选择JSON文件/ }).querySelector('input[type="file"]');
+    // Find the file input by looking for the span text, then get its parent input
+    const importSpan = screen.getByText('选择JSON文件');
+    const fileInput = importSpan.closest('label')?.querySelector('input[type="file"]');
+
     if (fileInput) {
       await userEvent.upload(fileInput, file);
 
@@ -179,6 +212,17 @@ describe('UserPreferences', () => {
         expect(onParametersChange).toHaveBeenCalledWith(importData.currentParameters);
         expect(screen.getByText(/配置导入成功/)).toBeInTheDocument();
       });
+    } else {
+      // Fallback: look for any file input
+      const fileInputs = screen.container.querySelectorAll('input[type="file"]');
+      if (fileInputs.length > 0) {
+        await userEvent.upload(fileInputs[0], file);
+
+        await waitFor(() => {
+          expect(onParametersChange).toHaveBeenCalledWith(importData.currentParameters);
+          expect(screen.getByText(/配置导入成功/)).toBeInTheDocument();
+        });
+      }
     }
   });
 

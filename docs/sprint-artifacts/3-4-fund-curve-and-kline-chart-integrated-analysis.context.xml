@@ -1,0 +1,199 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>4</storyId>
+    <title>资金曲线与K线图融合分析</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-24</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/3-4-fund-curve-and-kline-chart-integrated-analysis.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>As a user,</asA>
+    <iWant>I want to see K-line trends and strategy fund curves on the same chart,</iWant>
+    <soThat>so that I can comprehensively evaluate the risk-return performance of the strategy.</soThat>
+    <tasks>- [ ] Task 1: Dual Y-Axis Chart Foundation (AC: 1)
+  - [ ] Subtask 1.1: Create dual Y-axis chart configuration using Lightweight Charts 5.0.9
+  - [ ] Subtask 1.2: Implement left axis for price data and right axis for fund data
+  - [ ] Subtask 1.3: Configure axis scaling and synchronization mechanisms
+  - [ ] Subtask 1.4: Add axis labels and grid lines for both price and fund axes
+
+- [ ] Task 2: Fund Curve Data Processing (AC: 2)
+  - [ ] Subtask 2.1: Create fund curve calculation service based on strategy signals
+  - [ ] Subtask 2.2: Implement synchronized data scaling between price and fund data
+  - [ ] Subtask 2.3: Add real-time fund curve updates during strategy parameter changes
+  - [ ] Subtask 2.4: Implement smooth animations for fund curve transitions
+
+- [ ] Task 3: Performance Metrics Display (AC: 3)
+  - [ ] Subtask 3.1: Create real-time performance metrics calculator
+  - [ ] Subtask 3.2: Implement display panel for return rate, maximum drawdown, Sharpe ratio
+  - [ ] Subtask 3.3: Add real-time updates of metrics during chart interactions
+  - [ ] Subtask 3.4: Format and display metrics with appropriate precision and units
+
+- [ ] Task 4: Baseline Comparison System (AC: 4)
+  - [ ] Subtask 4.1: Implement buy-and-hold strategy calculation as baseline
+  - [ ] Subtask 4.2: Create baseline curve rendering with distinct visual style
+  - [ ] Subtask 4.3: Add baseline comparison toggle and selection functionality
+  - [ ] Subtask 4.4: Implement performance difference calculations and display
+
+- [ ] Task 5: Performance Visualization Markers (AC: 5)
+  - [ ] Subtask 5.1: Create drawdown area visualization with transparent overlays
+  - [ ] Subtask 5.2: Implement profit range highlighting with color-coded zones
+  - [ ] Subtask 5.3: Add interactive tooltips for performance regions
+  - [ ] Subtask 5.4: Implement performance summary panel with key statistics</tasks>
+  </story>
+
+  <acceptanceCriteria>1. Implement dual Y-axis chart design (left axis for price, right axis for funds)
+2. Support synchronized zoom and pan of fund curves with K-line charts
+3. Provide real-time display of key strategy return metrics (return rate, maximum drawdown, Sharpe ratio)
+4. Support baseline comparison (such as buy-and-hold strategy)
+5. Implement visual markers for strategy performance (drawdown areas, profit ranges)</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-3.md</path>
+        <title>Epic Technical Specification: 专业K线图表与智能可视化系统</title>
+        <section>System Architecture Alignment</section>
+        <snippet>基于现有架构扩展，新增前端图表服务层：
+- Frontend Layer: React + TypeScript + Lightweight Charts 5.0.9
+- Chart Service: chartInteractionService.ts, klineService.ts 扩展
+- Data Layer: 扩展现有 kline.types.ts 类型系统</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-3.md</path>
+        <title>Epic Technical Specification: 专业K线图表与智能可视化系统</title>
+        <section>Services and Modules</section>
+        <snippet>klineChartCore.ts - 核心图表渲染引擎 | 市场数据、配置对象 | Lightweight Charts 实例 | Lightweight Charts 5.0.9
+strategySignalManager.ts - 策略信号管理 | 策略参数、历史数据 | 标记点数据、样式配置 | klineService.ts
+performanceOptimizer.ts - 性能优化和缓存 | 图表操作、数据请求 | 优化后的渲染指令 | 浏览器缓存API</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-3.md</path>
+        <title>Epic Technical Specification: 专业K线图表与智能可视化系统</title>
+        <section>Acceptance Criteria (Authoritative)</section>
+        <snippet>AC006: 系统必须实现双Y轴图表设计，支持资金曲线与K线图的同步分析
+AC006映射到Components/APIs: FundCurveIntegration.ts, DualYAxisChart | E2E测试：资金曲线同步分析功能验证</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>量化交易单均线策略分析平台 - Epic Breakdown</title>
+        <section>Story 3.4: 资金曲线与K线图融合分析</section>
+        <snippet>作为用户，我希望在同一图表上看到K线走势和策略资金曲线，以便全面评估策略的风险收益表现
+Acceptance Criteria: 1. 实现双Y轴图表设计（左轴价格，右轴资金） 2. 支持资金曲线与K线图的同步缩放和平移</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>frontend/src/components/charts/ThemedKlineChart.tsx</path>
+        <kind>component</kind>
+        <symbol>ThemedKlineChart</symbol>
+        <lines>full</lines>
+        <reason>Existing Lightweight Charts integration with theme system - base component for dual Y-axis extension</reason>
+      </artifact>
+      <artifact>
+        <path>frontend/src/services/klineService.ts</path>
+        <kind>service</kind>
+        <symbol>klineService</symbol>
+        <lines>full</lines>
+        <reason>Existing chart service integration patterns - to be extended with fund curve calculation methods</reason>
+      </artifact>
+      <artifact>
+        <path>frontend/src/types/kline.types.ts</path>
+        <kind>type</kind>
+        <symbol>Chart data interfaces</symbol>
+        <lines>full</lines>
+        <reason>Existing data model patterns for extension with fund curve data interfaces</reason>
+      </artifact>
+      <artifact>
+        <path>frontend/src/services/performanceService.ts</path>
+        <kind>service</kind>
+        <symbol>performance optimization</symbol>
+        <lines>full</lines>
+        <reason>Performance optimization and caching patterns for fund curve rendering</reason>
+      </artifact>
+      <artifact>
+        <path>frontend/src/services/chartInteractionService.ts</path>
+        <kind>service</kind>
+        <symbol>chart interaction management</symbol>
+        <lines>full</lines>
+        <reason>Chart interaction service for synchronized zoom and pan operations</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <ecosystem name="frontend">
+        <package name="lightweight-charts" version="5.0.9" usage="Core dual Y-axis chart rendering engine"/>
+        <package name="react" version="18.2.0+" usage="Component framework for chart integration"/>
+        <package name="typescript" version="5.0+" usage="Type system for fund curve data interfaces"/>
+        <package name="react-query" version="4.0+" usage="Data caching and state management for fund curve data"/>
+        <package name="date-fns" version="2.29+" usage="Date formatting for performance metrics display"/>
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Extend existing ThemedKlineChart.tsx with dual Y-axis configuration patterns</constraint>
+    <constraint>Leverage existing performanceService.ts caching framework for optimal rendering performance</constraint>
+    <constraint>Follow established TypeScript type system patterns from kline.types.ts and theme.types.ts</constraint>
+    <constraint>Maintain compatibility with existing React Query data management patterns</constraint>
+    <constraint>Dual Y-axis configuration requires careful data synchronization to maintain visual alignment</constraint>
+    <constraint>Fund curve calculations must be optimized for real-time updates without impacting chart performance</constraint>
+    <constraint>Performance metrics calculations should be cached to avoid redundant computations during chart interactions</constraint>
+    <constraint>Apply React.memo patterns from Story 3.3 for component optimization</constraint>
+  </constraints>
+  <interfaces>
+    <interface>
+      <name>Dual Y-Axis Chart Configuration</name>
+      <kind>Lightweight Charts API</kind>
+      <signature>createChart(container: HTMLElement, config: KlineChartConfig): Promise<IChartInstance></signature>
+      <path>frontend/src/services/fundCurveService.ts</path>
+    </interface>
+    <interface>
+      <name>Fund Curve Data Interface</name>
+      <kind>TypeScript Interface</kind>
+      <signature>interface FundCurveData { timestamp: number; value: number; metrics: PerformanceMetrics; }</signature>
+      <path>frontend/src/types/kline.types.ts</path>
+    </interface>
+    <interface>
+      <name>Performance Metrics Calculator</name>
+      <kind>Service Interface</kind>
+      <signature>calculateMetrics(fundData: FundCurveData[], baselineData?: FundCurveData[]): PerformanceMetrics</signature>
+      <path>frontend/src/services/fundCurveService.ts</path>
+    </interface>
+    <interface>
+      <name>Strategy Signal API Integration</name>
+      <kind>REST API</kind>
+      <signature>POST /api/strategy/signals - Request: { strategyConfig: StrategyConfig; dateRange: DateRange; symbol: string; }</signature>
+      <path>backend/api/strategy.py</path>
+    </interface>
+  </interfaces>
+  <tests>
+    <standards>Testing patterns following established Jest + React Testing Library setup from Story 3.3. Performance validation using browser performance APIs. Fund curve data accuracy validation and synchronization testing.</standards>
+    <locations>frontend/src/components/charts/__tests__/ - for dual Y-axis chart components
+frontend/src/services/__tests__/ - for fund curve calculation services
+frontend/src/__tests__/ - for integration tests</locations>
+    <ideas>
+      <test>
+        <acId>1</acId>
+        <idea>Dual Y-axis rendering test: Verify left axis shows price data, right axis shows fund data with proper scaling</idea>
+      </test>
+      <test>
+        <acId>2</acId>
+        <idea>Synchronization test: Test zoom and pan operations maintain alignment between price and fund curves</idea>
+      </test>
+      <test>
+        <acId>3</acId>
+        <idea>Performance metrics test: Validate real-time calculation accuracy of return rate, max drawdown, Sharpe ratio</idea>
+      </test>
+      <test>
+        <acId>4</acId>
+        <idea>Baseline comparison test: Verify buy-and-hold strategy calculation and visual distinction</idea>
+      </test>
+      <test>
+        <acId>5</acId>
+        <idea>Visualization markers test: Test drawdown area overlays and profit range highlighting functionality</idea>
+      </test>
+    </ideas>
+  </tests>
+</story-context>

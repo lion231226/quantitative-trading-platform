@@ -193,7 +193,9 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({
   const getBackupHistory = useCallback(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEYS.PARAMETERS_BACKUP);
-      return stored ? JSON.parse(stored) : [];
+      const parsed = stored ? JSON.parse(stored) : [];
+      // 确保返回的是数组
+      return Array.isArray(parsed) ? parsed : [];
     } catch (error) {
       return [];
     }

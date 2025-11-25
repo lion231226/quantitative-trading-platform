@@ -61,7 +61,18 @@
       "Bash(dir:*)",
       "mcp__exa__web_search_exa",
       "Bash(wmic:*)",
-      "Bash(nul)"
+      "Bash(nul)",
+      "SlashCommand(/bmad:core:workflows:brainstorming)",
+      "Bash(venvScriptsactivate:*)",
+      "Bash(source:*)",
+      "Bash(powershell:*)",
+      "Bash(powershell.exe:*)",
+      "Bash(=2.2.3:*)",
+      "Bash(git push:*)",
+      "Bash(git fetch:*)",
+      "WebSearch",
+      "Bash(cd:*)",
+      "Bash(xmllint:*)"
     ],
     "deny": [],
     "ask": []

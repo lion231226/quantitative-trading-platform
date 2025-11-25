@@ -1,0 +1,197 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>2</storyId>
+    <title>智能策略标记点动态更新系统</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-19</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/3-2-intelligent-strategy-signal-dynamic-update-system.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>用户</asA>
+    <iWant>切换策略时图表上的买卖信号能够自动更新</iWant>
+    <soThat>快速对比不同策略的效果和表现</soThat>
+    <tasks>
+Task 1: 策略信号管理系统 (AC: 1)
+  Subtask 1.1: 创建策略信号数据模型和类型定义
+  Subtask 1.2: 实现策略信号计算和缓存服务
+  Subtask 1.3: 集成现有klineService扩展信号管理功能
+  Subtask 1.4: 实现策略切换时的信号差异检测和更新逻辑
+
+Task 2: 标记点动态更新机制 (AC: 1, 4)
+  Subtask 2.1: 扩展Lightweight Charts标记点API封装
+  Subtask 2.2: 实现标记点的批量创建和移除功能
+  Subtask 2.3: 实现标记点状态管理和生命周期控制
+  Subtask 2.4: 优化标记点更新性能，支持500+信号点
+
+Task 3: 视觉样式区分系统 (AC: 2)
+  Subtask 3.1: 设计策略特定的视觉样式配置系统
+  Subtask 3.2: 实现基于策略类型的形状、颜色、大小映射
+  Subtask 3.3: 支持用户自定义策略样式配置
+  Subtask 3.4: 实现样式主题管理和切换功能
+
+Task 4: 交互式信息提示系统 (AC: 3)
+  Subtask 4.1: 创建策略信号详细信息数据结构
+  Subtask 4.2: 实现标记点悬停检测和提示框显示
+  Subtask 4.3: 设计和实现信号详情提示UI组件
+  Subtask 4.4: 集成策略逻辑解释和置信度显示
+
+Task 5: 动画效果实现 (AC: 4)
+  Subtask 5.1: 实现标记点淡入淡出过渡动画
+  Subtask 5.2: 实现标记点位置变化的平滑移动
+  Subtask 5.3: 优化动画性能，确保30fps以上帧率
+  Subtask 5.4: 实现动画队列管理和批处理
+
+Task 6: 多策略对比功能 (AC: 5)
+  Subtask 6.1: 实现多策略信号的并行显示逻辑
+  Subtask 6.2: 创建策略对比面板和控制界面
+  Subtask 6.3: 实现策略信号的可视化对比统计
+  Subtask 6.4: 支持策略组合分析和性能对比
+</tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. 实现策略切换时标记点的实时动态更新
+2. 不同策略使用独特的视觉样式（形状、颜色、大小）
+3. 标记点悬停显示详细信息（价格、时间、策略逻辑、置信度）
+4. 支持平滑的标记点过渡动画效果
+5. 实现多策略信号的同时显示和对比
+</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>量化交易单均线策略分析平台 - Epic Breakdown</title>
+        <section>Epic 3: 专业K线图表与智能可视化系统</section>
+        <snippet>Epic 3目标：实现专业级K线图表和策略标记点动态更新系统，推动平台从教育工具向实用量化工具升级。通过高性能渲染引擎和智能交互系统，为用户提供媲美专业交易软件的分析体验。</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD.md</path>
+        <title>量化交易单均线策略分析平台 Product Requirements Document (PRD)</title>
+        <section>Functional Requirements</section>
+        <snippet>FR004: 系统必须提供交互式数据可视化组件，展示价格走势、交易信号和策略收益曲线。FR006: 系统必须支持实时策略参数配置，允许用户调整均线周期并查看相应的回测效果。</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-3.md</path>
+        <title>Epic Technical Specification: 专业K线图表与智能可视化系统</title>
+        <section>Detailed Design - Services and Modules</section>
+        <snippet>strategySignalManager.ts: 策略信号管理，输入策略参数、历史数据，输出标记点数据、样式配置。performanceOptimizer.ts: 性能优化和缓存，输入图表操作、数据请求，输出优化后的渲染指令。</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-3.md</path>
+        <title>Epic Technical Specification: 专业K线图表与智能可视化系统</title>
+        <section>Data Models and Contracts</section>
+        <snippet>StrategySignal接口包含id、timestamp、price、signalType、strategyId、strategyName、confidence、volume等字段。SignalMarkerStyle接口定义shape、color、size、border等样式配置。</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-3.md</path>
+        <title>Epic Technical Specification: 专业K线图表与智能可视化系统</title>
+        <section>Non-Functional Requirements - Performance</section>
+        <snippet>渲染性能：60fps 流畅滚动，30fps 策略信号更新。数据加载：1000条K线数据加载时间 < 200ms。信号更新：策略切换响应时间 < 500ms。</snippet>
+      </doc>
+    </docs>
+    <code>
+      <codeArtifact>
+        <path>frontend/src/types/kline.types.ts</path>
+        <kind>types</kind>
+        <symbol>KlineData</symbol>
+        <lines>1-50</lines>
+        <reason>现有的249行类型系统基础，需要扩展策略信号类型</reason>
+      </codeArtifact>
+      <codeArtifact>
+        <path>frontend/src/services/klineService.ts</path>
+        <kind>service</kind>
+        <symbol>KlineService</symbol>
+        <lines>1-100</lines>
+        <reason>现有数据服务模式，需要扩展信号管理功能</reason>
+      </codeArtifact>
+      <codeArtifact>
+        <path>frontend/src/services/chartInteractionService.ts</path>
+        <kind>service</kind>
+        <symbol>ChartInteractionService</symbol>
+        <lines>50-150</lines>
+        <reason>交互处理经验，可复用于标记点交互逻辑</reason>
+      </codeArtifact>
+      <codeArtifact>
+        <path>frontend/src/services/performanceService.ts</path>
+        <kind>service</kind>
+        <symbol>PerformanceMonitor</symbol>
+        <lines>1-80</lines>
+        <reason>性能监控框架，可用于策略信号性能监控</reason>
+      </codeArtifact>
+      <codeArtifact>
+        <path>frontend/src/components/charts/KlineChart.tsx</path>
+        <kind>component</kind>
+        <symbol>KlineChart</symbol>
+        <lines>100-200</lines>
+        <reason>已存在的K线图组件，需要集成信号覆盖层</reason>
+      </codeArtifact>
+    </code>
+    <dependencies>
+      <ecosystem name="frontend">
+        <package name="lightweight-charts" version="5.0.9" purpose="核心图表渲染引擎"/>
+        <package name="react" version="18.2.0+" purpose="前端框架"/>
+        <package name="typescript" version="5.0+" purpose="类型系统"/>
+        <package name="react-query" version="4.0+" purpose="数据缓存和状态管理"/>
+        <package name="date-fns" version="2.29+" purpose="日期处理"/>
+      </ecosystem>
+      <ecosystem name="browser-apis">
+        <api name="Canvas API" purpose="高性能图表渲染"/>
+        <api name="localStorage" purpose="用户配置和主题设置"/>
+        <api name="IndexedDB" purpose="大量数据本地缓存"/>
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>基于Lightweight Charts 5.0.9架构进行扩展，不能破坏现有图表功能</constraint>
+    <constraint>策略信号更新响应时间必须控制在500ms以内</constraint>
+    <constraint>支持500+标记点的高效渲染，动画帧率保持30fps以上</constraint>
+    <constraint>使用TypeScript严格类型检查，确保策略信号类型安全</constraint>
+    <constraint>遵循React 18+ hooks模式和性能优化最佳实践</constraint>
+    <constraint>实现智能缓存策略，避免重复计算和网络请求</constraint>
+    <constraint>确保多策略信号同时显示时的视觉区分度和可读性</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>IStrategySignalManager</name>
+      <kind>class interface</kind>
+      <signature>interface IStrategySignalManager { loadSignals(strategyId: string, params: StrategyParams): Promise&lt;StrategySignal[]&gt;; updateSignals(chartId: string, strategyId: string): Promise&lt;void&gt;; optimizeSignalRendering(signals: StrategySignal[]): OptimizedSignals; }</signature>
+      <path>frontend/src/services/strategySignalManager.ts</path>
+    </interface>
+    <interface>
+      <name>IChartRenderer</name>
+      <kind>class interface</kind>
+      <signature>interface IChartRenderer { createChart(container: HTMLElement, config: KlineChartConfig): Promise&lt;IChartInstance&gt;; addSignals(chartId: string, signals: StrategySignal[]): Promise&lt;void&gt;; removeSignals(chartId: string, strategyId: string): Promise&lt;void&gt;; }</signature>
+      <path>frontend/src/services/chartRenderer.ts</path>
+    </interface>
+    <interface>
+      <name>StrategySignal</name>
+      <kind>type interface</kind>
+      <signature>interface StrategySignal { id: string; timestamp: number; price: number; signalType: 'buy' | 'sell' | 'hold'; strategyId: string; strategyName: string; confidence: number; volume: number; metadata?: { indicator: string; period: number; description?: string; }; }</signature>
+      <path>frontend/src/types/strategySignal.types.ts</path>
+    </interface>
+    <interface>
+      <name>SignalMarkerStyle</name>
+      <kind>type interface</kind>
+      <signature>interface SignalMarkerStyle { shape: 'circle' | 'square' | 'triangle' | 'arrow'; color: string; size: number; border: { color: string; width: number; }; textColor?: string; }</signature>
+      <path>frontend/src/types/strategySignal.types.ts</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>使用Jest + React Testing Library进行组件测试，测试目标覆盖率90%+。性能测试使用浏览器性能API监控渲染FPS和内存使用。集成测试验证策略信号与Lightweight Charts的协作。</standards>
+    <locations>frontend/src/__tests__/strategySignal/ - 策略信号测试套件，frontend/src/__tests__/markerAnimation/ - 动画功能测试，frontend/src/__tests__/strategyComparison/ - 对比功能测试</locations>
+    <ideas>
+      <test idea="AC1" test="策略切换时标记点实时更新测试">模拟策略参数变化，验证标记点在500ms内完成更新，检查信号数据正确性</test>
+      <test idea="AC2" test="视觉样式区分测试">验证不同策略信号的形状、颜色、大小配置，测试用户自定义样式功能</test>
+      <test idea="AC3" test="交互式信息提示测试">测试标记点悬停检测，验证详情提示框显示内容正确性</test>
+      <test idea="AC4" test="动画效果性能测试">测量动画帧率，确保30fps以上，测试动画队列管理</test>
+      <test idea="AC5" test="多策略对比功能测试">验证多策略信号并行显示，测试策略对比面板功能</test>
+    </ideas>
+  </tests>
+</story-context>
