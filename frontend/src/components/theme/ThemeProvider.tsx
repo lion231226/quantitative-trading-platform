@@ -80,8 +80,22 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     switch (event.type) {
       case 'theme-changed':
       case 'market-mode-changed':
+        setCurrentTheme(themeService.getCurrentTheme())
+        break
       case 'colorblind-mode-changed':
         setCurrentTheme(themeService.getCurrentTheme())
+        // 同步更新色盲配置状态
+        const updatedTheme = themeService.getCurrentTheme()
+        if (event.payload.colorblindConfig) {
+          setColorblindConfigState(event.payload.colorblindConfig)
+        } else {
+          // 如果没有配置对象，根据mode推断
+          setColorblindConfigState(prev => ({
+            ...prev,
+            enabled: updatedTheme.colorblindMode !== 'none',
+            mode: updatedTheme.colorblindMode
+          }))
+        }
         break
       case 'custom-colors-changed':
         setCurrentTheme(themeService.getCurrentTheme())

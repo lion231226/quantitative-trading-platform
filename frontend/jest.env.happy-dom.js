@@ -36,6 +36,47 @@ class HappyDOMEnvironment extends TestEnvironment {
     this.global.performance = happyWindow.performance || {
       now: jest.fn(() => Date.now())
     };
+
+    // Fix getComputedStyle issue in happy-dom
+    if (!happyWindow.getComputedStyle) {
+      const createStyleMock = () => ({
+        getPropertyValue: jest.fn(() => ''),
+        zIndex: '0',
+        opacity: '1',
+        color: 'black',
+        backgroundColor: 'white',
+        display: 'block',
+        position: 'static',
+        width: 'auto',
+        height: 'auto',
+        top: '0px',
+        left: '0px',
+        visibility: 'visible',
+        cursor: 'pointer',
+        pointerEvents: 'auto',
+        textAlign: 'left',
+        fontSize: '16px',
+        lineHeight: '1.5',
+        margin: '0px',
+        padding: '0px',
+        border: '0px',
+        borderStyle: 'solid',
+        borderColor: 'black',
+        borderWidth: '0px',
+        borderRadius: '0px',
+        boxSizing: 'border-box',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        gap: '0px',
+        gridTemplateColumns: 'none',
+        gridTemplateRows: 'none'
+      });
+
+      happyWindow.getComputedStyle = jest.fn(() => createStyleMock());
+    }
+
+    this.global.getComputedStyle = happyWindow.getComputedStyle;
   }
 
   async setup() {

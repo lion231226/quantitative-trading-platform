@@ -1,0 +1,137 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>2.1</storyId>
+    <title>业务逻辑测试修复和状态管理优化</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-25</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/4-2-1-business-logic-test-fixes-and-state-management.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>开发团队</asA>
+    <iWant>修复业务逻辑测试失败并优化组件状态管理</iWant>
+    <soThat>确保用户界面功能稳定可靠并提升代码质量</soThat>
+    <tasks>5 major tasks covering localStorage test fixes, component state management optimization, user interaction logic testing, theme/style management testing, and state management best practices establishment</tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. 修复localStorage数据持久化测试 - UserPreferences组件localStorage相关测试100%通过
+2. 解决组件状态管理问题 - 组件状态更新和同步逻辑正确，测试通过率≥90%
+3. 优化用户交互逻辑测试 - 复杂操作流程和数据验证测试完整通过
+4. 修复主题和样式管理测试 - CSS类名和主题切换逻辑稳定
+5. 建立状态管理最佳实践 - 制定组件状态管理和测试标准
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/epics.md" title="Epic 4: 技术债务清理与质量保障全面提升" section="Epic 4 Overview" snippet="史诗目标: 将技术健康度评分从现状全面提升到企业级生产就绪标准的10分满分" />
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic Technical Specification" section="System Architecture Alignment" snippet="本Epic完全遵循现有架构设计（验证评分97.4%），建立在Next.js 14 + FastAPI + TypeScript全栈架构基础上" />
+      <doc path="docs/test-layering-strategy.md" title="测试分层策略文档" section="单元测试实施标准" snippet="使用Jest + React Testing Library, 隔离测试，不依赖外部服务, 覆盖率要求：90%以上" />
+      <doc path="docs/architecture-one-click-launch.md" title="一键启动脚本 Decision Architecture" section="Frontend Architecture" snippet="React 18+: Use modern hooks and concurrent rendering features, TypeScript: All state management must be fully typed" />
+      <doc path="docs/stories/4-1-5-react-18-jsdom-compatibility-fix.md" title="React 18 JSDOM兼容性修复" section="Business Logic Issues Identified" snippet="UserPreferences组件12/13测试失败，主要是localStorage和状态管理问题" />
+    </docs>
+
+    <code>
+      <artifact path="frontend/src/components/controls/UserPreferences.tsx" kind="component" symbol="UserPreferences" lines="1-50" reason="Core component requiring localStorage and state management fixes">
+        const UserPreferences: React.FC&lt;UserPreferencesProps&gt; = ({
+          currentParameters,
+          onParametersChange,
+          className = '',
+        }) =&gt; {
+          const [preferences, setPreferences] = useState&lt;UserPreferencesType&gt;(DEFAULT_PREFERENCES);
+          const [isLoading, setIsLoading] = useState(true);
+      </artifact>
+
+      <artifact path="frontend/src/components/controls/__tests__/UserPreferences.test.tsx" kind="test" symbol="UserPreferences Tests" lines="1-30" reason="Test file requiring localStorage mock enhancement and state management testing">
+        // Mock localStorage
+        const localStorageMock = {
+          getItem: jest.fn(() =&gt; null),
+          setItem: jest.fn(),
+          removeItem: jest.fn(),
+          clear: jest.fn(),
+        };
+      </artifact>
+
+      <artifact path="frontend/jest.setup.js" kind="config" symbol="Jest Setup" lines="1-50" reason="Test environment configuration requiring localStorage mock enhancement">
+        import '@testing-library/jest-dom'
+        // Fix DOM environment for React 18
+        Object.defineProperty(window, 'document', {
+          value: document,
+          writable: true,
+        });
+      </artifact>
+
+      <artifact path="frontend/jest.setup.js" kind="config" symbol="localStorage Mock" lines="325-360" reason="Enhanced localStorage mock implementation needed">
+        // Mock HTMLCanvasElement for chart-related tests
+        global.HTMLCanvasElement = class HTMLCanvasElement {
+          constructor() {
+            this.width = 0
+            this.height = 0
+      </artifact>
+    </code>
+
+    <dependencies>
+      <frontend name="Next.js" version="^14.2.33" />
+      <frontend name="React" version="^18" />
+      <frontend name="TypeScript" version="^5" />
+      <frontend name="Jest" version="^29.7.0" />
+      <frontend name="@testing-library/react" version="^15.0.7" />
+      <frontend name="@testing-library/user-event" version="^14.5.2" />
+      <frontend name="happy-dom" version="^14.12.3" />
+      <frontend name="chart.js" version="^4.4.2" />
+      <frontend name="lucide-react" version="^0.552.0" />
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture">Local State First: Use React useState for component-local state management</constraint>
+    <constraint type="architecture">State Synchronization: Implement proper useEffect dependencies to prevent stale closures</constraint>
+    <constraint type="architecture">Error Boundaries: Wrap state management in try-catch blocks for error resilience</constraint>
+    <constraint type="architecture">State Immutability: Always treat state as immutable, use functional updates</constraint>
+    <constraint type="testing">Test Layering Strategy: 70% Unit Tests, 20% Integration Tests, 10% E2E Tests</constraint>
+    <constraint type="testing">Unit Test Requirements: Jest + React Testing Library, 90%+ coverage, &lt;100ms per test</constraint>
+    <constraint type="performance">State updates should be optimized to prevent unnecessary re-renders</constraint>
+    <constraint type="performance">localStorage operations should be debounced where appropriate</constraint>
+    <constraint type="framework">No external state management libraries (Redux, Zustand, etc.) for local component state</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="UserPreferencesType" kind="TypeScript interface" signature="interface UserPreferencesType {
+  defaultParameters: StrategyParameters;
+  favoritePresets: string[];
+  autoSave: boolean;
+  showAdvanced: boolean;
+  chartPreferences: ChartPreferences;
+}" path="frontend/src/types/parameter.types" />
+
+    <interface name="localStorage API" kind="Web Storage API" signature="interface Storage {
+  getItem(key: string): string | null;
+  setItem(key: string, value: string): void;
+  removeItem(key: string): void;
+  clear(): void;
+  length: number;
+  key(index: number): string | null;
+}" path="Web API" />
+  </interfaces>
+
+  <tests>
+    <standards>Use Jest + React Testing Library for all unit tests. Implement proper localStorage mocking with full API support. Test state management functions in isolation with 90%+ coverage. Integration tests should cover component lifecycle with localStorage. Tests must execute in &lt;100ms and use happy-dom environment.</standards>
+    <locations>frontend/src/components/**/__tests__/*.test.tsx, frontend/src/hooks/__tests__/*.test.ts, frontend/src/services/__tests__/*.test.ts</locations>
+    <ideas>
+      <test-idea ac="1">Test localStorage mock enhancement with full API support (getItem, setItem, removeItem, clear, length, key)</test-idea>
+      <test-idea ac="1">Test UserPreferences localStorage data persistence and recovery scenarios</test-idea>
+      <test-idea ac="1">Test configuration import/export localStorage dependency handling</test-idea>
+      <test-idea ac="2">Test UserPreferences component state update synchronization logic</test-idea>
+      <test-idea ac="2">Test useEffect dependencies to prevent stale closures in state management</test-idea>
+      <test-idea ac="2">Test component lifecycle and initial state setting from localStorage</test-idea>
+      <test-idea ac="3">Test user interaction flows (save, reset, parameter adjustment) with proper state management</test-idea>
+      <test-idea ac="3">Test form interaction and data validation with error handling</test-idea>
+      <test-idea ac="4">Test theme switching CSS class management and localStorage persistence</test-idea>
+      <test-idea ac="4">Test style state synchronization and visual regression scenarios</test-idea>
+      <test-idea ac="5">Test state management performance optimization patterns</test-idea>
+      <test-idea ac="5">Test error boundary implementation for state management failures</test-idea>
+    </ideas>
+  </tests>
+</story-context>

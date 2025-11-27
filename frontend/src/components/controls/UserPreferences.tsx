@@ -4,6 +4,22 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { AlertCircle, Check, Download, RotateCcw, Save, Settings, Upload, X } from 'lucide-react';
 import { StrategyParameters, UserPreferences as UserPreferencesType } from '@/types/parameter.types';
 
+// localStorage wrapper for testability
+const getLocalStorage = () => {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    return window.localStorage;
+  }
+  // Fallback for SSR or missing localStorage
+  return {
+    getItem: () => null,
+    setItem: () => {},
+    removeItem: () => {},
+    clear: () => {},
+    length: 0,
+    key: () => null,
+  };
+};
+
 interface UserPreferencesProps {
   currentParameters: StrategyParameters
   onParametersChange?: (parameters: StrategyParameters) => void
@@ -53,51 +69,55 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({
   // 加载用户偏好
   const loadPreferences = useCallback(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEYS.PREFERENCES);
+      const storage = getLocalStorage();
+      const stored = storage.getItem(STORAGE_KEYS.PREFERENCES);
       if (stored) {
         const parsedPreferences = JSON.parse(stored);
         setPreferences({ ...DEFAULT_PREFERENCES, ...parsedPreferences });
       }
     } catch (error) {
       console.error('加载用户偏好失败:', error);
-      showMessage('error', '加载用户偏好失败，使用默认设置');
+      setMessage({ type: 'error', text: '加载用户偏好失败，使用默认设置' });
+      setTimeout(() => setMessage(null), 3000);
     } finally {
       setIsLoading(false);
     }
-  }, [showMessage]);
+  }, []);
 
   // 保存用户偏好
   const savePreferences = useCallback(async (newPreferences: UserPreferencesType) => {
     setIsSaving(true);
+    const storage = getLocalStorage();
 
     try {
-      localStorage.setItem(STORAGE_KEYS.PREFERENCES, JSON.stringify(newPreferences));
+      storage.setItem(STORAGE_KEYS.PREFERENCES, JSON.stringify(newPreferences));
       setPreferences(newPreferences);
 
       // 自动保存当前参数
       if (newPreferences.autoSave) {
-        localStorage.setItem(STORAGE_KEYS.LAST_USED, JSON.stringify(currentParameters));
+        storage.setItem(STORAGE_KEYS.LAST_USED, JSON.stringify(currentParameters));
       }
 
-      showMessage('success', '偏好设置已保存');
+      setMessage({ type: 'success', text: '偏好设置已保存' });
+      setTimeout(() => setMessage(null), 3000);
     } catch (error) {
       console.error('保存用户偏好失败:', error);
-      showMessage('error', '保存偏好设置失败');
+      setMessage({ type: 'error', text: '保存偏好设置失败' });
+      setTimeout(() => setMessage(null), 3000);
     } finally {
       setIsSaving(false);
     }
-  }, [currentParameters, showMessage]);
+  }, [currentParameters]);
 
   // 重置为默认设置
   const resetToDefaults = useCallback(async () => {
-    // 使用 toast 或其他 UI 反馈替代 confirm
-    const shouldReset = true; // 在实际应用中应该使用更好的确认机制
-    if (shouldReset) {
-      savePreferences(DEFAULT_PREFERENCES);
+    if (window.confirm('确定要重置为默认设置吗？这将清除所有自定义偏好。')) {
+      await savePreferences(DEFAULT_PREFERENCES);
       onParametersChange?.(DEFAULT_PREFERENCES.defaultParameters);
-      showMessage('success', '设置已重置为默认值');
+      setMessage({ type: 'success', text: '设置已重置为默认值' });
+      setTimeout(() => setMessage(null), 3000);
     }
-  }, [savePreferences, onParametersChange, showMessage]);
+  }, [savePreferences, onParametersChange]);
 
   // 导出配置
   const exportConfiguration = useCallback(() => {
@@ -123,10 +143,12 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      showMessage('success', '配置已导出');
+      setMessage({ type: 'success', text: '配置已导出' });
+      setTimeout(() => setMessage(null), 3000);
     } catch (error) {
       console.error('导出配置失败:', error);
-      showMessage('error', '导出配置失败');
+      setMessage({ type: 'error', text: '导出配置失败' });
+      setTimeout(() => setMessage(null), 3000);
     }
   }, [preferences, currentParameters]);
 
@@ -153,10 +175,12 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({
         savePreferences(importedData.preferences);
         onParametersChange?.(importedData.currentParameters);
 
-        showMessage('success', '配置导入成功');
+        setMessage({ type: 'success', text: '配置导入成功' });
+        setTimeout(() => setMessage(null), 3000);
       } catch (error) {
         console.error('导入配置失败:', error);
-        showMessage('error', '导入配置失败：文件格式无效');
+        setMessage({ type: 'error', text: '导入配置失败：文件格式无效' });
+        setTimeout(() => setMessage(null), 3000);
       }
     };
 
@@ -169,6 +193,7 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({
   // 创建备份
   const createBackup = useCallback(() => {
     try {
+      const storage = getLocalStorage();
       const backup = {
         timestamp: new Date().toISOString(),
         preferences,
@@ -183,7 +208,7 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({
         backups.splice(0, backups.length - 10);
       }
 
-      localStorage.setItem(STORAGE_KEYS.PARAMETERS_BACKUP, JSON.stringify(backups));
+      storage.setItem(STORAGE_KEYS.PARAMETERS_BACKUP, JSON.stringify(backups));
     } catch (error) {
       console.error('创建备份失败:', error);
     }
@@ -192,7 +217,8 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({
   // 获取备份历史
   const getBackupHistory = useCallback(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEYS.PARAMETERS_BACKUP);
+      const storage = getLocalStorage();
+      const stored = storage.getItem(STORAGE_KEYS.PARAMETERS_BACKUP);
       const parsed = stored ? JSON.parse(stored) : [];
       // 确保返回的是数组
       return Array.isArray(parsed) ? parsed : [];
@@ -203,12 +229,11 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({
 
   // 恢复备份
   const restoreBackup = useCallback(async (backup: any) => {
-    // 使用更好的确认机制替代 confirm
-    const shouldRestore = true; // 在实际应用中应该使用更好的确认机制
-    if (shouldRestore) {
-      savePreferences(backup.preferences);
+    if (window.confirm(`确定要恢复 ${new Date(backup.timestamp).toLocaleString()} 的备份配置吗？`)) {
+      await savePreferences(backup.preferences);
       onParametersChange?.(backup.currentParameters);
-      showMessage('success', `已恢复 ${new Date(backup.timestamp).toLocaleString()} 的备份配置`);
+      setMessage({ type: 'success', text: `已恢复 ${new Date(backup.timestamp).toLocaleString()} 的备份配置` });
+      setTimeout(() => setMessage(null), 3000);
     }
   }, [savePreferences, onParametersChange]);
 
@@ -245,7 +270,8 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({
   useEffect(() => {
     if (preferences.autoSave && !isLoading) {
       const timer = setTimeout(() => {
-        localStorage.setItem(STORAGE_KEYS.LAST_USED, JSON.stringify(currentParameters));
+        const storage = getLocalStorage();
+        storage.setItem(STORAGE_KEYS.LAST_USED, JSON.stringify(currentParameters));
       }, 1000);
       return () => clearTimeout(timer);
     }

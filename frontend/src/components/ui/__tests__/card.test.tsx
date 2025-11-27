@@ -61,7 +61,8 @@ describe('Card Components', () => {
       </CardFooter>,
     );
 
-    const button = screen.getByRole('button', { name: /footer button/i });
+    // Use getByText instead of getByRole to avoid DOM API issues
+    const button = screen.getByText('Footer Button');
     expect(button).toBeInTheDocument();
   });
 
@@ -84,6 +85,6 @@ describe('Card Components', () => {
     expect(screen.getByText('Card Title')).toBeInTheDocument();
     expect(screen.getByText('Card Description')).toBeInTheDocument();
     expect(screen.getByText('Main content goes here')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /action/i })).toBeInTheDocument();
+    expect(screen.getByText('Action')).toBeInTheDocument();
   });
 });

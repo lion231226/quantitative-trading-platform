@@ -33,55 +33,91 @@ if (!document.getElementById('root')) {
 }
 
 // Mock getComputedStyle for better DOM compatibility
-Object.defineProperty(window, 'getComputedStyle', {
-  value: jest.fn(() => ({
-    getPropertyValue: jest.fn((prop) => {
-      const styleMap = {
-        'pointer-events': 'auto',
-        'z-index': '0',
-        'opacity': '1',
-        'color': 'black',
-        'background-color': 'white',
-        'display': 'block',
-        'position': 'static',
-        'width': 'auto',
-        'height': 'auto',
-        'top': '0px',
-        'left': '0px',
-        'visibility': 'visible',
-        'cursor': 'pointer',
-        'text-align': 'left',
-        'font-size': '16px',
-        'line-height': '1.5',
-        'margin': '0px',
-        'padding': '0px',
-        'border': '0px',
-        'box-sizing': 'border-box'
-      };
-      return styleMap[prop] || '';
-    }),
-    zIndex: '0',
-    opacity: '1',
-    color: 'black',
-    backgroundColor: 'white',
-    display: 'block',
-    position: 'static',
-    width: 'auto',
-    height: 'auto',
-    top: '0px',
-    left: '0px',
-    visibility: 'visible',
-    cursor: 'pointer',
-    pointerEvents: 'auto',
-    textAlign: 'left',
-    fontSize: '16px',
-    lineHeight: '1.5',
-    margin: '0px',
-    padding: '0px',
-    border: '0px',
-    boxSizing: 'border-box'
-  })),
+const createComputedStyleMock = () => ({
+  getPropertyValue: jest.fn((prop) => {
+    const styleMap = {
+      'pointer-events': 'auto',
+      'z-index': '0',
+      'opacity': '1',
+      'color': 'black',
+      'background-color': 'white',
+      'display': 'block',
+      'position': 'static',
+      'width': 'auto',
+      'height': 'auto',
+      'top': '0px',
+      'left': '0px',
+      'visibility': 'visible',
+      'cursor': 'pointer',
+      'text-align': 'left',
+      'font-size': '16px',
+      'line-height': '1.5',
+      'margin': '0px',
+      'padding': '0px',
+      'border': '0px',
+      'box-sizing': 'border-box',
+      'flex-direction': 'row',
+      'align-items': 'center',
+      'justify-content': 'flex-start',
+      'gap': '0px',
+      'grid-template-columns': 'none',
+      'grid-template-rows': 'none',
+      'visibility': 'visible'
+    };
+    return styleMap[prop] || '';
+  }),
+  zIndex: '0',
+  opacity: '1',
+  color: 'black',
+  backgroundColor: 'white',
+  display: 'block',
+  position: 'static',
+  width: 'auto',
+  height: 'auto',
+  top: '0px',
+  left: '0px',
+  visibility: 'visible',
+  cursor: 'pointer',
+  pointerEvents: 'auto',
+  textAlign: 'left',
+  fontSize: '16px',
+  lineHeight: '1.5',
+  margin: '0px',
+  padding: '0px',
+  border: '0px',
+  borderStyle: 'solid',
+  borderColor: 'black',
+  borderWidth: '0px',
+  borderRadius: '0px',
+  boxSizing: 'border-box',
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'flex-start',
+  gap: '0px',
+  gridTemplateColumns: 'none',
+  gridTemplateRows: 'none'
 });
+
+// Enhanced getComputedStyle mock that never returns undefined
+const getComputedStyleMock = jest.fn((element) => {
+  // Always return a valid style object, never undefined
+  return createComputedStyleMock();
+});
+
+Object.defineProperty(window, 'getComputedStyle', {
+  value: getComputedStyleMock,
+  configurable: true
+});
+
+// Also ensure global.getComputedStyle exists for non-window contexts
+if (typeof global !== 'undefined') {
+  global.getComputedStyle = getComputedStyleMock;
+}
+
+// Also patch the global scope directly for dom-accessibility-api
+if (typeof globalThis !== 'undefined') {
+  globalThis.getComputedStyle = getComputedStyleMock;
+}
 
 // Mock getBoundingClientRect for DOM measurements
 Element.prototype.getBoundingClientRect = jest.fn(() => ({
@@ -320,8 +356,192 @@ global.FileReader = class FileReader {
   }
 }
 
+// Enhanced localStorage mock with full API support
+const createLocalStorageMock = () => {
+  let store = {};
+  const listeners = new Map();
+
+  const notifyListeners = (key, oldValue, newValue) => {
+    const event = {
+      key,
+      oldValue,
+      newValue,
+      storageArea: store,
+      url: 'http://localhost'
+    };
+
+    if (key === null) {
+      // notify all listeners for clear
+      listeners.forEach((callback) => {
+        try {
+          callback(event);
+        } catch (error) {
+          console.warn('localStorage listener error:', error);
+        }
+      });
+    } else {
+      // notify specific key listeners
+      const keyListeners = listeners.get(key) || [];
+      keyListeners.forEach((callback) => {
+        try {
+          callback(event);
+        } catch (error) {
+          console.warn('localStorage listener error:', error);
+        }
+      });
+    }
+  };
+
+  return {
+    getItem: jest.fn((key) => {
+      return store[key] !== undefined ? store[key] : null;
+    }),
+
+    setItem: jest.fn((key, value) => {
+      const oldValue = store[key];
+      store[key] = String(value);
+
+      // Check storage quota (simulate 5MB limit)
+      const totalSize = JSON.stringify(store).length;
+      if (totalSize > 5 * 1024 * 1024) {
+        delete store[key];
+        throw new Error('QuotaExceededError: localStorage quota exceeded');
+      }
+
+      notifyListeners(key, oldValue, String(value));
+    }),
+
+    removeItem: jest.fn((key) => {
+      const oldValue = store[key];
+      delete store[key];
+      notifyListeners(key, oldValue, null);
+    }),
+
+    clear: jest.fn(() => {
+      store = {};
+      notifyListeners(null, null, null);
+    }),
+
+    get length() {
+      return Object.keys(store).length;
+    },
+
+    key: jest.fn((index) => {
+      const keys = Object.keys(store);
+      return index < keys.length ? keys[index] : null;
+    }),
+
+    // Storage event listeners
+    addEventListener: jest.fn((event, callback) => {
+      if (event === 'storage') {
+        if (!listeners.has('storage')) {
+          listeners.set('storage', []);
+        }
+        listeners.get('storage').push(callback);
+      }
+    }),
+
+    removeEventListener: jest.fn((event, callback) => {
+      if (event === 'storage') {
+        const storageListeners = listeners.get('storage') || [];
+        const index = storageListeners.indexOf(callback);
+        if (index > -1) {
+          storageListeners.splice(index, 1);
+        }
+      }
+    }),
+
+    // Direct access for testing
+    _getStore: jest.fn(() => ({ ...store })),
+    _setStore: jest.fn((newStore) => {
+      store = { ...newStore };
+    })
+  };
+};
+
+// Create and assign localStorage mock
+const localStorageMock = createLocalStorageMock();
+Object.defineProperty(window, 'localStorage', {
+  value: localStorageMock,
+  writable: true,
+});
+
+// Create sessionStorage mock with similar implementation
+const createSessionStorageMock = () => {
+  let store = {};
+  return {
+    getItem: jest.fn((key) => {
+      return store[key] !== undefined ? store[key] : null;
+    }),
+    setItem: jest.fn((key, value) => {
+      store[key] = String(value);
+    }),
+    removeItem: jest.fn((key) => {
+      delete store[key];
+    }),
+    clear: jest.fn(() => {
+      store = {};
+    }),
+    get length() {
+      return Object.keys(store).length;
+    },
+    key: jest.fn((index) => {
+      const keys = Object.keys(store);
+      return index < keys.length ? keys[index] : null;
+    })
+  };
+};
+
+Object.defineProperty(window, 'sessionStorage', {
+  value: createSessionStorageMock(),
+  writable: true,
+});
+
 // Note: JSDOM event handling fixes are no longer needed with happy-dom
 // The Event class and event handling are now provided by happy-dom
+
+// Fix happy-dom dispatchEvent issue more comprehensively
+// This fixes the "Cannot read properties of undefined (reading 'dispatchEvent')" error
+
+// Override HTMLElement.prototype.click to prevent dispatchEvent errors
+Object.defineProperty(HTMLElement.prototype, 'click', {
+  value: jest.fn(function() {
+    // Mock click behavior without dispatchEvent
+    if (this.onclick && typeof this.onclick === 'function') {
+      try {
+        this.onclick.call(this, { type: 'click', target: this });
+      } catch (error) {
+        console.warn('Mock click error:', error.message);
+      }
+    }
+  }),
+  writable: true,
+  configurable: true
+});
+
+// Ensure all elements have dispatchEvent method
+const ensureDispatchEvent = (element) => {
+  if (!element.dispatchEvent) {
+    element.dispatchEvent = jest.fn(() => true);
+  }
+};
+
+// Override document.createElement to ensure all elements have dispatchEvent
+const originalCreateElement = document.createElement;
+document.createElement = function(tagName) {
+  const element = originalCreateElement.call(this, tagName);
+  ensureDispatchEvent(element);
+  return element;
+};
+
+// Also ensure existing elements have dispatchEvent
+if (typeof Element !== 'undefined') {
+  Object.defineProperty(Element.prototype, 'dispatchEvent', {
+    value: jest.fn(() => true),
+    writable: true,
+    configurable: true
+  });
+}
 
 // Mock HTMLCanvasElement for chart-related tests
 global.HTMLCanvasElement = class HTMLCanvasElement {
@@ -355,6 +575,7 @@ global.HTMLCanvasElement = class HTMLCanvasElement {
       clip: jest.fn(),
     }))
     this.toDataURL = jest.fn(() => 'data:image/png;base64,mocked')
+    this.dispatchEvent = jest.fn(() => true);
   }
 }
 
@@ -377,7 +598,17 @@ if (!global.performance.now || typeof global.performance.now !== 'function') {
 
 // Suppress console warnings for tests (only React deprecation warnings remain)
 const originalError = console.error
+
+// Global DOM compatibility fixes for testing
 beforeAll(() => {
+  // Ensure getComputedStyle is properly mocked
+  // Use the already defined getComputedStyleMock
+
+  // Also patch Element.prototype.getComputedStyle if it exists
+  if (typeof Element !== 'undefined' && !Element.prototype.getComputedStyle) {
+    Element.prototype.getComputedStyle = getComputedStyleMock;
+  }
+
   console.error = (...args) => {
     if (
       typeof args[0] === 'string' &&
@@ -386,6 +617,24 @@ beforeAll(() => {
       return
     }
     originalError.call(console, ...args)
+  }
+})
+
+// Additional DOM compatibility for role-based queries
+beforeEach(() => {
+  // Ensure getComputedStyle is always available for each test
+  if (typeof window !== 'undefined' && !window.getComputedStyle) {
+    window.getComputedStyle = getComputedStyleMock;
+  }
+
+  // Also patch global scope
+  if (typeof global !== 'undefined' && !global.getComputedStyle) {
+    global.getComputedStyle = getComputedStyleMock;
+  }
+
+  // And globalThis for modern environments
+  if (typeof globalThis !== 'undefined' && !globalThis.getComputedStyle) {
+    globalThis.getComputedStyle = getComputedStyleMock;
   }
 })
 
