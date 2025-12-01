@@ -7,7 +7,12 @@ export interface UXMetrics {
   id: string;
   timestamp: string;
   componentName: string;
-  actionType: 'render' | 'api_call' | 'user_interaction' | 'navigation' | 'error';
+  actionType:
+    | 'render'
+    | 'api_call'
+    | 'user_interaction'
+    | 'navigation'
+    | 'error';
   componentRenderTime?: number; // ms
   apiResponseTime?: number; // ms
   userInteractionTime?: number; // ms
@@ -21,7 +26,14 @@ export interface UserBehaviorData {
   sessionId: string;
   userId?: string;
   pagePath: string;
-  actionType: 'click' | 'scroll' | 'hover' | 'form_submit' | 'navigation' | 'search' | 'filter';
+  actionType:
+    | 'click'
+    | 'scroll'
+    | 'hover'
+    | 'form_submit'
+    | 'navigation'
+    | 'search'
+    | 'filter';
   elementId?: string;
   elementSelector?: string;
   timestamp: string;
@@ -68,7 +80,12 @@ export interface UXError {
   id: string;
   timestamp: string;
   componentName?: string;
-  errorType: 'javascript_error' | 'network_error' | 'api_error' | 'render_error' | 'user_error';
+  errorType:
+    | 'javascript_error'
+    | 'network_error'
+    | 'api_error'
+    | 'render_error'
+    | 'user_error';
   message: string;
   stack?: string;
   userAgent: string;
@@ -86,7 +103,11 @@ export interface UserFeedback {
   timestamp: string;
   userId?: string;
   sessionId: string;
-  feedbackType: 'bug_report' | 'feature_request' | 'general_feedback' | 'usability_issue';
+  feedbackType:
+    | 'bug_report'
+    | 'feature_request'
+    | 'general_feedback'
+    | 'usability_issue';
   rating?: number; // 1-5
   category: 'performance' | 'ui_ux' | 'functionality' | 'error' | 'other';
   title: string;
@@ -105,7 +126,13 @@ export interface HelpDocument {
   id: string;
   title: string;
   content: string;
-  category: 'getting_started' | 'features' | 'troubleshooting' | 'api' | 'tutorials' | 'faq';
+  category:
+    | 'getting_started'
+    | 'features'
+    | 'troubleshooting'
+    | 'api'
+    | 'tutorials'
+    | 'faq';
   tags: string[];
   order: number;
   lastUpdated: string;
@@ -211,7 +238,12 @@ export interface Achievement {
 
 // 成就要求
 export interface AchievementRequirement {
-  type: 'complete_guide' | 'use_feature' | 'time_spent' | 'actions_count' | 'visit_pages';
+  type:
+    | 'complete_guide'
+    | 'use_feature'
+    | 'time_spent'
+    | 'actions_count'
+    | 'visit_pages';
   target: string | number;
   operator: 'equals' | 'greater_than' | 'less_than' | 'at_least';
   description: string;
@@ -254,7 +286,15 @@ export interface NetworkInfo {
   rtt?: number; // round-trip time in ms
   saveData?: boolean;
   online: boolean;
-  connectionType?: 'bluetooth' | 'cellular' | 'ethernet' | 'none' | 'wifi' | 'wimax' | 'other' | 'unknown';
+  connectionType?:
+    | 'bluetooth'
+    | 'cellular'
+    | 'ethernet'
+    | 'none'
+    | 'wifi'
+    | 'wimax'
+    | 'other'
+    | 'unknown';
 }
 
 // 浏览器信息类型
@@ -364,7 +404,14 @@ export interface SortConfig {
 // 过滤配置类型
 export interface FilterConfig {
   field: string;
-  operator: 'equals' | 'contains' | 'startsWith' | 'endsWith' | 'greaterThan' | 'lessThan' | 'between';
+  operator:
+    | 'equals'
+    | 'contains'
+    | 'startsWith'
+    | 'endsWith'
+    | 'greaterThan'
+    | 'lessThan'
+    | 'between';
   value: any;
   valueType: 'string' | 'number' | 'date' | 'boolean' | 'array';
 }

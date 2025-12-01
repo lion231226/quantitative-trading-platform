@@ -19,15 +19,23 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
 // 注册 Chart.js 组件
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+);
 
 // 组件Props
 export interface TradingSignalsProps {
-  signals: TradingSignal[]
-  onSignalClick?: (signal: TradingSignal) => void
-  className?: string
-  height?: number
-  width?: number
+  signals: TradingSignal[];
+  onSignalClick?: (signal: TradingSignal) => void;
+  className?: string;
+  height?: number;
+  width?: number;
 }
 
 export function TradingSignals({
@@ -39,8 +47,8 @@ export function TradingSignals({
 }: TradingSignalsProps) {
   // 按类型分组信号
   const { buySignals, sellSignals } = useMemo(() => {
-    const buy = signals.filter(s => s.type === 'buy');
-    const sell = signals.filter(s => s.type === 'sell');
+    const buy = signals.filter((s) => s.type === 'buy');
+    const sell = signals.filter((s) => s.type === 'sell');
     return { buySignals: buy, sellSignals: sell };
   }, [signals]);
 
@@ -50,7 +58,7 @@ export function TradingSignals({
       datasets: [
         {
           label: '买入信号',
-          data: buySignals.map(signal => ({
+          data: buySignals.map((signal) => ({
             x: new Date(signal.timestamp).getTime(),
             y: signal.price,
           })),
@@ -62,7 +70,7 @@ export function TradingSignals({
         },
         {
           label: '卖出信号',
-          data: sellSignals.map(signal => ({
+          data: sellSignals.map((signal) => ({
             x: new Date(signal.timestamp).getTime(),
             y: signal.price,
           })),
@@ -77,91 +85,101 @@ export function TradingSignals({
   }, [buySignals, sellSignals]);
 
   // 生成图表选项
-  const chartOptions = useMemo<ChartOptions<'scatter'>>(() => ({
-    responsive: true,
-    maintainAspectRatio: false,
-    interaction: {
-      mode: 'nearest',
-      intersect: true,
-    },
-    plugins: {
-      legend: {
-        position: 'top',
-        labels: {
-          usePointStyle: true,
-          padding: 20,
-        },
+  const chartOptions = useMemo<ChartOptions<'scatter'>>(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        mode: 'nearest',
+        intersect: true,
       },
-      tooltip: {
-        enabled: true,
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        titleColor: '#fff',
-        bodyColor: '#fff',
-        borderColor: '#ddd',
-        borderWidth: 1,
-        padding: 10,
-        displayColors: true,
-        callbacks: {
-          title: (context) => {
-            const signal = context[0];
-            const xValue = signal?.parsed?.x;
-            return xValue !== null && xValue !== undefined ? new Date(xValue).toLocaleString() : '';
-          },
-          label: (context) => {
-            const datasetIndex = context.datasetIndex;
-            const signal = datasetIndex === 0 ? buySignals[context.dataIndex] : sellSignals[context.dataIndex];
-            return [
-              `类型: ${signal.type === 'buy' ? '买入' : '卖出'}`,
-              `价格: ${signal.price.toFixed(2)}`,
-              `策略: ${signal.strategy}`,
-            ];
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: {
+            usePointStyle: true,
+            padding: 20,
           },
         },
-      },
-    },
-    scales: {
-      x: {
-        type: 'time',
-        time: {
-          displayFormats: {
-            day: 'MM/dd',
-            month: 'MM/dd',
+        tooltip: {
+          enabled: true,
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          borderColor: '#ddd',
+          borderWidth: 1,
+          padding: 10,
+          displayColors: true,
+          callbacks: {
+            title: (context) => {
+              const signal = context[0];
+              const xValue = signal?.parsed?.x;
+              return xValue !== null && xValue !== undefined
+                ? new Date(xValue).toLocaleString()
+                : '';
+            },
+            label: (context) => {
+              const datasetIndex = context.datasetIndex;
+              const signal =
+                datasetIndex === 0
+                  ? buySignals[context.dataIndex]
+                  : sellSignals[context.dataIndex];
+              return [
+                `类型: ${signal.type === 'buy' ? '买入' : '卖出'}`,
+                `价格: ${signal.price.toFixed(2)}`,
+                `策略: ${signal.strategy}`,
+              ];
+            },
           },
         },
-        title: {
-          display: true,
-          text: '时间',
+      },
+      scales: {
+        x: {
+          type: 'time',
+          time: {
+            displayFormats: {
+              day: 'MM/dd',
+              month: 'MM/dd',
+            },
+          },
+          title: {
+            display: true,
+            text: '时间',
+          },
+        },
+        y: {
+          title: {
+            display: true,
+            text: '价格',
+          },
+          ticks: {
+            callback: (value) => Number(value).toFixed(2),
+          },
         },
       },
-      y: {
-        title: {
-          display: true,
-          text: '价格',
-        },
-        ticks: {
-          callback: (value) => Number(value).toFixed(2),
-        },
-      },
-    },
-    onClick: (event, elements) => {
-      if (elements.length > 0 && onSignalClick) {
-        const element = elements[0];
-        const datasetIndex = element.datasetIndex;
-        const index = element.index;
-        const signal = datasetIndex === 0 ? buySignals[index] : sellSignals[index];
-        if (signal) {
-          onSignalClick(signal);
+      onClick: (event, elements) => {
+        if (elements.length > 0 && onSignalClick) {
+          const element = elements[0];
+          const datasetIndex = element.datasetIndex;
+          const index = element.index;
+          const signal =
+            datasetIndex === 0 ? buySignals[index] : sellSignals[index];
+          if (signal) {
+            onSignalClick(signal);
+          }
         }
-      }
-    },
-  }), [buySignals, sellSignals, onSignalClick]);
+      },
+    }),
+    [buySignals, sellSignals, onSignalClick],
+  );
 
   // 渲染统计信息
   const renderStats = () => {
     const totalSignals = signals.length;
     const buyCount = buySignals.length;
     const sellCount = sellSignals.length;
-    const recentSignal = signals.length > 0 ? signals[signals.length - 1] : null;
+    const recentSignal =
+      signals.length > 0 ? signals[signals.length - 1] : null;
 
     return (
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-50 border-b">
@@ -183,7 +201,13 @@ export function TradingSignals({
         <div className="text-center">
           <div className="text-lg font-semibold">
             {recentSignal ? (
-              <span className={recentSignal.type === 'buy' ? 'text-green-600' : 'text-red-600'}>
+              <span
+                className={
+                  recentSignal.type === 'buy'
+                    ? 'text-green-600'
+                    : 'text-red-600'
+                }
+              >
                 {recentSignal.type === 'buy' ? '买入' : '卖出'}
               </span>
             ) : (
@@ -221,7 +245,9 @@ export function TradingSignals({
                 </span>
               </div>
               <div className="text-right">
-                <div className="text-sm font-medium">{signal.price.toFixed(2)}</div>
+                <div className="text-sm font-medium">
+                  {signal.price.toFixed(2)}
+                </div>
                 <div className="text-xs text-gray-500">
                   {new Date(signal.timestamp).toLocaleDateString()}
                 </div>

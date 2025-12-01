@@ -1,0 +1,31 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🚀 Pre-commit checks running..."
+
+# 运行 ESLint
+echo "Running ESLint..."
+npm run lint -- --fix
+if [ $? -ne 0 ]; then
+  echo "❌ ESLint failed. Please fix the errors before committing."
+  exit 1
+fi
+
+# 运行 Prettier 检查
+echo "Running Prettier check..."
+npm run format:check
+if [ $? -ne 0 ]; then
+  echo "❌ Code formatting issues found. Run 'npm run format' to fix."
+  exit 1
+fi
+
+# 运行 TypeScript 类型检查
+echo "Running TypeScript type check..."
+npm run type-check
+if [ $? -ne 0 ]; then
+  echo "❌ TypeScript type errors found. Please fix them before committing."
+  exit 1
+fi
+
+echo "✅ All pre-commit checks passed!"
+exit 0

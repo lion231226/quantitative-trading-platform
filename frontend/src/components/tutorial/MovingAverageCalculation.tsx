@@ -1,18 +1,18 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import {
-  Chart as ChartJS,
+  AnimationOptions,
   CategoryScale,
+  Chart as ChartJS,
+  Filler,
+  Legend,
+  LineElement,
   LinearScale,
   PointElement,
-  LineElement,
   Title,
   Tooltip,
-  Legend,
-  Filler,
-  AnimationOptions,
 } from 'chart.js';
-import { Play, Pause, RotateCcw, Calculator, TrendingUp } from 'lucide-react';
+import { Calculator, Pause, Play, RotateCcw, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -26,7 +26,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  Filler
+  Filler,
 );
 
 interface MovingAverageCalculationProps {
@@ -57,7 +57,9 @@ export function MovingAverageCalculation({
 }: MovingAverageCalculationProps) {
   const [isPlaying, setIsPlaying] = useState(autoPlay);
   const [currentStep, setCurrentStep] = useState(0);
-  const [calculationSteps, setCalculationSteps] = useState<CalculationStep[]>([]);
+  const [calculationSteps, setCalculationSteps] = useState<CalculationStep[]>(
+    [],
+  );
   const [chartData, setChartData] = useState<any>(null);
   const intervalRef = useRef<NodeJS.Timeout>();
 
@@ -77,43 +79,46 @@ export function MovingAverageCalculation({
   }, []);
 
   // 计算移动平均线步骤
-  const calculateSteps = useCallback((prices: number[]) => {
-    const steps: CalculationStep[] = [];
+  const calculateSteps = useCallback(
+    (prices: number[]) => {
+      const steps: CalculationStep[] = [];
 
-    for (let i = 0; i < prices.length; i++) {
-      const price = prices[i];
+      for (let i = 0; i < prices.length; i++) {
+        const price = prices[i];
 
-      if (i < period - 1) {
-        // 数据不足，无法计算
-        steps.push({
-          step: i,
-          price,
-          window: prices.slice(0, i + 1),
-          sum: 0,
-          average: 0,
-          formula: `需要至少${period}个数据点`,
-        });
-      } else {
-        // 计算移动平均
-        const window = prices.slice(i - period + 1, i + 1);
-        const sum = window.reduce((acc, val) => acc + val, 0);
-        const average = sum / period;
+        if (i < period - 1) {
+          // 数据不足，无法计算
+          steps.push({
+            step: i,
+            price,
+            window: prices.slice(0, i + 1),
+            sum: 0,
+            average: 0,
+            formula: `需要至少${period}个数据点`,
+          });
+        } else {
+          // 计算移动平均
+          const window = prices.slice(i - period + 1, i + 1);
+          const sum = window.reduce((acc, val) => acc + val, 0);
+          const average = sum / period;
 
-        const formula = `(${window.join(' + ')}) / ${period} = ${sum.toFixed(2)} / ${period} = ${average.toFixed(2)}`;
+          const formula = `(${window.join(' + ')}) / ${period} = ${sum.toFixed(2)} / ${period} = ${average.toFixed(2)}`;
 
-        steps.push({
-          step: i,
-          price,
-          window,
-          sum,
-          average,
-          formula,
-        });
+          steps.push({
+            step: i,
+            price,
+            window,
+            sum,
+            average,
+            formula,
+          });
+        }
       }
-    }
 
-    return steps;
-  }, [period]);
+      return steps;
+    },
+    [period],
+  );
 
   // 初始化数据
   useEffect(() => {
@@ -123,50 +128,53 @@ export function MovingAverageCalculation({
   }, [generatePriceData, calculateSteps]);
 
   // 更新图表数据
-  const updateChartData = useCallback((stepIndex: number) => {
-    if (calculationSteps.length === 0) return;
+  const updateChartData = useCallback(
+    (stepIndex: number) => {
+      if (calculationSteps.length === 0) return;
 
-    const currentSteps = calculationSteps.slice(0, stepIndex + 1);
-    const labels = currentSteps.map((_, index) => `Day ${index + 1}`);
-    const prices = currentSteps.map(step => step.price);
-    const averages = currentSteps.map(step => step.average);
+      const currentSteps = calculationSteps.slice(0, stepIndex + 1);
+      const labels = currentSteps.map((_, index) => `Day ${index + 1}`);
+      const prices = currentSteps.map((step) => step.price);
+      const averages = currentSteps.map((step) => step.average);
 
-    const newChartData = {
-      labels,
-      datasets: [
-        {
-          label: '价格',
-          data: prices,
-          borderColor: 'rgb(59, 130, 246)',
-          backgroundColor: 'rgba(59, 130, 246, 0.1)',
-          borderWidth: 3,
-          fill: false,
-          tension: 0.1,
-          pointRadius: 5,
-          pointHoverRadius: 7,
-        },
-        {
-          label: `${period}日移动平均`,
-          data: averages,
-          borderColor: 'rgb(239, 68, 68)',
-          backgroundColor: 'rgba(239, 68, 68, 0.1)',
-          borderWidth: 3,
-          fill: false,
-          tension: 0.1,
-          pointRadius: 5,
-          pointHoverRadius: 7,
-        },
-      ],
-    };
+      const newChartData = {
+        labels,
+        datasets: [
+          {
+            label: '价格',
+            data: prices,
+            borderColor: 'rgb(59, 130, 246)',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            borderWidth: 3,
+            fill: false,
+            tension: 0.1,
+            pointRadius: 5,
+            pointHoverRadius: 7,
+          },
+          {
+            label: `${period}日移动平均`,
+            data: averages,
+            borderColor: 'rgb(239, 68, 68)',
+            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+            borderWidth: 3,
+            fill: false,
+            tension: 0.1,
+            pointRadius: 5,
+            pointHoverRadius: 7,
+          },
+        ],
+      };
 
-    setChartData(newChartData);
-  }, [calculationSteps, period]);
+      setChartData(newChartData);
+    },
+    [calculationSteps, period],
+  );
 
   // 动画播放控制
   useEffect(() => {
     if (isPlaying) {
       intervalRef.current = setInterval(() => {
-        setCurrentStep(prev => {
+        setCurrentStep((prev) => {
           const nextStep = prev + 1;
 
           if (nextStep >= calculationSteps.length) {
@@ -208,12 +216,12 @@ export function MovingAverageCalculation({
   };
   const handleNext = () => {
     if (currentStep < calculationSteps.length - 1) {
-      setCurrentStep(prev => prev + 1);
+      setCurrentStep((prev) => prev + 1);
     }
   };
   const handlePrevious = () => {
     if (currentStep > 0) {
-      setCurrentStep(prev => prev - 1);
+      setCurrentStep((prev) => prev - 1);
     }
   };
 
@@ -266,8 +274,8 @@ export function MovingAverageCalculation({
           color: 'rgba(0, 0, 0, 0.05)',
         },
         ticks: {
-          callback: function(value: any) {
-            return '¥' + value.toFixed(0);
+          callback(value: any) {
+            return `¥${value.toFixed(0)}`;
           },
           font: {
             size: 12,
@@ -286,9 +294,7 @@ export function MovingAverageCalculation({
         <h3 className="text-2xl font-bold text-gray-900 mb-2">
           移动平均线计算演示
         </h3>
-        <p className="text-gray-600">
-          观看移动平均线是如何一步步计算出来的
-        </p>
+        <p className="text-gray-600">观看移动平均线是如何一步步计算出来的</p>
       </div>
 
       {/* 计算过程展示 */}
@@ -298,9 +304,7 @@ export function MovingAverageCalculation({
             <h4 className="text-lg font-semibold text-gray-900">
               计算步骤 {currentCalculation.step + 1}
             </h4>
-            <Badge variant="outline">
-              Day {currentCalculation.step + 1}
-            </Badge>
+            <Badge variant="outline">Day {currentCalculation.step + 1}</Badge>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -393,16 +397,12 @@ export function MovingAverageCalculation({
             >
               上一步
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleReset}
-            >
+            <Button variant="outline" size="sm" onClick={handleReset}>
               <RotateCcw className="h-4 w-4 mr-2" />
               重置
             </Button>
             <Button
-              variant={isPlaying ? "secondary" : "default"}
+              variant={isPlaying ? 'secondary' : 'default'}
               size="sm"
               onClick={isPlaying ? handlePause : handlePlay}
             >
@@ -446,7 +446,9 @@ export function MovingAverageCalculation({
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div
               className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${((currentStep + 1) / calculationSteps.length) * 100}%` }}
+              style={{
+                width: `${((currentStep + 1) / calculationSteps.length) * 100}%`,
+              }}
             ></div>
           </div>
         </div>

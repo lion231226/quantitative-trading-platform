@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom';
 
 // Fix DOM environment for React 18
 Object.defineProperty(window, 'document', {
@@ -38,31 +38,31 @@ const createComputedStyleMock = () => ({
     const styleMap = {
       'pointer-events': 'auto',
       'z-index': '0',
-      'opacity': '1',
-      'color': 'black',
+      opacity: '1',
+      color: 'black',
       'background-color': 'white',
-      'display': 'block',
-      'position': 'static',
-      'width': 'auto',
-      'height': 'auto',
-      'top': '0px',
-      'left': '0px',
-      'visibility': 'visible',
-      'cursor': 'pointer',
+      display: 'block',
+      position: 'static',
+      width: 'auto',
+      height: 'auto',
+      top: '0px',
+      left: '0px',
+      visibility: 'visible',
+      cursor: 'pointer',
       'text-align': 'left',
       'font-size': '16px',
       'line-height': '1.5',
-      'margin': '0px',
-      'padding': '0px',
-      'border': '0px',
+      margin: '0px',
+      padding: '0px',
+      border: '0px',
       'box-sizing': 'border-box',
       'flex-direction': 'row',
       'align-items': 'center',
       'justify-content': 'flex-start',
-      'gap': '0px',
+      gap: '0px',
       'grid-template-columns': 'none',
       'grid-template-rows': 'none',
-      'visibility': 'visible'
+      visibility: 'visible',
     };
     return styleMap[prop] || '';
   }),
@@ -95,7 +95,7 @@ const createComputedStyleMock = () => ({
   justifyContent: 'flex-start',
   gap: '0px',
   gridTemplateColumns: 'none',
-  gridTemplateRows: 'none'
+  gridTemplateRows: 'none',
 });
 
 // Enhanced getComputedStyle mock that never returns undefined
@@ -106,7 +106,7 @@ const getComputedStyleMock = jest.fn((element) => {
 
 Object.defineProperty(window, 'getComputedStyle', {
   value: getComputedStyleMock,
-  configurable: true
+  configurable: true,
 });
 
 // Also ensure global.getComputedStyle exists for non-window contexts
@@ -136,17 +136,36 @@ Element.prototype.getBoundingClientRect = jest.fn(() => ({
 const createStyleMock = () => {
   const style = {};
   const properties = [
-    'pointerEvents', 'zIndex', 'opacity', 'color', 'backgroundColor',
-    'display', 'position', 'width', 'height', 'top', 'left', 'visibility',
-    'cursor', 'textAlign', 'fontSize', 'lineHeight', 'margin', 'padding',
-    'border', 'boxSizing', 'transform', 'transition', 'animation'
+    'pointerEvents',
+    'zIndex',
+    'opacity',
+    'color',
+    'backgroundColor',
+    'display',
+    'position',
+    'width',
+    'height',
+    'top',
+    'left',
+    'visibility',
+    'cursor',
+    'textAlign',
+    'fontSize',
+    'lineHeight',
+    'margin',
+    'padding',
+    'border',
+    'boxSizing',
+    'transform',
+    'transition',
+    'animation',
   ];
 
-  properties.forEach(prop => {
+  properties.forEach((prop) => {
     Object.defineProperty(style, prop, {
       value: prop === 'pointerEvents' ? 'auto' : 'initial',
       writable: true,
-      configurable: true
+      configurable: true,
     });
   });
 
@@ -165,11 +184,11 @@ Object.defineProperty(HTMLElement.prototype, 'style', {
     }
     return this._styleMock;
   },
-  configurable: true
+  configurable: true,
 });
 
 // Mock closest method for elements
-Element.prototype.closest = jest.fn(function(selector) {
+Element.prototype.closest = jest.fn(function (selector) {
   // Mock basic closest functionality for common cases
   if (selector === 'button' && this.tagName === 'BUTTON') return this;
   if (selector === 'div' && this.tagName === 'DIV') return this;
@@ -212,9 +231,9 @@ jest.mock('next/router', () => ({
         off: jest.fn(),
         emit: jest.fn(),
       },
-    }
+    };
   },
-}))
+}));
 
 // Mock next/navigation
 jest.mock('next/navigation', () => ({
@@ -226,15 +245,15 @@ jest.mock('next/navigation', () => ({
       back: jest.fn(),
       forward: jest.fn(),
       prefetch: jest.fn(),
-    }
+    };
   },
   useSearchParams() {
-    return new URLSearchParams()
+    return new URLSearchParams();
   },
   usePathname() {
-    return '/'
+    return '/';
   },
-}))
+}));
 
 // Mock Chart.js
 jest.mock('chart.js', () => ({
@@ -249,8 +268,7 @@ jest.mock('chart.js', () => ({
     },
   },
   registerables: [],
-}))
-
+}));
 
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
@@ -258,7 +276,7 @@ global.IntersectionObserver = class IntersectionObserver {
   disconnect() {}
   observe() {}
   unobserve() {}
-}
+};
 
 // Mock ResizeObserver
 global.ResizeObserver = class ResizeObserver {
@@ -266,7 +284,7 @@ global.ResizeObserver = class ResizeObserver {
   disconnect() {}
   observe() {}
   unobserve() {}
-}
+};
 
 // Mock Network Information API for mobile tests
 Object.defineProperty(navigator, 'connection', {
@@ -280,34 +298,34 @@ Object.defineProperty(navigator, 'connection', {
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
   },
-})
+});
 
 // Mock online/offline events
 Object.defineProperty(navigator, 'onLine', {
   writable: true,
   value: true,
-})
+});
 
 // Mock Touch events for mobile testing
 Object.defineProperty(window, 'ontouchstart', {
   writable: true,
   value: jest.fn(),
-})
+});
 
 Object.defineProperty(window, 'ontouchend', {
   writable: true,
   value: jest.fn(),
-})
+});
 
 Object.defineProperty(window, 'ontouchmove', {
   writable: true,
   value: jest.fn(),
-})
+});
 
 // Mock matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: jest.fn().mockImplementation(query => ({
+  value: jest.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -317,44 +335,44 @@ Object.defineProperty(window, 'matchMedia', {
     removeEventListener: jest.fn(),
     dispatchEvent: jest.fn(),
   })),
-})
+});
 
 // Mock DOM methods for file operations
-global.URL.createObjectURL = jest.fn(() => 'mocked-url')
-global.URL.revokeObjectURL = jest.fn()
+global.URL.createObjectURL = jest.fn(() => 'mocked-url');
+global.URL.revokeObjectURL = jest.fn();
 
 // Mock File and FileReader
 global.File = class File {
   constructor(chunks, filename, options = {}) {
-    this.chunks = chunks
-    this.name = filename
-    this.type = options.type || ''
-    this.size = chunks.reduce((acc, chunk) => acc + chunk.length, 0)
+    this.chunks = chunks;
+    this.name = filename;
+    this.type = options.type || '';
+    this.size = chunks.reduce((acc, chunk) => acc + chunk.length, 0);
   }
-}
+};
 
 global.FileReader = class FileReader {
   constructor() {
-    this.readyState = 0
-    this.result = null
+    this.readyState = 0;
+    this.result = null;
   }
 
   readAsText() {
     setTimeout(() => {
-      this.readyState = 2
-      this.result = '{"test": "data"}'
-      this.onload && this.onload()
-    }, 0)
+      this.readyState = 2;
+      this.result = '{"test": "data"}';
+      this.onload && this.onload();
+    }, 0);
   }
 
   readAsDataURL() {
     setTimeout(() => {
-      this.readyState = 2
-      this.result = 'data:application/json;base64,mocked'
-      this.onload && this.onload()
-    }, 0)
+      this.readyState = 2;
+      this.result = 'data:application/json;base64,mocked';
+      this.onload && this.onload();
+    }, 0);
   }
-}
+};
 
 // Enhanced localStorage mock with full API support
 const createLocalStorageMock = () => {
@@ -367,7 +385,7 @@ const createLocalStorageMock = () => {
       oldValue,
       newValue,
       storageArea: store,
-      url: 'http://localhost'
+      url: 'http://localhost',
     };
 
     if (key === null) {
@@ -455,7 +473,7 @@ const createLocalStorageMock = () => {
     _getStore: jest.fn(() => ({ ...store })),
     _setStore: jest.fn((newStore) => {
       store = { ...newStore };
-    })
+    }),
   };
 };
 
@@ -488,7 +506,7 @@ const createSessionStorageMock = () => {
     key: jest.fn((index) => {
       const keys = Object.keys(store);
       return index < keys.length ? keys[index] : null;
-    })
+    }),
   };
 };
 
@@ -505,7 +523,7 @@ Object.defineProperty(window, 'sessionStorage', {
 
 // Override HTMLElement.prototype.click to prevent dispatchEvent errors
 Object.defineProperty(HTMLElement.prototype, 'click', {
-  value: jest.fn(function() {
+  value: jest.fn(function () {
     // Mock click behavior without dispatchEvent
     if (this.onclick && typeof this.onclick === 'function') {
       try {
@@ -516,7 +534,7 @@ Object.defineProperty(HTMLElement.prototype, 'click', {
     }
   }),
   writable: true,
-  configurable: true
+  configurable: true,
 });
 
 // Ensure all elements have dispatchEvent method
@@ -528,7 +546,7 @@ const ensureDispatchEvent = (element) => {
 
 // Override document.createElement to ensure all elements have dispatchEvent
 const originalCreateElement = document.createElement;
-document.createElement = function(tagName) {
+document.createElement = function (tagName) {
   const element = originalCreateElement.call(this, tagName);
   ensureDispatchEvent(element);
   return element;
@@ -539,15 +557,15 @@ if (typeof Element !== 'undefined') {
   Object.defineProperty(Element.prototype, 'dispatchEvent', {
     value: jest.fn(() => true),
     writable: true,
-    configurable: true
+    configurable: true,
   });
 }
 
 // Mock HTMLCanvasElement for chart-related tests
 global.HTMLCanvasElement = class HTMLCanvasElement {
   constructor() {
-    this.width = 0
-    this.height = 0
+    this.width = 0;
+    this.height = 0;
     this.getContext = jest.fn(() => ({
       fillRect: jest.fn(),
       clearRect: jest.fn(),
@@ -573,20 +591,20 @@ global.HTMLCanvasElement = class HTMLCanvasElement {
       transform: jest.fn(),
       rect: jest.fn(),
       clip: jest.fn(),
-    }))
-    this.toDataURL = jest.fn(() => 'data:image/png;base64,mocked')
+    }));
+    this.toDataURL = jest.fn(() => 'data:image/png;base64,mocked');
     this.dispatchEvent = jest.fn(() => true);
   }
-}
+};
 
 // Mock requestAnimationFrame and cancelAnimationFrame for animation tests
 global.requestAnimationFrame = jest.fn((callback) => {
-  return setTimeout(callback, 16)
-})
+  return setTimeout(callback, 16);
+});
 
 global.cancelAnimationFrame = jest.fn((id) => {
-  clearTimeout(id)
-})
+  clearTimeout(id);
+});
 
 // Mock performance.now for timing tests (only if not already defined)
 if (!global.performance.now || typeof global.performance.now !== 'function') {
@@ -597,7 +615,7 @@ if (!global.performance.now || typeof global.performance.now !== 'function') {
 }
 
 // Suppress console warnings for tests (only React deprecation warnings remain)
-const originalError = console.error
+const originalError = console.error;
 
 // Global DOM compatibility fixes for testing
 beforeAll(() => {
@@ -614,11 +632,11 @@ beforeAll(() => {
       typeof args[0] === 'string' &&
       args[0].includes('Warning: ReactDOM.render is deprecated')
     ) {
-      return
+      return;
     }
-    originalError.call(console, ...args)
-  }
-})
+    originalError.call(console, ...args);
+  };
+});
 
 // Additional DOM compatibility for role-based queries
 beforeEach(() => {
@@ -636,8 +654,8 @@ beforeEach(() => {
   if (typeof globalThis !== 'undefined' && !globalThis.getComputedStyle) {
     globalThis.getComputedStyle = getComputedStyleMock;
   }
-})
+});
 
 afterAll(() => {
-  console.error = originalError
-})
+  console.error = originalError;
+});

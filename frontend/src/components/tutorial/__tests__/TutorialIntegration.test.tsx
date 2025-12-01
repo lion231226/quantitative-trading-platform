@@ -46,16 +46,26 @@ jest.mock('@/components/ui/dialog', () => ({
 
 jest.mock('@/components/ui/slider', () => ({
   Slider: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  SliderTrack: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  SliderRange: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  SliderThumb: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+  SliderTrack: ({ children, ...props }: any) => (
+    <div {...props}>{children}</div>
+  ),
+  SliderRange: ({ children, ...props }: any) => (
+    <div {...props}>{children}</div>
+  ),
+  SliderThumb: ({ children, ...props }: any) => (
+    <div {...props}>{children}</div>
+  ),
 }));
 
 jest.mock('@/components/ui/tabs', () => ({
   Tabs: ({ children, ...props }: any) => <div {...props}>{children}</div>,
   TabsList: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  TabsTrigger: ({ children, ...props }: any) => <button {...props}>{children}</button>,
-  TabsContent: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+  TabsTrigger: ({ children, ...props }: any) => (
+    <button {...props}>{children}</button>
+  ),
+  TabsContent: ({ children, ...props }: any) => (
+    <div {...props}>{children}</div>
+  ),
 }));
 
 jest.mock('@/components/ui/input', () => ({
@@ -90,15 +100,27 @@ jest.mock('lodash', () => ({
 
 // Mock tutorial components
 jest.mock('../TutorialStep', () => ({
-  TutorialStep: ({ children, ...props }: any) => <div data-testid="tutorial-step" {...props}>{children}</div>,
+  TutorialStep: ({ children, ...props }: any) => (
+    <div data-testid="tutorial-step" {...props}>
+      {children}
+    </div>
+  ),
 }));
 
 jest.mock('../TutorialNavigation', () => ({
-  TutorialNavigation: ({ children, ...props }: any) => <div data-testid="tutorial-navigation" {...props}>{children}</div>,
+  TutorialNavigation: ({ children, ...props }: any) => (
+    <div data-testid="tutorial-navigation" {...props}>
+      {children}
+    </div>
+  ),
 }));
 
 jest.mock('../TutorialProgress', () => ({
-  TutorialProgress: ({ children, ...props }: any) => <div data-testid="tutorial-progress" {...props}>{children}</div>,
+  TutorialProgress: ({ children, ...props }: any) => (
+    <div data-testid="tutorial-progress" {...props}>
+      {children}
+    </div>
+  ),
 }));
 
 // Mock tutorial helpers
@@ -126,7 +148,7 @@ jest.mock('@/services/contextHelpService', () => ({
   UserContext: {
     level: 'beginner',
     preferences: { showHints: true },
-    progress: { completedTutorials: [] }
+    progress: { completedTutorials: [] },
   },
   getContextHelpService: () => ({
     getHelpContent: jest.fn(() => Promise.resolve([])),
@@ -219,7 +241,6 @@ jest.mock('react-chartjs-2', () => ({
   Bar: () => <div data-testid="chart" />,
 }));
 
-
 // Mock TutorialTooltip and FAQSystem using simpler mocks
 jest.mock('../TutorialTooltip', () => {
   const MockTooltip = ({ children, ...props }: any) => (
@@ -250,7 +271,7 @@ jest.mock('@/types/tutorial.types', () => ({}));
 
 // Now import the components after mocking
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import TutorialSystem from '../TutorialSystem';
 import TutorialTooltip from '../TutorialTooltip';
@@ -266,9 +287,7 @@ const queryClient = new QueryClient({
 });
 
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
-  <QueryClientProvider client={queryClient}>
-    {children}
-  </QueryClientProvider>
+  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 );
 
 describe('Tutorial Integration Tests', () => {
@@ -276,8 +295,12 @@ describe('Tutorial Integration Tests', () => {
     it('renders complete tutorial system with navigation', async () => {
       render(
         <Wrapper>
-          <TutorialSystem tutorialId="test-tutorial" isOpen={true} onClose={() => {}} />
-        </Wrapper>
+          <TutorialSystem
+            tutorialId="test-tutorial"
+            isOpen={true}
+            onClose={() => {}}
+          />
+        </Wrapper>,
       );
 
       await waitFor(() => {
@@ -288,8 +311,12 @@ describe('Tutorial Integration Tests', () => {
     it('navigates between tutorial steps', async () => {
       render(
         <Wrapper>
-          <TutorialSystem tutorialId="test-tutorial" isOpen={true} onClose={() => {}} />
-        </Wrapper>
+          <TutorialSystem
+            tutorialId="test-tutorial"
+            isOpen={true}
+            onClose={() => {}}
+          />
+        </Wrapper>,
       );
 
       await waitFor(() => {
@@ -300,8 +327,12 @@ describe('Tutorial Integration Tests', () => {
     it('saves and restores tutorial progress', async () => {
       render(
         <Wrapper>
-          <TutorialSystem tutorialId="test-tutorial" isOpen={true} onClose={() => {}} />
-        </Wrapper>
+          <TutorialSystem
+            tutorialId="test-tutorial"
+            isOpen={true}
+            onClose={() => {}}
+          />
+        </Wrapper>,
       );
 
       await waitFor(() => {
@@ -312,8 +343,12 @@ describe('Tutorial Integration Tests', () => {
     it('shows tutorial completion when all steps are done', async () => {
       render(
         <Wrapper>
-          <TutorialSystem tutorialId="test-tutorial" isOpen={true} onClose={() => {}} />
-        </Wrapper>
+          <TutorialSystem
+            tutorialId="test-tutorial"
+            isOpen={true}
+            onClose={() => {}}
+          />
+        </Wrapper>,
       );
 
       await waitFor(() => {
@@ -327,10 +362,16 @@ describe('Tutorial Integration Tests', () => {
       render(
         <Wrapper>
           <div>
-            <TutorialSystem tutorialId="test-tutorial" isOpen={true} onClose={() => {}} />
-            <TutorialTooltip context={{ tutorialId: 'test-tutorial', stepId: 'step-1' }} />
+            <TutorialSystem
+              tutorialId="test-tutorial"
+              isOpen={true}
+              onClose={() => {}}
+            />
+            <TutorialTooltip
+              context={{ tutorialId: 'test-tutorial', stepId: 'step-1' }}
+            />
           </div>
-        </Wrapper>
+        </Wrapper>,
       );
 
       await waitFor(() => {
@@ -348,8 +389,10 @@ describe('Tutorial Integration Tests', () => {
     it('provides relevant recommendations based on tutorial context', async () => {
       render(
         <Wrapper>
-          <TutorialTooltip context={{ tutorialId: 'test-tutorial', stepId: 'step-1' }} />
-        </Wrapper>
+          <TutorialTooltip
+            context={{ tutorialId: 'test-tutorial', stepId: 'step-1' }}
+          />
+        </Wrapper>,
       );
 
       const tooltipTrigger = screen.getByLabelText('帮助');
@@ -363,8 +406,10 @@ describe('Tutorial Integration Tests', () => {
     it('searches help content effectively', async () => {
       render(
         <Wrapper>
-          <TutorialTooltip context={{ tutorialId: 'test-tutorial', stepId: 'step-1' }} />
-        </Wrapper>
+          <TutorialTooltip
+            context={{ tutorialId: 'test-tutorial', stepId: 'step-1' }}
+          />
+        </Wrapper>,
       );
 
       const tooltipTrigger = screen.getByLabelText('帮助');
@@ -380,8 +425,10 @@ describe('Tutorial Integration Tests', () => {
     it('integrates with tutorial context for personalized FAQs', async () => {
       render(
         <Wrapper>
-          <FAQSystem context={{ tutorialId: 'test-tutorial', userLevel: 'beginner' }} />
-        </Wrapper>
+          <FAQSystem
+            context={{ tutorialId: 'test-tutorial', userLevel: 'beginner' }}
+          />
+        </Wrapper>,
       );
 
       await waitFor(() => {
@@ -392,8 +439,10 @@ describe('Tutorial Integration Tests', () => {
     it('provides relevant FAQ content based on user level', async () => {
       render(
         <Wrapper>
-          <FAQSystem context={{ tutorialId: 'test-tutorial', userLevel: 'beginner' }} />
-        </Wrapper>
+          <FAQSystem
+            context={{ tutorialId: 'test-tutorial', userLevel: 'beginner' }}
+          />
+        </Wrapper>,
       );
 
       await waitFor(() => {
@@ -404,8 +453,10 @@ describe('Tutorial Integration Tests', () => {
     it('allows searching FAQs with results', async () => {
       render(
         <Wrapper>
-          <FAQSystem context={{ tutorialId: 'test-tutorial', userLevel: 'beginner' }} />
-        </Wrapper>
+          <FAQSystem
+            context={{ tutorialId: 'test-tutorial', userLevel: 'beginner' }}
+          />
+        </Wrapper>,
       );
 
       await waitFor(() => {
@@ -419,11 +470,19 @@ describe('Tutorial Integration Tests', () => {
       render(
         <Wrapper>
           <div>
-            <TutorialSystem tutorialId="test-tutorial" isOpen={true} onClose={() => {}} />
-            <TutorialTooltip context={{ tutorialId: 'test-tutorial', stepId: 'step-1' }} />
-            <FAQSystem context={{ tutorialId: 'test-tutorial', userLevel: 'beginner' }} />
+            <TutorialSystem
+              tutorialId="test-tutorial"
+              isOpen={true}
+              onClose={() => {}}
+            />
+            <TutorialTooltip
+              context={{ tutorialId: 'test-tutorial', stepId: 'step-1' }}
+            />
+            <FAQSystem
+              context={{ tutorialId: 'test-tutorial', userLevel: 'beginner' }}
+            />
           </div>
-        </Wrapper>
+        </Wrapper>,
       );
 
       await waitFor(() => {
@@ -436,10 +495,16 @@ describe('Tutorial Integration Tests', () => {
       render(
         <Wrapper>
           <div>
-            <TutorialSystem tutorialId="test-tutorial" isOpen={true} onClose={() => {}} />
-            <TutorialTooltip context={{ tutorialId: 'test-tutorial', stepId: 'step-1' }} />
+            <TutorialSystem
+              tutorialId="test-tutorial"
+              isOpen={true}
+              onClose={() => {}}
+            />
+            <TutorialTooltip
+              context={{ tutorialId: 'test-tutorial', stepId: 'step-1' }}
+            />
           </div>
-        </Wrapper>
+        </Wrapper>,
       );
 
       await waitFor(() => {
@@ -451,10 +516,16 @@ describe('Tutorial Integration Tests', () => {
       render(
         <Wrapper>
           <div>
-            <TutorialSystem tutorialId="test-tutorial" isOpen={true} onClose={() => {}} />
-            <TutorialTooltip context={{ tutorialId: 'test-tutorial', stepId: 'step-1' }} />
+            <TutorialSystem
+              tutorialId="test-tutorial"
+              isOpen={true}
+              onClose={() => {}}
+            />
+            <TutorialTooltip
+              context={{ tutorialId: 'test-tutorial', stepId: 'step-1' }}
+            />
           </div>
-        </Wrapper>
+        </Wrapper>,
       );
 
       await waitFor(() => {
@@ -467,8 +538,12 @@ describe('Tutorial Integration Tests', () => {
     it('handles errors gracefully in integrated environment', async () => {
       render(
         <Wrapper>
-          <TutorialSystem tutorialId="test-tutorial" isOpen={true} onClose={() => {}} />
-        </Wrapper>
+          <TutorialSystem
+            tutorialId="test-tutorial"
+            isOpen={true}
+            onClose={() => {}}
+          />
+        </Wrapper>,
       );
 
       await waitFor(() => {
@@ -479,8 +554,12 @@ describe('Tutorial Integration Tests', () => {
     it('manages loading states in integrated components', async () => {
       render(
         <Wrapper>
-          <TutorialSystem tutorialId="test-tutorial" isOpen={true} onClose={() => {}} />
-        </Wrapper>
+          <TutorialSystem
+            tutorialId="test-tutorial"
+            isOpen={true}
+            onClose={() => {}}
+          />
+        </Wrapper>,
       );
 
       await waitFor(() => {
@@ -494,11 +573,19 @@ describe('Tutorial Integration Tests', () => {
       render(
         <Wrapper>
           <div>
-            <TutorialSystem tutorialId="test-tutorial" isOpen={true} onClose={() => {}} />
-            <TutorialTooltip context={{ tutorialId: 'test-tutorial', stepId: 'step-1' }} />
-            <FAQSystem context={{ tutorialId: 'test-tutorial', userLevel: 'beginner' }} />
+            <TutorialSystem
+              tutorialId="test-tutorial"
+              isOpen={true}
+              onClose={() => {}}
+            />
+            <TutorialTooltip
+              context={{ tutorialId: 'test-tutorial', stepId: 'step-1' }}
+            />
+            <FAQSystem
+              context={{ tutorialId: 'test-tutorial', userLevel: 'beginner' }}
+            />
           </div>
-        </Wrapper>
+        </Wrapper>,
       );
 
       await waitFor(() => {
@@ -518,10 +605,16 @@ describe('Tutorial Integration Tests', () => {
       render(
         <Wrapper>
           <div>
-            <TutorialSystem tutorialId="test-tutorial" isOpen={true} onClose={() => {}} />
-            <TutorialTooltip context={{ tutorialId: 'test-tutorial', stepId: 'step-1' }} />
+            <TutorialSystem
+              tutorialId="test-tutorial"
+              isOpen={true}
+              onClose={() => {}}
+            />
+            <TutorialTooltip
+              context={{ tutorialId: 'test-tutorial', stepId: 'step-1' }}
+            />
           </div>
-        </Wrapper>
+        </Wrapper>,
       );
 
       await waitFor(() => {
@@ -536,10 +629,16 @@ describe('Tutorial Integration Tests', () => {
       render(
         <Wrapper>
           <div>
-            <TutorialSystem tutorialId="test-tutorial" isOpen={true} onClose={() => {}} />
-            <TutorialTooltip context={{ tutorialId: 'test-tutorial', stepId: 'step-1' }} />
+            <TutorialSystem
+              tutorialId="test-tutorial"
+              isOpen={true}
+              onClose={() => {}}
+            />
+            <TutorialTooltip
+              context={{ tutorialId: 'test-tutorial', stepId: 'step-1' }}
+            />
           </div>
-        </Wrapper>
+        </Wrapper>,
       );
 
       await waitFor(() => {

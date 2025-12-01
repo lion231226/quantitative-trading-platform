@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Loading } from '@/components/ui/loading';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
@@ -15,46 +21,44 @@ import {
 import { strategyAPI } from '@/lib/api';
 import { formatValidationErrors } from '@/lib/validation';
 import {
-  StrategyType,
   SingleMovingAverageParams,
+  StrategyParameterMeta,
   StrategyParams,
-  StrategyParameterMeta
+  StrategyType,
 } from '@/types/strategy';
 import { StrategyConfig } from '@/types/api';
 import {
   DEFAULT_STRATEGY_PARAMS,
   STRATEGY_PARAMETER_META,
   STRATEGY_PRESETS,
-  validateStrategyParams,
   formatParamValue,
   getParametersByCategory,
-  safeGetValue
+  safeGetValue,
+  validateStrategyParams,
 } from '@/utils/strategyParams';
-import {
-  STRATEGY_TYPES,
-  getStrategyConfig
-} from '@/constants/strategyTypes';
+import { STRATEGY_TYPES, getStrategyConfig } from '@/constants/strategyTypes';
 import { cn } from '@/lib/utils';
 import { ParameterInput } from './ParameterInput';
 import { StrategyTypeSelectorSimple } from './StrategyTypeSelectorSimple';
 
 interface StrategyFormProps {
-  onParamsChange: (strategyType: StrategyType, params: StrategyParams) => void
-  initialStrategyType?: StrategyType
-  initialParams?: StrategyParams
-  className?: string
+  onParamsChange: (strategyType: StrategyType, params: StrategyParams) => void;
+  initialStrategyType?: StrategyType;
+  initialParams?: StrategyParams;
+  className?: string;
 }
 
 export function StrategyForm({
   onParamsChange,
   initialStrategyType = 'single_ma',
   initialParams,
-  className
+  className,
 }: StrategyFormProps) {
   const [strategies, setStrategies] = useState<StrategyConfig[]>([]);
-  const [selectedStrategy, setSelectedStrategy] = useState<StrategyType>(initialStrategyType);
+  const [selectedStrategy, setSelectedStrategy] =
+    useState<StrategyType>(initialStrategyType);
   const [params, setParams] = useState<SingleMovingAverageParams>(
-    initialParams || DEFAULT_STRATEGY_PARAMS
+    initialParams || DEFAULT_STRATEGY_PARAMS,
   );
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState<string[]>([]);
@@ -82,7 +86,10 @@ export function StrategyForm({
     }
   };
 
-  const handleParamChange = (key: keyof SingleMovingAverageParams, value: any) => {
+  const handleParamChange = (
+    key: keyof SingleMovingAverageParams,
+    value: any,
+  ) => {
     const newParams = { ...params, [key]: value };
     setParams(newParams);
 
@@ -112,7 +119,10 @@ export function StrategyForm({
     setErrors([]);
   };
 
-  const handleQuickParam = (key: keyof SingleMovingAverageParams, value: any) => {
+  const handleQuickParam = (
+    key: keyof SingleMovingAverageParams,
+    value: any,
+  ) => {
     handleParamChange(key, value);
   };
 
@@ -152,11 +162,14 @@ export function StrategyForm({
         {selectedStrategy === 'single_ma' && (
           <div>
             <label className="text-sm font-medium mb-2 block">策略预设</label>
-            <Select value="custom" onValueChange={(value) => {
-              if (value !== "custom") {
-                handlePresetSelect(value as keyof typeof STRATEGY_PRESETS);
-              }
-            }}>
+            <Select
+              value="custom"
+              onValueChange={(value) => {
+                if (value !== 'custom') {
+                  handlePresetSelect(value as keyof typeof STRATEGY_PRESETS);
+                }
+              }}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="选择策略预设" />
               </SelectTrigger>
@@ -215,9 +228,12 @@ export function StrategyForm({
         ) : (
           <Alert>
             <AlertDescription>
-              {selectedStrategy === 'dual_ma' && '双均线策略正在开发中，敬请期待！将支持快慢双均线交叉策略配置。'}
-              {selectedStrategy === 'rsi' && 'RSI策略正在开发中，敬请期待！将支持RSI超买超卖策略配置。'}
-              {selectedStrategy === 'macd' && 'MACD策略正在实验阶段，敬请期待！将支持MACD动量策略配置。'}
+              {selectedStrategy === 'dual_ma' &&
+                '双均线策略正在开发中，敬请期待！将支持快慢双均线交叉策略配置。'}
+              {selectedStrategy === 'rsi' &&
+                'RSI策略正在开发中，敬请期待！将支持RSI超买超卖策略配置。'}
+              {selectedStrategy === 'macd' &&
+                'MACD策略正在实验阶段，敬请期待！将支持MACD动量策略配置。'}
             </AlertDescription>
           </Alert>
         )}
@@ -226,11 +242,21 @@ export function StrategyForm({
         <div className="text-sm text-muted-foreground p-3 bg-muted rounded-md">
           <div className="font-medium mb-2">当前参数摘要:</div>
           <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
-            <div>均线周期: {params.ma_period || 20}天 ({params.ma_type || 'SMA'})</div>
-            <div>初始资金: ¥{(params.initial_capital || 100000).toLocaleString()}</div>
-            <div>止损: {((params.stop_loss_pct || 0.02) * 100).toFixed(1)}%</div>
-            <div>止盈: {((params.take_profit_pct || 0.05) * 100).toFixed(1)}%</div>
-            <div>最大仓位: {((params.max_position_size || 1.0) * 100).toFixed(0)}%</div>
+            <div>
+              均线周期: {params.ma_period || 20}天 ({params.ma_type || 'SMA'})
+            </div>
+            <div>
+              初始资金: ¥{(params.initial_capital || 100000).toLocaleString()}
+            </div>
+            <div>
+              止损: {((params.stop_loss_pct || 0.02) * 100).toFixed(1)}%
+            </div>
+            <div>
+              止盈: {((params.take_profit_pct || 0.05) * 100).toFixed(1)}%
+            </div>
+            <div>
+              最大仓位: {((params.max_position_size || 1.0) * 100).toFixed(0)}%
+            </div>
             <div>确认周期: {params.confirmation_periods || 1}天</div>
             <div>每日信号: {params.max_signals_per_day || 10}个</div>
             <div>冷却时间: {params.signal_cooldown || 300}秒</div>
@@ -241,7 +267,9 @@ export function StrategyForm({
         {errors.length > 0 && (
           <div className="text-sm text-red-600 p-3 bg-red-50 border border-red-200 rounded-md">
             <div className="font-medium mb-1">参数验证失败:</div>
-            <div className="whitespace-pre-line">{formatValidationErrors(errors)}</div>
+            <div className="whitespace-pre-line">
+              {formatValidationErrors(errors)}
+            </div>
           </div>
         )}
 

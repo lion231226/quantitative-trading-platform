@@ -1,17 +1,17 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  Monitor,
-  Tablet,
-  Smartphone,
-  Maximize2,
-  Minimize2,
-  RotateCw,
   Eye,
   EyeOff,
+  Maximize2,
+  Minimize2,
+  Monitor,
+  RotateCw,
   Settings,
-  X
+  Smartphone,
+  Tablet,
+  X,
 } from 'lucide-react';
 
 // 响应式断点
@@ -67,7 +67,9 @@ interface ResponsiveTutorialContainerProps {
   maxWidth?: string;
 }
 
-const ResponsiveTutorialContainer: React.FC<ResponsiveTutorialContainerProps> = ({
+const ResponsiveTutorialContainer: React.FC<
+  ResponsiveTutorialContainerProps
+> = ({
   children,
   customBreakpoints = {},
   showControls = true,
@@ -101,78 +103,101 @@ const ResponsiveTutorialContainer: React.FC<ResponsiveTutorialContainerProps> = 
   const breakpoints = { ...BREAKPOINTS, ...customBreakpoints };
 
   // 检测设备类型
-  const detectDeviceType = useCallback((width: number): DeviceType => {
-    if (width < breakpoints.mobile) return 'mobile';
-    if (width < breakpoints.tablet) return 'tablet';
-    if (width < breakpoints.desktop) return 'desktop';
-    return 'large';
-  }, [breakpoints]);
+  const detectDeviceType = useCallback(
+    (width: number): DeviceType => {
+      if (width < breakpoints.mobile) return 'mobile';
+      if (width < breakpoints.tablet) return 'tablet';
+      if (width < breakpoints.desktop) return 'desktop';
+      return 'large';
+    },
+    [breakpoints],
+  );
 
   // 检测屏幕方向
-  const detectOrientation = useCallback((width: number, height: number): Orientation => {
-    return width > height ? 'landscape' : 'portrait';
-  }, []);
+  const detectOrientation = useCallback(
+    (width: number, height: number): Orientation => {
+      return width > height ? 'landscape' : 'portrait';
+    },
+    [],
+  );
 
   // 检测触摸能力
-  const detectTouchCapabilities = useCallback((): { enabled: boolean; mode: TouchMode } => {
-    const touchEnabled = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    const touchMode: TouchMode = touchEnabled ?
-      (window.matchMedia('(pointer: coarse)').matches ? 'touch' : 'hybrid') : 'mouse';
+  const detectTouchCapabilities = useCallback((): {
+    enabled: boolean;
+    mode: TouchMode;
+  } => {
+    const touchEnabled =
+      'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const touchMode: TouchMode = touchEnabled
+      ? window.matchMedia('(pointer: coarse)').matches
+        ? 'touch'
+        : 'hybrid'
+      : 'mouse';
 
     return { enabled: touchEnabled, mode: touchMode };
   }, []);
 
   // 计算最佳布局模式
-  const calculateOptimalLayout = useCallback((
-    deviceType: DeviceType,
-    orientation: Orientation,
-    touchMode: TouchMode
-  ): LayoutMode => {
-    if (!autoLayout) return config.layoutMode;
+  const calculateOptimalLayout = useCallback(
+    (
+      deviceType: DeviceType,
+      orientation: Orientation,
+      touchMode: TouchMode,
+    ): LayoutMode => {
+      if (!autoLayout) return config.layoutMode;
 
-    // 移动设备优先使用紧凑布局
-    if (deviceType === 'mobile') {
-      return orientation === 'portrait' ? 'compact' : 'standard';
-    }
-
-    // 平板设备根据方向和触摸模式调整
-    if (deviceType === 'tablet') {
-      if (touchMode === 'touch') {
-        return orientation === 'landscape' ? 'standard' : 'compact';
+      // 移动设备优先使用紧凑布局
+      if (deviceType === 'mobile') {
+        return orientation === 'portrait' ? 'compact' : 'standard';
       }
-      return 'standard';
-    }
 
-    // 桌面设备使用标准或宽松布局
-    if (deviceType === 'desktop') {
-      return 'standard';
-    }
+      // 平板设备根据方向和触摸模式调整
+      if (deviceType === 'tablet') {
+        if (touchMode === 'touch') {
+          return orientation === 'landscape' ? 'standard' : 'compact';
+        }
+        return 'standard';
+      }
 
-    // 大屏设备使用宽松布局
-    return 'spacious';
-  }, [autoLayout, config.layoutMode]);
+      // 桌面设备使用标准或宽松布局
+      if (deviceType === 'desktop') {
+        return 'standard';
+      }
+
+      // 大屏设备使用宽松布局
+      return 'spacious';
+    },
+    [autoLayout, config.layoutMode],
+  );
 
   // 计算最佳字体大小
-  const calculateOptimalFontSize = useCallback((
-    deviceType: DeviceType,
-    screenWidth: number
-  ): 'small' | 'medium' | 'large' => {
-    if (deviceType === 'mobile') return 'small';
-    if (deviceType === 'tablet') return screenWidth < 900 ? 'small' : 'medium';
-    if (deviceType === 'large') return 'large';
-    return 'medium';
-  }, []);
+  const calculateOptimalFontSize = useCallback(
+    (
+      deviceType: DeviceType,
+      screenWidth: number,
+    ): 'small' | 'medium' | 'large' => {
+      if (deviceType === 'mobile') return 'small';
+      if (deviceType === 'tablet')
+        return screenWidth < 900 ? 'small' : 'medium';
+      if (deviceType === 'large') return 'large';
+      return 'medium';
+    },
+    [],
+  );
 
   // 计算最佳间距
-  const calculateOptimalSpacing = useCallback((
-    deviceType: DeviceType,
-    layoutMode: LayoutMode
-  ): 'compact' | 'normal' | 'relaxed' => {
-    if (deviceType === 'mobile') return 'compact';
-    if (layoutMode === 'spacious') return 'relaxed';
-    if (layoutMode === 'compact') return 'compact';
-    return 'normal';
-  }, []);
+  const calculateOptimalSpacing = useCallback(
+    (
+      deviceType: DeviceType,
+      layoutMode: LayoutMode,
+    ): 'compact' | 'normal' | 'relaxed' => {
+      if (deviceType === 'mobile') return 'compact';
+      if (layoutMode === 'spacious') return 'relaxed';
+      if (layoutMode === 'compact') return 'compact';
+      return 'normal';
+    },
+    [],
+  );
 
   // 更新响应式配置
   const updateConfig = useCallback(() => {
@@ -184,13 +209,20 @@ const ResponsiveTutorialContainer: React.FC<ResponsiveTutorialContainerProps> = 
 
     const deviceType = detectDeviceType(screenWidth);
     const orientation = detectOrientation(screenWidth, screenHeight);
-    const { enabled: touchEnabled, mode: touchMode } = detectTouchCapabilities();
-    const layoutMode = calculateOptimalLayout(deviceType, orientation, touchMode);
+    const { enabled: touchEnabled, mode: touchMode } =
+      detectTouchCapabilities();
+    const layoutMode = calculateOptimalLayout(
+      deviceType,
+      orientation,
+      touchMode,
+    );
     const fontSize = calculateOptimalFontSize(deviceType, screenWidth);
     const spacing = calculateOptimalSpacing(deviceType, layoutMode);
 
     // 检测用户偏好
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const prefersReducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
     const prefersHighDensity = window.matchMedia('(resolution: 2dppx)').matches;
 
     const newConfig: ResponsiveConfig = {
@@ -250,7 +282,7 @@ const ResponsiveTutorialContainer: React.FC<ResponsiveTutorialContainerProps> = 
       window.matchMedia('(resolution: 2dppx)'),
     ];
 
-    mediaQueries.forEach(mq => {
+    mediaQueries.forEach((mq) => {
       mq.addEventListener('change', updateConfig);
     });
 
@@ -267,7 +299,7 @@ const ResponsiveTutorialContainer: React.FC<ResponsiveTutorialContainerProps> = 
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('orientationchange', handleOrientationChange);
 
-      mediaQueries.forEach(mq => {
+      mediaQueries.forEach((mq) => {
         mq.removeEventListener('change', updateConfig);
       });
 
@@ -332,13 +364,19 @@ const ResponsiveTutorialContainer: React.FC<ResponsiveTutorialContainerProps> = 
     if (!showControls) return null;
 
     return (
-      <div className={`fixed top-4 right-4 z-50 transition-all duration-300 ${
-        isControlsOpen ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-2'
-      }`}>
+      <div
+        className={`fixed top-4 right-4 z-50 transition-all duration-300 ${
+          isControlsOpen
+            ? 'opacity-100 translate-x-0'
+            : 'opacity-0 translate-x-2'
+        }`}
+      >
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 min-w-[280px]">
           {/* Header */}
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-gray-900 dark:text-white">响应式控制</h3>
+            <h3 className="font-semibold text-gray-900 dark:text-white">
+              响应式控制
+            </h3>
             <button
               onClick={() => setIsControlsOpen(false)}
               className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
@@ -352,14 +390,26 @@ const ResponsiveTutorialContainer: React.FC<ResponsiveTutorialContainerProps> = 
             <div className="flex items-center justify-between text-sm">
               <span className="text-gray-600 dark:text-gray-400">设备类型</span>
               <div className="flex items-center gap-1">
-                {config.deviceType === 'mobile' && <Smartphone className="w-4 h-4" />}
-                {config.deviceType === 'tablet' && <Tablet className="w-4 h-4" />}
-                {config.deviceType === 'desktop' && <Monitor className="w-4 h-4" />}
-                {config.deviceType === 'large' && <Monitor className="w-4 h-4" />}
+                {config.deviceType === 'mobile' && (
+                  <Smartphone className="w-4 h-4" />
+                )}
+                {config.deviceType === 'tablet' && (
+                  <Tablet className="w-4 h-4" />
+                )}
+                {config.deviceType === 'desktop' && (
+                  <Monitor className="w-4 h-4" />
+                )}
+                {config.deviceType === 'large' && (
+                  <Monitor className="w-4 h-4" />
+                )}
                 <span className="font-medium text-gray-900 dark:text-white">
-                  {config.deviceType === 'mobile' ? '手机' :
-                   config.deviceType === 'tablet' ? '平板' :
-                   config.deviceType === 'desktop' ? '桌面' : '大屏'}
+                  {config.deviceType === 'mobile'
+                    ? '手机'
+                    : config.deviceType === 'tablet'
+                      ? '平板'
+                      : config.deviceType === 'desktop'
+                        ? '桌面'
+                        : '大屏'}
                 </span>
               </div>
             </div>
@@ -381,8 +431,11 @@ const ResponsiveTutorialContainer: React.FC<ResponsiveTutorialContainerProps> = 
             <div className="flex items-center justify-between text-sm">
               <span className="text-gray-600 dark:text-gray-400">触摸模式</span>
               <span className="font-medium text-gray-900 dark:text-white">
-                {config.touchMode === 'touch' ? '触摸' :
-                 config.touchMode === 'mouse' ? '鼠标' : '混合'}
+                {config.touchMode === 'touch'
+                  ? '触摸'
+                  : config.touchMode === 'mouse'
+                    ? '鼠标'
+                    : '混合'}
               </span>
             </div>
           </div>
@@ -393,10 +446,12 @@ const ResponsiveTutorialContainer: React.FC<ResponsiveTutorialContainerProps> = 
               <span className="text-gray-600 dark:text-gray-400">布局模式</span>
               <select
                 value={config.layoutMode}
-                onChange={(e) => setConfig(prev => ({
-                  ...prev,
-                  layoutMode: e.target.value as LayoutMode
-                }))}
+                onChange={(e) =>
+                  setConfig((prev) => ({
+                    ...prev,
+                    layoutMode: e.target.value as LayoutMode,
+                  }))
+                }
                 className="px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="compact">紧凑</option>
@@ -410,10 +465,12 @@ const ResponsiveTutorialContainer: React.FC<ResponsiveTutorialContainerProps> = 
               <span className="text-gray-600 dark:text-gray-400">字体大小</span>
               <select
                 value={config.fontSize}
-                onChange={(e) => setConfig(prev => ({
-                  ...prev,
-                  fontSize: e.target.value as 'small' | 'medium' | 'large'
-                }))}
+                onChange={(e) =>
+                  setConfig((prev) => ({
+                    ...prev,
+                    fontSize: e.target.value as 'small' | 'medium' | 'large',
+                  }))
+                }
                 className="px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="small">小</option>
@@ -426,10 +483,12 @@ const ResponsiveTutorialContainer: React.FC<ResponsiveTutorialContainerProps> = 
               <span className="text-gray-600 dark:text-gray-400">间距</span>
               <select
                 value={config.spacing}
-                onChange={(e) => setConfig(prev => ({
-                  ...prev,
-                  spacing: e.target.value as 'compact' | 'normal' | 'relaxed'
-                }))}
+                onChange={(e) =>
+                  setConfig((prev) => ({
+                    ...prev,
+                    spacing: e.target.value as 'compact' | 'normal' | 'relaxed',
+                  }))
+                }
                 className="px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="compact">紧凑</option>
@@ -441,10 +500,12 @@ const ResponsiveTutorialContainer: React.FC<ResponsiveTutorialContainerProps> = 
             <div className="flex items-center justify-between text-sm">
               <span className="text-gray-600 dark:text-gray-400">动画</span>
               <button
-                onClick={() => setConfig(prev => ({
-                  ...prev,
-                  animations: !prev.animations
-                }))}
+                onClick={() =>
+                  setConfig((prev) => ({
+                    ...prev,
+                    animations: !prev.animations,
+                  }))
+                }
                 className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
                   config.animations ? 'bg-blue-600' : 'bg-gray-200'
                 }`}
@@ -464,7 +525,11 @@ const ResponsiveTutorialContainer: React.FC<ResponsiveTutorialContainerProps> = 
               onClick={toggleFullscreen}
               className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
             >
-              {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+              {isFullscreen ? (
+                <Minimize2 className="w-4 h-4" />
+              ) : (
+                <Maximize2 className="w-4 h-4" />
+              )}
               {isFullscreen ? '退出全屏' : '全屏'}
             </button>
             <button
@@ -515,28 +580,58 @@ const ResponsiveTutorialContainer: React.FC<ResponsiveTutorialContainerProps> = 
             --scale-factor: ${Math.min(config.screenWidth / 1920, 1)};
 
             /* Font size variables */
-            --font-size-xs: ${config.fontSize === 'small' ? '0.75rem' :
-                             config.fontSize === 'large' ? '0.875rem' : '0.8125rem'};
-            --font-size-sm: ${config.fontSize === 'small' ? '0.875rem' :
-                             config.fontSize === 'large' ? '1rem' : '0.9375rem'};
-            --font-size-base: ${config.fontSize === 'small' ? '1rem' :
-                               config.fontSize === 'large' ? '1.125rem' : '1.0625rem'};
-            --font-size-lg: ${config.fontSize === 'small' ? '1.125rem' :
-                             config.fontSize === 'large' ? '1.25rem' : '1.1875rem'};
-            --font-size-xl: ${config.fontSize === 'small' ? '1.25rem' :
-                             config.fontSize === 'large' ? '1.5rem' : '1.375rem'};
+            --font-size-xs: ${config.fontSize === 'small'
+              ? '0.75rem'
+              : config.fontSize === 'large'
+                ? '0.875rem'
+                : '0.8125rem'};
+            --font-size-sm: ${config.fontSize === 'small'
+              ? '0.875rem'
+              : config.fontSize === 'large'
+                ? '1rem'
+                : '0.9375rem'};
+            --font-size-base: ${config.fontSize === 'small'
+              ? '1rem'
+              : config.fontSize === 'large'
+                ? '1.125rem'
+                : '1.0625rem'};
+            --font-size-lg: ${config.fontSize === 'small'
+              ? '1.125rem'
+              : config.fontSize === 'large'
+                ? '1.25rem'
+                : '1.1875rem'};
+            --font-size-xl: ${config.fontSize === 'small'
+              ? '1.25rem'
+              : config.fontSize === 'large'
+                ? '1.5rem'
+                : '1.375rem'};
 
             /* Spacing variables */
-            --spacing-xs: ${config.spacing === 'compact' ? '0.25rem' :
-                          config.spacing === 'relaxed' ? '0.5rem' : '0.375rem'};
-            --spacing-sm: ${config.spacing === 'compact' ? '0.5rem' :
-                          config.spacing === 'relaxed' ? '1rem' : '0.75rem'};
-            --spacing-md: ${config.spacing === 'compact' ? '0.75rem' :
-                          config.spacing === 'relaxed' ? '1.5rem' : '1rem'};
-            --spacing-lg: ${config.spacing === 'compact' ? '1rem' :
-                          config.spacing === 'relaxed' ? '2rem' : '1.5rem'};
-            --spacing-xl: ${config.spacing === 'compact' ? '1.5rem' :
-                          config.spacing === 'relaxed' ? '3rem' : '2rem'};
+            --spacing-xs: ${config.spacing === 'compact'
+              ? '0.25rem'
+              : config.spacing === 'relaxed'
+                ? '0.5rem'
+                : '0.375rem'};
+            --spacing-sm: ${config.spacing === 'compact'
+              ? '0.5rem'
+              : config.spacing === 'relaxed'
+                ? '1rem'
+                : '0.75rem'};
+            --spacing-md: ${config.spacing === 'compact'
+              ? '0.75rem'
+              : config.spacing === 'relaxed'
+                ? '1.5rem'
+                : '1rem'};
+            --spacing-lg: ${config.spacing === 'compact'
+              ? '1rem'
+              : config.spacing === 'relaxed'
+                ? '2rem'
+                : '1.5rem'};
+            --spacing-xl: ${config.spacing === 'compact'
+              ? '1.5rem'
+              : config.spacing === 'relaxed'
+                ? '3rem'
+                : '2rem'};
 
             /* Animation variables */
             --animation-duration: ${config.reducedMotion ? '0.01ms' : '300ms'};
@@ -624,14 +719,13 @@ const ResponsiveTutorialContainer: React.FC<ResponsiveTutorialContainerProps> = 
         `}</style>
 
         {/* Content */}
-        <div className="tutorial-content w-full h-full">
-          {children}
-        </div>
+        <div className="tutorial-content w-full h-full">{children}</div>
 
         {/* Responsive Indicator (for development) */}
         {process.env.NODE_ENV === 'development' && (
           <div className="fixed bottom-4 left-4 bg-black/75 text-white text-xs px-2 py-1 rounded z-50">
-            {config.deviceType} • {config.orientation} • {config.screenWidth}×{config.screenHeight}
+            {config.deviceType} • {config.orientation} • {config.screenWidth}×
+            {config.screenHeight}
           </div>
         )}
       </div>

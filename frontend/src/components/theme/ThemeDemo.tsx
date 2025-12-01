@@ -1,36 +1,40 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import { ThemeProvider, useTheme } from './ThemeProvider'
-import { MarketModeSelector } from './MarketModeSelector'
-import { ThemeController } from './ThemeController'
-import { ColorblindHelper } from './ColorblindHelper'
-import { ColorPicker } from './ColorPicker'
-import { ThemedKlineChart } from '../charts'
-import { generateMockKlineData } from '../../utils/klineHelpers'
+import React, { useState } from 'react';
+import { ThemeProvider, useTheme } from './ThemeProvider';
+import { MarketModeSelector } from './MarketModeSelector';
+import { ThemeController } from './ThemeController';
+import { ColorblindHelper } from './ColorblindHelper';
+import { ColorPicker } from './ColorPicker';
+import { ThemedKlineChart } from '../charts';
+import { generateMockKlineData } from '../../utils/klineHelpers';
 
 interface ThemeDemoProps {
-  className?: string
+  className?: string;
 }
 
 /**
  * 主题系统演示组件
  * 展示完整的主题切换、市场模式、色盲辅助和自定义颜色功能
  */
-export const ThemeDemoContent: React.FC<ThemeDemoProps> = ({ className = '' }) => {
-  const { currentTheme, setThemeMode, exportThemes } = useTheme()
-  const [activeTab, setActiveTab] = useState<'market' | 'theme' | 'colorblind' | 'custom'>('market')
+export const ThemeDemoContent: React.FC<ThemeDemoProps> = ({
+  className = '',
+}) => {
+  const { currentTheme, setThemeMode, exportThemes } = useTheme();
+  const [activeTab, setActiveTab] = useState<
+    'market' | 'theme' | 'colorblind' | 'custom'
+  >('market');
 
   // 生成模拟数据
-  const mockKlineData = generateMockKlineData(100)
+  const mockKlineData = generateMockKlineData(100);
 
   // 标签页配置
   const tabs = [
     { id: 'market' as const, label: '市场模式', icon: '🌍' },
     { id: 'theme' as const, label: '主题切换', icon: '🎨' },
     { id: 'colorblind' as const, label: '色盲辅助', icon: '👁️' },
-    { id: 'custom' as const, label: '自定义颜色', icon: '🎯' }
-  ]
+    { id: 'custom' as const, label: '自定义颜色', icon: '🎯' },
+  ];
 
   return (
     <div className={`theme-demo ${className}`}>
@@ -53,8 +57,12 @@ export const ThemeDemoContent: React.FC<ThemeDemoProps> = ({ className = '' }) =
                 当前主题: {currentTheme.name}
               </h2>
               <p className="text-sm text-gray-600">
-                市场模式: {currentTheme.marketMode === 'chinese' ? '中国市场 (红涨绿跌)' : '国际市场 (绿涨红跌)'}
-                {currentTheme.colorblindMode !== 'none' && ` | 色盲模式: ${currentTheme.colorblindMode}`}
+                市场模式:{' '}
+                {currentTheme.marketMode === 'chinese'
+                  ? '中国市场 (红涨绿跌)'
+                  : '国际市场 (绿涨红跌)'}
+                {currentTheme.colorblindMode !== 'none' &&
+                  ` | 色盲模式: ${currentTheme.colorblindMode}`}
               </p>
             </div>
             <div className="flex items-center space-x-4">
@@ -105,7 +113,10 @@ export const ThemeDemoContent: React.FC<ThemeDemoProps> = ({ className = '' }) =
                 <MarketModeSelector showLabel={true} variant="detailed" />
               )}
               {activeTab === 'theme' && (
-                <ThemeController showMarketMode={false} showColorblindMode={false} />
+                <ThemeController
+                  showMarketMode={false}
+                  showColorblindMode={false}
+                />
               )}
               {activeTab === 'colorblind' && (
                 <ColorblindHelper showPreview={true} showControls={true} />
@@ -137,7 +148,9 @@ export const ThemeDemoContent: React.FC<ThemeDemoProps> = ({ className = '' }) =
               {/* 主题特性说明 */}
               <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                  <h4 className="text-sm font-semibold text-green-800 mb-2">✅ 已实现功能</h4>
+                  <h4 className="text-sm font-semibold text-green-800 mb-2">
+                    ✅ 已实现功能
+                  </h4>
                   <ul className="text-sm text-green-700 space-y-1">
                     <li>• 中国市场模式（红涨绿跌）</li>
                     <li>• 国际市场模式（绿涨红跌）</li>
@@ -148,7 +161,9 @@ export const ThemeDemoContent: React.FC<ThemeDemoProps> = ({ className = '' }) =
                   </ul>
                 </div>
                 <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <h4 className="text-sm font-semibold text-blue-800 mb-2">🔧 技术特性</h4>
+                  <h4 className="text-sm font-semibold text-blue-800 mb-2">
+                    🔧 技术特性
+                  </h4>
                   <ul className="text-sm text-blue-700 space-y-1">
                     <li>• React Context 状态管理</li>
                     <li>• TypeScript 类型安全</li>
@@ -189,8 +204,8 @@ export const ThemeDemoContent: React.FC<ThemeDemoProps> = ({ className = '' }) =
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 /**
  * 带主题提供者的完整演示组件
@@ -200,7 +215,7 @@ export const ThemeDemo: React.FC<ThemeDemoProps> = (props) => {
     <ThemeProvider>
       <ThemeDemoContent {...props} />
     </ThemeProvider>
-  )
-}
+  );
+};
 
-export default ThemeDemo
+export default ThemeDemo;

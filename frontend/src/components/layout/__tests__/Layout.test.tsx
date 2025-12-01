@@ -33,7 +33,9 @@ describe('Layout Component', () => {
       </Layout>,
     );
 
-    expect(screen.getByText(/Built with Next.js, FastAPI, and Tailwind CSS/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Built with Next.js, FastAPI, and Tailwind CSS/),
+    ).toBeInTheDocument();
   });
 
   it('navigation elements are clickable buttons', () => {

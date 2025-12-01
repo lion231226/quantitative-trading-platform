@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { PerformanceMetrics } from '@/types/performance.types';
 
 /**
@@ -9,7 +9,7 @@ import { PerformanceMetrics } from '@/types/performance.types';
 export function debounce<T extends (...args: any[]) => any>(
   func: T,
   wait: number,
-  immediate = false
+  immediate = false,
 ): (...args: Parameters<T>) => void {
   let timeout: NodeJS.Timeout | null = null;
 
@@ -31,7 +31,7 @@ export function debounce<T extends (...args: any[]) => any>(
 // 节流函数
 export function throttle<T extends (...args: any[]) => any>(
   func: T,
-  limit: number
+  limit: number,
 ): (...args: Parameters<T>) => void {
   let inThrottle: boolean;
 
@@ -39,7 +39,7 @@ export function throttle<T extends (...args: any[]) => any>(
     if (!inThrottle) {
       func.apply(this, args);
       inThrottle = true;
-      setTimeout(() => inThrottle = false, limit);
+      setTimeout(() => (inThrottle = false), limit);
     }
   };
 }
@@ -59,7 +59,7 @@ export function deepEqual(obj1: any, obj2: any): boolean {
 
   if (keys1.length !== keys2.length) return false;
 
-  for (let key of keys1) {
+  for (const key of keys1) {
     if (!keys2.includes(key)) return false;
     if (!deepEqual(obj1[key], obj2[key])) return false;
   }
@@ -68,13 +68,19 @@ export function deepEqual(obj1: any, obj2: any): boolean {
 }
 
 // 内存使用监控
-export function getMemoryUsage(): { used: number; total: number; percentage: number } | null {
+export function getMemoryUsage(): {
+  used: number;
+  total: number;
+  percentage: number;
+} | null {
   if ('memory' in performance) {
     const memory = (performance as any).memory;
     return {
       used: Math.round(memory.usedJSHeapSize / 1048576), // MB
       total: Math.round(memory.totalJSHeapSize / 1048576), // MB
-      percentage: Math.round((memory.usedJSHeapSize / memory.jsHeapSizeLimit) * 100),
+      percentage: Math.round(
+        (memory.usedJSHeapSize / memory.jsHeapSizeLimit) * 100,
+      ),
     };
   }
   return null;
@@ -90,14 +96,24 @@ export function analyzePagePerformance(): {
 } | null {
   if (!('performance' in window)) return null;
 
-  const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+  const navigation = performance.getEntriesByType(
+    'navigation',
+  )[0] as PerformanceNavigationTiming;
   const paintEntries = performance.getEntriesByType('paint');
 
-  const domContentLoaded = navigation ? navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart : 0;
-  const loadComplete = navigation ? navigation.loadEventEnd - navigation.loadEventStart : 0;
+  const domContentLoaded = navigation
+    ? navigation.domContentLoadedEventEnd -
+      navigation.domContentLoadedEventStart
+    : 0;
+  const loadComplete = navigation
+    ? navigation.loadEventEnd - navigation.loadEventStart
+    : 0;
 
-  const firstPaint = paintEntries.find(entry => entry.name === 'first-paint')?.startTime || 0;
-  const firstContentfulPaint = paintEntries.find(entry => entry.name === 'first-contentful-paint')?.startTime || 0;
+  const firstPaint =
+    paintEntries.find((entry) => entry.name === 'first-paint')?.startTime || 0;
+  const firstContentfulPaint =
+    paintEntries.find((entry) => entry.name === 'first-contentful-paint')
+      ?.startTime || 0;
 
   // 获取LCP需要PerformanceObserver
   let largestContentfulPaint = 0;
@@ -134,7 +150,7 @@ export function formatFileSize(bytes: number): string {
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 }
 
 // 格式化时间
@@ -173,7 +189,10 @@ export function getDeviceInfo(): {
   screenResolution: string;
 } {
   const userAgent = navigator.userAgent.toLowerCase();
-  const isMobile = /mobile|android|iphone|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+  const isMobile =
+    /mobile|android|iphone|ipod|blackberry|iemobile|opera mini/i.test(
+      userAgent,
+    );
   const isTablet = /ipad|android(?!.*mobile)/i.test(userAgent);
   const isDesktop = !isMobile && !isTablet;
 
@@ -221,9 +240,13 @@ export function getBrowserInfo(): {
 
 // 缓存管理
 export class CacheManager<T = any> {
-  private cache = new Map<string, { data: T; timestamp: number; ttl: number }>();
+  private cache = new Map<
+    string,
+    { data: T; timestamp: number; ttl: number }
+  >();
 
-  set(key: string, data: T, ttl: number = 300000): void { // 默认5分钟
+  set(key: string, data: T, ttl: number = 300000): void {
+    // 默认5分钟
     this.cache.set(key, {
       data,
       timestamp: Date.now(),
@@ -276,22 +299,25 @@ export class LazyLoadObserver {
   private callbacks = new Map<Element, () => void>();
 
   constructor(options: IntersectionObserverInit = {}) {
-    this.observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const callback = this.callbacks.get(entry.target);
-          if (callback) {
-            callback();
-            this.observer.unobserve(entry.target);
-            this.callbacks.delete(entry.target);
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const callback = this.callbacks.get(entry.target);
+            if (callback) {
+              callback();
+              this.observer.unobserve(entry.target);
+              this.callbacks.delete(entry.target);
+            }
           }
-        }
-      });
-    }, {
-      rootMargin: '50px',
-      threshold: 0.1,
-      ...options,
-    });
+        });
+      },
+      {
+        rootMargin: '50px',
+        threshold: 0.1,
+        ...options,
+      },
+    );
   }
 
   observe(element: Element, callback: () => void): void {
@@ -346,11 +372,10 @@ export class RequestQueue {
       if (request) {
         this.currentRequests++;
 
-        request()
-          .finally(() => {
-            this.currentRequests--;
-            this.process();
-          });
+        request().finally(() => {
+          this.currentRequests--;
+          this.process();
+        });
       }
     }
 
@@ -374,7 +399,10 @@ export class RequestQueue {
 export function useMemoWithCompare<T>(
   factory: () => T,
   deps: React.DependencyList,
-  compareFn?: (prevDeps: React.DependencyList, nextDeps: React.DependencyList) => boolean
+  compareFn?: (
+    prevDeps: React.DependencyList,
+    nextDeps: React.DependencyList,
+  ) => boolean,
 ): T {
   const ref = useRef<{ deps: React.DependencyList; value: T }>();
 
@@ -391,7 +419,7 @@ export function useMemoWithCompare<T>(
 export function useDebouncedCallback<T extends (...args: any[]) => any>(
   callback: T,
   delay: number,
-  deps: React.DependencyList = []
+  deps: React.DependencyList = [],
 ): T {
   const callbackRef = useRef(callback);
   const timeoutRef = useRef<NodeJS.Timeout>();
@@ -417,7 +445,7 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
 export function useThrottledCallback<T extends (...args: any[]) => any>(
   callback: T,
   delay: number,
-  deps: React.DependencyList = []
+  deps: React.DependencyList = [],
 ): T {
   const callbackRef = useRef(callback);
   const lastRun = useRef(Date.now());

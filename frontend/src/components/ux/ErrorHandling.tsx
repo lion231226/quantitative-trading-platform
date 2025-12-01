@@ -1,6 +1,13 @@
 'use client';
 
-import React, { memo, useMemo, useCallback, useRef, useEffect, useState } from 'react';
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -25,8 +32,16 @@ export type ErrorType =
 // 增强的错误边界组件
 interface EnhancedErrorBoundaryProps {
   children: React.ReactNode;
-  fallback?: React.ComponentType<{ error: Error; errorInfo: React.ErrorInfo; reset: () => void }>;
-  onError?: (error: Error, errorInfo: React.ErrorInfo, errorData: UXError) => void;
+  fallback?: React.ComponentType<{
+    error: Error;
+    errorInfo: React.ErrorInfo;
+    reset: () => void;
+  }>;
+  onError?: (
+    error: Error,
+    errorInfo: React.ErrorInfo,
+    errorData: UXError,
+  ) => void;
   enableErrorReporting?: boolean;
   maxRetries?: number;
   retryDelay?: number;
@@ -40,154 +55,174 @@ interface EnhancedErrorBoundaryState {
   errorId?: string;
 }
 
-export const EnhancedErrorBoundary = memo<EnhancedErrorBoundaryProps>(({
-  children,
-  fallback,
-  onError,
-  enableErrorReporting = true,
-  maxRetries = 3,
-  retryDelay = 1000,
-}) => {
-  const [state, setState] = useState<EnhancedErrorBoundaryState>({
-    hasError: false,
-    retryCount: 0,
-  });
+export const EnhancedErrorBoundary = memo<EnhancedErrorBoundaryProps>(
+  ({
+    children,
+    fallback,
+    onError,
+    enableErrorReporting = true,
+    maxRetries = 3,
+    retryDelay = 1000,
+  }) => {
+    const [state, setState] = useState<EnhancedErrorBoundaryState>({
+      hasError: false,
+      retryCount: 0,
+    });
 
-  const retryTimeoutRef = useRef<NodeJS.Timeout>();
+    const retryTimeoutRef = useRef<NodeJS.Timeout>();
 
-  const generateErrorId = useCallback(() => {
-    return `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  }, []);
+    const generateErrorId = useCallback(() => {
+      return `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    }, []);
 
-  const createUXError = useCallback((
-    error: Error,
-    errorInfo: React.ErrorInfo,
-    errorType: ErrorType = 'render_error'
-  ): UXError => {
-    const errorId = generateErrorId();
+    const createUXError = useCallback(
+      (
+        error: Error,
+        errorInfo: React.ErrorInfo,
+        errorType: ErrorType = 'render_error',
+      ): UXError => {
+        const errorId = generateErrorId();
 
-    return {
-      id: errorId,
-      timestamp: new Date().toISOString(),
-      componentName: errorInfo.componentStack.split('\n')[1]?.trim() || 'Unknown',
-      errorType,
-      message: error.message,
-      stack: error.stack,
-      userAgent: navigator.userAgent,
-      pagePath: window.location.pathname,
-      sessionId: getSessionId(),
-      metadata: {
-        componentStack: errorInfo.componentStack,
-        retryCount: state.retryCount,
-        url: window.location.href,
-        referrer: document.referrer,
+        return {
+          id: errorId,
+          timestamp: new Date().toISOString(),
+          componentName:
+            errorInfo.componentStack.split('\n')[1]?.trim() || 'Unknown',
+          errorType,
+          message: error.message,
+          stack: error.stack,
+          userAgent: navigator.userAgent,
+          pagePath: window.location.pathname,
+          sessionId: getSessionId(),
+          metadata: {
+            componentStack: errorInfo.componentStack,
+            retryCount: state.retryCount,
+            url: window.location.href,
+            referrer: document.referrer,
+          },
+          resolved: false,
+        };
       },
-      resolved: false,
-    };
-  }, [generateErrorId, state.retryCount]);
+      [generateErrorId, state.retryCount],
+    );
 
-  const getSessionId = useCallback(() => {
-    let sessionId = sessionStorage.getItem('ux_session_id');
-    if (!sessionId) {
-      sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      sessionStorage.setItem('ux_session_id', sessionId);
-    }
-    return sessionId;
-  }, []);
-
-  const reportError = useCallback(async (errorData: UXError) => {
-    if (!enableErrorReporting) return;
-
-    try {
-      // 这里可以发送到错误监控服务如Sentry
-      console.error('[Error Reporting]', errorData);
-
-      // 模拟API调用
-      if (process.env.NODE_ENV === 'production') {
-        // await errorReportingService.report(errorData);
+    const getSessionId = useCallback(() => {
+      let sessionId = sessionStorage.getItem('ux_session_id');
+      if (!sessionId) {
+        sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        sessionStorage.setItem('ux_session_id', sessionId);
       }
-    } catch (reportingError) {
-      console.error('Failed to report error:', reportingError);
-    }
-  }, [enableErrorReporting]);
+      return sessionId;
+    }, []);
 
-  const handleError = useCallback((
-    error: Error,
-    errorInfo: React.ErrorInfo,
-    errorType: ErrorType = 'render_error'
-  ) => {
-    const errorData = createUXError(error, errorInfo, errorType);
+    const reportError = useCallback(
+      async (errorData: UXError) => {
+        if (!enableErrorReporting) return;
 
-    setState(prev => ({
-      ...prev,
+        try {
+          // 这里可以发送到错误监控服务如Sentry
+          console.error('[Error Reporting]', errorData);
+
+          // 模拟API调用
+          if (process.env.NODE_ENV === 'production') {
+            // await errorReportingService.report(errorData);
+          }
+        } catch (reportingError) {
+          console.error('Failed to report error:', reportingError);
+        }
+      },
+      [enableErrorReporting],
+    );
+
+    const handleError = useCallback(
+      (
+        error: Error,
+        errorInfo: React.ErrorInfo,
+        errorType: ErrorType = 'render_error',
+      ) => {
+        const errorData = createUXError(error, errorInfo, errorType);
+
+        setState((prev) => ({
+          ...prev,
+          hasError: true,
+          error,
+          errorInfo,
+          errorId: errorData.id,
+        }));
+
+        // 报告错误
+        reportError(errorData);
+
+        // 通知外部错误处理器
+        onError?.(error, errorInfo, errorData);
+      },
+      [createUXError, reportError, onError],
+    );
+
+    const handleReset = useCallback(() => {
+      if (state.retryCount >= maxRetries) {
+        console.warn('Max retries reached, not attempting to recover');
+        return;
+      }
+
+      setState((prev) => ({
+        ...prev,
+        hasError: false,
+        error: undefined,
+        errorInfo: undefined,
+        retryCount: prev.retryCount + 1,
+      }));
+    }, [state.retryCount, maxRetries]);
+
+    // 自动重试逻辑
+    useEffect(() => {
+      if (state.hasError && state.retryCount < maxRetries) {
+        retryTimeoutRef.current = setTimeout(
+          () => {
+            handleReset();
+          },
+          retryDelay * Math.pow(2, state.retryCount),
+        ); // 指数退避
+
+        return () => {
+          if (retryTimeoutRef.current) {
+            clearTimeout(retryTimeoutRef.current);
+          }
+        };
+      }
+    }, [state.hasError, state.retryCount, maxRetries, retryDelay, handleReset]);
+
+    // 处理同步错误
+    const staticGetDerivedStateFromError = (
+      error: Error,
+    ): Partial<EnhancedErrorBoundaryState> => ({
       hasError: true,
       error,
-      errorInfo,
-      errorId: errorData.id,
-    }));
+    });
 
-    // 报告错误
-    reportError(errorData);
+    // 处理异步错误和错误报告
+    const staticComponentDidCatch = (
+      error: Error,
+      errorInfo: React.ErrorInfo,
+    ) => {
+      handleError(error, errorInfo);
+    };
 
-    // 通知外部错误处理器
-    onError?.(error, errorInfo, errorData);
-  }, [createUXError, reportError, onError]);
-
-  const handleReset = useCallback(() => {
-    if (state.retryCount >= maxRetries) {
-      console.warn('Max retries reached, not attempting to recover');
-      return;
-    }
-
-    setState(prev => ({
-      ...prev,
-      hasError: false,
-      error: undefined,
-      errorInfo: undefined,
-      retryCount: prev.retryCount + 1,
-    }));
-  }, [state.retryCount, maxRetries]);
-
-  // 自动重试逻辑
-  useEffect(() => {
-    if (state.hasError && state.retryCount < maxRetries) {
-      retryTimeoutRef.current = setTimeout(() => {
-        handleReset();
-      }, retryDelay * Math.pow(2, state.retryCount)); // 指数退避
-
-      return () => {
-        if (retryTimeoutRef.current) {
-          clearTimeout(retryTimeoutRef.current);
-        }
-      };
-    }
-  }, [state.hasError, state.retryCount, maxRetries, retryDelay, handleReset]);
-
-  // 处理同步错误
-  const staticGetDerivedStateFromError = (error: Error): Partial<EnhancedErrorBoundaryState> => ({
-    hasError: true,
-    error,
-  });
-
-  // 处理异步错误和错误报告
-  const staticComponentDidCatch = (error: Error, errorInfo: React.ErrorInfo) => {
-    handleError(error, errorInfo);
-  };
-
-  // 使用class组件来兼容React的错误边界
-  return (
-    <ErrorBoundaryClass
-      state={state}
-      setState={setState}
-      fallback={fallback}
-      handleError={handleError}
-      handleReset={handleReset}
-      maxRetries={maxRetries}
-    >
-      {children}
-    </ErrorBoundaryClass>
-  );
-});
+    // 使用class组件来兼容React的错误边界
+    return (
+      <ErrorBoundaryClass
+        state={state}
+        setState={setState}
+        fallback={fallback}
+        handleError={handleError}
+        handleReset={handleReset}
+        maxRetries={maxRetries}
+      >
+        {children}
+      </ErrorBoundaryClass>
+    );
+  },
+);
 
 EnhancedErrorBoundary.displayName = 'EnhancedErrorBoundary';
 
@@ -196,7 +231,11 @@ class ErrorBoundaryClass extends React.Component<
   {
     state: EnhancedErrorBoundaryState;
     setState: React.Dispatch<React.SetStateAction<EnhancedErrorBoundaryState>>;
-    fallback?: React.ComponentType<{ error: Error; errorInfo: React.ErrorInfo; reset: () => void }>;
+    fallback?: React.ComponentType<{
+      error: Error;
+      errorInfo: React.ErrorInfo;
+      reset: () => void;
+    }>;
     handleError: (error: Error, errorInfo: React.ErrorInfo) => void;
     handleReset: () => void;
     maxRetries: number;
@@ -209,7 +248,9 @@ class ErrorBoundaryClass extends React.Component<
     this.state = props.state;
   }
 
-  static getDerivedStateFromError(error: Error): Partial<EnhancedErrorBoundaryState> {
+  static getDerivedStateFromError(
+    error: Error,
+  ): Partial<EnhancedErrorBoundaryState> {
     return {
       hasError: true,
       error,
@@ -293,16 +334,10 @@ function DefaultErrorFallback({
                 重试 ({retryCount + 1}/{maxRetries})
               </Button>
             )}
-            <Button
-              onClick={() => window.location.reload()}
-              variant="outline"
-            >
+            <Button onClick={() => window.location.reload()} variant="outline">
               刷新页面
             </Button>
-            <Button
-              onClick={() => window.history.back()}
-              variant="ghost"
-            >
+            <Button onClick={() => window.history.back()} variant="ghost">
               返回上页
             </Button>
           </div>
@@ -314,7 +349,9 @@ function DefaultErrorFallback({
               </summary>
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-xs text-left overflow-auto max-h-60">
                 <div className="font-semibold mb-2">错误信息:</div>
-                <div className="text-red-600 mb-3 break-all">{error.message}</div>
+                <div className="text-red-600 mb-3 break-all">
+                  {error.message}
+                </div>
 
                 {error.stack && (
                   <>
@@ -338,7 +375,8 @@ function DefaultErrorFallback({
           )}
 
           <div className="text-xs text-gray-500">
-            错误ID: {error.message.slice(0, 20)}...{Date.now().toString().slice(-6)}
+            错误ID: {error.message.slice(0, 20)}...
+            {Date.now().toString().slice(-6)}
           </div>
         </div>
       </Card>
@@ -392,9 +430,7 @@ export function NetworkErrorBoundary({
         <Card className="max-w-md w-full p-6 text-center">
           <div className="text-4xl mb-4">📡</div>
           <h3 className="text-lg font-semibold mb-2">网络连接问题</h3>
-          <p className="text-gray-600 mb-4">
-            {networkError.message}
-          </p>
+          <p className="text-gray-600 mb-4">{networkError.message}</p>
           <Button onClick={handleReset} variant="default">
             重试
           </Button>
@@ -410,7 +446,9 @@ export function NetworkErrorBoundary({
 interface UserFeedbackProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (feedback: Omit<UserFeedback, 'id' | 'timestamp' | 'sessionId'>) => void;
+  onSubmit: (
+    feedback: Omit<UserFeedback, 'id' | 'timestamp' | 'sessionId'>,
+  ) => void;
   defaultErrorInfo?: string;
 }
 
@@ -430,42 +468,45 @@ export function UserFeedbackModal({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!feedback.title.trim() || !feedback.description.trim()) {
-      return;
-    }
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!feedback.title.trim() || !feedback.description.trim()) {
+        return;
+      }
 
-    setIsSubmitting(true);
+      setIsSubmitting(true);
 
-    try {
-      await onSubmit({
-        ...feedback,
-        pagePath: window.location.pathname,
-        userAgent: navigator.userAgent,
-        metadata: {
-          errorInfo: defaultErrorInfo,
-          timestamp: new Date().toISOString(),
-        },
-        status: 'pending',
-        priority: feedback.category === 'error' ? 'high' : 'medium',
-      });
+      try {
+        await onSubmit({
+          ...feedback,
+          pagePath: window.location.pathname,
+          userAgent: navigator.userAgent,
+          metadata: {
+            errorInfo: defaultErrorInfo,
+            timestamp: new Date().toISOString(),
+          },
+          status: 'pending',
+          priority: feedback.category === 'error' ? 'high' : 'medium',
+        });
 
-      setFeedback({
-        feedbackType: 'bug_report',
-        category: 'functionality',
-        title: '',
-        description: '',
-        email: '',
-      });
+        setFeedback({
+          feedbackType: 'bug_report',
+          category: 'functionality',
+          title: '',
+          description: '',
+          email: '',
+        });
 
-      onClose();
-    } catch (error) {
-      console.error('Failed to submit feedback:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [feedback, defaultErrorInfo, onSubmit, onClose]);
+        onClose();
+      } catch (error) {
+        console.error('Failed to submit feedback:', error);
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [feedback, defaultErrorInfo, onSubmit, onClose],
+  );
 
   if (!isOpen) return null;
 
@@ -484,7 +525,12 @@ export function UserFeedbackModal({
             <label className="block text-sm font-medium mb-1">反馈类型</label>
             <select
               value={feedback.feedbackType}
-              onChange={(e) => setFeedback(prev => ({ ...prev, feedbackType: e.target.value as any }))}
+              onChange={(e) =>
+                setFeedback((prev) => ({
+                  ...prev,
+                  feedbackType: e.target.value as any,
+                }))
+              }
               className="w-full p-2 border rounded-md"
             >
               <option value="bug_report">问题报告</option>
@@ -498,7 +544,12 @@ export function UserFeedbackModal({
             <label className="block text-sm font-medium mb-1">分类</label>
             <select
               value={feedback.category}
-              onChange={(e) => setFeedback(prev => ({ ...prev, category: e.target.value as any }))}
+              onChange={(e) =>
+                setFeedback((prev) => ({
+                  ...prev,
+                  category: e.target.value as any,
+                }))
+              }
               className="w-full p-2 border rounded-md"
             >
               <option value="functionality">功能问题</option>
@@ -514,7 +565,9 @@ export function UserFeedbackModal({
             <input
               type="text"
               value={feedback.title}
-              onChange={(e) => setFeedback(prev => ({ ...prev, title: e.target.value }))}
+              onChange={(e) =>
+                setFeedback((prev) => ({ ...prev, title: e.target.value }))
+              }
               className="w-full p-2 border rounded-md"
               placeholder="简要描述问题"
               required
@@ -525,7 +578,12 @@ export function UserFeedbackModal({
             <label className="block text-sm font-medium mb-1">详细描述</label>
             <textarea
               value={feedback.description}
-              onChange={(e) => setFeedback(prev => ({ ...prev, description: e.target.value }))}
+              onChange={(e) =>
+                setFeedback((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }))
+              }
               className="w-full p-2 border rounded-md h-24"
               placeholder="请详细描述您遇到的问题或建议"
               required
@@ -533,11 +591,15 @@ export function UserFeedbackModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">邮箱（可选）</label>
+            <label className="block text-sm font-medium mb-1">
+              邮箱（可选）
+            </label>
             <input
               type="email"
               value={feedback.email}
-              onChange={(e) => setFeedback(prev => ({ ...prev, email: e.target.value }))}
+              onChange={(e) =>
+                setFeedback((prev) => ({ ...prev, email: e.target.value }))
+              }
               className="w-full p-2 border rounded-md"
               placeholder="如需回复请留下邮箱"
             />
@@ -545,14 +607,20 @@ export function UserFeedbackModal({
 
           {defaultErrorInfo && (
             <div className="bg-gray-50 p-3 rounded-md">
-              <p className="text-sm text-gray-600">错误信息已自动附加到反馈中</p>
+              <p className="text-sm text-gray-600">
+                错误信息已自动附加到反馈中
+              </p>
             </div>
           )}
 
           <div className="flex gap-3 pt-4">
             <Button
               type="submit"
-              disabled={isSubmitting || !feedback.title.trim() || !feedback.description.trim()}
+              disabled={
+                isSubmitting ||
+                !feedback.title.trim() ||
+                !feedback.description.trim()
+              }
               className="flex-1"
             >
               {isSubmitting ? '提交中...' : '提交反馈'}
@@ -579,7 +647,11 @@ interface ErrorNotificationProps {
   onReport?: () => void;
 }
 
-export function ErrorNotification({ error, onDismiss, onReport }: ErrorNotificationProps) {
+export function ErrorNotification({
+  error,
+  onDismiss,
+  onReport,
+}: ErrorNotificationProps) {
   const severity = useMemo(() => {
     switch (error.errorType) {
       case 'javascript_error':

@@ -2,14 +2,20 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { cn, formatDate } from '@/lib/utils';
 
 interface DateRangePickerProps {
-  onDateRangeChange: (startDate: string, endDate: string) => void
-  startDate?: string
-  endDate?: string
-  className?: string
+  onDateRangeChange: (startDate: string, endDate: string) => void;
+  startDate?: string;
+  endDate?: string;
+  className?: string;
 }
 
 // 快速日期范围选项
@@ -72,7 +78,7 @@ export function DateRangePicker({
         <div>
           <label className="text-sm font-medium mb-2 block">快速选择</label>
           <div className="flex flex-wrap gap-2">
-            {quickRanges.map(range => (
+            {quickRanges.map((range) => (
               <Button
                 key={range.label}
                 variant="outline"
@@ -113,9 +119,16 @@ export function DateRangePicker({
         {/* 显示当前选择的日期范围 */}
         {internalStartDate && internalEndDate && (
           <div className="text-sm text-muted-foreground p-3 bg-muted rounded-md">
-            已选择：{formatDate(internalStartDate)} 至 {formatDate(internalEndDate)}
+            已选择：{formatDate(internalStartDate)} 至{' '}
+            {formatDate(internalEndDate)}
             <div className="text-xs mt-1">
-              共 {Math.ceil((new Date(internalEndDate).getTime() - new Date(internalStartDate).getTime()) / (1000 * 60 * 60 * 24))} 天
+              共{' '}
+              {Math.ceil(
+                (new Date(internalEndDate).getTime() -
+                  new Date(internalStartDate).getTime()) /
+                  (1000 * 60 * 60 * 24),
+              )}{' '}
+              天
             </div>
           </div>
         )}

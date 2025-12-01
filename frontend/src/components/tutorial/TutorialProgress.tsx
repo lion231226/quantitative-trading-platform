@@ -4,9 +4,9 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
+  Achievement,
   TutorialProgress as TutorialProgressType,
   TutorialStats,
-  Achievement,
   TutorialStep,
 } from '@/types/tutorial.types';
 import {
@@ -15,14 +15,14 @@ import {
   generateProgressSummary,
 } from '@/utils/tutorialHelpers';
 import {
-  Clock,
-  BookOpen,
   Award,
-  TrendingUp,
+  BookOpen,
+  Bookmark,
   CheckCircle,
   Circle,
-  Bookmark,
+  Clock,
   SkipForward,
+  TrendingUp,
 } from 'lucide-react';
 
 interface TutorialProgressProps {
@@ -81,7 +81,9 @@ export function TutorialProgress({
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900">学习进度</h3>
-          <Badge variant={completionPercentage === 100 ? 'default' : 'secondary'}>
+          <Badge
+            variant={completionPercentage === 100 ? 'default' : 'secondary'}
+          >
             {completionPercentage === 100 ? '已完成' : '进行中'}
           </Badge>
         </div>
@@ -158,10 +160,10 @@ export function TutorialProgress({
                     isCurrent
                       ? 'border-blue-500 bg-blue-50'
                       : isCompleted
-                      ? 'border-green-200 bg-green-50'
-                      : isSkipped
-                      ? 'border-gray-200 bg-gray-50'
-                      : 'border-gray-200 hover:bg-gray-50'
+                        ? 'border-green-200 bg-green-50'
+                        : isSkipped
+                          ? 'border-gray-200 bg-gray-50'
+                          : 'border-gray-200 hover:bg-gray-50'
                   }`}
                 >
                   <div className="flex items-center space-x-3">

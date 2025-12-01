@@ -7,7 +7,9 @@ import { DeviceInfo, NetworkInfo } from '@/types/ux.types';
 // 检测是否为移动设备
 export function isMobileDevice(): boolean {
   const userAgent = navigator.userAgent.toLowerCase();
-  return /mobile|android|iphone|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+  return /mobile|android|iphone|ipod|blackberry|iemobile|opera mini/i.test(
+    userAgent,
+  );
 }
 
 // 检测是否为平板设备
@@ -40,15 +42,17 @@ export function getDeviceInfo(): DeviceInfo {
     },
     pixelRatio: window.devicePixelRatio || 1,
     touchSupport: 'ontouchstart' in window,
-    orientation: window.innerHeight > window.innerWidth ? 'portrait' : 'landscape',
+    orientation:
+      window.innerHeight > window.innerWidth ? 'portrait' : 'landscape',
   };
 }
 
 // 获取网络信息
 export function getNetworkInfo(): NetworkInfo {
-  const connection = (navigator as any).connection ||
-                    (navigator as any).mozConnection ||
-                    (navigator as any).webkitConnection;
+  const connection =
+    (navigator as any).connection ||
+    (navigator as any).mozConnection ||
+    (navigator as any).webkitConnection;
 
   return {
     online: navigator.onLine,
@@ -103,18 +107,17 @@ export function getResponsiveValue<T>(values: {
   xl?: T;
 }): T | undefined {
   const screenSize = getScreenSize();
-  return values[screenSize] ||
-         values.lg ||
-         values.md ||
-         values.sm ||
-         values.xs;
+  return values[screenSize] || values.lg || values.md || values.sm || values.xs;
 }
 
 // 格式化移动端数字
-export function formatMobileNumber(num: number, options: {
-  compact?: boolean;
-  precision?: number;
-} = {}): string {
+export function formatMobileNumber(
+  num: number,
+  options: {
+    compact?: boolean;
+    precision?: number;
+  } = {},
+): string {
   const { compact = true, precision = 1 } = options;
 
   if (compact) {
@@ -130,11 +133,14 @@ export function formatMobileNumber(num: number, options: {
 }
 
 // 获取移动端优化的CSS类名
-export function getMobileClassName(baseClass: string, modifiers: {
-  mobile?: string;
-  tablet?: string;
-  desktop?: string;
-} = {}): string {
+export function getMobileClassName(
+  baseClass: string,
+  modifiers: {
+    mobile?: string;
+    tablet?: string;
+    desktop?: string;
+  } = {},
+): string {
   const deviceInfo = getDeviceInfo();
   let className = baseClass;
 
@@ -153,7 +159,7 @@ export function getMobileClassName(baseClass: string, modifiers: {
 export function createMobileDebounce<T extends (...args: any[]) => any>(
   func: T,
   wait: number,
-  immediate = false
+  immediate = false,
 ): (...args: Parameters<T>) => void {
   let timeout: NodeJS.Timeout | null = null;
 
@@ -175,7 +181,7 @@ export function createMobileDebounce<T extends (...args: any[]) => any>(
 // 节流函数（移动端优化）
 export function createMobileThrottle<T extends (...args: any[]) => any>(
   func: T,
-  limit: number
+  limit: number,
 ): (...args: Parameters<T>) => void {
   let inThrottle: boolean;
 
@@ -183,7 +189,7 @@ export function createMobileThrottle<T extends (...args: any[]) => any>(
     if (!inThrottle) {
       func.apply(this, args);
       inThrottle = true;
-      setTimeout(() => inThrottle = false, limit);
+      setTimeout(() => (inThrottle = false), limit);
     }
   };
 }
@@ -202,14 +208,16 @@ export class TouchHandler {
     onLongPress?: () => void;
   } = {};
 
-  constructor(callbacks: {
-    onSwipeLeft?: () => void;
-    onSwipeRight?: () => void;
-    onSwipeUp?: () => void;
-    onSwipeDown?: () => void;
-    onTap?: () => void;
-    onLongPress?: () => void;
-  } = {}) {
+  constructor(
+    callbacks: {
+      onSwipeLeft?: () => void;
+      onSwipeRight?: () => void;
+      onSwipeUp?: () => void;
+      onSwipeDown?: () => void;
+      onTap?: () => void;
+      onLongPress?: () => void;
+    } = {},
+  ) {
     this.callbacks = callbacks;
   }
 
@@ -256,18 +264,22 @@ export class TouchHandler {
       }
 
       // 检测点击
-      if (Math.abs(deltaX) < maxTapDistance &&
-          Math.abs(deltaY) < maxTapDistance &&
-          deltaTime < maxSwipeTime &&
-          this.callbacks.onTap) {
+      if (
+        Math.abs(deltaX) < maxTapDistance &&
+        Math.abs(deltaY) < maxTapDistance &&
+        deltaTime < maxSwipeTime &&
+        this.callbacks.onTap
+      ) {
         this.callbacks.onTap();
       }
 
       // 检测长按
-      if (Math.abs(deltaX) < maxTapDistance &&
-          Math.abs(deltaY) < maxTapDistance &&
-          deltaTime >= minLongPressTime &&
-          this.callbacks.onLongPress) {
+      if (
+        Math.abs(deltaX) < maxTapDistance &&
+        Math.abs(deltaY) < maxTapDistance &&
+        deltaTime >= minLongPressTime &&
+        this.callbacks.onLongPress
+      ) {
         this.callbacks.onLongPress();
       }
     }
@@ -279,12 +291,15 @@ export class TouchHandler {
 }
 
 // 移动端图片优化
-export function getOptimizedImageUrl(url: string, options: {
-  width?: number;
-  height?: number;
-  quality?: number;
-  format?: 'webp' | 'jpg' | 'png';
-} = {}): string {
+export function getOptimizedImageUrl(
+  url: string,
+  options: {
+    width?: number;
+    height?: number;
+    quality?: number;
+    format?: 'webp' | 'jpg' | 'png';
+  } = {},
+): string {
   const { width, height, quality = 80, format = 'webp' } = options;
 
   // 如果是相对路径，添加CDN前缀
@@ -307,7 +322,8 @@ export function getOptimizedImageUrl(url: string, options: {
 // 移动端性能优化
 export class MobilePerformanceOptimizer {
   private static instance: MobilePerformanceOptimizer;
-  private metrics: Array<{ name: string; value: number; timestamp: number }> = [];
+  private metrics: Array<{ name: string; value: number; timestamp: number }> =
+    [];
 
   static getInstance(): MobilePerformanceOptimizer {
     if (!MobilePerformanceOptimizer.instance) {
@@ -334,17 +350,28 @@ export class MobilePerformanceOptimizer {
   getAverageMetric(name: string, timeWindow: number = 60000): number | null {
     const now = Date.now();
     const recentMetrics = this.metrics.filter(
-      metric => metric.name === name && (now - metric.timestamp) < timeWindow
+      (metric) => metric.name === name && now - metric.timestamp < timeWindow,
     );
 
     if (recentMetrics.length === 0) return null;
 
-    return recentMetrics.reduce((sum, metric) => sum + metric.value, 0) / recentMetrics.length;
+    return (
+      recentMetrics.reduce((sum, metric) => sum + metric.value, 0) /
+      recentMetrics.length
+    );
   }
 
   // 检测性能问题
-  detectPerformanceIssues(): Array<{ type: string; severity: 'low' | 'medium' | 'high'; message: string }> {
-    const issues: Array<{ type: string; severity: 'low' | 'medium' | 'high'; message: string }> = [];
+  detectPerformanceIssues(): Array<{
+    type: string;
+    severity: 'low' | 'medium' | 'high';
+    message: string;
+  }> {
+    const issues: Array<{
+      type: string;
+      severity: 'low' | 'medium' | 'high';
+      message: string;
+    }> = [];
 
     // 检查渲染时间
     const avgRenderTime = this.getAverageMetric('renderTime');
@@ -397,7 +424,11 @@ export class MobilePerformanceOptimizer {
 // 移动端调试工具
 export class MobileDebugger {
   private static instance: MobileDebugger;
-  private logs: Array<{ level: 'log' | 'warn' | 'error'; message: string; timestamp: number }> = [];
+  private logs: Array<{
+    level: 'log' | 'warn' | 'error';
+    message: string;
+    timestamp: number;
+  }> = [];
 
   static getInstance(): MobileDebugger {
     if (!MobileDebugger.instance) {
@@ -437,7 +468,11 @@ export class MobileDebugger {
   }
 
   // 获取日志
-  getLogs(): Array<{ level: 'log' | 'warn' | 'error'; message: string; timestamp: number }> {
+  getLogs(): Array<{
+    level: 'log' | 'warn' | 'error';
+    message: string;
+    timestamp: number;
+  }> {
     return [...this.logs];
   }
 
@@ -448,9 +483,12 @@ export class MobileDebugger {
 
   // 导出日志
   exportLogs(): string {
-    return this.logs.map(log =>
-      `[${new Date(log.timestamp).toISOString()}] ${log.level.toUpperCase()}: ${log.message}`
-    ).join('\n');
+    return this.logs
+      .map(
+        (log) =>
+          `[${new Date(log.timestamp).toISOString()}] ${log.level.toUpperCase()}: ${log.message}`,
+      )
+      .join('\n');
   }
 }
 

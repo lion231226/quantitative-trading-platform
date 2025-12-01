@@ -61,7 +61,7 @@ describe('DateRangePicker Component', () => {
         onDateRangeChange={mockOnDateRangeChange}
         startDate="2024-01-01"
         endDate="2024-01-31"
-      />
+      />,
     );
 
     expect(screen.getByText(/已选择：/)).toBeInTheDocument();
@@ -75,14 +75,20 @@ describe('DateRangePicker Component', () => {
         onDateRangeChange={mockOnDateRangeChange}
         startDate="2024-01-01"
         endDate="2024-01-31"
-      />
+      />,
     );
 
     // Check that inputs have the correct values
-    const dateInputs = document.querySelectorAll('input[type="date"]') as NodeListOf<HTMLInputElement>;
+    const dateInputs = document.querySelectorAll(
+      'input[type="date"]',
+    ) as NodeListOf<HTMLInputElement>;
 
-    const startInput = Array.from(dateInputs).find(input => input.value === '2024-01-01');
-    const endInput = Array.from(dateInputs).find(input => input.value === '2024-01-31');
+    const startInput = Array.from(dateInputs).find(
+      (input) => input.value === '2024-01-01',
+    );
+    const endInput = Array.from(dateInputs).find(
+      (input) => input.value === '2024-01-31',
+    );
 
     expect(startInput).toBeTruthy();
     expect(endInput).toBeTruthy();

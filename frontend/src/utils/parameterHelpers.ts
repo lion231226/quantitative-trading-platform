@@ -13,7 +13,10 @@ export function generateId(): string {
 }
 
 // 参数验证规则配置
-export const PARAMETER_RULES: Record<keyof StrategyParameters, ParameterValidation> = {
+export const PARAMETER_RULES: Record<
+  keyof StrategyParameters,
+  ParameterValidation
+> = {
   movingAveragePeriod: {
     min: 5,
     max: 200,
@@ -51,8 +54,8 @@ export function validateParameter(
   parameter: keyof StrategyParameters,
   value: number,
   context?: {
-    otherParameters?: Partial<StrategyParameters>
-    groupName?: string
+    otherParameters?: Partial<StrategyParameters>;
+    groupName?: string;
   },
 ): ParameterValidationResult {
   const rule = PARAMETER_RULES[parameter];
@@ -60,7 +63,10 @@ export function validateParameter(
   const warnings: string[] = [];
 
   // 基本验证
-  if (rule.required && (value === undefined || value === null || isNaN(value))) {
+  if (
+    rule.required &&
+    (value === undefined || value === null || isNaN(value))
+  ) {
     errors.push(`${getParameterLabel(parameter)} 是必填项`);
     return { isValid: false, errors, warnings };
   }
@@ -85,13 +91,19 @@ export function validateParameter(
     const tolerance = Math.pow(10, -decimalPlaces) * 0.5;
 
     if (Math.abs(value - steppedValue) > tolerance) {
-      warnings.push(`${getParameterLabel(parameter)} 建议使用 ${rule.step} 的步进值`);
+      warnings.push(
+        `${getParameterLabel(parameter)} 建议使用 ${rule.step} 的步进值`,
+      );
     }
   }
 
   // 业务逻辑验证
   if (context?.otherParameters) {
-    const businessWarnings = validateBusinessLogic(parameter, value, context.otherParameters);
+    const businessWarnings = validateBusinessLogic(
+      parameter,
+      value,
+      context.otherParameters,
+    );
     warnings.push(...businessWarnings);
   }
 
@@ -118,14 +130,10 @@ export function validateAllParameters(
 
   // 验证每个参数
   Object.entries(parameters).forEach(([key, value]) => {
-    const result = validateParameter(
-      key as keyof StrategyParameters,
-      value,
-      {
-        otherParameters: parameters,
-        groupName,
-      },
-    );
+    const result = validateParameter(key as keyof StrategyParameters, value, {
+      otherParameters: parameters,
+      groupName,
+    });
     allErrors.push(...result.errors);
     allWarnings.push(...result.warnings);
   });
@@ -144,7 +152,9 @@ export function validateAllParameters(
 /**
  * 验证参数组
  */
-export function validateParameterGroup(group: ParameterGroup): ParameterValidationResult {
+export function validateParameterGroup(
+  group: ParameterGroup,
+): ParameterValidationResult {
   const baseValidation = validateAllParameters(group.parameters, group.name);
 
   const groupErrors: string[] = [...baseValidation.errors];
@@ -268,7 +278,9 @@ export function calculateParameterSimilarity(
 /**
  * 生成参数描述
  */
-export function generateParameterDescription(parameters: StrategyParameters): string {
+export function generateParameterDescription(
+  parameters: StrategyParameters,
+): string {
   const { movingAveragePeriod, stopLoss, takeProfit } = parameters;
 
   let description = `使用${movingAveragePeriod}日移动平均线`;
@@ -296,7 +308,9 @@ export function areParametersEqual(
 
   for (const key of keys) {
     const rule = PARAMETER_RULES[key];
-    const actualTolerance = rule.precision ? Math.pow(10, -rule.precision) * 0.5 : tolerance;
+    const actualTolerance = rule.precision
+      ? Math.pow(10, -rule.precision) * 0.5
+      : tolerance;
 
     if (Math.abs(params1[key] - params2[key]) > actualTolerance) {
       return false;
@@ -378,7 +392,9 @@ function getParameterSpecificWarnings(
 /**
  * 验证参数间关系
  */
-function validateParameterRelationships(parameters: StrategyParameters): string[] {
+function validateParameterRelationships(
+  parameters: StrategyParameters,
+): string[] {
   const warnings: string[] = [];
 
   const { stopLoss, takeProfit, movingAveragePeriod } = parameters;
@@ -411,9 +427,9 @@ function validateParameterRelationships(parameters: StrategyParameters): string[
  * 获取参数风险评估
  */
 export function getParameterRiskAssessment(parameters: StrategyParameters): {
-  level: 'low' | 'medium' | 'high' | 'very_high'
-  score: number // 0-100
-  factors: string[]
+  level: 'low' | 'medium' | 'high' | 'very_high';
+  score: number; // 0-100
+  factors: string[];
 } {
   let riskScore = 0;
   const factors: string[] = [];

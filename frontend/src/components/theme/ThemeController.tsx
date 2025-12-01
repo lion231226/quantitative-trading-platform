@@ -1,18 +1,26 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import { Palette, Sun, Moon, Settings, Upload, Download, RotateCcw } from 'lucide-react'
-import { useTheme } from './ThemeProvider'
-import { MarketModeSelector } from './MarketModeSelector'
-import { ThemeMode, ColorblindMode } from '../../types/theme.types'
+import React, { useState } from 'react';
+import {
+  Download,
+  Moon,
+  Palette,
+  RotateCcw,
+  Settings,
+  Sun,
+  Upload,
+} from 'lucide-react';
+import { useTheme } from './ThemeProvider';
+import { MarketModeSelector } from './MarketModeSelector';
+import { ColorblindMode, ThemeMode } from '../../types/theme.types';
 
 interface ThemeControllerProps {
-  className?: string
-  variant?: 'default' | 'compact' | 'minimal'
-  showMarketMode?: boolean
-  showColorblindMode?: boolean
-  showCustomColors?: boolean
-  showImportExport?: boolean
+  className?: string;
+  variant?: 'default' | 'compact' | 'minimal';
+  showMarketMode?: boolean;
+  showColorblindMode?: boolean;
+  showCustomColors?: boolean;
+  showImportExport?: boolean;
 }
 
 export const ThemeController: React.FC<ThemeControllerProps> = ({
@@ -21,7 +29,7 @@ export const ThemeController: React.FC<ThemeControllerProps> = ({
   showMarketMode = true,
   showColorblindMode = true,
   showCustomColors = true,
-  showImportExport = true
+  showImportExport = true,
 }) => {
   const {
     currentTheme,
@@ -33,72 +41,86 @@ export const ThemeController: React.FC<ThemeControllerProps> = ({
     setColorblindMode,
     exportThemes,
     importThemes,
-    resetToDefaults
-  } = useTheme()
+    resetToDefaults,
+  } = useTheme();
 
-  const [showAdvanced, setShowAdvanced] = useState(false)
-  const [importFile, setImportFile] = useState<File | null>(null)
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [importFile, setImportFile] = useState<File | null>(null);
 
   // 主题模式选项
   const themeModes = [
     {
       value: 'light' as ThemeMode,
       label: '浅色',
-      icon: <Sun className="w-4 h-4" />
+      icon: <Sun className="w-4 h-4" />,
     },
     {
       value: 'dark' as ThemeMode,
       label: '深色',
-      icon: <Moon className="w-4 h-4" />
-    }
-  ]
+      icon: <Moon className="w-4 h-4" />,
+    },
+  ];
 
   // 色盲模式选项
   const colorblindModes = [
     { value: 'none' as ColorblindMode, label: '无', description: '正常视觉' },
-    { value: 'protanopia' as ColorblindMode, label: '红色盲', description: '无法感知红色' },
-    { value: 'deuteranopia' as ColorblindMode, label: '绿色盲', description: '无法感知绿色' },
-    { value: 'tritanopia' as ColorblindMode, label: '蓝色盲', description: '无法感知蓝色' },
-    { value: 'achromatopsia' as ColorblindMode, label: '全色盲', description: '只有灰度视觉' }
-  ]
+    {
+      value: 'protanopia' as ColorblindMode,
+      label: '红色盲',
+      description: '无法感知红色',
+    },
+    {
+      value: 'deuteranopia' as ColorblindMode,
+      label: '绿色盲',
+      description: '无法感知绿色',
+    },
+    {
+      value: 'tritanopia' as ColorblindMode,
+      label: '蓝色盲',
+      description: '无法感知蓝色',
+    },
+    {
+      value: 'achromatopsia' as ColorblindMode,
+      label: '全色盲',
+      description: '只有灰度视觉',
+    },
+  ];
 
   // 处理导入
   const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
+    const file = event.target.files?.[0];
     if (file) {
       try {
-        await importThemes(file)
-        alert('主题配置导入成功')
+        await importThemes(file);
+        alert('主题配置导入成功');
       } catch (error) {
-        console.error('导入失败:', error)
-        alert('主题配置导入失败，请检查文件格式')
+        console.error('导入失败:', error);
+        alert('主题配置导入失败，请检查文件格式');
       }
-      event.target.value = '' // 清空输入
+      event.target.value = ''; // 清空输入
     }
-  }
+  };
 
   // 处理色盲模式切换
   const handleColorblindModeChange = (mode: ColorblindMode) => {
     setColorblindMode({
       ...colorblindConfig,
       enabled: mode !== 'none',
-      mode
-    })
-  }
+      mode,
+    });
+  };
 
   // 变体样式
   const variantClasses = {
     default: 'bg-white border border-gray-200 rounded-lg shadow-sm p-4',
     compact: 'bg-white border border-gray-200 rounded-md p-3',
-    minimal: 'bg-transparent p-0'
-  }[variant]
+    minimal: 'bg-transparent p-0',
+  }[variant];
 
   if (variant === 'minimal') {
     return (
       <div className={`flex items-center space-x-4 ${className}`}>
-        {showMarketMode && (
-          <MarketModeSelector variant="compact" />
-        )}
+        {showMarketMode && <MarketModeSelector variant="compact" />}
         <div className="flex items-center space-x-2">
           {themeModes.map((mode) => (
             <button
@@ -116,7 +138,7 @@ export const ThemeController: React.FC<ThemeControllerProps> = ({
           ))}
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -138,9 +160,7 @@ export const ThemeController: React.FC<ThemeControllerProps> = ({
 
       <div className="space-y-4">
         {/* 市场模式选择 */}
-        {showMarketMode && (
-          <MarketModeSelector />
-        )}
+        {showMarketMode && <MarketModeSelector />}
 
         {/* 主题模式选择 */}
         <div>
@@ -203,7 +223,7 @@ export const ThemeController: React.FC<ThemeControllerProps> = ({
                   涨: currentTheme.colors.bullish,
                   跌: currentTheme.colors.bearish,
                   成交量: currentTheme.colors.volume,
-                  背景: currentTheme.colors.background
+                  背景: currentTheme.colors.background,
                 }).map(([label, color]) => (
                   <div key={label} className="flex items-center space-x-2">
                     <div
@@ -259,12 +279,13 @@ export const ThemeController: React.FC<ThemeControllerProps> = ({
         <div className="pt-3 border-t border-gray-200">
           <div className="text-xs text-gray-500">
             当前主题: {currentTheme.name} ({currentTheme.marketMode})
-            {colorblindConfig.enabled && ` | 色盲模式: ${colorblindConfig.mode}`}
+            {colorblindConfig.enabled &&
+              ` | 色盲模式: ${colorblindConfig.mode}`}
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ThemeController
+export default ThemeController;

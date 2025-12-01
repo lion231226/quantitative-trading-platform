@@ -4,8 +4,8 @@ import React, { useMemo } from 'react';
 import { Line } from 'react-chartjs-2';
 import {
   CategoryScale,
-  Chart as ChartJS,
   ChartData,
+  Chart as ChartJS,
   ChartOptions,
   Filler,
   Legend,
@@ -26,7 +26,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  Filler
+  Filler,
 );
 
 interface SimpleEquityCurveProps {
@@ -72,16 +72,21 @@ const SimpleEquityCurve: React.FC<SimpleEquityCurveProps> = ({
       sampledData = equityCurve.filter((_, index) => index % step === 0);
     }
 
-    const labels = sampledData.map(point => {
+    const labels = sampledData.map((point) => {
       const date = new Date(point.date);
-      return date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' });
+      return date.toLocaleDateString('zh-CN', {
+        month: 'short',
+        day: 'numeric',
+      });
     });
 
-    const equityValues = sampledData.map(point => point.equity);
+    const equityValues = sampledData.map((point) => point.equity);
 
     // 计算初始资金用于计算收益率
     const initialEquity = equityValues[0] || 100000;
-    const returns = equityValues.map(equity => ((equity - initialEquity) / initialEquity) * 100);
+    const returns = equityValues.map(
+      (equity) => ((equity - initialEquity) / initialEquity) * 100,
+    );
 
     return {
       labels,
@@ -114,114 +119,117 @@ const SimpleEquityCurve: React.FC<SimpleEquityCurveProps> = ({
   }, [equityCurve]);
 
   // 图表配置
-  const chartOptions = useMemo((): ChartOptions<'line'> => ({
-    responsive: true,
-    maintainAspectRatio: false,
-    interaction: {
-      mode: 'index',
-      intersect: false,
-    },
-    plugins: {
-      legend: {
-        position: 'top',
-        labels: {
-          usePointStyle: true,
-          padding: 15,
-          font: {
-            size: 12,
+  const chartOptions = useMemo(
+    (): ChartOptions<'line'> => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        mode: 'index',
+        intersect: false,
+      },
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: {
+            usePointStyle: true,
+            padding: 15,
+            font: {
+              size: 12,
+            },
           },
         },
-      },
-      title: {
-        display: false,
-      },
-      tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        titleColor: '#ffffff',
-        bodyColor: '#ffffff',
-        borderColor: '#ffffff',
-        borderWidth: 1,
-        padding: 12,
-        displayColors: true,
-        callbacks: {
-          label: function(context) {
-            const value = context.parsed.y;
-            if (value === null || value === undefined) return '';
-
-            const label = context.dataset.label || '';
-            if (label === '策略净值') {
-              return `${label}: ¥${value.toLocaleString()}`;
-            } else {
-              return `${label}: ${value.toFixed(2)}%`;
-            }
-          },
-        },
-      },
-    },
-    scales: {
-      x: {
-        display: true,
-        grid: {
+        title: {
           display: false,
         },
-        ticks: {
-          color: '#6b7280',
-          maxRotation: 45,
-          minRotation: 0,
-          autoSkip: true,
-          maxTicksLimit: 12,
-        },
-      },
-      y: {
-        type: 'linear',
-        display: true,
-        position: 'left',
-        grid: {
-          color: '#e5e7eb',
-        },
-        ticks: {
-          color: '#6b7280',
-          callback: function(value) {
-            return '¥' + Number(value).toLocaleString();
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          titleColor: '#ffffff',
+          bodyColor: '#ffffff',
+          borderColor: '#ffffff',
+          borderWidth: 1,
+          padding: 12,
+          displayColors: true,
+          callbacks: {
+            label(context) {
+              const value = context.parsed.y;
+              if (value === null || value === undefined) return '';
+
+              const label = context.dataset.label || '';
+              if (label === '策略净值') {
+                return `${label}: ¥${value.toLocaleString()}`;
+              } else {
+                return `${label}: ${value.toFixed(2)}%`;
+              }
+            },
           },
         },
-        title: {
-          display: true,
-          text: '策略净值',
-          color: '#6b7280',
-        },
       },
-      y1: {
-        type: 'linear',
-        display: true,
-        position: 'right',
-        grid: {
-          drawOnChartArea: false,
-        },
-        ticks: {
-          color: '#6b7280',
-          callback: function(value) {
-            return value.toFixed(1) + '%';
+      scales: {
+        x: {
+          display: true,
+          grid: {
+            display: false,
+          },
+          ticks: {
+            color: '#6b7280',
+            maxRotation: 45,
+            minRotation: 0,
+            autoSkip: true,
+            maxTicksLimit: 12,
           },
         },
-        title: {
+        y: {
+          type: 'linear',
           display: true,
-          text: '收益率',
-          color: '#6b7280',
+          position: 'left',
+          grid: {
+            color: '#e5e7eb',
+          },
+          ticks: {
+            color: '#6b7280',
+            callback(value) {
+              return `¥${Number(value).toLocaleString()}`;
+            },
+          },
+          title: {
+            display: true,
+            text: '策略净值',
+            color: '#6b7280',
+          },
+        },
+        y1: {
+          type: 'linear',
+          display: true,
+          position: 'right',
+          grid: {
+            drawOnChartArea: false,
+          },
+          ticks: {
+            color: '#6b7280',
+            callback(value) {
+              return `${value.toFixed(1)}%`;
+            },
+          },
+          title: {
+            display: true,
+            text: '收益率',
+            color: '#6b7280',
+          },
         },
       },
-    },
-    elements: {
-      point: {
-        radius: 0,
-        hoverRadius: 4,
+      elements: {
+        point: {
+          radius: 0,
+          hoverRadius: 4,
+        },
+        line: {
+          borderWidth: 2,
+          tension: 0.4,
+        },
       },
-      line: {
-        borderWidth: 2,
-        tension: 0.4,
-      },
-    },
-  }), []);
+    }),
+    [],
+  );
 
   if (!equityCurve || equityCurve.length === 0) {
     return (
@@ -245,17 +253,32 @@ const SimpleEquityCurve: React.FC<SimpleEquityCurveProps> = ({
         {strategyInfo && (
           <div className="text-sm text-muted-foreground space-y-1">
             <div className="flex flex-wrap gap-4">
-              <span><strong>品种:</strong> {strategyInfo.symbol}</span>
-              <span><strong>策略:</strong> {strategyInfo.strategyType === 'single_ma' ? '单均线策略' : strategyInfo.strategyType}</span>
+              <span>
+                <strong>品种:</strong> {strategyInfo.symbol}
+              </span>
+              <span>
+                <strong>策略:</strong>{' '}
+                {strategyInfo.strategyType === 'single_ma'
+                  ? '单均线策略'
+                  : strategyInfo.strategyType}
+              </span>
               {strategyInfo.parameters.ma_period && (
-                <span><strong>周期:</strong> {strategyInfo.parameters.ma_period}天</span>
+                <span>
+                  <strong>周期:</strong> {strategyInfo.parameters.ma_period}天
+                </span>
               )}
               {strategyInfo.parameters.initial_capital && (
-                <span><strong>初始资金:</strong> ¥{strategyInfo.parameters.initial_capital.toLocaleString()}</span>
+                <span>
+                  <strong>初始资金:</strong> ¥
+                  {strategyInfo.parameters.initial_capital.toLocaleString()}
+                </span>
               )}
             </div>
             {strategyInfo.startDate && strategyInfo.endDate && (
-              <div><strong>时间范围:</strong> {strategyInfo.startDate} 至 {strategyInfo.endDate}</div>
+              <div>
+                <strong>时间范围:</strong> {strategyInfo.startDate} 至{' '}
+                {strategyInfo.endDate}
+              </div>
             )}
           </div>
         )}

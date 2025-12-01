@@ -1,7 +1,11 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useVarietyComparison, useComparisonResults, useAvailableMetrics } from '../comparisonService';
+import {
+  useAvailableMetrics,
+  useComparisonResults,
+  useVarietyComparison,
+} from '../comparisonService';
 import * as api from '@/lib/api';
 
 // Mock API
@@ -19,8 +23,8 @@ describe('ComparisonService Hooks', () => {
     queryClient = new QueryClient({
       defaultOptions: {
         queries: { retry: false },
-        mutations: { retry: false }
-      }
+        mutations: { retry: false },
+      },
     });
 
     wrapper = ({ children }) => (
@@ -35,13 +39,13 @@ describe('ComparisonService Hooks', () => {
       symbols: ['RB2410', 'I2410'],
       startDate: '2024-01-01',
       endDate: '2024-12-31',
-      strategy: { name: 'SMA', params: { window: 20 } }
+      strategy: { name: 'SMA', params: { window: 20 } },
     };
 
     it('should not fetch when less than 2 symbols are provided', () => {
       const { result } = renderHook(
         () => useVarietyComparison({ ...mockRequest, symbols: ['RB2410'] }),
-        { wrapper }
+        { wrapper },
       );
 
       expect(result.current.isLoading).toBe(false);
@@ -63,7 +67,7 @@ describe('ComparisonService Hooks', () => {
             metrics: { totalReturn: 0.15, sharpeRatio: 1.2 },
             trades: [],
             equity: [],
-            signals: []
+            signals: [],
           },
           {
             symbol: 'I2410',
@@ -73,8 +77,8 @@ describe('ComparisonService Hooks', () => {
             metrics: { totalReturn: 0.08, sharpeRatio: 0.9 },
             trades: [],
             equity: [],
-            signals: []
-          }
+            signals: [],
+          },
         ],
         summary: {
           totalVarieties: 2,
@@ -85,20 +89,23 @@ describe('ComparisonService Hooks', () => {
           averageReturn: 0.115,
           averageSharpeRatio: 1.05,
           totalTrades: 0,
-          dateRange: { start: '2024-01-01', end: '2024-12-31', tradingDays: 252 }
+          dateRange: {
+            start: '2024-01-01',
+            end: '2024-12-31',
+            tradingDays: 252,
+          },
         },
-        rankings: []
+        rankings: [],
       };
 
       (fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => mockResponse
+        json: async () => mockResponse,
       });
 
-      const { result } = renderHook(
-        () => useVarietyComparison(mockRequest),
-        { wrapper }
-      );
+      const { result } = renderHook(() => useVarietyComparison(mockRequest), {
+        wrapper,
+      });
 
       expect(result.current.isLoading).toBe(true);
 
@@ -112,8 +119,8 @@ describe('ComparisonService Hooks', () => {
         expect.objectContaining({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(mockRequest)
-        })
+          body: JSON.stringify(mockRequest),
+        }),
       );
     });
 
@@ -121,33 +128,40 @@ describe('ComparisonService Hooks', () => {
       (fetch as jest.Mock).mockResolvedValueOnce({
         ok: false,
         status: 400,
-        json: async () => ({ message: 'API Error' })
+        json: async () => ({ message: 'API Error' }),
       });
 
-      const { result } = renderHook(
-        () => useVarietyComparison(mockRequest),
-        { wrapper }
-      );
+      const { result } = renderHook(() => useVarietyComparison(mockRequest), {
+        wrapper,
+      });
 
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-        expect(result.current.error).toBeDefined();
-      }, { timeout: 5000 });
+      await waitFor(
+        () => {
+          expect(result.current.isLoading).toBe(false);
+          expect(result.current.error).toBeDefined();
+        },
+        { timeout: 5000 },
+      );
 
       expect(result.current.data).toBeUndefined();
     });
 
     it('should cache results for 5 minutes', async () => {
-      const mockResponse = { requestId: 'test-id', results: [], summary: {}, rankings: [] };
+      const mockResponse = {
+        requestId: 'test-id',
+        results: [],
+        summary: {},
+        rankings: [],
+      };
 
       (fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => mockResponse
+        json: async () => mockResponse,
       });
 
       const { result, rerender } = renderHook(
         () => useVarietyComparison(mockRequest),
-        { wrapper }
+        { wrapper },
       );
 
       await waitFor(() => {
@@ -168,34 +182,32 @@ describe('ComparisonService Hooks', () => {
       requestId: mockRequestId,
       results: [],
       summary: {},
-      rankings: []
+      rankings: [],
     };
 
     it('should fetch results for given request ID', async () => {
       (fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => mockResults
+        json: async () => mockResults,
       });
 
-      const { result } = renderHook(
-        () => useComparisonResults(mockRequestId),
-        { wrapper }
-      );
+      const { result } = renderHook(() => useComparisonResults(mockRequestId), {
+        wrapper,
+      });
 
       await waitFor(() => {
         expect(result.current.data).toEqual(mockResults);
       });
 
       expect(fetch).toHaveBeenCalledWith(
-        `/api/v1/comparison/results/${mockRequestId}`
+        `/api/v1/comparison/results/${mockRequestId}`,
       );
     });
 
     it('should not fetch when request ID is empty', () => {
-      const { result } = renderHook(
-        () => useComparisonResults(''),
-        { wrapper }
-      );
+      const { result } = renderHook(() => useComparisonResults(''), {
+        wrapper,
+      });
 
       expect(result.current.isLoading).toBe(false);
       expect(result.current.data).toBeUndefined();
@@ -205,12 +217,12 @@ describe('ComparisonService Hooks', () => {
     it('should handle 404 errors for non-existent request ID', async () => {
       (fetch as jest.Mock).mockResolvedValueOnce({
         ok: false,
-        status: 404
+        status: 404,
       });
 
       const { result } = renderHook(
         () => useComparisonResults('non-existent-id'),
-        { wrapper }
+        { wrapper },
       );
 
       await waitFor(() => {
@@ -222,42 +234,32 @@ describe('ComparisonService Hooks', () => {
   });
 
   describe('useAvailableMetrics', () => {
-    const mockMetrics = [
-      'total_return',
-      'sharpe_ratio',
-      'max_drawdown'
-    ];
+    const mockMetrics = ['total_return', 'sharpe_ratio', 'max_drawdown'];
 
     it('should fetch available metrics', async () => {
       (fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => mockMetrics
+        json: async () => mockMetrics,
       });
 
-      const { result } = renderHook(
-        () => useAvailableMetrics(),
-        { wrapper }
-      );
+      const { result } = renderHook(() => useAvailableMetrics(), { wrapper });
 
       await waitFor(() => {
         expect(result.current.data).toEqual(mockMetrics);
       });
 
-      expect(fetch).toHaveBeenCalledWith(
-        '/api/v1/comparison/metrics'
-      );
+      expect(fetch).toHaveBeenCalledWith('/api/v1/comparison/metrics');
     });
 
     it('should cache metrics for 1 hour', async () => {
       (fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => mockMetrics
+        json: async () => mockMetrics,
       });
 
-      const { result, rerender } = renderHook(
-        () => useAvailableMetrics(),
-        { wrapper }
-      );
+      const { result, rerender } = renderHook(() => useAvailableMetrics(), {
+        wrapper,
+      });
 
       await waitFor(() => {
         expect(result.current.data).toEqual(mockMetrics);
@@ -273,13 +275,10 @@ describe('ComparisonService Hooks', () => {
     it('should handle API errors', async () => {
       (fetch as jest.Mock).mockResolvedValueOnce({
         ok: false,
-        json: async () => ({ message: 'Failed to fetch metrics' })
+        json: async () => ({ message: 'Failed to fetch metrics' }),
       });
 
-      const { result } = renderHook(
-        () => useAvailableMetrics(),
-        { wrapper }
-      );
+      const { result } = renderHook(() => useAvailableMetrics(), { wrapper });
 
       await waitFor(() => {
         expect(result.current.error).toBeDefined();
@@ -293,10 +292,17 @@ describe('ComparisonService Hooks', () => {
     it('should generate correct query keys', () => {
       const { COMPARISON_QUERY_KEYS } = require('../comparisonService');
 
-      expect(COMPARISON_QUERY_KEYS.comparison('test-id')).toEqual(['comparison', 'test-id']);
-      expect(COMPARISON_QUERY_KEYS.availableMetrics()).toEqual(['comparison', 'metrics']);
-      expect(COMPARISON_QUERY_KEYS.historicalComparison(['RB2410', 'I2410'], 30))
-        .toEqual(['comparison', 'historical', ['RB2410', 'I2410'], 30]);
+      expect(COMPARISON_QUERY_KEYS.comparison('test-id')).toEqual([
+        'comparison',
+        'test-id',
+      ]);
+      expect(COMPARISON_QUERY_KEYS.availableMetrics()).toEqual([
+        'comparison',
+        'metrics',
+      ]);
+      expect(
+        COMPARISON_QUERY_KEYS.historicalComparison(['RB2410', 'I2410'], 30),
+      ).toEqual(['comparison', 'historical', ['RB2410', 'I2410'], 30]);
     });
   });
 
@@ -306,19 +312,21 @@ describe('ComparisonService Hooks', () => {
       const retryQueryClient = new QueryClient({
         defaultOptions: {
           queries: { retry: 2 },
-          mutations: { retry: false }
-        }
+          mutations: { retry: false },
+        },
       });
 
       const retryWrapper = ({ children }: { children: React.ReactNode }) => (
-        <QueryClientProvider client={retryQueryClient}>{children}</QueryClientProvider>
+        <QueryClientProvider client={retryQueryClient}>
+          {children}
+        </QueryClientProvider>
       );
 
       const mockRequest = {
         symbols: ['RB2410', 'I2410'],
         startDate: '2024-01-01',
         endDate: '2024-12-31',
-        strategy: { name: 'SMA', params: { window: 20 } }
+        strategy: { name: 'SMA', params: { window: 20 } },
       };
 
       // Fail twice, then succeed
@@ -327,17 +335,24 @@ describe('ComparisonService Hooks', () => {
         .mockResolvedValueOnce({ ok: false, status: 500 })
         .mockResolvedValueOnce({
           ok: true,
-          json: async () => ({ requestId: 'success', results: [], summary: {}, rankings: [] })
+          json: async () => ({
+            requestId: 'success',
+            results: [],
+            summary: {},
+            rankings: [],
+          }),
         });
 
-      const { result } = renderHook(
-        () => useVarietyComparison(mockRequest),
-        { wrapper: retryWrapper }
-      );
+      const { result } = renderHook(() => useVarietyComparison(mockRequest), {
+        wrapper: retryWrapper,
+      });
 
-      await waitFor(() => {
-        expect(result.current.data).toBeDefined();
-      }, { timeout: 5000 });
+      await waitFor(
+        () => {
+          expect(result.current.data).toBeDefined();
+        },
+        { timeout: 5000 },
+      );
 
       expect(fetch).toHaveBeenCalledTimes(3); // 2 retries + 1 success
     });
@@ -347,15 +362,14 @@ describe('ComparisonService Hooks', () => {
         symbols: ['RB2410', 'I2410'],
         startDate: '2024-01-01',
         endDate: '2024-12-31',
-        strategy: { name: 'SMA', params: { window: 20 } }
+        strategy: { name: 'SMA', params: { window: 20 } },
       };
 
       (fetch as jest.Mock).mockRejectedValueOnce(new Error('Network Error'));
 
-      const { result } = renderHook(
-        () => useVarietyComparison(mockRequest),
-        { wrapper }
-      );
+      const { result } = renderHook(() => useVarietyComparison(mockRequest), {
+        wrapper,
+      });
 
       await waitFor(() => {
         expect(result.current.error).toBeDefined();
@@ -372,12 +386,17 @@ describe('ComparisonService Hooks', () => {
         symbols: ['RB2410', 'I2410'],
         startDate: '2024-01-01',
         endDate: '2024-12-31',
-        strategy: { name: 'SMA', params: { window: 20 } }
+        strategy: { name: 'SMA', params: { window: 20 } },
       };
 
       (fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ requestId: 'prefetch', results: [], summary: {}, rankings: [] })
+        json: async () => ({
+          requestId: 'prefetch',
+          results: [],
+          summary: {},
+          rankings: [],
+        }),
       });
 
       const { result } = renderHook(() => useComparisonCache(), { wrapper });
@@ -389,8 +408,8 @@ describe('ComparisonService Hooks', () => {
           '/api/v1/comparison/run',
           expect.objectContaining({
             method: 'POST',
-            body: JSON.stringify(mockRequest)
-          })
+            body: JSON.stringify(mockRequest),
+          }),
         );
       });
     });
@@ -403,7 +422,9 @@ describe('ComparisonService Hooks', () => {
 
       result.current.clearComparisonCache();
 
-      expect(invalidateQueriesSpy).toHaveBeenCalledWith({ queryKey: ['comparison'] });
+      expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+        queryKey: ['comparison'],
+      });
     });
 
     it('should get cached comparison data', async () => {

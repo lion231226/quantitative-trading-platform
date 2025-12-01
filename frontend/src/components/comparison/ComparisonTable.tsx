@@ -1,32 +1,43 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { VarietyResult, PerformanceMetrics } from '@/types/comparison.types';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { PerformanceMetrics, VarietyResult } from '@/types/comparison.types';
 import { cn } from '@/lib/utils';
-import { ArrowUpDown, ArrowUp, ArrowDown, Download, Filter } from 'lucide-react';
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  Download,
+  Filter,
+} from 'lucide-react';
 
 interface ComparisonTableProps {
-  results: VarietyResult[]
-  sortable?: boolean
-  filterable?: boolean
-  exportable?: boolean
-  className?: string
+  results: VarietyResult[];
+  sortable?: boolean;
+  filterable?: boolean;
+  exportable?: boolean;
+  className?: string;
 }
 
 type SortField = keyof PerformanceMetrics | 'symbol' | 'sector';
 type SortDirection = 'asc' | 'desc';
 
 interface ColumnConfig {
-  key: SortField
-  label: string
-  formatter: (value: any, result: VarietyResult) => React.ReactNode
-  className?: string
-  sortable: boolean
+  key: SortField;
+  label: string;
+  formatter: (value: any, result: VarietyResult) => React.ReactNode;
+  className?: string;
+  sortable: boolean;
 }
 
 export function ComparisonTable({
@@ -34,7 +45,7 @@ export function ComparisonTable({
   sortable = true,
   filterable = true,
   exportable = true,
-  className
+  className,
 }: ComparisonTableProps) {
   const [sortField, setSortField] = useState<SortField>('totalReturn');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
@@ -43,7 +54,7 @@ export function ComparisonTable({
 
   // 获取所有版块
   const sectors = useMemo(() => {
-    const uniqueSectors = Array.from(new Set(results.map(r => r.sector)));
+    const uniqueSectors = Array.from(new Set(results.map((r) => r.sector)));
     return ['全部', ...uniqueSectors];
   }, [results]);
 
@@ -54,16 +65,17 @@ export function ComparisonTable({
     // 搜索过滤
     if (filterTerm.trim()) {
       const searchLower = filterTerm.toLowerCase();
-      filtered = filtered.filter(r =>
-        r.symbol.toLowerCase().includes(searchLower) ||
-        r.name.toLowerCase().includes(searchLower) ||
-        r.sector.toLowerCase().includes(searchLower)
+      filtered = filtered.filter(
+        (r) =>
+          r.symbol.toLowerCase().includes(searchLower) ||
+          r.name.toLowerCase().includes(searchLower) ||
+          r.sector.toLowerCase().includes(searchLower),
       );
     }
 
     // 版块过滤
     if (selectedSector !== '全部') {
-      filtered = filtered.filter(r => r.sector === selectedSector);
+      filtered = filtered.filter((r) => r.sector === selectedSector);
     }
 
     return filtered;
@@ -114,16 +126,20 @@ export function ComparisonTable({
 
   // 导出功能
   const handleExport = (format: 'csv' | 'excel') => {
-    const headers = columns.map(col => col.label).join(',');
-    const rows = sortedResults.map(result =>
-      columns.map(col => {
-        if (col.key === 'symbol') return result.symbol;
-        if (col.key === 'sector') return result.sector;
-        return result.metrics[col.key as keyof PerformanceMetrics];
-      }).join(',')
-    ).join('\n');
+    const headers = columns.map((col) => col.label).join(',');
+    const rows = sortedResults
+      .map((result) =>
+        columns
+          .map((col) => {
+            if (col.key === 'symbol') return result.symbol;
+            if (col.key === 'sector') return result.sector;
+            return result.metrics[col.key as keyof PerformanceMetrics];
+          })
+          .join(','),
+      )
+      .join('\n');
 
-    const csvContent = headers + '\n' + rows;
+    const csvContent = `${headers}\n${rows}`;
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
@@ -142,7 +158,7 @@ export function ComparisonTable({
           <div className="text-sm text-muted-foreground">{result.name}</div>
         </div>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'sector',
@@ -152,33 +168,45 @@ export function ComparisonTable({
           {sector}
         </Badge>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'totalReturn',
       label: '总收益率',
       formatter: (value) => (
-        <span className={cn(
-          'font-medium',
-          value > 0 ? 'text-green-600' : value < 0 ? 'text-red-600' : 'text-gray-600'
-        )}>
+        <span
+          className={cn(
+            'font-medium',
+            value > 0
+              ? 'text-green-600'
+              : value < 0
+                ? 'text-red-600'
+                : 'text-gray-600',
+          )}
+        >
           {(value * 100).toFixed(2)}%
         </span>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'sharpeRatio',
       label: '夏普比率',
       formatter: (value) => (
-        <span className={cn(
-          'font-medium',
-          value > 1 ? 'text-green-600' : value > 0.5 ? 'text-yellow-600' : 'text-red-600'
-        )}>
+        <span
+          className={cn(
+            'font-medium',
+            value > 1
+              ? 'text-green-600'
+              : value > 0.5
+                ? 'text-yellow-600'
+                : 'text-red-600',
+          )}
+        >
           {value.toFixed(2)}
         </span>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'maxDrawdown',
@@ -188,54 +216,62 @@ export function ComparisonTable({
           {(value * 100).toFixed(2)}%
         </span>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'volatility',
       label: '波动率',
       formatter: (value) => (
-        <span className="font-medium">
-          {(value * 100).toFixed(2)}%
-        </span>
+        <span className="font-medium">{(value * 100).toFixed(2)}%</span>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'winRate',
       label: '胜率',
       formatter: (value) => (
-        <span className={cn(
-          'font-medium',
-          value > 0.6 ? 'text-green-600' : value > 0.4 ? 'text-yellow-600' : 'text-red-600'
-        )}>
+        <span
+          className={cn(
+            'font-medium',
+            value > 0.6
+              ? 'text-green-600'
+              : value > 0.4
+                ? 'text-yellow-600'
+                : 'text-red-600',
+          )}
+        >
           {(value * 100).toFixed(1)}%
         </span>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'totalTrades',
       label: '交易次数',
       formatter: (value) => (
-        <span className="font-medium">
-          {value.toFixed(0)}
-        </span>
+        <span className="font-medium">{value.toFixed(0)}</span>
       ),
-      sortable: true
+      sortable: true,
     },
     {
       key: 'profitFactor',
       label: '盈亏比',
       formatter: (value) => (
-        <span className={cn(
-          'font-medium',
-          value > 2 ? 'text-green-600' : value > 1.5 ? 'text-yellow-600' : 'text-red-600'
-        )}>
+        <span
+          className={cn(
+            'font-medium',
+            value > 2
+              ? 'text-green-600'
+              : value > 1.5
+                ? 'text-yellow-600'
+                : 'text-red-600',
+          )}
+        >
           {value.toFixed(2)}
         </span>
       ),
-      sortable: true
-    }
+      sortable: true,
+    },
   ];
 
   // 获取排序图标
@@ -243,9 +279,11 @@ export function ComparisonTable({
     if (sortField !== field) {
       return <ArrowUpDown className="h-4 w-4 text-muted-foreground" />;
     }
-    return sortDirection === 'asc'
-      ? <ArrowUp className="h-4 w-4 text-primary" />
-      : <ArrowDown className="h-4 w-4 text-primary" />;
+    return sortDirection === 'asc' ? (
+      <ArrowUp className="h-4 w-4 text-primary" />
+    ) : (
+      <ArrowDown className="h-4 w-4 text-primary" />
+    );
   };
 
   return (
@@ -294,7 +332,7 @@ export function ComparisonTable({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  {sectors.map(sector => (
+                  {sectors.map((sector) => (
                     <DropdownMenuItem
                       key={sector}
                       onClick={() => setSelectedSector(sector)}
@@ -325,8 +363,10 @@ export function ComparisonTable({
                     key={column.key}
                     className={cn(
                       'text-left p-3 font-medium text-sm',
-                      column.sortable && sortable && 'cursor-pointer hover:bg-muted/50',
-                      column.className
+                      column.sortable &&
+                        sortable &&
+                        'cursor-pointer hover:bg-muted/50',
+                      column.className,
                     )}
                     onClick={() => column.sortable && handleSort(column.key)}
                   >
@@ -344,7 +384,7 @@ export function ComparisonTable({
                   key={result.symbol}
                   className={cn(
                     'border-b hover:bg-muted/30',
-                    index % 2 === 0 && 'bg-muted/10'
+                    index % 2 === 0 && 'bg-muted/10',
                   )}
                 >
                   {columns.map((column) => (
@@ -353,10 +393,14 @@ export function ComparisonTable({
                       className={cn('p-3 text-sm', column.className)}
                     >
                       {column.formatter(
-                        column.key === 'symbol' ? result.symbol :
-                        column.key === 'sector' ? result.sector :
-                        result.metrics[column.key as keyof PerformanceMetrics],
-                        result
+                        column.key === 'symbol'
+                          ? result.symbol
+                          : column.key === 'sector'
+                            ? result.sector
+                            : result.metrics[
+                                column.key as keyof PerformanceMetrics
+                              ],
+                        result,
                       )}
                     </td>
                   ))}
@@ -371,8 +415,7 @@ export function ComparisonTable({
           <div className="text-center py-8 text-muted-foreground">
             {filterTerm || selectedSector !== '全部'
               ? '没有找到匹配的品种'
-              : '暂无数据'
-            }
+              : '暂无数据'}
           </div>
         )}
       </CardContent>

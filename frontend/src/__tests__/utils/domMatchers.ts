@@ -6,7 +6,10 @@ import { expect } from '@testing-library/jest-dom';
  */
 
 // Enhanced toBeInTheDocument with DOM error handling
-const toBeInTheDocumentCompat = async (element: HTMLElement | null, timeout = 1000) => {
+const toBeInTheDocumentCompat = async (
+  element: HTMLElement | null,
+  timeout = 1000,
+) => {
   if (!element) {
     return {
       message: () => 'Expected element to be in the document, but it was null',
@@ -31,8 +34,10 @@ const toBeInTheDocumentCompat = async (element: HTMLElement | null, timeout = 10
 // Custom matcher for role queries with fallback
 const toHaveRoleCompat = async (element: HTMLElement, expectedRole: string) => {
   try {
-    const actualRole = element.getAttribute('role') || element.tagName.toLowerCase();
-    const pass = actualRole === expectedRole || actualRole.includes(expectedRole);
+    const actualRole =
+      element.getAttribute('role') || element.tagName.toLowerCase();
+    const pass =
+      actualRole === expectedRole || actualRole.includes(expectedRole);
 
     return {
       message: () =>

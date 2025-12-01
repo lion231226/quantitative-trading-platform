@@ -1,25 +1,25 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import { Globe, TrendingUp } from 'lucide-react'
-import { useTheme } from './ThemeProvider'
-import { MarketMode } from '../../types/theme.types'
+import React, { useState } from 'react';
+import { Globe, TrendingUp } from 'lucide-react';
+import { useTheme } from './ThemeProvider';
+import { MarketMode } from '../../types/theme.types';
 
 interface MarketModeSelectorProps {
-  className?: string
-  showLabel?: boolean
-  size?: 'sm' | 'md' | 'lg'
-  variant?: 'default' | 'compact' | 'detailed'
+  className?: string;
+  showLabel?: boolean;
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'default' | 'compact' | 'detailed';
 }
 
 export const MarketModeSelector: React.FC<MarketModeSelectorProps> = ({
   className = '',
   showLabel = true,
   size = 'md',
-  variant = 'default'
+  variant = 'default',
 }) => {
-  const { marketMode, setMarketMode } = useTheme()
-  const [isOpen, setIsOpen] = useState(false)
+  const { marketMode, setMarketMode } = useTheme();
+  const [isOpen, setIsOpen] = useState(false);
 
   // 市场模式选项
   const marketModes = [
@@ -30,8 +30,8 @@ export const MarketModeSelector: React.FC<MarketModeSelectorProps> = ({
       icon: '🇨🇳',
       colors: {
         bullish: '#ef4444', // 红色
-        bearish: '#22c55e'  // 绿色
-      }
+        bearish: '#22c55e', // 绿色
+      },
     },
     {
       value: 'international' as MarketMode,
@@ -40,44 +40,45 @@ export const MarketModeSelector: React.FC<MarketModeSelectorProps> = ({
       icon: '🌍',
       colors: {
         bullish: '#22c55e', // 绿色
-        bearish: '#ef4444'  // 红色
-      }
-    }
-  ]
+        bearish: '#ef4444', // 红色
+      },
+    },
+  ];
 
   // 当前选择的市场模式
-  const currentMode = marketModes.find(mode => mode.value === marketMode)
+  const currentMode = marketModes.find((mode) => mode.value === marketMode);
 
   // 尺寸样式映射
   const sizeClasses = {
     sm: {
       container: 'px-3 py-1.5 text-sm',
       dropdown: 'text-xs',
-      preview: 'w-4 h-4'
+      preview: 'w-4 h-4',
     },
     md: {
       container: 'px-4 py-2 text-sm',
       dropdown: 'text-sm',
-      preview: 'w-5 h-5'
+      preview: 'w-5 h-5',
     },
     lg: {
       container: 'px-5 py-3 text-base',
       dropdown: 'text-base',
-      preview: 'w-6 h-6'
-    }
-  }[size]
+      preview: 'w-6 h-6',
+    },
+  }[size];
 
   // 变体样式
   const variantClasses = {
-    default: 'bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50',
+    default:
+      'bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50',
     compact: 'bg-transparent border border-gray-300 rounded hover:bg-gray-50',
-    detailed: 'bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100'
-  }[variant]
+    detailed: 'bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100',
+  }[variant];
 
   const handleModeChange = (mode: MarketMode) => {
-    setMarketMode(mode)
-    setIsOpen(false)
-  }
+    setMarketMode(mode);
+    setIsOpen(false);
+  };
 
   if (variant === 'compact') {
     return (
@@ -98,7 +99,12 @@ export const MarketModeSelector: React.FC<MarketModeSelectorProps> = ({
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </button>
 
@@ -123,7 +129,9 @@ export const MarketModeSelector: React.FC<MarketModeSelectorProps> = ({
                     <span className="text-lg">{mode.icon}</span>
                     <div className="flex-1 text-left">
                       <div className="font-medium">{mode.label}</div>
-                      <div className="text-xs text-gray-500">{mode.description}</div>
+                      <div className="text-xs text-gray-500">
+                        {mode.description}
+                      </div>
                     </div>
                     <div className="flex space-x-1">
                       <div
@@ -144,7 +152,7 @@ export const MarketModeSelector: React.FC<MarketModeSelectorProps> = ({
           </>
         )}
       </div>
-    )
+    );
   }
 
   return (
@@ -193,7 +201,12 @@ export const MarketModeSelector: React.FC<MarketModeSelectorProps> = ({
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </div>
       </button>
@@ -208,7 +221,9 @@ export const MarketModeSelector: React.FC<MarketModeSelectorProps> = ({
             <div className="p-4">
               <div className="flex items-center space-x-2 mb-3">
                 <TrendingUp className="w-4 h-4 text-gray-600" />
-                <h3 className="text-sm font-semibold text-gray-900">选择市场模式</h3>
+                <h3 className="text-sm font-semibold text-gray-900">
+                  选择市场模式
+                </h3>
               </div>
 
               <div className="space-y-2">
@@ -225,15 +240,23 @@ export const MarketModeSelector: React.FC<MarketModeSelectorProps> = ({
                     <span className="text-2xl">{mode.icon}</span>
                     <div className="flex-1 text-left">
                       <div className="font-medium text-base">{mode.label}</div>
-                      <div className="text-sm text-gray-500">{mode.description}</div>
+                      <div className="text-sm text-gray-500">
+                        {mode.description}
+                      </div>
                     </div>
                     <div className="flex flex-col items-center space-y-1">
                       <div className="flex items-center space-x-1">
-                        <div className="w-4 h-4 rounded" style={{ backgroundColor: mode.colors.bullish }} />
+                        <div
+                          className="w-4 h-4 rounded"
+                          style={{ backgroundColor: mode.colors.bullish }}
+                        />
                         <span className="text-xs text-gray-600">涨</span>
                       </div>
                       <div className="flex items-center space-x-1">
-                        <div className="w-4 h-4 rounded" style={{ backgroundColor: mode.colors.bearish }} />
+                        <div
+                          className="w-4 h-4 rounded"
+                          style={{ backgroundColor: mode.colors.bearish }}
+                        />
                         <span className="text-xs text-gray-600">跌</span>
                       </div>
                     </div>
@@ -244,7 +267,8 @@ export const MarketModeSelector: React.FC<MarketModeSelectorProps> = ({
               {variant === 'detailed' && (
                 <div className="mt-4 pt-3 border-t border-gray-200">
                   <p className="text-xs text-gray-500">
-                    💡 市场模式决定涨跌颜色：中国股市习惯红涨绿跌，国际市场习惯绿涨红跌。
+                    💡
+                    市场模式决定涨跌颜色：中国股市习惯红涨绿跌，国际市场习惯绿涨红跌。
                     选择符合您使用习惯的模式可获得更好的视觉体验。
                   </p>
                 </div>
@@ -254,7 +278,7 @@ export const MarketModeSelector: React.FC<MarketModeSelectorProps> = ({
         </>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default MarketModeSelector
+export default MarketModeSelector;

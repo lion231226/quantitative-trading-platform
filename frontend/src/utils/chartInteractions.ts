@@ -42,9 +42,12 @@ export class ChartInteractions {
     if (!this.chart) return;
 
     // 初始化插件引用
-    this.zoomPlugin = this.chart.config.plugins?.find(p => p.id === 'zoom') || null;
-    this.crosshairPlugin = this.chart.config.plugins?.find(p => p.id === 'crosshair') || null;
-    this.dataLabelsPlugin = this.chart.config.plugins?.find(p => p.id === 'datalabels') || null;
+    this.zoomPlugin =
+      this.chart.config.plugins?.find((p) => p.id === 'zoom') || null;
+    this.crosshairPlugin =
+      this.chart.config.plugins?.find((p) => p.id === 'crosshair') || null;
+    this.dataLabelsPlugin =
+      this.chart.config.plugins?.find((p) => p.id === 'datalabels') || null;
   }
 
   // 重置缩放
@@ -98,14 +101,26 @@ export class ChartInteractions {
   }
 
   // 添加点击事件监听器
-  addClickListener(callback: (event: ChartEvent, elements: ActiveElement[], chart: ChartJS) => void) {
+  addClickListener(
+    callback: (
+      event: ChartEvent,
+      elements: ActiveElement[],
+      chart: ChartJS,
+    ) => void,
+  ) {
     if (!this.chart) return;
 
     this.chart.options.onClick = callback;
   }
 
   // 添加悬停事件监听器
-  addHoverListener(callback: (event: ChartEvent, elements: ActiveElement[], chart: ChartJS) => void) {
+  addHoverListener(
+    callback: (
+      event: ChartEvent,
+      elements: ActiveElement[],
+      chart: ChartJS,
+    ) => void,
+  ) {
     if (!this.chart) return;
 
     this.chart.options.onHover = callback;
@@ -154,7 +169,7 @@ export class ChartInteractions {
               ctx.restore();
             }
           }
-        }
+        },
       } as any);
 
       this.chart.update();
@@ -201,7 +216,7 @@ export class ChartInteractions {
               });
             }
           });
-        }
+        },
       } as any);
 
       this.chart.update();
@@ -276,7 +291,13 @@ export const createInteractionConfig = () => ({
   },
 
   // 点击事件配置
-  events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove'] as const,
+  events: [
+    'mousemove',
+    'mouseout',
+    'click',
+    'touchstart',
+    'touchmove',
+  ] as const,
 });
 
 // 信号点击处理器
@@ -285,7 +306,7 @@ export const handleSignalClick = (
   elements: ActiveElement[],
   chart: ChartJS,
   signals: TradingSignal[],
-  onSignalClick?: (signal: TradingSignal) => void
+  onSignalClick?: (signal: TradingSignal) => void,
 ) => {
   if (elements.length > 0 && signals.length > 0) {
     const element = elements[0];
@@ -293,8 +314,8 @@ export const handleSignalClick = (
     const index = element.index;
 
     // 查找对应的信号
-    const signal = signals.find(s =>
-      Math.floor(new Date(s.timestamp).getTime() / 1000) === index
+    const signal = signals.find(
+      (s) => Math.floor(new Date(s.timestamp).getTime() / 1000) === index,
     );
 
     if (signal && onSignalClick) {
@@ -309,7 +330,7 @@ export const handlePricePointClick = (
   elements: ActiveElement[],
   chart: ChartJS,
   data: PricePoint[],
-  onPointClick?: (point: PricePoint) => void
+  onPointClick?: (point: PricePoint) => void,
 ) => {
   if (elements.length > 0 && data.length > 0) {
     const element = elements[0];

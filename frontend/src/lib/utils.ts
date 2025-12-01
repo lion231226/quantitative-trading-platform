@@ -50,7 +50,7 @@ export function safeJsonParse<T>(json: string, fallback: T): T {
  * 延迟执行
  */
 export function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
@@ -73,7 +73,7 @@ export function deepClone<T>(obj: T): T {
   }
 
   if (obj instanceof Array) {
-    return obj.map(item => deepClone(item)) as T;
+    return obj.map((item) => deepClone(item)) as T;
   }
 
   if (typeof obj === 'object') {
@@ -87,4 +87,42 @@ export function deepClone<T>(obj: T): T {
   }
 
   return obj;
+}
+
+/**
+ * 安全的数组访问 - 处理 noUncheckedIndexedAccess
+ */
+export function safeArrayAccess<T>(array: T[], index: number): T | undefined {
+  return index >= 0 && index < array.length ? array[index] : undefined;
+}
+
+/**
+ * 安全的数组首元素访问
+ */
+export function safeArrayFirst<T>(array: T[]): T | undefined {
+  return safeArrayAccess(array, 0);
+}
+
+/**
+ * 安全的数组末元素访问
+ */
+export function safeArrayLast<T>(array: T[]): T | undefined {
+  return safeArrayAccess(array, array.length - 1);
+}
+
+/**
+ * 检查数组是否有元素
+ */
+export function hasArrayElements<T>(array: T[]): boolean {
+  return array.length > 0;
+}
+
+/**
+ * 安全的对象属性访问
+ */
+export function safeObjectAccess<T, K extends keyof T>(
+  obj: T,
+  key: K,
+): T[K] | undefined {
+  return obj?.[key];
 }

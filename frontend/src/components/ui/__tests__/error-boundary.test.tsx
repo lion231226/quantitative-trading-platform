@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ErrorBoundary from '../error-boundary';
 
@@ -95,7 +95,7 @@ describe('ErrorBoundary Component', () => {
     fireEvent.click(resetButton);
 
     // Wait for state to update
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     // Rerender with no error
     rerender(
@@ -108,7 +108,13 @@ describe('ErrorBoundary Component', () => {
   });
 
   it('uses custom fallback when provided', () => {
-    const CustomFallback = ({ error, reset }: { error: Error; reset: () => void }) => (
+    const CustomFallback = ({
+      error,
+      reset,
+    }: {
+      error: Error;
+      reset: () => void;
+    }) => (
       <div>
         <h1>Custom Error</h1>
         <p>{error.message}</p>

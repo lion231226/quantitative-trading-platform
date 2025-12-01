@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import TutorialSystem from '../TutorialSystem';
 
@@ -63,7 +63,7 @@ describe('TutorialSystem', () => {
         tutorialId="test-tutorial"
         isOpen={true}
         onClose={jest.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText('Test Tutorial')).toBeInTheDocument();
@@ -78,7 +78,7 @@ describe('TutorialSystem', () => {
         isOpen={true}
         onClose={jest.fn()}
         autoStart={true}
-      />
+      />,
     );
 
     await waitFor(() => {
@@ -93,7 +93,7 @@ describe('TutorialSystem', () => {
         tutorialId="test-tutorial"
         isOpen={true}
         onClose={onClose}
-      />
+      />,
     );
 
     const closeButton = screen.getByLabelText('Close');

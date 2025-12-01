@@ -1,27 +1,27 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import {
-  Chart as ChartJS,
+  AnimationOptions,
   CategoryScale,
+  Chart as ChartJS,
+  Filler,
+  Legend,
+  LineElement,
   LinearScale,
   PointElement,
-  LineElement,
   Title,
   Tooltip,
-  Legend,
-  Filler,
-  AnimationOptions,
 } from 'chart.js';
 import {
-  Play,
-  Pause,
-  RotateCcw,
-  TrendingUp,
-  TrendingDown,
-  ArrowUpRight,
   ArrowDownRight,
+  ArrowUpRight,
   Eye,
   EyeOff,
+  Pause,
+  Play,
+  RotateCcw,
+  TrendingDown,
+  TrendingUp,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -37,7 +37,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  Filler
+  Filler,
 );
 
 interface GoldenDeathCrossAnimationProps {
@@ -107,53 +107,59 @@ export function GoldenDeathCrossAnimation({
   }, []);
 
   // 计算移动平均线
-  const calculateMovingAverage = useCallback((data: number[], period: number, index: number) => {
-    if (index < period - 1) return null;
+  const calculateMovingAverage = useCallback(
+    (data: number[], period: number, index: number) => {
+      if (index < period - 1) return null;
 
-    const window = data.slice(index - period + 1, index + 1);
-    return window.reduce((sum, val) => sum + val, 0) / period;
-  }, []);
+      const window = data.slice(index - period + 1, index + 1);
+      return window.reduce((sum, val) => sum + val, 0) / period;
+    },
+    [],
+  );
 
   // 检测金叉死叉
-  const detectCross = useCallback((
-    data: number[],
-    index: number,
-    ma10: number | null,
-    ma20: number | null,
-    prevMa10: number | null,
-    prevMa20: number | null
-  ): CrossSignal | null => {
-    if (!ma10 || !ma20 || !prevMa10 || !prevMa20) return null;
+  const detectCross = useCallback(
+    (
+      data: number[],
+      index: number,
+      ma10: number | null,
+      ma20: number | null,
+      prevMa10: number | null,
+      prevMa20: number | null,
+    ): CrossSignal | null => {
+      if (!ma10 || !ma20 || !prevMa10 || !prevMa20) return null;
 
-    const currentDiff = ma10 - ma20;
-    const prevDiff = prevMa10 - prevMa20;
+      const currentDiff = ma10 - ma20;
+      const prevDiff = prevMa10 - prevMa20;
 
-    // 金叉：短期均线上穿长期均线
-    if (prevDiff <= 0 && currentDiff > 0 && showGoldenCross) {
-      return {
-        type: 'golden',
-        day: index,
-        price: data[index],
-        ma10,
-        ma20,
-        description: `金叉形成！短期均线(¥${ma10.toFixed(2)})上穿长期均线(¥${ma20.toFixed(2)})`,
-      };
-    }
+      // 金叉：短期均线上穿长期均线
+      if (prevDiff <= 0 && currentDiff > 0 && showGoldenCross) {
+        return {
+          type: 'golden',
+          day: index,
+          price: data[index],
+          ma10,
+          ma20,
+          description: `金叉形成！短期均线(¥${ma10.toFixed(2)})上穿长期均线(¥${ma20.toFixed(2)})`,
+        };
+      }
 
-    // 死叉：短期均线下穿长期均线
-    if (prevDiff >= 0 && currentDiff < 0 && showDeathCross) {
-      return {
-        type: 'death',
-        day: index,
-        price: data[index],
-        ma10,
-        ma20,
-        description: `死叉形成！短期均线(¥${ma10.toFixed(2)})下穿长期均线(¥${ma20.toFixed(2)})`,
-      };
-    }
+      // 死叉：短期均线下穿长期均线
+      if (prevDiff >= 0 && currentDiff < 0 && showDeathCross) {
+        return {
+          type: 'death',
+          day: index,
+          price: data[index],
+          ma10,
+          ma20,
+          description: `死叉形成！短期均线(¥${ma10.toFixed(2)})下穿长期均线(¥${ma20.toFixed(2)})`,
+        };
+      }
 
-    return null;
-  }, [showGoldenCross, showDeathCross]);
+      return null;
+    },
+    [showGoldenCross, showDeathCross],
+  );
 
   // 准备动画步骤
   const prepareAnimationSteps = useCallback(() => {
@@ -188,115 +194,118 @@ export function GoldenDeathCrossAnimation({
   }, [generatePriceData, calculateMovingAverage, detectCross]);
 
   // 更新图表数据
-  const updateChartData = useCallback((stepIndex: number) => {
-    if (animationSteps.length === 0) return;
+  const updateChartData = useCallback(
+    (stepIndex: number) => {
+      if (animationSteps.length === 0) return;
 
-    const currentSteps = animationSteps.slice(0, stepIndex + 1);
-    const labels = currentSteps.map(step => `Day ${step.day + 1}`);
-    const prices = currentSteps.map(step => step.price);
-    const ma10Data = currentSteps.map(step => step.ma10);
-    const ma20Data = currentSteps.map(step => step.ma20);
+      const currentSteps = animationSteps.slice(0, stepIndex + 1);
+      const labels = currentSteps.map((step) => `Day ${step.day + 1}`);
+      const prices = currentSteps.map((step) => step.price);
+      const ma10Data = currentSteps.map((step) => step.ma10);
+      const ma20Data = currentSteps.map((step) => step.ma20);
 
-    // 找到交叉点
-    const goldenCrossPoints = currentSteps
-      .filter(step => step.cross?.type === 'golden')
-      .map(step => ({
-        x: step.day + 1,
-        y: step.price,
-      }));
+      // 找到交叉点
+      const goldenCrossPoints = currentSteps
+        .filter((step) => step.cross?.type === 'golden')
+        .map((step) => ({
+          x: step.day + 1,
+          y: step.price,
+        }));
 
-    const deathCrossPoints = currentSteps
-      .filter(step => step.cross?.type === 'death')
-      .map(step => ({
-        x: step.day + 1,
-        y: step.price,
-      }));
+      const deathCrossPoints = currentSteps
+        .filter((step) => step.cross?.type === 'death')
+        .map((step) => ({
+          x: step.day + 1,
+          y: step.price,
+        }));
 
-    const datasets = [
-      {
-        label: '价格',
-        data: prices,
-        borderColor: 'rgb(59, 130, 246)',
-        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-        borderWidth: 2,
-        fill: false,
-        tension: 0.1,
-        pointRadius: 2,
-        pointHoverRadius: 6,
-      },
-    ];
+      const datasets = [
+        {
+          label: '价格',
+          data: prices,
+          borderColor: 'rgb(59, 130, 246)',
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          borderWidth: 2,
+          fill: false,
+          tension: 0.1,
+          pointRadius: 2,
+          pointHoverRadius: 6,
+        },
+      ];
 
-    // 添加移动平均线
-    if (showMAs.ma10) {
-      datasets.push({
-        label: 'MA10 (短期)',
-        data: ma10Data,
-        borderColor: 'rgb(239, 68, 68)',
-        backgroundColor: 'transparent',
-        borderWidth: 3,
-        fill: false,
-        tension: 0.1,
-        pointRadius: 0,
-        pointHoverRadius: 6,
-      });
-    }
+      // 添加移动平均线
+      if (showMAs.ma10) {
+        datasets.push({
+          label: 'MA10 (短期)',
+          data: ma10Data,
+          borderColor: 'rgb(239, 68, 68)',
+          backgroundColor: 'transparent',
+          borderWidth: 3,
+          fill: false,
+          tension: 0.1,
+          pointRadius: 0,
+          pointHoverRadius: 6,
+        });
+      }
 
-    if (showMAs.ma20) {
-      datasets.push({
-        label: 'MA20 (长期)',
-        data: ma20Data,
-        borderColor: 'rgb(34, 197, 94)',
-        backgroundColor: 'transparent',
-        borderWidth: 3,
-        fill: false,
-        tension: 0.1,
-        pointRadius: 0,
-        pointHoverRadius: 6,
-      });
-    }
+      if (showMAs.ma20) {
+        datasets.push({
+          label: 'MA20 (长期)',
+          data: ma20Data,
+          borderColor: 'rgb(34, 197, 94)',
+          backgroundColor: 'transparent',
+          borderWidth: 3,
+          fill: false,
+          tension: 0.1,
+          pointRadius: 0,
+          pointHoverRadius: 6,
+        });
+      }
 
-    // 添加交叉点标记
-    if (showGoldenCross && goldenCrossPoints.length > 0) {
-      datasets.push({
-        label: '金叉',
-        data: goldenCrossPoints,
-        borderColor: 'rgb(34, 197, 94)',
-        backgroundColor: 'rgb(34, 197, 94)',
-        pointStyle: 'triangle',
-        rotation: 0,
-        radius: 12,
-        pointHoverRadius: 15,
-        showLine: false,
-      });
-    }
+      // 添加交叉点标记
+      if (showGoldenCross && goldenCrossPoints.length > 0) {
+        datasets.push({
+          label: '金叉',
+          data: goldenCrossPoints,
+          borderColor: 'rgb(34, 197, 94)',
+          backgroundColor: 'rgb(34, 197, 94)',
+          pointStyle: 'triangle',
+          rotation: 0,
+          radius: 12,
+          pointHoverRadius: 15,
+          showLine: false,
+        });
+      }
 
-    if (showDeathCross && deathCrossPoints.length > 0) {
-      datasets.push({
-        label: '死叉',
-        data: deathCrossPoints,
-        borderColor: 'rgb(239, 68, 68)',
-        backgroundColor: 'rgb(239, 68, 68)',
-        pointStyle: 'triangle',
-        rotation: 180,
-        radius: 12,
-        pointHoverRadius: 15,
-        showLine: false,
-      });
-    }
+      if (showDeathCross && deathCrossPoints.length > 0) {
+        datasets.push({
+          label: '死叉',
+          data: deathCrossPoints,
+          borderColor: 'rgb(239, 68, 68)',
+          backgroundColor: 'rgb(239, 68, 68)',
+          pointStyle: 'triangle',
+          rotation: 180,
+          radius: 12,
+          pointHoverRadius: 15,
+          showLine: false,
+        });
+      }
 
-    const newChartData = {
-      labels,
-      datasets,
-    };
+      const newChartData = {
+        labels,
+        datasets,
+      };
 
-    setChartData(newChartData);
-  }, [animationSteps, showMAs, showGoldenCross, showDeathCross]);
+      setChartData(newChartData);
+    },
+    [animationSteps, showMAs, showGoldenCross, showDeathCross],
+  );
 
   // 动画播放控制
   useEffect(() => {
     if (isPlaying) {
       intervalRef.current = setInterval(() => {
-        setCurrentStep(prev => {
+        setCurrentStep((prev) => {
           const nextStep = prev + 1;
 
           if (nextStep >= animationSteps.length) {
@@ -307,7 +316,10 @@ export function GoldenDeathCrossAnimation({
 
           const currentAnimation = animationSteps[nextStep];
           if (currentAnimation?.cross) {
-            onCrossDetected?.(currentAnimation.cross.type, currentAnimation.cross);
+            onCrossDetected?.(
+              currentAnimation.cross.type,
+              currentAnimation.cross,
+            );
           }
 
           return nextStep;
@@ -348,12 +360,12 @@ export function GoldenDeathCrossAnimation({
   };
   const handleNext = () => {
     if (currentStep < animationSteps.length - 1) {
-      setCurrentStep(prev => prev + 1);
+      setCurrentStep((prev) => prev + 1);
     }
   };
   const handlePrevious = () => {
     if (currentStep > 0) {
-      setCurrentStep(prev => prev - 1);
+      setCurrentStep((prev) => prev - 1);
     }
   };
 
@@ -389,7 +401,7 @@ export function GoldenDeathCrossAnimation({
         padding: 12,
         displayColors: true,
         callbacks: {
-          afterLabel: function(context: any) {
+          afterLabel(context: any) {
             const index = context.dataIndex;
             if (index < animationSteps.length) {
               const step = animationSteps[index];
@@ -421,8 +433,8 @@ export function GoldenDeathCrossAnimation({
           color: 'rgba(0, 0, 0, 0.05)',
         },
         ticks: {
-          callback: function(value: any) {
-            return '¥' + value.toFixed(0);
+          callback(value: any) {
+            return `¥${value.toFixed(0)}`;
           },
           font: {
             size: 10,
@@ -439,23 +451,25 @@ export function GoldenDeathCrossAnimation({
         <h3 className="text-2xl font-bold text-gray-900 mb-2">
           金叉死叉信号演示
         </h3>
-        <p className="text-gray-600 mb-4">
-          观察短期均线和长期均线的交叉信号
-        </p>
+        <p className="text-gray-600 mb-4">观察短期均线和长期均线的交叉信号</p>
 
         <div className="flex justify-center space-x-6">
           <div className="flex items-center space-x-2">
             <div className="w-4 h-4 bg-green-500 rotate-45 transform"></div>
-            <span className="text-sm font-medium text-gray-700">金叉 (买入)</span>
+            <span className="text-sm font-medium text-gray-700">
+              金叉 (买入)
+            </span>
             <Badge variant="outline" className="text-green-600">
-              {detectedCrosses.filter(c => c.type === 'golden').length} 次
+              {detectedCrosses.filter((c) => c.type === 'golden').length} 次
             </Badge>
           </div>
           <div className="flex items-center space-x-2">
             <div className="w-4 h-4 bg-red-500 rotate-45 transform"></div>
-            <span className="text-sm font-medium text-gray-700">死叉 (卖出)</span>
+            <span className="text-sm font-medium text-gray-700">
+              死叉 (卖出)
+            </span>
             <Badge variant="outline" className="text-red-600">
-              {detectedCrosses.filter(c => c.type === 'death').length} 次
+              {detectedCrosses.filter((c) => c.type === 'death').length} 次
             </Badge>
           </div>
         </div>
@@ -463,11 +477,13 @@ export function GoldenDeathCrossAnimation({
 
       {/* 当前交叉信号 */}
       {currentAnimation?.cross && (
-        <Card className={`p-4 border-2 ${
-          currentAnimation.cross.type === 'golden'
-            ? 'border-green-300 bg-green-50'
-            : 'border-red-300 bg-red-50'
-        }`}>
+        <Card
+          className={`p-4 border-2 ${
+            currentAnimation.cross.type === 'golden'
+              ? 'border-green-300 bg-green-50'
+              : 'border-red-300 bg-red-50'
+          }`}
+        >
           <div className="flex items-center space-x-3">
             {currentAnimation.cross.type === 'golden' ? (
               <ArrowUpRight className="h-6 w-6 text-green-600" />
@@ -475,14 +491,24 @@ export function GoldenDeathCrossAnimation({
               <ArrowDownRight className="h-6 w-6 text-red-600" />
             )}
             <div>
-              <h4 className={`font-semibold ${
-                currentAnimation.cross.type === 'golden' ? 'text-green-800' : 'text-red-800'
-              }`}>
-                {currentAnimation.cross.type === 'golden' ? '金叉信号！' : '死叉信号！'}
+              <h4
+                className={`font-semibold ${
+                  currentAnimation.cross.type === 'golden'
+                    ? 'text-green-800'
+                    : 'text-red-800'
+                }`}
+              >
+                {currentAnimation.cross.type === 'golden'
+                  ? '金叉信号！'
+                  : '死叉信号！'}
               </h4>
-              <p className={`text-sm ${
-                currentAnimation.cross.type === 'golden' ? 'text-green-700' : 'text-red-700'
-              }`}>
+              <p
+                className={`text-sm ${
+                  currentAnimation.cross.type === 'golden'
+                    ? 'text-green-700'
+                    : 'text-red-700'
+                }`}
+              >
                 {currentAnimation.cross.description}
               </p>
             </div>
@@ -498,7 +524,9 @@ export function GoldenDeathCrossAnimation({
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setShowMAs(prev => ({ ...prev, ma10: !prev.ma10 }))}
+              onClick={() =>
+                setShowMAs((prev) => ({ ...prev, ma10: !prev.ma10 }))
+              }
               className={showMAs.ma10 ? 'text-red-600' : 'text-gray-400'}
             >
               <Eye className="h-4 w-4 mr-1" />
@@ -507,7 +535,9 @@ export function GoldenDeathCrossAnimation({
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setShowMAs(prev => ({ ...prev, ma20: !prev.ma20 }))}
+              onClick={() =>
+                setShowMAs((prev) => ({ ...prev, ma20: !prev.ma20 }))
+              }
               className={showMAs.ma20 ? 'text-green-600' : 'text-gray-400'}
             >
               <Eye className="h-4 w-4 mr-1" />
@@ -532,28 +562,33 @@ export function GoldenDeathCrossAnimation({
             <div className="text-center">
               <p className="text-sm text-gray-600">MA10</p>
               <p className="text-lg font-bold text-red-600">
-                {currentAnimation.ma10 ? `¥${currentAnimation.ma10.toFixed(2)}` : '---'}
+                {currentAnimation.ma10
+                  ? `¥${currentAnimation.ma10.toFixed(2)}`
+                  : '---'}
               </p>
             </div>
             <div className="text-center">
               <p className="text-sm text-gray-600">MA20</p>
               <p className="text-lg font-bold text-green-600">
-                {currentAnimation.ma20 ? `¥${currentAnimation.ma20.toFixed(2)}` : '---'}
+                {currentAnimation.ma20
+                  ? `¥${currentAnimation.ma20.toFixed(2)}`
+                  : '---'}
               </p>
             </div>
             <div className="text-center">
               <p className="text-sm text-gray-600">差值</p>
-              <p className={`text-lg font-bold ${
-                currentAnimation.ma10 && currentAnimation.ma20
-                  ? currentAnimation.ma10 > currentAnimation.ma20
-                    ? 'text-red-600'
-                    : 'text-green-600'
-                  : 'text-gray-400'
-              }`}>
+              <p
+                className={`text-lg font-bold ${
+                  currentAnimation.ma10 && currentAnimation.ma20
+                    ? currentAnimation.ma10 > currentAnimation.ma20
+                      ? 'text-red-600'
+                      : 'text-green-600'
+                    : 'text-gray-400'
+                }`}
+              >
                 {currentAnimation.ma10 && currentAnimation.ma20
                   ? `¥${(currentAnimation.ma10 - currentAnimation.ma20).toFixed(2)}`
-                  : '---'
-                }
+                  : '---'}
               </p>
             </div>
           </div>
@@ -573,16 +608,12 @@ export function GoldenDeathCrossAnimation({
               >
                 上一步
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleReset}
-              >
+              <Button variant="outline" size="sm" onClick={handleReset}>
                 <RotateCcw className="h-4 w-4 mr-2" />
                 重置
               </Button>
               <Button
-                variant={isPlaying ? "secondary" : "default"}
+                variant={isPlaying ? 'secondary' : 'default'}
                 size="sm"
                 onClick={isPlaying ? handlePause : handlePlay}
               >
@@ -633,7 +664,9 @@ export function GoldenDeathCrossAnimation({
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div
               className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${((currentStep + 1) / animationSteps.length) * 100}%` }}
+              style={{
+                width: `${((currentStep + 1) / animationSteps.length) * 100}%`,
+              }}
             ></div>
           </div>
         </div>

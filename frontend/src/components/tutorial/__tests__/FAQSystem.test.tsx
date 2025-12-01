@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import FAQSystem from '../FAQSystem';
 import { UserContext } from '@/services/contextHelpService';
@@ -77,10 +77,18 @@ describe('FAQSystem', () => {
     // Categories appear in the select dropdown options
     expect(screen.getByText('全部分类')).toBeInTheDocument();
     // Use more specific selectors to avoid multiple matches
-    expect(screen.getByRole('option', { name: '入门指南' })).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: '基本概念' })).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: '功能说明' })).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: '问题解决' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('option', { name: '入门指南' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('option', { name: '基本概念' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('option', { name: '功能说明' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('option', { name: '问题解决' }),
+    ).toBeInTheDocument();
   });
 
   it('expands FAQ item when clicked', async () => {
@@ -89,7 +97,9 @@ describe('FAQSystem', () => {
 
     // Should show the basic concept category - use getAllByRole and pick the first (category header)
     await waitFor(() => {
-      const categoryButtons = screen.getAllByRole('button', { name: /基本概念/ });
+      const categoryButtons = screen.getAllByRole('button', {
+        name: /基本概念/,
+      });
       expect(categoryButtons.length).toBeGreaterThan(0);
     });
 
@@ -154,7 +164,13 @@ describe('FAQSystem', () => {
   it('calls onFAQClick when FAQ item is clicked', async () => {
     const mockOnFAQClick = jest.fn();
     // Render with a default expanded category to make FAQ items visible
-    render(<FAQSystem {...defaultProps} onFAQClick={mockOnFAQClick} defaultExpandedCategory="concepts" />);
+    render(
+      <FAQSystem
+        {...defaultProps}
+        onFAQClick={mockOnFAQClick}
+        defaultExpandedCategory="concepts"
+      />,
+    );
 
     await waitFor(() => {
       const faqItems = screen.getAllByText(/什么是|如何|为什么/);
@@ -173,9 +189,13 @@ describe('FAQSystem', () => {
 
   it('calls onHelpLinkClick when help link is clicked', () => {
     const mockOnHelpLinkClick = jest.fn();
-    render(<FAQSystem {...defaultProps} onHelpLinkClick={mockOnHelpLinkClick} />);
+    render(
+      <FAQSystem {...defaultProps} onHelpLinkClick={mockOnHelpLinkClick} />,
+    );
 
-    const helpLinks = screen.getAllByText(/新手入门指南|交互式教程|API文档|联系支持/);
+    const helpLinks = screen.getAllByText(
+      /新手入门指南|交互式教程|API文档|联系支持/,
+    );
     if (helpLinks.length > 0) {
       fireEvent.click(helpLinks[0]);
       expect(mockOnHelpLinkClick).toHaveBeenCalled();
@@ -218,10 +238,18 @@ describe('FAQSystem', () => {
 
     // Should show category indicators in select dropdown
     // Use option role to be more specific and avoid matching category badges
-    expect(screen.getByRole('option', { name: '入门指南' })).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: '基本概念' })).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: '功能说明' })).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: '问题解决' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('option', { name: '入门指南' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('option', { name: '基本概念' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('option', { name: '功能说明' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('option', { name: '问题解决' }),
+    ).toBeInTheDocument();
   });
 
   it('displays reading time estimates', () => {

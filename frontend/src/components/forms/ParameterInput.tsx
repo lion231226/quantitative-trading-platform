@@ -1,7 +1,13 @@
 'use client';
 
-import { MovingAverageStrategyParams, StrategyParameterMeta } from '@/types/strategy';
-import { STRATEGY_PARAMETER_META, formatParamValue } from '@/utils/strategyParams';
+import {
+  MovingAverageStrategyParams,
+  StrategyParameterMeta,
+} from '@/types/strategy';
+import {
+  STRATEGY_PARAMETER_META,
+  formatParamValue,
+} from '@/utils/strategyParams';
 import { Button } from '@/components/ui/button';
 
 interface ParameterInputProps {
@@ -11,7 +17,12 @@ interface ParameterInputProps {
   onChange: (key: keyof MovingAverageStrategyParams, value: any) => void;
 }
 
-export function ParameterInput({ key_name, value, meta, onChange }: ParameterInputProps) {
+export function ParameterInput({
+  key_name,
+  value,
+  meta,
+  onChange,
+}: ParameterInputProps) {
   const handleChange = (newValue: any) => {
     onChange(key_name, newValue);
   };
@@ -85,25 +96,13 @@ export function ParameterInput({ key_name, value, meta, onChange }: ParameterInp
     if (key_name === 'ma_period') {
       return (
         <div className="flex gap-2 mt-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleChange(10)}
-          >
+          <Button variant="outline" size="sm" onClick={() => handleChange(10)}>
             短期(10天)
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleChange(20)}
-          >
+          <Button variant="outline" size="sm" onClick={() => handleChange(20)}>
             中期(20天)
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleChange(60)}
-          >
+          <Button variant="outline" size="sm" onClick={() => handleChange(60)}>
             长期(60天)
           </Button>
         </div>
@@ -183,11 +182,7 @@ export function ParameterInput({ key_name, value, meta, onChange }: ParameterInp
           >
             平衡(5%)
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleChange(0.10)}
-          >
+          <Button variant="outline" size="sm" onClick={() => handleChange(0.1)}>
             激进(10%)
           </Button>
         </div>

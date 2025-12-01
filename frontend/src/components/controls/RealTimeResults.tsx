@@ -18,15 +18,15 @@ import {
 } from 'lucide-react';
 
 interface RealTimeResultsProps {
-  result: StrategyResult | null
-  isLoading?: boolean
-  isUpdating?: boolean
-  error?: string | null
-  lastUpdate?: Date | null
-  onRefresh?: () => void
-  showDetails?: boolean
-  compact?: boolean
-  className?: string
+  result: StrategyResult | null;
+  isLoading?: boolean;
+  isUpdating?: boolean;
+  error?: string | null;
+  lastUpdate?: Date | null;
+  onRefresh?: () => void;
+  showDetails?: boolean;
+  compact?: boolean;
+  className?: string;
 }
 
 export function RealTimeResults({
@@ -93,7 +93,9 @@ export function RealTimeResults({
 
   if (compact) {
     return (
-      <div className={`flex items-center space-x-4 p-4 bg-background border rounded-lg ${className}`}>
+      <div
+        className={`flex items-center space-x-4 p-4 bg-background border rounded-lg ${className}`}
+      >
         <div className="flex items-center space-x-2">
           <BarChart3 className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm font-medium">策略表现</span>
@@ -116,13 +118,17 @@ export function RealTimeResults({
         {result && !isLoading && (
           <div className="flex items-center space-x-4">
             <div className="text-right">
-              <div className={`text-lg font-semibold ${result.totalReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <div
+                className={`text-lg font-semibold ${result.totalReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}
+              >
                 {formatPercent(result.totalReturn)}
               </div>
               <div className="text-xs text-muted-foreground">总收益</div>
             </div>
             {performanceGrade && (
-              <div className={`px-2 py-1 rounded-full text-xs font-medium bg-${performanceGrade.color}-100 text-${performanceGrade.color}-800`}>
+              <div
+                className={`px-2 py-1 rounded-full text-xs font-medium bg-${performanceGrade.color}-100 text-${performanceGrade.color}-800`}
+              >
                 {performanceGrade.grade}
               </div>
             )}
@@ -137,7 +143,9 @@ export function RealTimeResults({
             disabled={isLoading || isUpdating}
             className="ml-auto"
           >
-            <RefreshCw className={`h-4 w-4 ${isUpdating ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`h-4 w-4 ${isUpdating ? 'animate-spin' : ''}`}
+            />
           </Button>
         )}
       </div>
@@ -173,7 +181,9 @@ export function RealTimeResults({
                 onClick={onRefresh}
                 disabled={isLoading || isUpdating}
               >
-                <RefreshCw className={`h-4 w-4 mr-1 ${isUpdating ? 'animate-spin' : ''}`} />
+                <RefreshCw
+                  className={`h-4 w-4 mr-1 ${isUpdating ? 'animate-spin' : ''}`}
+                />
                 刷新
               </Button>
             )}
@@ -219,18 +229,26 @@ export function RealTimeResults({
             {performanceGrade && (
               <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 <div className="flex items-center space-x-3">
-                  <div className={`w-12 h-12 rounded-full bg-${performanceGrade.color}-100 flex items-center justify-center`}>
-                    <span className={`text-xl font-bold text-${performanceGrade.color}-800`}>
+                  <div
+                    className={`w-12 h-12 rounded-full bg-${performanceGrade.color}-100 flex items-center justify-center`}
+                  >
+                    <span
+                      className={`text-xl font-bold text-${performanceGrade.color}-800`}
+                    >
                       {performanceGrade.grade}
                     </span>
                   </div>
                   <div>
                     <p className="font-medium">{performanceGrade.label}表现</p>
-                    <p className="text-sm text-muted-foreground">综合评分算法</p>
+                    <p className="text-sm text-muted-foreground">
+                      综合评分算法
+                    </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className={`text-lg font-semibold ${result.totalReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  <div
+                    className={`text-lg font-semibold ${result.totalReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                  >
                     {formatPercent(result.totalReturn)}
                   </div>
                   <div className="text-sm text-muted-foreground">总收益率</div>
@@ -245,7 +263,9 @@ export function RealTimeResults({
                   <TrendingUp className="h-4 w-4 text-blue-600" />
                   <span className="text-sm font-medium">总收益率</span>
                 </div>
-                <div className={`text-xl font-bold ${result.totalReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <div
+                  className={`text-xl font-bold ${result.totalReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                >
                   {formatPercent(result.totalReturn)}
                 </div>
               </Card>
@@ -292,38 +312,60 @@ export function RealTimeResults({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-3">
                     <div className="flex justify-between items-center py-2 border-b">
-                      <span className="text-sm text-muted-foreground">总交易次数</span>
+                      <span className="text-sm text-muted-foreground">
+                        总交易次数
+                      </span>
                       <span className="font-medium">{result.totalTrades}</span>
                     </div>
                     <div className="flex justify-between items-center py-2 border-b">
-                      <span className="text-sm text-muted-foreground">盈利因子</span>
-                      <span className="font-medium">{formatNumber(result.profitFactor)}</span>
+                      <span className="text-sm text-muted-foreground">
+                        盈利因子
+                      </span>
+                      <span className="font-medium">
+                        {formatNumber(result.profitFactor)}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center py-2 border-b">
-                      <span className="text-sm text-muted-foreground">平均交易</span>
+                      <span className="text-sm text-muted-foreground">
+                        平均交易
+                      </span>
                       <span className="font-medium">
-                        {result.averageTrade ? formatPercent(result.averageTrade) : 'N/A'}
+                        {result.averageTrade
+                          ? formatPercent(result.averageTrade)
+                          : 'N/A'}
                       </span>
                     </div>
                   </div>
 
                   <div className="space-y-3">
                     <div className="flex justify-between items-center py-2 border-b">
-                      <span className="text-sm text-muted-foreground">波动率</span>
+                      <span className="text-sm text-muted-foreground">
+                        波动率
+                      </span>
                       <span className="font-medium">
-                        {result.volatility ? formatPercent(result.volatility) : 'N/A'}
+                        {result.volatility
+                          ? formatPercent(result.volatility)
+                          : 'N/A'}
                       </span>
                     </div>
                     <div className="flex justify-between items-center py-2 border-b">
-                      <span className="text-sm text-muted-foreground">卡尔玛比率</span>
+                      <span className="text-sm text-muted-foreground">
+                        卡尔玛比率
+                      </span>
                       <span className="font-medium">
-                        {result.calmarRatio ? formatNumber(result.calmarRatio) : 'N/A'}
+                        {result.calmarRatio
+                          ? formatNumber(result.calmarRatio)
+                          : 'N/A'}
                       </span>
                     </div>
                     <div className="flex justify-between items-center py-2 border-b">
-                      <span className="text-sm text-muted-foreground">期望值</span>
+                      <span className="text-sm text-muted-foreground">
+                        期望值
+                      </span>
                       <span className="font-medium">
-                        {result.expectancy ? formatNumber(result.expectancy) : 'N/A'}
+                        {result.expectancy
+                          ? formatNumber(result.expectancy)
+                          : 'N/A'}
                       </span>
                     </div>
                   </div>

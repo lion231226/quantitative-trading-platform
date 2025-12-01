@@ -1,16 +1,16 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  Search,
-  BookOpen,
-  TrendingUp,
-  Calculator,
   AlertTriangle,
-  Info,
-  X,
+  BookOpen,
+  Calculator,
   ChevronRight,
-  Star,
   Clock,
   Filter,
+  Info,
+  Search,
+  Star,
+  TrendingUp,
+  X,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -66,152 +66,171 @@ export function InteractiveGlossary({
   const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   // 模拟术语库数据
-  const glossaryData: GlossaryTerm[] = useMemo(() => [
-    {
-      id: 'moving-average',
-      term: '移动平均线',
-      category: 'technical',
-      definition: '移动平均线是一种技术分析指标，通过计算特定时间段内价格的平均值来平滑价格波动，帮助识别趋势方向。',
-      explanation: '移动平均线是最基础和最常用的技术分析工具之一。它能够过滤掉价格的短期波动，显示出价格的长期趋势。常见的类型包括简单移动平均线(SMA)和指数移动平均线(EMA)。',
-      examples: [
-        '20日移动平均线显示中期趋势',
-        '当价格上穿50日移动平均线时，可能预示上升趋势开始',
-        '200日移动平均线常用于判断长期趋势',
-      ],
-      relatedTerms: ['SMA', 'EMA', '趋势', '技术分析'],
-      difficulty: 'beginner',
-      importance: 'high',
-      readingTime: 45,
-      tags: ['技术指标', '趋势分析', '基础'],
-      lastUpdated: '2025-11-02',
-    },
-    {
-      id: 'golden-cross',
-      term: '金叉',
-      category: 'strategy',
-      definition: '金叉是指短期移动平均线从下方向上穿越长期移动平均线的技术分析信号，通常被视为买入信号。',
-      explanation: '金叉是技术分析中的一个重要概念，表明短期上升趋势可能强于长期趋势，市场情绪可能转向看涨。这个信号在量化交易中常用于自动生成买入指令。',
-      examples: [
-        '10日均线向上穿越20日均线形成金叉',
-        '金叉出现后，价格通常会继续上涨一段时间',
-        '配合成交量分析可以提高金叉信号的可靠性',
-      ],
-      relatedTerms: ['死叉', '移动平均线', '买入信号', '技术分析'],
-      difficulty: 'intermediate',
-      importance: 'high',
-      readingTime: 60,
-      tags: ['交易信号', '均线策略', '买入'],
-      lastUpdated: '2025-11-02',
-    },
-    {
-      id: 'death-cross',
-      term: '死叉',
-      category: 'strategy',
-      definition: '死叉是指短期移动平均线从上方向下穿越长期移动平均线的技术分析信号，通常被视为卖出信号。',
-      explanation: '死叉与金叉相反，表明短期下降趋势可能强于长期趋势，市场情绪可能转向看跌。在量化交易策略中，死叉常用于触发卖出或平仓指令。',
-      examples: [
-        '10日均线向下跌破20日均线形成死叉',
-        '死叉出现后，价格通常会继续下跌一段时间',
-        '结合其他技术指标可以验证死叉信号的有效性',
-      ],
-      relatedTerms: ['金叉', '移动平均线', '卖出信号', '风险控制'],
-      difficulty: 'intermediate',
-      importance: 'high',
-      readingTime: 60,
-      tags: ['交易信号', '均线策略', '卖出'],
-      lastUpdated: '2025-11-02',
-    },
-    {
-      id: 'SMA',
-      term: '简单移动平均线',
-      category: 'technical',
-      definition: '简单移动平均线(Simple Moving Average)是计算特定时期内价格的平均值，给予每个价格点相同的权重。',
-      explanation: 'SMA是最基础的移动平均线类型，计算方法简单：将指定时期内的所有价格相加，然后除以时期数。SMA的优点是计算简单、易于理解，缺点是对近期价格变化的反应较慢。',
-      examples: [
-        '10日SMA = 最近10天收盘价的总和 ÷ 10',
-        '50日SMA常用于判断中期趋势',
-        '200日SMA被认为是牛熊分界线',
-      ],
-      relatedTerms: ['EMA', '移动平均线', '加权平均'],
-      difficulty: 'beginner',
-      importance: 'medium',
-      readingTime: 40,
-      tags: ['技术指标', '计算方法', '基础'],
-      lastUpdated: '2025-11-02',
-    },
-    {
-      id: 'EMA',
-      term: '指数移动平均线',
-      category: 'technical',
-      definition: '指数移动平均线给予近期价格更高的权重，能够更快地响应价格变化。',
-      explanation: 'EMA通过使用指数递减的权重因子，使得近期的价格在计算中占有更大比重。这使得EMA比SMA更敏感，能够更快地反映价格趋势的变化，但也更容易产生假信号。',
-      examples: [
-        '12日EMA常用于短期趋势分析',
-        '26日EMA在MACD指标中使用',
-        'EMA比SMA更快响应价格突破',
-      ],
-      relatedTerms: ['SMA', '移动平均线', 'MACD', '权重'],
-      difficulty: 'intermediate',
-      importance: 'medium',
-      readingTime: 50,
-      tags: ['技术指标', '计算方法', '高级'],
-      lastUpdated: '2025-11-02',
-    },
-    {
-      id: 'quantitative-trading',
-      term: '量化交易',
-      category: 'basic',
-      definition: '量化交易是利用数学模型和计算机算法来执行交易策略的交易方式，旨在消除人为情绪影响。',
-      explanation: '量化交易通过分析大量历史数据，识别市场模式，并基于预设的规则自动执行交易。这种方法可以提高交易决策的客观性和一致性，降低情绪化交易的风险。',
-      examples: [
-        '基于均线交叉的自动交易策略',
-        '统计套利策略',
-        '高频交易算法',
-      ],
-      relatedTerms: ['算法交易', '交易策略', '回测', '风险管理'],
-      difficulty: 'beginner',
-      importance: 'high',
-      readingTime: 70,
-      tags: ['基础概念', '交易方式', '自动化'],
-      lastUpdated: '2025-11-02',
-    },
-    {
-      id: 'backtesting',
-      term: '回测',
-      category: 'advanced',
-      definition: '回测是使用历史数据测试交易策略效果的过程，用于评估策略的历史表现和可行性。',
-      explanation: '回测是量化交易中不可或缺的环节，通过模拟策略在过去一段时间内的表现，可以评估策略的盈利能力、风险水平和稳定性。但需要注意的是，过去的表现不代表未来的结果。',
-      examples: [
-        '使用2020-2023年的数据测试均线策略',
-        '计算策略的年化收益率和最大回撤',
-        '分析策略在不同市场环境下的表现',
-      ],
-      relatedTerms: ['策略验证', '历史数据', '风险指标', '过度拟合'],
-      difficulty: 'advanced',
-      importance: 'high',
-      readingTime: 80,
-      tags: ['策略验证', '数据分析', '风险评估'],
-      lastUpdated: '2025-11-02',
-    },
-    {
-      id: 'risk-management',
-      term: '风险管理',
-      category: 'risk',
-      definition: '风险管理是识别、评估和控制交易风险的系统性方法，旨在保护资本并实现长期稳定收益。',
-      explanation: '风险管理是量化交易成功的核心要素。通过设置止损点、控制仓位大小、分散投资等方式，可以在追求收益的同时控制潜在损失。记住：保住本金比追求高收益更重要。',
-      examples: [
-        '设置2%的止损规则',
-        '单笔交易风险不超过总资金的1%',
-        '使用多策略分散风险',
-      ],
-      relatedTerms: ['止损', '仓位管理', '分散投资', '最大回撤'],
-      difficulty: 'intermediate',
-      importance: 'high',
-      readingTime: 90,
-      tags: ['风险控制', '资金管理', '交易纪律'],
-      lastUpdated: '2025-11-02',
-    },
-  ], []);
+  const glossaryData: GlossaryTerm[] = useMemo(
+    () => [
+      {
+        id: 'moving-average',
+        term: '移动平均线',
+        category: 'technical',
+        definition:
+          '移动平均线是一种技术分析指标，通过计算特定时间段内价格的平均值来平滑价格波动，帮助识别趋势方向。',
+        explanation:
+          '移动平均线是最基础和最常用的技术分析工具之一。它能够过滤掉价格的短期波动，显示出价格的长期趋势。常见的类型包括简单移动平均线(SMA)和指数移动平均线(EMA)。',
+        examples: [
+          '20日移动平均线显示中期趋势',
+          '当价格上穿50日移动平均线时，可能预示上升趋势开始',
+          '200日移动平均线常用于判断长期趋势',
+        ],
+        relatedTerms: ['SMA', 'EMA', '趋势', '技术分析'],
+        difficulty: 'beginner',
+        importance: 'high',
+        readingTime: 45,
+        tags: ['技术指标', '趋势分析', '基础'],
+        lastUpdated: '2025-11-02',
+      },
+      {
+        id: 'golden-cross',
+        term: '金叉',
+        category: 'strategy',
+        definition:
+          '金叉是指短期移动平均线从下方向上穿越长期移动平均线的技术分析信号，通常被视为买入信号。',
+        explanation:
+          '金叉是技术分析中的一个重要概念，表明短期上升趋势可能强于长期趋势，市场情绪可能转向看涨。这个信号在量化交易中常用于自动生成买入指令。',
+        examples: [
+          '10日均线向上穿越20日均线形成金叉',
+          '金叉出现后，价格通常会继续上涨一段时间',
+          '配合成交量分析可以提高金叉信号的可靠性',
+        ],
+        relatedTerms: ['死叉', '移动平均线', '买入信号', '技术分析'],
+        difficulty: 'intermediate',
+        importance: 'high',
+        readingTime: 60,
+        tags: ['交易信号', '均线策略', '买入'],
+        lastUpdated: '2025-11-02',
+      },
+      {
+        id: 'death-cross',
+        term: '死叉',
+        category: 'strategy',
+        definition:
+          '死叉是指短期移动平均线从上方向下穿越长期移动平均线的技术分析信号，通常被视为卖出信号。',
+        explanation:
+          '死叉与金叉相反，表明短期下降趋势可能强于长期趋势，市场情绪可能转向看跌。在量化交易策略中，死叉常用于触发卖出或平仓指令。',
+        examples: [
+          '10日均线向下跌破20日均线形成死叉',
+          '死叉出现后，价格通常会继续下跌一段时间',
+          '结合其他技术指标可以验证死叉信号的有效性',
+        ],
+        relatedTerms: ['金叉', '移动平均线', '卖出信号', '风险控制'],
+        difficulty: 'intermediate',
+        importance: 'high',
+        readingTime: 60,
+        tags: ['交易信号', '均线策略', '卖出'],
+        lastUpdated: '2025-11-02',
+      },
+      {
+        id: 'SMA',
+        term: '简单移动平均线',
+        category: 'technical',
+        definition:
+          '简单移动平均线(Simple Moving Average)是计算特定时期内价格的平均值，给予每个价格点相同的权重。',
+        explanation:
+          'SMA是最基础的移动平均线类型，计算方法简单：将指定时期内的所有价格相加，然后除以时期数。SMA的优点是计算简单、易于理解，缺点是对近期价格变化的反应较慢。',
+        examples: [
+          '10日SMA = 最近10天收盘价的总和 ÷ 10',
+          '50日SMA常用于判断中期趋势',
+          '200日SMA被认为是牛熊分界线',
+        ],
+        relatedTerms: ['EMA', '移动平均线', '加权平均'],
+        difficulty: 'beginner',
+        importance: 'medium',
+        readingTime: 40,
+        tags: ['技术指标', '计算方法', '基础'],
+        lastUpdated: '2025-11-02',
+      },
+      {
+        id: 'EMA',
+        term: '指数移动平均线',
+        category: 'technical',
+        definition:
+          '指数移动平均线给予近期价格更高的权重，能够更快地响应价格变化。',
+        explanation:
+          'EMA通过使用指数递减的权重因子，使得近期的价格在计算中占有更大比重。这使得EMA比SMA更敏感，能够更快地反映价格趋势的变化，但也更容易产生假信号。',
+        examples: [
+          '12日EMA常用于短期趋势分析',
+          '26日EMA在MACD指标中使用',
+          'EMA比SMA更快响应价格突破',
+        ],
+        relatedTerms: ['SMA', '移动平均线', 'MACD', '权重'],
+        difficulty: 'intermediate',
+        importance: 'medium',
+        readingTime: 50,
+        tags: ['技术指标', '计算方法', '高级'],
+        lastUpdated: '2025-11-02',
+      },
+      {
+        id: 'quantitative-trading',
+        term: '量化交易',
+        category: 'basic',
+        definition:
+          '量化交易是利用数学模型和计算机算法来执行交易策略的交易方式，旨在消除人为情绪影响。',
+        explanation:
+          '量化交易通过分析大量历史数据，识别市场模式，并基于预设的规则自动执行交易。这种方法可以提高交易决策的客观性和一致性，降低情绪化交易的风险。',
+        examples: [
+          '基于均线交叉的自动交易策略',
+          '统计套利策略',
+          '高频交易算法',
+        ],
+        relatedTerms: ['算法交易', '交易策略', '回测', '风险管理'],
+        difficulty: 'beginner',
+        importance: 'high',
+        readingTime: 70,
+        tags: ['基础概念', '交易方式', '自动化'],
+        lastUpdated: '2025-11-02',
+      },
+      {
+        id: 'backtesting',
+        term: '回测',
+        category: 'advanced',
+        definition:
+          '回测是使用历史数据测试交易策略效果的过程，用于评估策略的历史表现和可行性。',
+        explanation:
+          '回测是量化交易中不可或缺的环节，通过模拟策略在过去一段时间内的表现，可以评估策略的盈利能力、风险水平和稳定性。但需要注意的是，过去的表现不代表未来的结果。',
+        examples: [
+          '使用2020-2023年的数据测试均线策略',
+          '计算策略的年化收益率和最大回撤',
+          '分析策略在不同市场环境下的表现',
+        ],
+        relatedTerms: ['策略验证', '历史数据', '风险指标', '过度拟合'],
+        difficulty: 'advanced',
+        importance: 'high',
+        readingTime: 80,
+        tags: ['策略验证', '数据分析', '风险评估'],
+        lastUpdated: '2025-11-02',
+      },
+      {
+        id: 'risk-management',
+        term: '风险管理',
+        category: 'risk',
+        definition:
+          '风险管理是识别、评估和控制交易风险的系统性方法，旨在保护资本并实现长期稳定收益。',
+        explanation:
+          '风险管理是量化交易成功的核心要素。通过设置止损点、控制仓位大小、分散投资等方式，可以在追求收益的同时控制潜在损失。记住：保住本金比追求高收益更重要。',
+        examples: [
+          '设置2%的止损规则',
+          '单笔交易风险不超过总资金的1%',
+          '使用多策略分散风险',
+        ],
+        relatedTerms: ['止损', '仓位管理', '分散投资', '最大回撤'],
+        difficulty: 'intermediate',
+        importance: 'high',
+        readingTime: 90,
+        tags: ['风险控制', '资金管理', '交易纪律'],
+        lastUpdated: '2025-11-02',
+      },
+    ],
+    [],
+  );
 
   // 筛选术语
   const filteredTerms = useMemo(() => {
@@ -219,36 +238,65 @@ export function InteractiveGlossary({
 
     // 按分类筛选
     if (selectedCategory !== 'all') {
-      filtered = filtered.filter(term => term.category === selectedCategory);
+      filtered = filtered.filter((term) => term.category === selectedCategory);
     }
 
     // 按难度筛选
     if (selectedDifficulty !== 'all') {
-      filtered = filtered.filter(term => term.difficulty === selectedDifficulty);
+      filtered = filtered.filter(
+        (term) => term.difficulty === selectedDifficulty,
+      );
     }
 
     // 按搜索查询筛选
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(term =>
-        term.term.toLowerCase().includes(query) ||
-        term.definition.toLowerCase().includes(query) ||
-        term.tags.some(tag => tag.toLowerCase().includes(query))
+      filtered = filtered.filter(
+        (term) =>
+          term.term.toLowerCase().includes(query) ||
+          term.definition.toLowerCase().includes(query) ||
+          term.tags.some((tag) => tag.toLowerCase().includes(query)),
       );
     }
 
     // 限制数量
     return filtered.slice(0, maxTerms);
-  }, [glossaryData, selectedCategory, selectedDifficulty, searchQuery, maxTerms]);
+  }, [
+    glossaryData,
+    selectedCategory,
+    selectedDifficulty,
+    searchQuery,
+    maxTerms,
+  ]);
 
   // 分类配置
   const categoryConfig = {
     all: { label: '全部', color: 'bg-gray-100 text-gray-800', icon: BookOpen },
-    basic: { label: '基础概念', color: 'bg-blue-100 text-blue-800', icon: Info },
-    strategy: { label: '交易策略', color: 'bg-green-100 text-green-800', icon: TrendingUp },
-    technical: { label: '技术指标', color: 'bg-purple-100 text-purple-800', icon: Calculator },
-    risk: { label: '风险管理', color: 'bg-red-100 text-red-800', icon: AlertTriangle },
-    advanced: { label: '高级概念', color: 'bg-yellow-100 text-yellow-800', icon: Star },
+    basic: {
+      label: '基础概念',
+      color: 'bg-blue-100 text-blue-800',
+      icon: Info,
+    },
+    strategy: {
+      label: '交易策略',
+      color: 'bg-green-100 text-green-800',
+      icon: TrendingUp,
+    },
+    technical: {
+      label: '技术指标',
+      color: 'bg-purple-100 text-purple-800',
+      icon: Calculator,
+    },
+    risk: {
+      label: '风险管理',
+      color: 'bg-red-100 text-red-800',
+      icon: AlertTriangle,
+    },
+    advanced: {
+      label: '高级概念',
+      color: 'bg-yellow-100 text-yellow-800',
+      icon: Star,
+    },
   };
 
   // 难度配置
@@ -260,21 +308,24 @@ export function InteractiveGlossary({
   };
 
   // 处理术语选择
-  const handleTermSelect = useCallback((term: GlossaryTerm) => {
-    setSelectedTerm(term);
-    setIsDetailOpen(true);
-    onTermSelect?.(term);
+  const handleTermSelect = useCallback(
+    (term: GlossaryTerm) => {
+      setSelectedTerm(term);
+      setIsDetailOpen(true);
+      onTermSelect?.(term);
 
-    // 添加到最近查看
-    setRecentlyViewed(prev => {
-      const filtered = prev.filter(t => t.id !== term.id);
-      return [term, ...filtered].slice(0, 5);
-    });
-  }, [onTermSelect]);
+      // 添加到最近查看
+      setRecentlyViewed((prev) => {
+        const filtered = prev.filter((t) => t.id !== term.id);
+        return [term, ...filtered].slice(0, 5);
+      });
+    },
+    [onTermSelect],
+  );
 
   // 处理收藏
   const toggleFavorite = useCallback((termId: string) => {
-    setFavorites(prev => {
+    setFavorites((prev) => {
       const newFavorites = new Set(prev);
       if (newFavorites.has(termId)) {
         newFavorites.delete(termId);
@@ -369,8 +420,8 @@ export function InteractiveGlossary({
                 </p>
               ) : (
                 <div className="space-y-2">
-                  {Array.from(favorites).map(termId => {
-                    const term = glossaryData.find(t => t.id === termId);
+                  {Array.from(favorites).map((termId) => {
+                    const term = glossaryData.find((t) => t.id === termId);
                     return term ? (
                       <div
                         key={termId}
@@ -379,7 +430,9 @@ export function InteractiveGlossary({
                       >
                         <div className="flex items-center space-x-2">
                           <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
-                          <span className="text-sm font-medium">{term.term}</span>
+                          <span className="text-sm font-medium">
+                            {term.term}
+                          </span>
                         </div>
                         <ChevronRight className="h-3 w-3 text-gray-400" />
                       </div>
@@ -397,7 +450,7 @@ export function InteractiveGlossary({
                 <Clock className="h-4 w-4 text-blue-500" />
               </div>
               <div className="space-y-2">
-                {recentlyViewed.map(term => (
+                {recentlyViewed.map((term) => (
                   <div
                     key={term.id}
                     className="flex items-center justify-between p-2 rounded hover:bg-gray-50 cursor-pointer"
@@ -432,7 +485,7 @@ export function InteractiveGlossary({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {filteredTerms.map(term => (
+          {filteredTerms.map((term) => (
             <Card
               key={term.id}
               className="p-4 hover:shadow-md transition-shadow cursor-pointer"
@@ -460,7 +513,10 @@ export function InteractiveGlossary({
                         }`}
                       />
                     </Button>
-                    <Badge {...getImportanceBadge(term.importance)} className="text-xs">
+                    <Badge
+                      {...getImportanceBadge(term.importance)}
+                      className="text-xs"
+                    >
                       {getImportanceBadge(term.importance).label}
                     </Badge>
                   </div>
@@ -468,7 +524,10 @@ export function InteractiveGlossary({
 
                 {/* 分类和难度 */}
                 <div className="flex items-center space-x-2">
-                  <Badge variant="outline" className={categoryConfig[term.category].color}>
+                  <Badge
+                    variant="outline"
+                    className={categoryConfig[term.category].color}
+                  >
                     {categoryConfig[term.category].label}
                   </Badge>
                   <Badge variant="outline" className="text-xs">
@@ -487,13 +546,15 @@ export function InteractiveGlossary({
 
                 {/* 标签 */}
                 <div className="flex flex-wrap gap-1">
-                  {term.tags.slice(0, 3).map(tag => (
+                  {term.tags.slice(0, 3).map((tag) => (
                     <Badge key={tag} variant="outline" className="text-xs">
                       {tag}
                     </Badge>
                   ))}
                   {term.tags.length > 3 && (
-                    <span className="text-xs text-gray-500">+{term.tags.length - 3}</span>
+                    <span className="text-xs text-gray-500">
+                      +{term.tags.length - 3}
+                    </span>
                   )}
                 </div>
               </div>
@@ -519,7 +580,9 @@ export function InteractiveGlossary({
             <>
               <DialogHeader>
                 <div className="flex items-center justify-between">
-                  <DialogTitle className="text-xl">{selectedTerm.term}</DialogTitle>
+                  <DialogTitle className="text-xl">
+                    {selectedTerm.term}
+                  </DialogTitle>
                   <div className="flex items-center space-x-2">
                     <Badge {...getImportanceBadge(selectedTerm.importance)}>
                       {getImportanceBadge(selectedTerm.importance).label}
@@ -541,7 +604,10 @@ export function InteractiveGlossary({
                 </div>
                 <DialogDescription>
                   <div className="flex items-center space-x-3 mt-2">
-                    <Badge variant="outline" className={categoryConfig[selectedTerm.category].color}>
+                    <Badge
+                      variant="outline"
+                      className={categoryConfig[selectedTerm.category].color}
+                    >
                       {categoryConfig[selectedTerm.category].label}
                     </Badge>
                     <Badge variant="outline" className="text-xs">
@@ -584,10 +650,14 @@ export function InteractiveGlossary({
                 {/* 相关术语 */}
                 {selectedTerm.relatedTerms.length > 0 && (
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-2">相关术语</h4>
+                    <h4 className="font-semibold text-gray-900 mb-2">
+                      相关术语
+                    </h4>
                     <div className="flex flex-wrap gap-2">
-                      {selectedTerm.relatedTerms.map(relatedTerm => {
-                        const relatedTermData = glossaryData.find(t => t.term === relatedTerm);
+                      {selectedTerm.relatedTerms.map((relatedTerm) => {
+                        const relatedTermData = glossaryData.find(
+                          (t) => t.term === relatedTerm,
+                        );
                         return (
                           <Badge
                             key={relatedTerm}
@@ -611,7 +681,7 @@ export function InteractiveGlossary({
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-2">标签</h4>
                   <div className="flex flex-wrap gap-2">
-                    {selectedTerm.tags.map(tag => (
+                    {selectedTerm.tags.map((tag) => (
                       <Badge key={tag} variant="outline" className="text-xs">
                         {tag}
                       </Badge>

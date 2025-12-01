@@ -19,8 +19,8 @@ jest.mock('@/services/tutorialService', () => ({
             type: 'explanation',
             estimatedTime: 60,
             isOptional: false,
-          }
-        ]
+          },
+        ],
       },
       isLoading: false,
     }),
@@ -40,27 +40,43 @@ jest.mock('@/services/tutorialService', () => ({
     }),
     useUpdateProgress: () => ({ mutateAsync: jest.fn() }),
     saveUserPreferences: () => ({ mutateAsync: jest.fn() }),
-    progressManager: { currentStep: 0 }
+    progressManager: { currentStep: 0 },
   }),
 }));
 
 jest.mock('@/utils/tutorialHelpers', () => ({
   getStepNavigation: () => ({ previousStep: null, nextStep: null }),
-  generateProgressSummary: () => ({ completedSteps: 0, totalSteps: 1, progressPercentage: 0 }),
+  generateProgressSummary: () => ({
+    completedSteps: 0,
+    totalSteps: 1,
+    progressPercentage: 0,
+  }),
   canSkipStep: () => true,
-  createTutorialEvent: () => ({ type: 'test', timestamp: Date.now() })
+  createTutorialEvent: () => ({ type: 'test', timestamp: Date.now() }),
 }));
 
 jest.mock('@/components/ui/button', () => ({
-  Button: ({ children, ...props }: any) => <button data-testid="button" {...props}>{children}</button>,
+  Button: ({ children, ...props }: any) => (
+    <button data-testid="button" {...props}>
+      {children}
+    </button>
+  ),
 }));
 
 jest.mock('@/components/ui/card', () => ({
-  Card: ({ children, ...props }: any) => <div data-testid="card" {...props}>{children}</div>,
+  Card: ({ children, ...props }: any) => (
+    <div data-testid="card" {...props}>
+      {children}
+    </div>
+  ),
 }));
 
 jest.mock('@/components/ui/badge', () => ({
-  Badge: ({ children, ...props }: any) => <span data-testid="badge" {...props}>{children}</span>,
+  Badge: ({ children, ...props }: any) => (
+    <span data-testid="badge" {...props}>
+      {children}
+    </span>
+  ),
 }));
 
 jest.mock('lucide-react', () => ({
@@ -86,9 +102,7 @@ const queryClient = new QueryClient({
 });
 
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
-  <QueryClientProvider client={queryClient}>
-    {children}
-  </QueryClientProvider>
+  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 );
 
 describe('TutorialSystem Simple Tests', () => {
@@ -102,7 +116,7 @@ describe('TutorialSystem Simple Tests', () => {
           isOpen={true}
           onClose={() => {}}
         />
-      </Wrapper>
+      </Wrapper>,
     );
 
     expect(screen.getByTestId('card')).toBeInTheDocument();

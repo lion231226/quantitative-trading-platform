@@ -1,7 +1,13 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useMemo, useState } from 'react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -9,37 +15,42 @@ import { ComparisonTable } from './ComparisonTable';
 import { ComparisonCharts } from './ComparisonCharts';
 import { ComparisonRankings } from './ComparisonRankings';
 import { Loading } from '@/components/ui/loading';
-import { VarietyComparisonResult, VarietyResult } from '@/types/comparison.types';
+import {
+  VarietyComparisonResult,
+  VarietyResult,
+} from '@/types/comparison.types';
 import { cn } from '@/lib/utils';
 
 interface ComparisonResultsProps {
-  results?: VarietyComparisonResult
-  loading?: boolean
-  error?: string
-  className?: string
+  results?: VarietyComparisonResult;
+  loading?: boolean;
+  error?: string;
+  className?: string;
 }
 
 export function ComparisonResults({
   results,
   loading,
   error,
-  className
+  className,
 }: ComparisonResultsProps) {
-  const [selectedView, setSelectedView] = useState<'overview' | 'charts' | 'table' | 'rankings'>('overview');
+  const [selectedView, setSelectedView] = useState<
+    'overview' | 'charts' | 'table' | 'rankings'
+  >('overview');
 
   // 处理结果数据
   const processedData = useMemo(() => {
     if (!results) return null;
 
-    const successfulResults = results.results.filter(r => !r.error);
-    const failedResults = results.results.filter(r => r.error);
+    const successfulResults = results.results.filter((r) => !r.error);
+    const failedResults = results.results.filter((r) => r.error);
 
     return {
       successful: successfulResults,
       failed: failedResults,
       summary: results.summary,
       rankings: results.rankings,
-      request: results.request
+      request: results.request,
     };
   }, [results]);
 
@@ -89,7 +100,8 @@ export function ComparisonResults({
             <span>对比分析结果</span>
             <div className="flex gap-2">
               <Badge variant="outline">
-                {processedData.successful.length}/{processedData.request.symbols.length} 成功
+                {processedData.successful.length}/
+                {processedData.request.symbols.length} 成功
               </Badge>
               <Badge variant="outline">
                 {processedData.request.strategy.name} 策略
@@ -111,10 +123,15 @@ export function ComparisonResults({
           <CardContent>
             <div className="space-y-2">
               {processedData.failed.map((result) => (
-                <div key={result.symbol} className="flex items-center justify-between">
+                <div
+                  key={result.symbol}
+                  className="flex items-center justify-between"
+                >
                   <div>
                     <span className="font-medium">{result.symbol}</span>
-                    <span className="text-sm text-orange-600 ml-2">{result.error}</span>
+                    <span className="text-sm text-orange-600 ml-2">
+                      {result.error}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -124,7 +141,10 @@ export function ComparisonResults({
       )}
 
       {/* 结果视图选择 */}
-      <Tabs value={selectedView} onValueChange={(value) => setSelectedView(value as any)}>
+      <Tabs
+        value={selectedView}
+        onValueChange={(value) => setSelectedView(value as any)}
+      >
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="overview">概览</TabsTrigger>
           <TabsTrigger value="charts">图表分析</TabsTrigger>
@@ -155,15 +175,24 @@ export function ComparisonResults({
 // 概览组件
 function ComparisonOverview({ data }: { data: any }) {
   const topPerformers = data.successful
-    .sort((a: VarietyResult, b: VarietyResult) => b.metrics.totalReturn - a.metrics.totalReturn)
+    .sort(
+      (a: VarietyResult, b: VarietyResult) =>
+        b.metrics.totalReturn - a.metrics.totalReturn,
+    )
     .slice(0, 3);
 
   const riskAdjustedTopPerformers = data.successful
-    .sort((a: VarietyResult, b: VarietyResult) => b.metrics.sharpeRatio - a.metrics.sharpeRatio)
+    .sort(
+      (a: VarietyResult, b: VarietyResult) =>
+        b.metrics.sharpeRatio - a.metrics.sharpeRatio,
+    )
     .slice(0, 3);
 
   const lowestRisk = data.successful
-    .sort((a: VarietyResult, b: VarietyResult) => a.metrics.maxDrawdown - b.metrics.maxDrawdown)
+    .sort(
+      (a: VarietyResult, b: VarietyResult) =>
+        a.metrics.maxDrawdown - b.metrics.maxDrawdown,
+    )
     .slice(0, 3);
 
   return (
@@ -176,14 +205,19 @@ function ComparisonOverview({ data }: { data: any }) {
         <CardContent>
           <div className="space-y-3">
             {topPerformers.map((result: VarietyResult, index: number) => (
-              <div key={result.symbol} className="flex items-center justify-between">
+              <div
+                key={result.symbol}
+                className="flex items-center justify-between"
+              >
                 <div className="flex items-center space-x-3">
                   <Badge variant={index === 0 ? 'default' : 'secondary'}>
                     {index + 1}
                   </Badge>
                   <div>
                     <div className="font-medium">{result.symbol}</div>
-                    <div className="text-sm text-muted-foreground">{result.name}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {result.name}
+                    </div>
                   </div>
                 </div>
                 <div className="text-right">
@@ -207,27 +241,34 @@ function ComparisonOverview({ data }: { data: any }) {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {riskAdjustedTopPerformers.map((result: VarietyResult, index: number) => (
-              <div key={result.symbol} className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <Badge variant={index === 0 ? 'default' : 'secondary'}>
-                    {index + 1}
-                  </Badge>
-                  <div>
-                    <div className="font-medium">{result.symbol}</div>
-                    <div className="text-sm text-muted-foreground">{result.name}</div>
+            {riskAdjustedTopPerformers.map(
+              (result: VarietyResult, index: number) => (
+                <div
+                  key={result.symbol}
+                  className="flex items-center justify-between"
+                >
+                  <div className="flex items-center space-x-3">
+                    <Badge variant={index === 0 ? 'default' : 'secondary'}>
+                      {index + 1}
+                    </Badge>
+                    <div>
+                      <div className="font-medium">{result.symbol}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {result.name}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-medium text-blue-600">
+                      {result.metrics.sharpeRatio.toFixed(2)}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      收益 {(result.metrics.totalReturn * 100).toFixed(1)}%
+                    </div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="font-medium text-blue-600">
-                    {result.metrics.sharpeRatio.toFixed(2)}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    收益 {(result.metrics.totalReturn * 100).toFixed(1)}%
-                  </div>
-                </div>
-              </div>
-            ))}
+              ),
+            )}
           </div>
         </CardContent>
       </Card>
@@ -240,14 +281,19 @@ function ComparisonOverview({ data }: { data: any }) {
         <CardContent>
           <div className="space-y-3">
             {lowestRisk.map((result: VarietyResult, index: number) => (
-              <div key={result.symbol} className="flex items-center justify-between">
+              <div
+                key={result.symbol}
+                className="flex items-center justify-between"
+              >
                 <div className="flex items-center space-x-3">
                   <Badge variant={index === 0 ? 'default' : 'secondary'}>
                     {index + 1}
                   </Badge>
                   <div>
                     <div className="font-medium">{result.symbol}</div>
-                    <div className="text-sm text-muted-foreground">{result.name}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {result.name}
+                    </div>
                   </div>
                 </div>
                 <div className="text-right">
@@ -286,17 +332,26 @@ function ComparisonOverview({ data }: { data: any }) {
             <div className="text-center">
               <div className="text-lg font-bold text-red-600">
                 {(
-                  data.successful.reduce((sum: number, r: VarietyResult) => sum + r.metrics.maxDrawdown, 0) /
-                  data.successful.length * 100
-                ).toFixed(1)}%
+                  (data.successful.reduce(
+                    (sum: number, r: VarietyResult) =>
+                      sum + r.metrics.maxDrawdown,
+                    0,
+                  ) /
+                    data.successful.length) *
+                  100
+                ).toFixed(1)}
+                %
               </div>
               <div className="text-sm text-muted-foreground">平均最大回撤</div>
             </div>
             <div className="text-center">
               <div className="text-lg font-bold text-purple-600">
                 {(
-                  data.successful.reduce((sum: number, r: VarietyResult) => sum + r.metrics.totalTrades, 0) /
-                  data.successful.length
+                  data.successful.reduce(
+                    (sum: number, r: VarietyResult) =>
+                      sum + r.metrics.totalTrades,
+                    0,
+                  ) / data.successful.length
                 ).toFixed(0)}
               </div>
               <div className="text-sm text-muted-foreground">平均交易次数</div>
@@ -304,9 +359,14 @@ function ComparisonOverview({ data }: { data: any }) {
             <div className="text-center">
               <div className="text-lg font-bold text-orange-600">
                 {(
-                  data.successful.reduce((sum: number, r: VarietyResult) => sum + r.metrics.winRate, 0) /
-                  data.successful.length * 100
-                ).toFixed(0)}%
+                  (data.successful.reduce(
+                    (sum: number, r: VarietyResult) => sum + r.metrics.winRate,
+                    0,
+                  ) /
+                    data.successful.length) *
+                  100
+                ).toFixed(0)}
+                %
               </div>
               <div className="text-sm text-muted-foreground">平均胜率</div>
             </div>

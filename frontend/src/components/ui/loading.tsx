@@ -1,12 +1,16 @@
 import { cn } from '@/lib/utils';
 
 interface LoadingProps {
-  className?: string
-  size?: 'sm' | 'md' | 'lg'
-  text?: string
+  className?: string;
+  size?: 'sm' | 'md' | 'lg';
+  text?: string;
 }
 
-export function Loading({ className, size = 'md', text = '加载中...' }: LoadingProps) {
+export function Loading({
+  className,
+  size = 'md',
+  text = '加载中...',
+}: LoadingProps) {
   const sizeClasses = {
     sm: 'w-4 h-4',
     md: 'w-6 h-6',
@@ -26,14 +30,15 @@ export function Loading({ className, size = 'md', text = '加载中...' }: Loadi
         )}
         aria-hidden="true"
       />
-      {text && (
-        <span className="text-sm text-gray-600">{text}</span>
-      )}
+      {text && <span className="text-sm text-gray-600">{text}</span>}
     </div>
   );
 }
 
-export function LoadingSpinner({ className, size = 'md' }: Omit<LoadingProps, 'text'>) {
+export function LoadingSpinner({
+  className,
+  size = 'md',
+}: Omit<LoadingProps, 'text'>) {
   const sizeClasses = {
     sm: 'w-4 h-4',
     md: 'w-6 h-6',

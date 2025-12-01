@@ -16,7 +16,12 @@ export interface TutorialStep {
 }
 
 export interface CompletionCondition {
-  type: 'time_spent' | 'action_completed' | 'button_clicked' | 'animation_watched' | 'quiz_passed';
+  type:
+    | 'time_spent'
+    | 'action_completed'
+    | 'button_clicked'
+    | 'animation_watched'
+    | 'quiz_passed';
   value: any;
   operator?: '>' | '<' | '=' | '>=' | '<=';
 }
@@ -125,7 +130,13 @@ export interface TutorialUserPreferences {
 
 // 事件类型
 export interface TutorialEvent {
-  type: 'step_start' | 'step_complete' | 'tutorial_complete' | 'achievement_unlock' | 'bookmark_add' | 'skip_step';
+  type:
+    | 'step_start'
+    | 'step_complete'
+    | 'tutorial_complete'
+    | 'achievement_unlock'
+    | 'bookmark_add'
+    | 'skip_step';
   data: any;
   timestamp: string;
 }

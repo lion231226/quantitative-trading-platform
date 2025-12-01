@@ -82,7 +82,9 @@ describe('PriceChart', () => {
 
   it('handles config changes', () => {
     const onParameterChange = jest.fn();
-    render(<PriceChart {...defaultProps} onParameterChange={onParameterChange} />);
+    render(
+      <PriceChart {...defaultProps} onParameterChange={onParameterChange} />,
+    );
 
     // Find and toggle signal visibility
     const signalCheckbox = screen.getByLabelText('显示信号:');
@@ -96,7 +98,9 @@ describe('PriceChart', () => {
 
   it('handles moving average type changes', () => {
     const onParameterChange = jest.fn();
-    render(<PriceChart {...defaultProps} onParameterChange={onParameterChange} />);
+    render(
+      <PriceChart {...defaultProps} onParameterChange={onParameterChange} />,
+    );
 
     // Find moving average controls
     const maCheckbox = screen.getByLabelText('显示均线:');
@@ -114,7 +118,9 @@ describe('PriceChart', () => {
 
   it('handles moving average period changes', () => {
     const onParameterChange = jest.fn();
-    render(<PriceChart {...defaultProps} onParameterChange={onParameterChange} />);
+    render(
+      <PriceChart {...defaultProps} onParameterChange={onParameterChange} />,
+    );
 
     // Find and enable moving averages
     const maCheckbox = screen.getByLabelText('显示均线:');
@@ -161,7 +167,9 @@ describe('PriceChart', () => {
     const customClass = 'custom-chart-class';
     render(<PriceChart {...defaultProps} className={customClass} />);
 
-    const chartContainer = screen.getByTestId('chart-line').closest('.custom-chart-class');
+    const chartContainer = screen
+      .getByTestId('chart-line')
+      .closest('.custom-chart-class');
     expect(chartContainer).toBeInTheDocument();
   });
 
@@ -169,7 +177,13 @@ describe('PriceChart', () => {
     const customHeight = 600;
     const customWidth = 800;
 
-    render(<PriceChart {...defaultProps} height={customHeight} width={customWidth} />);
+    render(
+      <PriceChart
+        {...defaultProps}
+        height={customHeight}
+        width={customWidth}
+      />,
+    );
 
     // Dimensions are passed to the chart, but we can't easily test them
     // without accessing the actual chart instance

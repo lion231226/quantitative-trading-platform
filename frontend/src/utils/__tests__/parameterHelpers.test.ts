@@ -352,11 +352,14 @@ describe('parameterHelpers', () => {
       };
       const assessment = getParameterRiskAssessment(parameters);
       expect(assessment.factors.length).toBeGreaterThan(0);
-      expect(assessment.factors.some(factor =>
-        factor.includes('短期均线') ||
-        factor.includes('止盈') ||
-        factor.includes('止损'),
-      )).toBe(true);
+      expect(
+        assessment.factors.some(
+          (factor) =>
+            factor.includes('短期均线') ||
+            factor.includes('止盈') ||
+            factor.includes('止损'),
+        ),
+      ).toBe(true);
     });
 
     it('应该提供风险等级中文标签', () => {
@@ -366,7 +369,9 @@ describe('parameterHelpers', () => {
         takeProfit: 10,
       };
       const assessment = getParameterRiskAssessment(parameters);
-      expect(['low', 'medium', 'high', 'very_high']).toContain(assessment.level);
+      expect(['low', 'medium', 'high', 'very_high']).toContain(
+        assessment.level,
+      );
     });
   });
 

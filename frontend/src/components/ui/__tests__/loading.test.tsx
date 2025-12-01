@@ -16,11 +16,15 @@ describe('Loading Components', () => {
 
     it('renders with different sizes', () => {
       const { rerender } = render(<Loading size="sm" />);
-      const spinnerElement = screen.getByRole('status').querySelector('[aria-hidden="true"]');
+      const spinnerElement = screen
+        .getByRole('status')
+        .querySelector('[aria-hidden="true"]');
       expect(spinnerElement).toHaveClass('w-4 h-4');
 
       rerender(<Loading size="lg" />);
-      const lgSpinnerElement = screen.getByRole('status').querySelector('[aria-hidden="true"]');
+      const lgSpinnerElement = screen
+        .getByRole('status')
+        .querySelector('[aria-hidden="true"]');
       expect(lgSpinnerElement).toHaveClass('w-8 h-8');
     });
 

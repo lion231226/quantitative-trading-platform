@@ -72,7 +72,9 @@
       "Bash(git fetch:*)",
       "WebSearch",
       "Bash(cd:*)",
-      "Bash(xmllint:*)"
+      "Bash(xmllint:*)",
+      "Bash(npx eslint:*)",
+      "Bash(npx prettier:*)"
     ],
     "deny": [],
     "ask": []

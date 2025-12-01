@@ -1,5 +1,14 @@
 import axios, { AxiosResponse } from 'axios';
-import { APIError, APIResponse, MarketDataPoint, MarketDataRequest, StrategyConfig, StrategyResult, StrategyRunRequest, Symbol } from '@/types/api';
+import {
+  APIError,
+  APIResponse,
+  MarketDataPoint,
+  MarketDataRequest,
+  StrategyConfig,
+  StrategyResult,
+  StrategyRunRequest,
+  Symbol,
+} from '@/types/api';
 
 // 创建axios实例
 const apiClient = axios.create({
@@ -68,12 +77,14 @@ export const marketDataAPI = {
       symbol: item.symbol,
       name: item.name,
       sector: item.sector,
-      exchange: item.exchange
+      exchange: item.exchange,
     }));
   },
 
   // 获取历史数据
-  getHistory: async (request: MarketDataRequest): Promise<MarketDataPoint[]> => {
+  getHistory: async (
+    request: MarketDataRequest,
+  ): Promise<MarketDataPoint[]> => {
     const response = await apiClient.post<APIResponse<MarketDataPoint[]>>(
       '/market-data/history',
       request,
@@ -82,10 +93,13 @@ export const marketDataAPI = {
   },
 
   // 绩效分析API - 获取绩效指标
-  getPerformanceMetrics: async (strategyId: string, params?: any): Promise<any> => {
+  getPerformanceMetrics: async (
+    strategyId: string,
+    params?: any,
+  ): Promise<any> => {
     const response = await apiClient.get<APIResponse<any>>(
       `/performance/metrics/${strategyId}`,
-      { params }
+      { params },
     );
     return response.data;
   },
@@ -94,7 +108,7 @@ export const marketDataAPI = {
   calculateReturns: async (request: any): Promise<any> => {
     const response = await apiClient.post<APIResponse<any>>(
       '/performance/calculate_returns',
-      request
+      request,
     );
     return response.data;
   },
@@ -103,7 +117,7 @@ export const marketDataAPI = {
   generateReport: async (request: any): Promise<any> => {
     const response = await apiClient.post<APIResponse<any>>(
       '/performance/report',
-      request
+      request,
     );
     return response.data;
   },
@@ -120,15 +134,20 @@ export const strategyAPI = {
 
   // 获取策略参数配置
   getStrategyParameters: async (strategyType: string): Promise<any> => {
-    const response = await apiClient.get(`/strategies/parameters/${strategyType}`);
+    const response = await apiClient.get(
+      `/strategies/parameters/${strategyType}`,
+    );
     return response.data;
   },
 
   // 配置策略参数
-  configureStrategy: async (strategyType: string, parameters: any): Promise<any> => {
+  configureStrategy: async (
+    strategyType: string,
+    parameters: any,
+  ): Promise<any> => {
     const response = await apiClient.post('/strategies/configure', {
       strategy_type: strategyType,
-      parameters
+      parameters,
     });
     return response.data;
   },
@@ -144,11 +163,18 @@ export const strategyAPI = {
   },
 
   // 获取策略结果
-  getResults: async (strategyId: string): Promise<StrategyResult & { rawData: any }> => {
+  getResults: async (
+    strategyId: string,
+  ): Promise<StrategyResult & { rawData: any }> => {
     // 首先尝试从任务状态获取结果
-    const statusResponse = await apiClient.get(`/strategies/task/${strategyId}/status`);
+    const statusResponse = await apiClient.get(
+      `/strategies/task/${strategyId}/status`,
+    );
 
-    if (statusResponse.data.status === 'completed' && statusResponse.data.result) {
+    if (
+      statusResponse.data.status === 'completed' &&
+      statusResponse.data.result
+    ) {
       // 转换后端结果格式为前端期望的格式
       const backendResult = statusResponse.data.result;
       return {
@@ -161,7 +187,9 @@ export const strategyAPI = {
         total_trades: backendResult.performance.total_trades,
         profit_trades: backendResult.performance.winning_trades,
         loss_trades: backendResult.performance.losing_trades,
-        average_return: backendResult.performance.total_pnl / backendResult.performance.total_trades,
+        average_return:
+          backendResult.performance.total_pnl /
+          backendResult.performance.total_trades,
         volatility: 0.02, // 可以根据需要计算
         rawData: backendResult, // 保留原始数据用于图表显示
       };
@@ -172,7 +200,9 @@ export const strategyAPI = {
 
   // 获取任务状态
   getTaskStatus: async (taskId: string): Promise<any> => {
-    const response = await apiClient.get(`/api/v1/strategies/task/${taskId}/status`);
+    const response = await apiClient.get(
+      `/api/v1/strategies/task/${taskId}/status`,
+    );
     return response.data;
   },
 };

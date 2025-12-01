@@ -7,11 +7,28 @@ import { DateRangePicker } from '@/components/forms/DateRangePicker';
 import { StrategyForm } from '@/components/forms/StrategyForm';
 import { ResultsDisplay } from '@/components/results/ResultsDisplay';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Loading } from '@/components/ui/loading';
-import { marketDataAPI, strategyAPI } from '@/lib/api';
+import { strategyAPI } from '@/lib/api';
 import { validateStrategyForm } from '@/lib/validation';
-import { MarketSelectionForm, SingleMovingAverageParams, StrategyType, StrategyConfigForm, StrategyRun, StrategySubmissionForm, StrategyParams, DualMovingAverageParams, RSIStrategyParams, MACDStrategyParams } from '@/types/strategy';
+import {
+  DualMovingAverageParams,
+  MACDStrategyParams,
+  MarketSelectionForm,
+  RSIStrategyParams,
+  SingleMovingAverageParams,
+  StrategyConfigForm,
+  StrategyParams,
+  StrategyRun,
+  StrategySubmissionForm,
+  StrategyType,
+} from '@/types/strategy';
 
 export default function StrategyPage() {
   const [marketSelection, setMarketSelection] = useState<MarketSelectionForm>({
@@ -41,15 +58,18 @@ export default function StrategyPage() {
   const [error, setError] = useState<string>('');
 
   const handleSymbolSelect = (symbol: string) => {
-    setMarketSelection(prev => ({ ...prev, symbol }));
+    setMarketSelection((prev) => ({ ...prev, symbol }));
   };
 
   const handleDateRangeChange = (startDate: string, endDate: string) => {
-    setMarketSelection(prev => ({ ...prev, startDate, endDate }));
+    setMarketSelection((prev) => ({ ...prev, startDate, endDate }));
   };
 
-  const handleParamsChange = (strategyType: StrategyType, params: StrategyParams) => {
-    setStrategyConfig(prev => ({ ...prev, strategyType, params }));
+  const handleParamsChange = (
+    strategyType: StrategyType,
+    params: StrategyParams,
+  ) => {
+    setStrategyConfig((prev) => ({ ...prev, strategyType, params }));
   };
 
   const canRunStrategy = () => {
@@ -82,7 +102,10 @@ export default function StrategyPage() {
       setError('');
 
       // 类型安全的策略参数提取函数
-      const getStrategyParameters = (strategyType: StrategyType, params: StrategyParams) => {
+      const getStrategyParameters = (
+        strategyType: StrategyType,
+        params: StrategyParams,
+      ) => {
         switch (strategyType) {
           case 'single_ma':
             const singleParams = params as SingleMovingAverageParams;
@@ -153,7 +176,10 @@ export default function StrategyPage() {
         strategy_type: strategyConfig.strategyType,
         start_date: marketSelection.startDate,
         end_date: marketSelection.endDate,
-        parameters: getStrategyParameters(strategyConfig.strategyType, strategyConfig.params),
+        parameters: getStrategyParameters(
+          strategyConfig.strategyType,
+          strategyConfig.params,
+        ),
       };
 
       const response = await strategyAPI.run(runRequest);
@@ -161,7 +187,11 @@ export default function StrategyPage() {
       // 创建策略运行对象 - 检查响应数据结构
       console.log('Strategy run response:', response);
 
-      const strategyId = (response as any).strategy_id || (response as any).task_id || (response as any).data?.strategy_id || (response as any).data?.task_id;
+      const strategyId =
+        (response as any).strategy_id ||
+        (response as any).task_id ||
+        (response as any).data?.strategy_id ||
+        (response as any).data?.task_id;
 
       if (!strategyId) {
         throw new Error('策略运行失败：未获取到策略ID');
@@ -177,7 +207,6 @@ export default function StrategyPage() {
 
       // 开始轮询任务状态
       pollTaskStatus(strategyId);
-
     } catch (err) {
       setError(err instanceof Error ? err.message : '策略运行失败');
       console.error('Failed to run strategy:', err);
@@ -192,13 +221,19 @@ export default function StrategyPage() {
         const status = await strategyAPI.getTaskStatus(taskId);
         console.log('Task status response:', status);
 
-        setCurrentRun(prev => prev ? {
-          ...prev,
-          status: status.status,
-          progress: status.progress ? Math.round(status.progress * 100) : undefined,
-          result: status.result,
-          error: status.error,
-        } : null);
+        setCurrentRun((prev) =>
+          prev
+            ? {
+                ...prev,
+                status: status.status,
+                progress: status.progress
+                  ? Math.round(status.progress * 100)
+                  : 0,
+                result: status.result,
+                error: status.error,
+              }
+            : null,
+        );
 
         if (status.status === 'completed' || status.status === 'failed') {
           clearInterval(pollInterval);
@@ -219,12 +254,8 @@ export default function StrategyPage() {
     <Layout>
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            策略分析
-          </h1>
-          <p className="text-lg text-gray-600">
-            配置参数并运行策略回测
-          </p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">策略分析</h1>
+          <p className="text-lg text-gray-600">配置参数并运行策略回测</p>
         </div>
 
         {error && (
@@ -279,15 +310,16 @@ export default function StrategyPage() {
                         <div className="text-sm text-gray-600">
                           {marketSelection.startDate && marketSelection.endDate
                             ? `${marketSelection.startDate} 至 ${marketSelection.endDate}`
-                            : '未选择'
-                          }
+                            : '未选择'}
                         </div>
                       </div>
                       <div>
                         <div className="text-sm font-medium">策略类型</div>
                         <div className="text-sm text-gray-600">
-                          {strategyConfig.strategyType === 'single_ma' && '单均线策略'}
-                          {strategyConfig.strategyType === 'dual_ma' && '双均线策略'}
+                          {strategyConfig.strategyType === 'single_ma' &&
+                            '单均线策略'}
+                          {strategyConfig.strategyType === 'dual_ma' &&
+                            '双均线策略'}
                           {strategyConfig.strategyType === 'rsi' && 'RSI策略'}
                           {strategyConfig.strategyType === 'macd' && 'MACD策略'}
                         </div>
@@ -295,32 +327,49 @@ export default function StrategyPage() {
                     </div>
 
                     {/* 策略参数详情 */}
-                    {strategyConfig.strategyType === 'single_ma' && (() => {
-                      const params = strategyConfig.params as SingleMovingAverageParams;
-                      return (
-                        <div className="border-t pt-3">
-                          <div className="text-sm font-medium mb-2">策略参数</div>
-                          <div className="space-y-2">
-                            <div className="flex justify-between text-xs">
-                              <span className="text-gray-600">均线周期:</span>
-                              <span className="font-medium">{params.ma_period}天 ({params.ma_type})</span>
+                    {strategyConfig.strategyType === 'single_ma' &&
+                      (() => {
+                        const params =
+                          strategyConfig.params as SingleMovingAverageParams;
+                        return (
+                          <div className="border-t pt-3">
+                            <div className="text-sm font-medium mb-2">
+                              策略参数
                             </div>
-                            <div className="flex justify-between text-xs">
-                              <span className="text-gray-600">初始资金:</span>
-                              <span className="font-medium">¥{params.initial_capital.toLocaleString()}</span>
-                            </div>
-                            <div className="flex justify-between text-xs">
-                              <span className="text-gray-600">最小交叉幅度:</span>
-                              <span className="font-medium">{(params.min_cross_percentage * 100).toFixed(2)}%</span>
-                            </div>
-                            <div className="flex justify-between text-xs">
-                              <span className="text-gray-600">确认周期:</span>
-                              <span className="font-medium">{params.confirmation_periods}天</span>
+                            <div className="space-y-2">
+                              <div className="flex justify-between text-xs">
+                                <span className="text-gray-600">均线周期:</span>
+                                <span className="font-medium">
+                                  {params.ma_period}天 ({params.ma_type})
+                                </span>
+                              </div>
+                              <div className="flex justify-between text-xs">
+                                <span className="text-gray-600">初始资金:</span>
+                                <span className="font-medium">
+                                  ¥{params.initial_capital.toLocaleString()}
+                                </span>
+                              </div>
+                              <div className="flex justify-between text-xs">
+                                <span className="text-gray-600">
+                                  最小交叉幅度:
+                                </span>
+                                <span className="font-medium">
+                                  {(params.min_cross_percentage * 100).toFixed(
+                                    2,
+                                  )}
+                                  %
+                                </span>
+                              </div>
+                              <div className="flex justify-between text-xs">
+                                <span className="text-gray-600">确认周期:</span>
+                                <span className="font-medium">
+                                  {params.confirmation_periods}天
+                                </span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })()}
+                        );
+                      })()}
 
                     {/* 风险管理参数 */}
                     {(() => {
@@ -328,27 +377,49 @@ export default function StrategyPage() {
                       const commonParams = params as SingleMovingAverageParams;
                       return (
                         <div className="border-t pt-3">
-                          <div className="text-sm font-medium mb-2">风险管理</div>
+                          <div className="text-sm font-medium mb-2">
+                            风险管理
+                          </div>
                           <div className="space-y-2">
                             <div className="flex justify-between text-xs">
                               <span className="text-gray-600">止损比例:</span>
-                              <span className="font-medium text-red-600">{(commonParams.stop_loss_pct * 100).toFixed(1)}%</span>
+                              <span className="font-medium text-red-600">
+                                {(commonParams.stop_loss_pct * 100).toFixed(1)}%
+                              </span>
                             </div>
                             <div className="flex justify-between text-xs">
                               <span className="text-gray-600">止盈比例:</span>
-                              <span className="font-medium text-green-600">{(commonParams.take_profit_pct * 100).toFixed(1)}%</span>
+                              <span className="font-medium text-green-600">
+                                {(commonParams.take_profit_pct * 100).toFixed(
+                                  1,
+                                )}
+                                %
+                              </span>
                             </div>
                             <div className="flex justify-between text-xs">
                               <span className="text-gray-600">最大仓位:</span>
-                              <span className="font-medium">{(commonParams.max_position_size * 100).toFixed(0)}%</span>
+                              <span className="font-medium">
+                                {(commonParams.max_position_size * 100).toFixed(
+                                  0,
+                                )}
+                                %
+                              </span>
                             </div>
                             <div className="flex justify-between text-xs">
-                              <span className="text-gray-600">每日最大信号:</span>
-                              <span className="font-medium">{commonParams.max_signals_per_day}个</span>
+                              <span className="text-gray-600">
+                                每日最大信号:
+                              </span>
+                              <span className="font-medium">
+                                {commonParams.max_signals_per_day}个
+                              </span>
                             </div>
                             <div className="flex justify-between text-xs">
-                              <span className="text-gray-600">信号冷却时间:</span>
-                              <span className="font-medium">{commonParams.signal_cooldown}秒</span>
+                              <span className="text-gray-600">
+                                信号冷却时间:
+                              </span>
+                              <span className="font-medium">
+                                {commonParams.signal_cooldown}秒
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -380,10 +451,7 @@ export default function StrategyPage() {
             </div>
           </div>
         ) : (
-          <ResultsDisplay
-            strategyRun={currentRun}
-            onReset={resetStrategy}
-          />
+          <ResultsDisplay strategyRun={currentRun} onReset={resetStrategy} />
         )}
       </div>
     </Layout>

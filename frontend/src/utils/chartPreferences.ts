@@ -1,87 +1,91 @@
-import { ChartConfig, ChartInteractionConfig, PerformanceConfig } from '@/types/chart.types';
+import {
+  ChartConfig,
+  ChartInteractionConfig,
+  PerformanceConfig,
+} from '@/types/chart.types';
 
 // 用户偏好接口
 export interface UserChartPreferences {
   // 基础配置
-  chartConfig: Partial<ChartConfig>
+  chartConfig: Partial<ChartConfig>;
 
   // 交互配置
-  interactionConfig: Partial<ChartInteractionConfig>
+  interactionConfig: Partial<ChartInteractionConfig>;
 
   // 性能配置
-  performanceConfig: Partial<PerformanceConfig>
+  performanceConfig: Partial<PerformanceConfig>;
 
   // 主题配置
-  theme: ChartTheme
+  theme: ChartTheme;
 
   // 布局配置
-  layout: ChartLayout
+  layout: ChartLayout;
 
   // 导出偏好
-  exportPreferences: ExportPreferences
+  exportPreferences: ExportPreferences;
 
   // 用户信息
-  userId?: string
-  lastUpdated: string
+  userId?: string;
+  lastUpdated: string;
 }
 
 // 图表主题
 export interface ChartTheme {
-  name: string
+  name: string;
   colors: {
-    background: string
-    grid: string
-    text: string
-    price: string
-    buySignal: string
-    sellSignal: string
-    movingAverage: string
-    volume: string
-  }
+    background: string;
+    grid: string;
+    text: string;
+    price: string;
+    buySignal: string;
+    sellSignal: string;
+    movingAverage: string;
+    volume: string;
+  };
   fonts: {
-    family: string
+    family: string;
     size: {
-      title: number
-      legend: number
-      axis: number
-      tooltip: number
-    }
-  }
+      title: number;
+      legend: number;
+      axis: number;
+      tooltip: number;
+    };
+  };
   styles: {
-    lineWidth: number
-    pointRadius: number
-    gridLines: boolean
-    animations: boolean
-  }
+    lineWidth: number;
+    pointRadius: number;
+    gridLines: boolean;
+    animations: boolean;
+  };
 }
 
 // 图表布局
 export interface ChartLayout {
-  height: number
-  width?: number
+  height: number;
+  width?: number;
   padding: {
-    top: number
-    right: number
-    bottom: number
-    left: number
-  }
-  showControls: boolean
-  showLegend: boolean
-  showTooltip: boolean
-  responsive: boolean
+    top: number;
+    right: number;
+    bottom: number;
+    left: number;
+  };
+  showControls: boolean;
+  showLegend: boolean;
+  showTooltip: boolean;
+  responsive: boolean;
 }
 
 // 导出偏好
 export interface ExportPreferences {
-  defaultFormat: 'png' | 'csv' | 'json'
-  defaultFilename: string
-  includeMetadata: boolean
-  backgroundColor: string
-  quality: number
+  defaultFormat: 'png' | 'csv' | 'json';
+  defaultFilename: string;
+  includeMetadata: boolean;
+  backgroundColor: string;
+  quality: number;
   dimensions: {
-    width: number
-    height: number
-  }
+    width: number;
+    height: number;
+  };
 }
 
 // 默认主题
@@ -458,7 +462,9 @@ export class ResponsiveChartConfig {
   }
 
   // 监听屏幕尺寸变化
-  static onScreenSizeChange(callback: (config: Partial<UserChartPreferences>) => void): () => void {
+  static onScreenSizeChange(
+    callback: (config: Partial<UserChartPreferences>) => void,
+  ): () => void {
     if (typeof window === 'undefined') {
       return () => {};
     }
@@ -467,7 +473,8 @@ export class ResponsiveChartConfig {
 
     const handleResize = () => {
       const newWidth = window.innerWidth;
-      if (Math.abs(newWidth - currentWidth) > 100) { // 只在显著变化时触发
+      if (Math.abs(newWidth - currentWidth) > 100) {
+        // 只在显著变化时触发
         currentWidth = newWidth;
         callback(this.generateConfig(newWidth));
       }
@@ -516,7 +523,10 @@ export const ChartPreferencesUtils = {
     root.style.setProperty('--chart-text-color', theme.colors.text);
     root.style.setProperty('--chart-price-color', theme.colors.price);
     root.style.setProperty('--chart-buy-signal-color', theme.colors.buySignal);
-    root.style.setProperty('--chart-sell-signal-color', theme.colors.sellSignal);
+    root.style.setProperty(
+      '--chart-sell-signal-color',
+      theme.colors.sellSignal,
+    );
     root.style.setProperty('--chart-ma-color', theme.colors.movingAverage);
     root.style.setProperty('--chart-volume-color', theme.colors.volume);
   },
@@ -525,7 +535,9 @@ export const ChartPreferencesUtils = {
   detectSystemTheme(): 'light' | 'dark' {
     if (typeof window === 'undefined') return 'light';
 
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
   },
 
   // 监听系统主题变化

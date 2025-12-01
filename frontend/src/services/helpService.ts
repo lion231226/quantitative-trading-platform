@@ -1,11 +1,23 @@
-import { UseQueryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
-import { HelpDocument, FAQItem, UserFeedback, UXError } from '@/types/ux.types';
+import {
+  UseQueryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { FAQItem, HelpDocument, UXError, UserFeedback } from '@/types/ux.types';
 
 // 查询键常量
 export const HELP_QUERY_KEYS = {
   documents: (category?: string) => ['helpDocuments', category] as const,
-  faq: (category?: string, search?: string) => ['faq', category, search] as const,
+  faq: (category?: string, search?: string) =>
+    ['faq', category, search] as const,
   feedback: () => ['userFeedback'] as const,
   errors: () => ['uxErrors'] as const,
 } as const;
@@ -105,7 +117,8 @@ export class HelpDocumentService {
         difficulty: 'beginner',
         estimatedReadTime: 10,
         relatedDocuments: ['strategy-basics', 'risk-management'],
-        searchableContent: '快速入门 基础操作 策略选择 参数设置 回测分析 结果解读',
+        searchableContent:
+          '快速入门 基础操作 策略选择 参数设置 回测分析 结果解读',
       },
       {
         id: 'strategy-basics',
@@ -176,7 +189,8 @@ export class HelpDocumentService {
         difficulty: 'intermediate',
         estimatedReadTime: 8,
         relatedDocuments: ['risk-management', 'performance-analysis'],
-        searchableContent: '单均线 移动平均线 SMA EMA 金叉 死叉 交易信号 技术分析',
+        searchableContent:
+          '单均线 移动平均线 SMA EMA 金叉 死叉 交易信号 技术分析',
       },
       {
         id: 'troubleshooting',
@@ -328,7 +342,8 @@ export class HelpDocumentService {
         difficulty: 'beginner',
         estimatedReadTime: 12,
         relatedDocuments: ['getting-started', 'contact-support'],
-        searchableContent: '故障排除 常见问题 解决方案 技术支持 数据问题 性能问题',
+        searchableContent:
+          '故障排除 常见问题 解决方案 技术支持 数据问题 性能问题',
       },
     ];
 
@@ -341,12 +356,14 @@ export class HelpDocumentService {
   private buildSearchIndex(): void {
     this.searchIndex.clear();
 
-    this.documents.forEach(doc => {
-      const searchableContent = `${doc.title} ${doc.content} ${doc.tags.join(' ')} ${doc.searchableContent}`.toLowerCase();
+    this.documents.forEach((doc) => {
+      const searchableContent =
+        `${doc.title} ${doc.content} ${doc.tags.join(' ')} ${doc.searchableContent}`.toLowerCase();
       const words = searchableContent.split(/\s+/);
 
-      words.forEach(word => {
-        if (word.length > 2) { // 忽略过短的词
+      words.forEach((word) => {
+        if (word.length > 2) {
+          // 忽略过短的词
           if (!this.searchIndex.has(word)) {
             this.searchIndex.set(word, new Set());
           }
@@ -367,10 +384,10 @@ export class HelpDocumentService {
     const queryWords = query.toLowerCase().split(/\s+/);
     const docScores = new Map<string, number>();
 
-    queryWords.forEach(word => {
+    queryWords.forEach((word) => {
       const matchingDocs = this.searchIndex.get(word);
       if (matchingDocs) {
-        matchingDocs.forEach(docId => {
+        matchingDocs.forEach((docId) => {
           docScores.set(docId, (docScores.get(docId) || 0) + 1);
         });
       }
@@ -379,12 +396,12 @@ export class HelpDocumentService {
     // 按相关性排序
     const sortedDocs = Array.from(docScores.entries())
       .sort((a, b) => b[1] - a[1])
-      .map(([docId]) => this.documents.find(doc => doc.id === docId))
+      .map(([docId]) => this.documents.find((doc) => doc.id === docId))
       .filter(Boolean) as HelpDocument[];
 
     // 按类别过滤
     if (category) {
-      return sortedDocs.filter(doc => doc.category === category);
+      return sortedDocs.filter((doc) => doc.category === category);
     }
 
     return sortedDocs;
@@ -395,7 +412,7 @@ export class HelpDocumentService {
    */
   getDocumentsByCategory(category?: string): HelpDocument[] {
     if (category) {
-      return this.documents.filter(doc => doc.category === category);
+      return this.documents.filter((doc) => doc.category === category);
     }
     return this.documents;
   }
@@ -404,7 +421,7 @@ export class HelpDocumentService {
    * 获取单个文档
    */
   getDocumentById(id: string): HelpDocument | undefined {
-    return this.documents.find(doc => doc.id === id);
+    return this.documents.find((doc) => doc.id === id);
   }
 
   /**
@@ -415,7 +432,7 @@ export class HelpDocumentService {
     if (!doc) return [];
 
     return doc.relatedDocuments
-      .map(id => this.getDocumentById(id))
+      .map((id) => this.getDocumentById(id))
       .filter(Boolean) as HelpDocument[];
   }
 }
@@ -438,19 +455,24 @@ export class FAQService {
       {
         id: 'what-is-quant-trading',
         question: '什么是量化交易？',
-        answer: '量化交易是利用数学模型和计算机算法来执行交易策略的方法。它通过分析历史数据、识别市场模式和自动化交易决策，来减少人为情绪影响并提高交易效率。',
+        answer:
+          '量化交易是利用数学模型和计算机算法来执行交易策略的方法。它通过分析历史数据、识别市场模式和自动化交易决策，来减少人为情绪影响并提高交易效率。',
         category: '基础概念',
         tags: ['量化交易', '算法交易', '基础'],
         popularity: 156,
         helpful: 89,
         notHelpful: 12,
         lastUpdated: new Date().toISOString(),
-        relatedQuestions: ['what-is-moving-average', 'how-to-start-quant-trading'],
+        relatedQuestions: [
+          'what-is-moving-average',
+          'how-to-start-quant-trading',
+        ],
       },
       {
         id: 'what-is-moving-average',
         question: '什么是移动平均线？',
-        answer: '移动平均线是技术分析中常用的指标，通过计算特定时间段内价格的平均值来平滑价格波动。常见的有简单移动平均线(SMA)和指数移动平均线(EMA)。单均线策略就是基于移动平均线来判断买卖时机的交易策略。',
+        answer:
+          '移动平均线是技术分析中常用的指标，通过计算特定时间段内价格的平均值来平滑价格波动。常见的有简单移动平均线(SMA)和指数移动平均线(EMA)。单均线策略就是基于移动平均线来判断买卖时机的交易策略。',
         category: '技术指标',
         tags: ['移动平均线', '技术分析', '指标'],
         popularity: 203,
@@ -462,7 +484,8 @@ export class FAQService {
       {
         id: 'how-to-start-quant-trading',
         question: '如何开始量化交易？',
-        answer: '开始量化交易需要：1) 学习基础的技术分析和编程知识；2) 选择合适的交易平台和工具；3) 收集高质量的历史数据；4) 开发和测试交易策略；5) 进行严格的风险管理；6) 从小资金开始实盘交易。建议先通过模拟交易积累经验。',
+        answer:
+          '开始量化交易需要：1) 学习基础的技术分析和编程知识；2) 选择合适的交易平台和工具；3) 收集高质量的历史数据；4) 开发和测试交易策略；5) 进行严格的风险管理；6) 从小资金开始实盘交易。建议先通过模拟交易积累经验。',
         category: '入门指南',
         tags: ['入门', '学习', '步骤'],
         popularity: 189,
@@ -474,7 +497,8 @@ export class FAQService {
       {
         id: 'how-to-choose-MA-period',
         question: '如何选择移动平均线的周期？',
-        answer: '选择MA周期需要考虑：1) 交易时间框架（短线用5-20日，中线用20-60日，长线用60-200日）；2) 市场波动性（高波动市场使用较长周期）；3) 个人交易风格（激进vs保守）；4) 历史回测表现。建议通过回测不同参数组合来找到最优配置。',
+        answer:
+          '选择MA周期需要考虑：1) 交易时间框架（短线用5-20日，中线用20-60日，长线用60-200日）；2) 市场波动性（高波动市场使用较长周期）；3) 个人交易风格（激进vs保守）；4) 历史回测表现。建议通过回测不同参数组合来找到最优配置。',
         category: '策略配置',
         tags: ['参数选择', '优化', '配置'],
         popularity: 134,
@@ -486,7 +510,8 @@ export class FAQService {
       {
         id: 'risk-management-tips',
         question: '量化交易中的风险管理要点？',
-        answer: '风险管理要点包括：1) 设置合理的止损点位（通常2-5%）；2) 控制单笔交易仓位（不超过总资金的5-10%）；3) 分散投资降低单一风险；4) 监控最大回撤；5) 保持充足的风险准备金；6) 定期评估和调整策略。记住：保住本金比追求利润更重要。',
+        answer:
+          '风险管理要点包括：1) 设置合理的止损点位（通常2-5%）；2) 控制单笔交易仓位（不超过总资金的5-10%）；3) 分散投资降低单一风险；4) 监控最大回撤；5) 保持充足的风险准备金；6) 定期评估和调整策略。记住：保住本金比追求利润更重要。',
         category: '风险管理',
         tags: ['风险', '管理', '止损'],
         popularity: 178,
@@ -498,7 +523,8 @@ export class FAQService {
       {
         id: 'backtesting-tips',
         question: '策略回测需要注意什么？',
-        answer: '策略回测注意事项：1) 使用足够长的历史数据（至少3-5年）；2) 包含不同市场环境（牛市、熊市、震荡市）；3) 考虑交易成本和滑点；4) 避免过度拟合历史数据；5) 进行样本外测试；6) 关注最大回撤和夏普比率等风险指标；7) 定期重新评估策略有效性。',
+        answer:
+          '策略回测注意事项：1) 使用足够长的历史数据（至少3-5年）；2) 包含不同市场环境（牛市、熊市、震荡市）；3) 考虑交易成本和滑点；4) 避免过度拟合历史数据；5) 进行样本外测试；6) 关注最大回撤和夏普比率等风险指标；7) 定期重新评估策略有效性。',
         category: '策略测试',
         tags: ['回测', '测试', '验证'],
         popularity: 145,
@@ -510,7 +536,8 @@ export class FAQService {
       {
         id: 'data-quality-issues',
         question: '如何处理数据质量问题？',
-        answer: '处理数据质量问题：1) 选择可靠的数据源（如官方交易所、知名数据供应商）；2) 进行数据清洗（处理缺失值、异常值、重复数据）；3) 验证数据一致性；4) 定期更新数据；5) 建立数据监控机制；6) 对多个数据源进行交叉验证。垃圾进，垃圾出，数据质量直接影响策略效果。',
+        answer:
+          '处理数据质量问题：1) 选择可靠的数据源（如官方交易所、知名数据供应商）；2) 进行数据清洗（处理缺失值、异常值、重复数据）；3) 验证数据一致性；4) 定期更新数据；5) 建立数据监控机制；6) 对多个数据源进行交叉验证。垃圾进，垃圾出，数据质量直接影响策略效果。',
         category: '数据管理',
         tags: ['数据', '质量', '清洗'],
         popularity: 98,
@@ -522,7 +549,8 @@ export class FAQService {
       {
         id: 'platform-features',
         question: '平台支持哪些主要功能？',
-        answer: '平台主要功能包括：1) 单均线策略回测和分析；2) 实时数据可视化图表；3) 多策略对比分析；4) 详细的性能指标计算；5) 交互式教程系统；6) 风险管理工具；7) 数据导出功能；8) 移动端适配。我们持续更新功能，欢迎反馈建议。',
+        answer:
+          '平台主要功能包括：1) 单均线策略回测和分析；2) 实时数据可视化图表；3) 多策略对比分析；4) 详细的性能指标计算；5) 交互式教程系统；6) 风险管理工具；7) 数据导出功能；8) 移动端适配。我们持续更新功能，欢迎反馈建议。',
         category: '平台功能',
         tags: ['功能', '特性', '平台'],
         popularity: 167,
@@ -543,15 +571,17 @@ export class FAQService {
     }
 
     const queryLower = query.toLowerCase();
-    return this.faqItems.filter(faq => {
-      const matchesCategory = !category || faq.category === category;
-      const matchesQuery =
-        faq.question.toLowerCase().includes(queryLower) ||
-        faq.answer.toLowerCase().includes(queryLower) ||
-        faq.tags.some(tag => tag.toLowerCase().includes(queryLower));
+    return this.faqItems
+      .filter((faq) => {
+        const matchesCategory = !category || faq.category === category;
+        const matchesQuery =
+          faq.question.toLowerCase().includes(queryLower) ||
+          faq.answer.toLowerCase().includes(queryLower) ||
+          faq.tags.some((tag) => tag.toLowerCase().includes(queryLower));
 
-      return matchesCategory && matchesQuery;
-    }).sort((a, b) => b.popularity - a.popularity);
+        return matchesCategory && matchesQuery;
+      })
+      .sort((a, b) => b.popularity - a.popularity);
   }
 
   /**
@@ -559,7 +589,7 @@ export class FAQService {
    */
   getFAQsByCategory(category?: string): FAQItem[] {
     if (category) {
-      return this.faqItems.filter(faq => faq.category === category);
+      return this.faqItems.filter((faq) => faq.category === category);
     }
     return this.faqItems.sort((a, b) => b.popularity - a.popularity);
   }
@@ -577,7 +607,7 @@ export class FAQService {
    * 记录FAQ反馈
    */
   recordFAQFeedback(faqId: string, helpful: boolean): void {
-    const faq = this.faqItems.find(item => item.id === faqId);
+    const faq = this.faqItems.find((item) => item.id === faqId);
     if (faq) {
       if (helpful) {
         faq.helpful++;
@@ -592,7 +622,7 @@ export class FAQService {
    * 获取FAQ分类
    */
   getFAQCategories(): string[] {
-    return Array.from(new Set(this.faqItems.map(faq => faq.category)));
+    return Array.from(new Set(this.faqItems.map((faq) => faq.category)));
   }
 }
 
@@ -606,7 +636,9 @@ export class UserFeedbackService {
   /**
    * 提交反馈
    */
-  async submitFeedback(feedbackData: Omit<UserFeedback, 'id' | 'timestamp' | 'sessionId'>): Promise<UserFeedback> {
+  async submitFeedback(
+    feedbackData: Omit<UserFeedback, 'id' | 'timestamp' | 'sessionId'>,
+  ): Promise<UserFeedback> {
     const feedback: UserFeedback = {
       ...feedbackData,
       id: `feedback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -625,7 +657,9 @@ export class UserFeedbackService {
   /**
    * 记录错误
    */
-  recordError(errorData: Omit<UXError, 'id' | 'timestamp' | 'sessionId'>): UXError {
+  recordError(
+    errorData: Omit<UXError, 'id' | 'timestamp' | 'sessionId'>,
+  ): UXError {
     const error: UXError = {
       ...errorData,
       id: `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -645,8 +679,9 @@ export class UserFeedbackService {
    * 获取用户反馈历史
    */
   getUserFeedback(): UserFeedback[] {
-    return this.feedback.sort((a, b) =>
-      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    return this.feedback.sort(
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
     );
   }
 
@@ -654,8 +689,9 @@ export class UserFeedbackService {
    * 获取错误历史
    */
   getErrors(): UXError[] {
-    return this.errors.sort((a, b) =>
-      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    return this.errors.sort(
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
     );
   }
 
@@ -730,8 +766,9 @@ export function useSubmitFeedback() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (feedbackData: Omit<UserFeedback, 'id' | 'timestamp' | 'sessionId'>) =>
-      userFeedbackService.submitFeedback(feedbackData),
+    mutationFn: (
+      feedbackData: Omit<UserFeedback, 'id' | 'timestamp' | 'sessionId'>,
+    ) => userFeedbackService.submitFeedback(feedbackData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: HELP_QUERY_KEYS.feedback() });
     },

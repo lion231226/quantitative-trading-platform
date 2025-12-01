@@ -1,4 +1,4 @@
-import { screen, render, RenderOptions } from '@testing-library/react';
+import { RenderOptions, render, screen } from '@testing-library/react';
 import { ReactElement } from 'react';
 
 /**
@@ -23,7 +23,7 @@ export const getByTextOrRole = (text: string, role?: string) => {
  */
 export const renderWithCompat = (
   ui: ReactElement,
-  options?: Omit<RenderOptions, 'wrapper'>
+  options?: Omit<RenderOptions, 'wrapper'>,
 ) => {
   // Add any DOM compatibility fixes here if needed
   return render(ui, options);
@@ -34,7 +34,7 @@ export const renderWithCompat = (
  */
 export const waitForElement = async (
   textOrRole: { text?: string; role?: string },
-  timeout = 5000
+  timeout = 5000,
 ) => {
   const { text, role } = textOrRole;
 
@@ -43,7 +43,11 @@ export const waitForElement = async (
       return await screen.findByText(text, {}, { timeout });
     } catch (error) {
       if (role) {
-        return await screen.findByRole(role as any, { name: new RegExp(text || '', 'i') }, { timeout });
+        return await screen.findByRole(
+          role as any,
+          { name: new RegExp(text || '', 'i') },
+          { timeout },
+        );
       }
       throw error;
     }

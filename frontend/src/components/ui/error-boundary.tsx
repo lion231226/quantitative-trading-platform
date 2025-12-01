@@ -4,17 +4,20 @@ import React from 'react';
 import { Button } from './button';
 
 interface ErrorBoundaryState {
-  hasError: boolean
-  error?: Error
-  errorInfo?: React.ErrorInfo
+  hasError: boolean;
+  error?: Error;
+  errorInfo?: React.ErrorInfo;
 }
 
 interface ErrorBoundaryProps {
-  children: React.ReactNode
-  fallback?: React.ComponentType<{ error: Error; reset: () => void }>
+  children: React.ReactNode;
+  fallback?: React.ComponentType<{ error: Error; reset: () => void }>;
 }
 
-class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+class ErrorBoundary extends React.Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
@@ -82,7 +85,9 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       }
 
       // 默认错误UI
-      return <ErrorFallback error={this.state.error!} reset={this.handleReset} />;
+      return (
+        <ErrorFallback error={this.state.error!} reset={this.handleReset} />
+      );
     }
 
     return this.props.children;
@@ -90,8 +95,8 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
 }
 
 interface ErrorFallbackProps {
-  error: Error
-  reset: () => void
+  error: Error;
+  reset: () => void;
 }
 
 function ErrorFallback({ error, reset }: ErrorFallbackProps) {
@@ -130,10 +135,7 @@ function ErrorFallback({ error, reset }: ErrorFallbackProps) {
           <Button onClick={reset} variant="default">
             重试
           </Button>
-          <Button
-            onClick={() => window.location.reload()}
-            variant="outline"
-          >
+          <Button onClick={() => window.location.reload()} variant="outline">
             刷新页面
           </Button>
         </div>
@@ -174,11 +176,14 @@ export function useErrorHandler() {
 
 // 异步错误边界组件
 interface AsyncErrorBoundaryProps {
-  children: React.ReactNode
-  fallback?: React.ComponentType<{ error: Error; reset: () => void }>
+  children: React.ReactNode;
+  fallback?: React.ComponentType<{ error: Error; reset: () => void }>;
 }
 
-export function AsyncErrorBoundary({ children, fallback }: AsyncErrorBoundaryProps) {
+export function AsyncErrorBoundary({
+  children,
+  fallback,
+}: AsyncErrorBoundaryProps) {
   const { handleError, resetError } = useErrorHandler();
 
   // 包装异步操作的Hook
@@ -205,8 +210,8 @@ export function AsyncErrorBoundary({ children, fallback }: AsyncErrorBoundaryPro
 
 // Context for error handling
 const ErrorBoundaryContext = React.createContext<{
-  withErrorHandling: <T>(asyncFn: () => Promise<T>) => Promise<T | null>
-  resetError: () => void
+  withErrorHandling: <T>(asyncFn: () => Promise<T>) => Promise<T | null>;
+  resetError: () => void;
 }>({
   withErrorHandling: async () => null,
   resetError: () => {},

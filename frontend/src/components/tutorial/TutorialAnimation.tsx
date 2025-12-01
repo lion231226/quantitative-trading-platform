@@ -1,27 +1,27 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import {
-  Chart as ChartJS,
+  AnimationOptions,
   CategoryScale,
+  Chart as ChartJS,
+  Filler,
+  Legend,
+  LineElement,
   LinearScale,
   PointElement,
-  LineElement,
   Title,
   Tooltip,
-  Legend,
-  Filler,
-  AnimationOptions,
 } from 'chart.js';
 import {
-  Play,
+  Maximize2,
+  Minimize2,
   Pause,
+  Play,
   RotateCcw,
+  Settings,
   SkipForward,
   Volume2,
   VolumeX,
-  Settings,
-  Maximize2,
-  Minimize2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -37,7 +37,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  Filler
+  Filler,
 );
 
 interface TutorialAnimationProps {
@@ -119,41 +119,55 @@ export function TutorialAnimation({
   }, [data]);
 
   // 计算移动平均线
-  const calculateMovingAverage = useCallback((data: any[], period: number, currentIndex: number) => {
-    if (currentIndex < period - 1) return null;
+  const calculateMovingAverage = useCallback(
+    (data: any[], period: number, currentIndex: number) => {
+      if (currentIndex < period - 1) return null;
 
-    const sum = data
-      .slice(currentIndex - period + 1, currentIndex + 1)
-      .reduce((acc, point) => acc + point.price, 0);
+      const sum = data
+        .slice(currentIndex - period + 1, currentIndex + 1)
+        .reduce((acc, point) => acc + point.price, 0);
 
-    return sum / period;
-  }, []);
+      return sum / period;
+    },
+    [],
+  );
 
   // 检测金叉死叉
-  const detectCross = useCallback((data: any[], currentIndex: number) => {
-    if (currentIndex < 1) return null;
+  const detectCross = useCallback(
+    (data: any[], currentIndex: number) => {
+      if (currentIndex < 1) return null;
 
-    const shortMA10 = calculateMovingAverage(data, 10, currentIndex);
-    const shortMA10Prev = calculateMovingAverage(data, 10, currentIndex - 1);
-    const longMA20 = calculateMovingAverage(data, 20, currentIndex);
-    const longMA20Prev = calculateMovingAverage(data, 20, currentIndex - 1);
+      const shortMA10 = calculateMovingAverage(data, 10, currentIndex);
+      const shortMA10Prev = calculateMovingAverage(data, 10, currentIndex - 1);
+      const longMA20 = calculateMovingAverage(data, 20, currentIndex);
+      const longMA20Prev = calculateMovingAverage(data, 20, currentIndex - 1);
 
-    if (!shortMA10 || !shortMA10Prev || !longMA20 || !longMA20Prev) {
+      if (!shortMA10 || !shortMA10Prev || !longMA20 || !longMA20Prev) {
+        return null;
+      }
+
+      // 金叉：短期均线上穿长期均线
+      if (shortMA10Prev <= longMA20Prev && shortMA10 > longMA20) {
+        return {
+          type: 'golden-cross',
+          price: data[currentIndex].price,
+          index: currentIndex,
+        };
+      }
+
+      // 死叉：短期均线下穿长期均线
+      if (shortMA10Prev >= longMA20Prev && shortMA10 < longMA20) {
+        return {
+          type: 'death-cross',
+          price: data[currentIndex].price,
+          index: currentIndex,
+        };
+      }
+
       return null;
-    }
-
-    // 金叉：短期均线上穿长期均线
-    if (shortMA10Prev <= longMA20Prev && shortMA10 > longMA20) {
-      return { type: 'golden-cross', price: data[currentIndex].price, index: currentIndex };
-    }
-
-    // 死叉：短期均线下穿长期均线
-    if (shortMA10Prev >= longMA20Prev && shortMA10 < longMA20) {
-      return { type: 'death-cross', price: data[currentIndex].price, index: currentIndex };
-    }
-
-    return null;
-  }, [calculateMovingAverage]);
+    },
+    [calculateMovingAverage],
+  );
 
   // 准备动画数据
   const prepareAnimationData = useCallback(() => {
@@ -171,102 +185,108 @@ export function TutorialAnimation({
     }
 
     setAnimationData(animationSteps);
-    setAnimationState(prev => ({ ...prev, totalSteps: animationSteps.length }));
+    setAnimationState((prev) => ({
+      ...prev,
+      totalSteps: animationSteps.length,
+    }));
   }, [generateSampleData, calculateMovingAverage, detectCross]);
 
   // 更新图表数据
-  const updateChartData = useCallback((stepIndex: number) => {
-    if (animationData.length === 0) return;
+  const updateChartData = useCallback(
+    (stepIndex: number) => {
+      if (animationData.length === 0) return;
 
-    const currentData = animationData.slice(0, stepIndex + 1);
-    const labels = currentData.map(d => d.date);
-    const prices = currentData.map(d => d.price);
-    const ma10 = currentData.map(d => d.ma10);
-    const ma20 = currentData.map(d => d.ma20);
+      const currentData = animationData.slice(0, stepIndex + 1);
+      const labels = currentData.map((d) => d.date);
+      const prices = currentData.map((d) => d.price);
+      const ma10 = currentData.map((d) => d.ma10);
+      const ma20 = currentData.map((d) => d.ma20);
 
-    // 找到交叉点
-    const crossPoints = currentData
-      .filter(d => d.cross)
-      .map(d => ({
-        x: d.date,
-        y: d.price,
-        type: d.cross?.type,
-      }));
+      // 找到交叉点
+      const crossPoints = currentData
+        .filter((d) => d.cross)
+        .map((d) => ({
+          x: d.date,
+          y: d.price,
+          type: d.cross?.type,
+        }));
 
-    const newChartData = {
-      labels,
-      datasets: [
-        {
-          label: '价格',
-          data: prices,
-          borderColor: 'rgb(59, 130, 246)',
-          backgroundColor: 'rgba(59, 130, 246, 0.1)',
-          borderWidth: 2,
-          fill: true,
-          tension: 0.1,
-          pointRadius: currentData.length <= 10 ? 4 : 2,
-          pointHoverRadius: 6,
-        },
-        {
-          label: 'MA10',
-          data: ma10,
-          borderColor: 'rgb(239, 68, 68)',
-          backgroundColor: 'transparent',
-          borderWidth: 2,
-          fill: false,
-          tension: 0.1,
-          pointRadius: 0,
-          pointHoverRadius: 4,
-        },
-        {
-          label: 'MA20',
-          data: ma20,
-          borderColor: 'rgb(34, 197, 94)',
-          backgroundColor: 'transparent',
-          borderWidth: 2,
-          fill: false,
-          tension: 0.1,
-          pointRadius: 0,
-          pointHoverRadius: 4,
-        },
-        // 交叉点标记
-        {
-          label: '金叉',
-          data: crossPoints
-            .filter(p => p.type === 'golden-cross')
-            .map(p => ({ x: p.x, y: p.y })),
-          borderColor: 'rgb(34, 197, 94)',
-          backgroundColor: 'rgb(34, 197, 94)',
-          pointStyle: 'triangle',
-          rotation: 0,
-          radius: 8,
-          pointHoverRadius: 10,
-          showLine: false,
-        },
-        {
-          label: '死叉',
-          data: crossPoints
-            .filter(p => p.type === 'death-cross')
-            .map(p => ({ x: p.x, y: p.y })),
-          borderColor: 'rgb(239, 68, 68)',
-          backgroundColor: 'rgb(239, 68, 68)',
-          pointStyle: 'triangle',
-          rotation: 180,
-          radius: 8,
-          pointHoverRadius: 10,
-          showLine: false,
-        },
-      ],
-    };
+      const newChartData = {
+        labels,
+        datasets: [
+          {
+            label: '价格',
+            data: prices,
+            borderColor: 'rgb(59, 130, 246)',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.1,
+            pointRadius: currentData.length <= 10 ? 4 : 2,
+            pointHoverRadius: 6,
+          },
+          {
+            label: 'MA10',
+            data: ma10,
+            borderColor: 'rgb(239, 68, 68)',
+            backgroundColor: 'transparent',
+            borderWidth: 2,
+            fill: false,
+            tension: 0.1,
+            pointRadius: 0,
+            pointHoverRadius: 4,
+          },
+          {
+            label: 'MA20',
+            data: ma20,
+            borderColor: 'rgb(34, 197, 94)',
+            backgroundColor: 'transparent',
+            borderWidth: 2,
+            fill: false,
+            tension: 0.1,
+            pointRadius: 0,
+            pointHoverRadius: 4,
+          },
+          // 交叉点标记
+          {
+            label: '金叉',
+            data: crossPoints
+              .filter((p) => p.type === 'golden-cross')
+              .map((p) => ({ x: p.x, y: p.y })),
+            borderColor: 'rgb(34, 197, 94)',
+            backgroundColor: 'rgb(34, 197, 94)',
+            pointStyle: 'triangle',
+            rotation: 0,
+            radius: 8,
+            pointHoverRadius: 10,
+            showLine: false,
+          },
+          {
+            label: '死叉',
+            data: crossPoints
+              .filter((p) => p.type === 'death-cross')
+              .map((p) => ({ x: p.x, y: p.y })),
+            borderColor: 'rgb(239, 68, 68)',
+            backgroundColor: 'rgb(239, 68, 68)',
+            pointStyle: 'triangle',
+            rotation: 180,
+            radius: 8,
+            pointHoverRadius: 10,
+            showLine: false,
+          },
+        ],
+      };
 
-    setChartData(newChartData);
-  }, [animationData]);
+      setChartData(newChartData);
+    },
+    [animationData],
+  );
 
   // 动画播放控制
   useEffect(() => {
     if (animationState.isPlaying) {
       intervalRef.current = setInterval(() => {
-        setAnimationState(prev => {
+        setAnimationState((prev) => {
           const nextStep = Math.min(prev.currentStep + 1, prev.totalSteps - 1);
 
           if (nextStep === prev.totalSteps - 1) {
@@ -289,7 +309,12 @@ export function TutorialAnimation({
         clearInterval(intervalRef.current);
       }
     };
-  }, [animationState.isPlaying, animationState.speed, animationState.totalSteps, onComplete]);
+  }, [
+    animationState.isPlaying,
+    animationState.speed,
+    animationState.totalSteps,
+    onComplete,
+  ]);
 
   // 步骤变化时更新图表
   useEffect(() => {
@@ -304,30 +329,34 @@ export function TutorialAnimation({
 
   // 控制函数
   const handlePlay = () => {
-    setAnimationState(prev => ({ ...prev, isPlaying: true }));
+    setAnimationState((prev) => ({ ...prev, isPlaying: true }));
   };
 
   const handlePause = () => {
-    setAnimationState(prev => ({ ...prev, isPlaying: false }));
+    setAnimationState((prev) => ({ ...prev, isPlaying: false }));
   };
 
   const handleReset = () => {
-    setAnimationState(prev => ({ ...prev, currentStep: 0, isPlaying: false }));
+    setAnimationState((prev) => ({
+      ...prev,
+      currentStep: 0,
+      isPlaying: false,
+    }));
   };
 
   const handleStepForward = () => {
-    setAnimationState(prev => ({
+    setAnimationState((prev) => ({
       ...prev,
       currentStep: Math.min(prev.currentStep + 1, prev.totalSteps - 1),
     }));
   };
 
   const handleSpeedChange = (newSpeed: number[]) => {
-    setAnimationState(prev => ({ ...prev, speed: newSpeed[0] }));
+    setAnimationState((prev) => ({ ...prev, speed: newSpeed[0] }));
   };
 
   const handleStepChange = (newStep: number[]) => {
-    setAnimationState(prev => ({ ...prev, currentStep: newStep[0] }));
+    setAnimationState((prev) => ({ ...prev, currentStep: newStep[0] }));
   };
 
   // Chart.js 配置
@@ -359,7 +388,7 @@ export function TutorialAnimation({
         borderWidth: 1,
         displayColors: true,
         callbacks: {
-          label: function(context: any) {
+          label(context: any) {
             let label = context.dataset.label || '';
             if (label) {
               label += ': ';
@@ -388,8 +417,8 @@ export function TutorialAnimation({
           color: 'rgba(0, 0, 0, 0.05)',
         },
         ticks: {
-          callback: function(value: any) {
-            return '¥' + value.toFixed(0);
+          callback(value: any) {
+            return `¥${value.toFixed(0)}`;
           },
         },
       },
@@ -411,20 +440,26 @@ export function TutorialAnimation({
 
     switch (type) {
       case 'moving-average':
-        return <MovingAverageAnimation data={chartData} options={chartOptions} />;
+        return (
+          <MovingAverageAnimation data={chartData} options={chartOptions} />
+        );
       case 'golden-cross':
         return <GoldenCrossAnimation data={chartData} options={chartOptions} />;
       case 'death-cross':
         return <DeathCrossAnimation data={chartData} options={chartOptions} />;
       case 'signal-generation':
-        return <SignalGenerationAnimation data={chartData} options={chartOptions} />;
+        return (
+          <SignalGenerationAnimation data={chartData} options={chartOptions} />
+        );
       default:
         return <Line ref={chartRef} data={chartData} options={chartOptions} />;
     }
   };
 
   return (
-    <div className={`bg-white rounded-lg ${animationState.isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
+    <div
+      className={`bg-white rounded-lg ${animationState.isFullscreen ? 'fixed inset-0 z-50' : ''}`}
+    >
       <Card className="h-full">
         {/* 顶部工具栏 */}
         <div className="flex items-center justify-between p-4 border-b">
@@ -436,7 +471,8 @@ export function TutorialAnimation({
               {type === 'signal-generation' && '交易信号生成'}
             </h3>
             <Badge variant="outline">
-              步骤 {animationState.currentStep + 1} / {animationState.totalSteps}
+              步骤 {animationState.currentStep + 1} /{' '}
+              {animationState.totalSteps}
             </Badge>
           </div>
 
@@ -444,29 +480,59 @@ export function TutorialAnimation({
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setAnimationState(prev => ({ ...prev, isMuted: !prev.isMuted }))}
+              onClick={() =>
+                setAnimationState((prev) => ({
+                  ...prev,
+                  isMuted: !prev.isMuted,
+                }))
+              }
             >
-              {animationState.isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+              {animationState.isMuted ? (
+                <VolumeX className="h-4 w-4" />
+              ) : (
+                <Volume2 className="h-4 w-4" />
+              )}
             </Button>
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setAnimationState(prev => ({ ...prev, showSettings: !prev.showSettings }))}
+              onClick={() =>
+                setAnimationState((prev) => ({
+                  ...prev,
+                  showSettings: !prev.showSettings,
+                }))
+              }
             >
               <Settings className="h-4 w-4" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setAnimationState(prev => ({ ...prev, isFullscreen: !prev.isFullscreen }))}
+              onClick={() =>
+                setAnimationState((prev) => ({
+                  ...prev,
+                  isFullscreen: !prev.isFullscreen,
+                }))
+              }
             >
-              {animationState.isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+              {animationState.isFullscreen ? (
+                <Minimize2 className="h-4 w-4" />
+              ) : (
+                <Maximize2 className="h-4 w-4" />
+              )}
             </Button>
           </div>
         </div>
 
         {/* 动画区域 */}
-        <div className="relative" style={{ height: animationState.isFullscreen ? 'calc(100vh - 200px)' : height }}>
+        <div
+          className="relative"
+          style={{
+            height: animationState.isFullscreen
+              ? 'calc(100vh - 200px)'
+              : height,
+          }}
+        >
           {renderAnimationContent()}
         </div>
 
@@ -484,7 +550,11 @@ export function TutorialAnimation({
                   size="sm"
                   onClick={animationState.isPlaying ? handlePause : handlePlay}
                 >
-                  {animationState.isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                  {animationState.isPlaying ? (
+                    <Pause className="h-4 w-4" />
+                  ) : (
+                    <Play className="h-4 w-4" />
+                  )}
                 </Button>
                 <Button variant="outline" size="sm" onClick={handleStepForward}>
                   <SkipForward className="h-4 w-4" />
@@ -495,7 +565,10 @@ export function TutorialAnimation({
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm text-gray-600">
                   <span>进度</span>
-                  <span>{animationState.currentStep + 1} / {animationState.totalSteps}</span>
+                  <span>
+                    {animationState.currentStep + 1} /{' '}
+                    {animationState.totalSteps}
+                  </span>
                 </div>
                 <Slider
                   value={[animationState.currentStep]}
@@ -534,7 +607,12 @@ export function TutorialAnimation({
                 <input
                   type="checkbox"
                   checked={animationState.isMuted}
-                  onChange={(e) => setAnimationState(prev => ({ ...prev, isMuted: e.target.checked }))}
+                  onChange={(e) =>
+                    setAnimationState((prev) => ({
+                      ...prev,
+                      isMuted: e.target.checked,
+                    }))
+                  }
                   className="rounded"
                 />
                 <span className="text-sm text-gray-700">静音</span>
@@ -564,15 +642,19 @@ export function TutorialAnimation({
 }
 
 // 移动平均线动画组件
-function MovingAverageAnimation({ data, options }: { data: any; options: any }) {
+function MovingAverageAnimation({
+  data,
+  options,
+}: {
+  data: any;
+  options: any;
+}) {
   return (
     <div className="relative h-full">
       <Line data={data} options={options} />
       <div className="absolute top-4 left-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
         <h4 className="font-medium text-blue-900 mb-1">移动平均线计算</h4>
-        <p className="text-sm text-blue-700">
-          MA = (P1 + P2 + ... + Pn) / n
-        </p>
+        <p className="text-sm text-blue-700">MA = (P1 + P2 + ... + Pn) / n</p>
         <p className="text-xs text-blue-600 mt-1">
           红线: 10日均线 | 绿线: 20日均线
         </p>
@@ -588,12 +670,8 @@ function GoldenCrossAnimation({ data, options }: { data: any; options: any }) {
       <Line data={data} options={options} />
       <div className="absolute top-4 left-4 bg-green-50 border border-green-200 rounded-lg p-3">
         <h4 className="font-medium text-green-900 mb-1">金叉信号 📈</h4>
-        <p className="text-sm text-green-700">
-          短期均线上穿长期均线
-        </p>
-        <p className="text-xs text-green-600 mt-1">
-          买入信号 - 看涨趋势
-        </p>
+        <p className="text-sm text-green-700">短期均线上穿长期均线</p>
+        <p className="text-xs text-green-600 mt-1">买入信号 - 看涨趋势</p>
       </div>
     </div>
   );
@@ -606,27 +684,27 @@ function DeathCrossAnimation({ data, options }: { data: any; options: any }) {
       <Line data={data} options={options} />
       <div className="absolute top-4 left-4 bg-red-50 border border-red-200 rounded-lg p-3">
         <h4 className="font-medium text-red-900 mb-1">死叉信号 📉</h4>
-        <p className="text-sm text-red-700">
-          短期均线下穿长期均线
-        </p>
-        <p className="text-xs text-red-600 mt-1">
-          卖出信号 - 看跌趋势
-        </p>
+        <p className="text-sm text-red-700">短期均线下穿长期均线</p>
+        <p className="text-xs text-red-600 mt-1">卖出信号 - 看跌趋势</p>
       </div>
     </div>
   );
 }
 
 // 交易信号生成动画组件
-function SignalGenerationAnimation({ data, options }: { data: any; options: any }) {
+function SignalGenerationAnimation({
+  data,
+  options,
+}: {
+  data: any;
+  options: any;
+}) {
   return (
     <div className="relative h-full">
       <Line data={data} options={options} />
       <div className="absolute top-4 left-4 bg-purple-50 border border-purple-200 rounded-lg p-3">
         <h4 className="font-medium text-purple-900 mb-1">交易信号生成</h4>
-        <p className="text-sm text-purple-700">
-          基于均线交叉的自动信号
-        </p>
+        <p className="text-sm text-purple-700">基于均线交叉的自动信号</p>
         <p className="text-xs text-purple-600 mt-1">
           绿三角: 金叉买入 | 红三角: 死叉卖出
         </p>

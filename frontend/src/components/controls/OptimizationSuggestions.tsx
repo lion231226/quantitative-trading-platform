@@ -1,17 +1,30 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { BarChart3, Check, Info, Lightbulb, Loader2, Shield, TrendingUp, X } from 'lucide-react';
-import { OptimizationSuggestion, StrategyParameters, StrategyResult } from '@/types/parameter.types';
+import {
+  BarChart3,
+  Check,
+  Info,
+  Lightbulb,
+  Loader2,
+  Shield,
+  TrendingUp,
+  X,
+} from 'lucide-react';
+import {
+  OptimizationSuggestion,
+  StrategyParameters,
+  StrategyResult,
+} from '@/types/parameter.types';
 import { parameterService } from '@/services/parameterService';
 
 interface OptimizationSuggestionsProps {
-  symbol: string
-  currentParameters: StrategyParameters
-  startDate: string
-  endDate: string
-  onApplySuggestion?: (suggestion: OptimizationSuggestion) => void
-  className?: string
+  symbol: string;
+  currentParameters: StrategyParameters;
+  startDate: string;
+  endDate: string;
+  onApplySuggestion?: (suggestion: OptimizationSuggestion) => void;
+  className?: string;
 }
 
 // 建议类型配置
@@ -52,12 +65,29 @@ const SUGGESTION_TYPES = {
 
 // 可信度等级配置
 const CONFIDENCE_LEVELS = {
-  high: { min: 80, label: '高可信度', color: 'text-green-600', bgColor: 'bg-green-100' },
-  medium: { min: 60, label: '中可信度', color: 'text-yellow-600', bgColor: 'bg-yellow-100' },
-  low: { min: 40, label: '低可信度', color: 'text-red-600', bgColor: 'bg-red-100' },
+  high: {
+    min: 80,
+    label: '高可信度',
+    color: 'text-green-600',
+    bgColor: 'bg-green-100',
+  },
+  medium: {
+    min: 60,
+    label: '中可信度',
+    color: 'text-yellow-600',
+    bgColor: 'bg-yellow-100',
+  },
+  low: {
+    min: 40,
+    label: '低可信度',
+    color: 'text-red-600',
+    bgColor: 'bg-red-100',
+  },
 };
 
-export const OptimizationSuggestions: React.FC<OptimizationSuggestionsProps> = ({
+export const OptimizationSuggestions: React.FC<
+  OptimizationSuggestionsProps
+> = ({
   symbol,
   currentParameters,
   startDate,
@@ -68,7 +98,9 @@ export const OptimizationSuggestions: React.FC<OptimizationSuggestionsProps> = (
   const [suggestions, setSuggestions] = useState<OptimizationSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [appliedSuggestions, setAppliedSuggestions] = useState<Set<string>>(new Set());
+  const [appliedSuggestions, setAppliedSuggestions] = useState<Set<string>>(
+    new Set(),
+  );
 
   // 获取优化建议
   const fetchSuggestions = useCallback(async () => {
@@ -145,9 +177,10 @@ export const OptimizationSuggestions: React.FC<OptimizationSuggestionsProps> = (
       confidence: 68,
       parameters: {
         ...params,
-        movingAveragePeriod: params.movingAveragePeriod > 20
-          ? Math.max(params.movingAveragePeriod - 5, 15)
-          : Math.min(params.movingAveragePeriod + 5, 35),
+        movingAveragePeriod:
+          params.movingAveragePeriod > 20
+            ? Math.max(params.movingAveragePeriod - 5, 15)
+            : Math.min(params.movingAveragePeriod + 5, 35),
       },
       reasoning: `基于当前市场趋势特征和历史数据，建议将均线周期从${params.movingAveragePeriod}调整为${params.movingAveragePeriod > 20 ? Math.max(params.movingAveragePeriod - 5, 15) : Math.min(params.movingAveragePeriod + 5, 35)}，以更好地适应市场节奏。`,
       expectedImprovement: '预计提高信号质量，减少假信号数量',
@@ -173,25 +206,33 @@ export const OptimizationSuggestions: React.FC<OptimizationSuggestionsProps> = (
   };
 
   // 应用建议
-  const applySuggestion = useCallback((suggestion: OptimizationSuggestion) => {
-    onApplySuggestion?.(suggestion);
-    setAppliedSuggestions(prev => new Set(prev).add(suggestion.id));
-  }, [onApplySuggestion]);
+  const applySuggestion = useCallback(
+    (suggestion: OptimizationSuggestion) => {
+      onApplySuggestion?.(suggestion);
+      setAppliedSuggestions((prev) => new Set(prev).add(suggestion.id));
+    },
+    [onApplySuggestion],
+  );
 
   // 忽略建议
   const dismissSuggestion = useCallback((suggestionId: string) => {
-    setSuggestions(prev => prev.filter(s => s.id !== suggestionId));
+    setSuggestions((prev) => prev.filter((s) => s.id !== suggestionId));
   }, []);
 
   // 获取可信度等级
   const getConfidenceLevel = (confidence: number) => {
     if (confidence >= CONFIDENCE_LEVELS.high.min) return CONFIDENCE_LEVELS.high;
-    if (confidence >= CONFIDENCE_LEVELS.medium.min) return CONFIDENCE_LEVELS.medium;
+    if (confidence >= CONFIDENCE_LEVELS.medium.min)
+      return CONFIDENCE_LEVELS.medium;
     return CONFIDENCE_LEVELS.low;
   };
 
   // 参数变化显示
-  const formatParameterChange = (current: number, suggested: number, precision: number = 1) => {
+  const formatParameterChange = (
+    current: number,
+    suggested: number,
+    precision: number = 1,
+  ) => {
     const change = suggested - current;
     const changePercent = ((change / current) * 100).toFixed(1);
     const direction = change > 0 ? '↑' : change < 0 ? '↓' : '→';
@@ -254,7 +295,9 @@ export const OptimizationSuggestions: React.FC<OptimizationSuggestionsProps> = (
         <div className="text-center py-8 bg-gray-50 rounded-lg">
           <Lightbulb className="mx-auto h-12 w-12 text-gray-400 mb-4" />
           <p className="text-gray-600 mb-2">暂无优化建议</p>
-          <p className="text-sm text-gray-500">当前参数配置已经较为合理，或正在分析您的参数...</p>
+          <p className="text-sm text-gray-500">
+            当前参数配置已经较为合理，或正在分析您的参数...
+          </p>
         </div>
       )}
 
@@ -283,12 +326,18 @@ export const OptimizationSuggestions: React.FC<OptimizationSuggestionsProps> = (
 
                   <div>
                     <div className="flex items-center space-x-2">
-                      <h4 className="font-semibold text-gray-900">{typeConfig.label}</h4>
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${confidenceLevel.bgColor} ${confidenceLevel.color}`}>
+                      <h4 className="font-semibold text-gray-900">
+                        {typeConfig.label}
+                      </h4>
+                      <span
+                        className={`px-2 py-1 text-xs font-medium rounded-full ${confidenceLevel.bgColor} ${confidenceLevel.color}`}
+                      >
                         {confidenceLevel.label} ({suggestion.confidence}%)
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600 mt-1">{typeConfig.description}</p>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {typeConfig.description}
+                    </p>
                   </div>
                 </div>
 
@@ -305,88 +354,118 @@ export const OptimizationSuggestions: React.FC<OptimizationSuggestionsProps> = (
 
               {/* 参数变化对比 */}
               <div className="bg-white rounded-lg p-3 mb-3">
-                <h5 className="text-sm font-medium text-gray-700 mb-2">建议参数调整：</h5>
+                <h5 className="text-sm font-medium text-gray-700 mb-2">
+                  建议参数调整：
+                </h5>
 
                 <div className="grid grid-cols-1 gap-2 text-sm">
                   {/* 均线周期变化 */}
-                  {suggestion.parameters.movingAveragePeriod !== currentParameters.movingAveragePeriod && (
+                  {suggestion.parameters.movingAveragePeriod !==
+                    currentParameters.movingAveragePeriod && (
                     <div className="flex items-center justify-between">
                       <span className="text-gray-600">均线周期:</span>
                       <div className="flex items-center space-x-2">
                         <span className="text-gray-500">
-                          {formatParameterChange(
-                            currentParameters.movingAveragePeriod,
-                            suggestion.parameters.movingAveragePeriod,
-                            0,
-                          ).current}
+                          {
+                            formatParameterChange(
+                              currentParameters.movingAveragePeriod,
+                              suggestion.parameters.movingAveragePeriod,
+                              0,
+                            ).current
+                          }
                         </span>
                         <span className="text-blue-600 font-medium">
-                          → {formatParameterChange(
-                            currentParameters.movingAveragePeriod,
-                            suggestion.parameters.movingAveragePeriod,
-                            0,
-                          ).suggested}
+                          →{' '}
+                          {
+                            formatParameterChange(
+                              currentParameters.movingAveragePeriod,
+                              suggestion.parameters.movingAveragePeriod,
+                              0,
+                            ).suggested
+                          }
                         </span>
                         <span className="text-xs text-gray-500">
-                          {formatParameterChange(
-                            currentParameters.movingAveragePeriod,
-                            suggestion.parameters.movingAveragePeriod,
-                            0,
-                          ).change}
+                          {
+                            formatParameterChange(
+                              currentParameters.movingAveragePeriod,
+                              suggestion.parameters.movingAveragePeriod,
+                              0,
+                            ).change
+                          }
                         </span>
                       </div>
                     </div>
                   )}
 
                   {/* 止损变化 */}
-                  {suggestion.parameters.stopLoss !== currentParameters.stopLoss && (
+                  {suggestion.parameters.stopLoss !==
+                    currentParameters.stopLoss && (
                     <div className="flex items-center justify-between">
                       <span className="text-gray-600">止损:</span>
                       <div className="flex items-center space-x-2">
                         <span className="text-gray-500">
-                          {formatParameterChange(
-                            currentParameters.stopLoss,
-                            suggestion.parameters.stopLoss,
-                          ).current}%
+                          {
+                            formatParameterChange(
+                              currentParameters.stopLoss,
+                              suggestion.parameters.stopLoss,
+                            ).current
+                          }
+                          %
                         </span>
                         <span className="text-blue-600 font-medium">
-                          → {formatParameterChange(
-                            currentParameters.stopLoss,
-                            suggestion.parameters.stopLoss,
-                          ).suggested}%
+                          →{' '}
+                          {
+                            formatParameterChange(
+                              currentParameters.stopLoss,
+                              suggestion.parameters.stopLoss,
+                            ).suggested
+                          }
+                          %
                         </span>
                         <span className="text-xs text-gray-500">
-                          {formatParameterChange(
-                            currentParameters.stopLoss,
-                            suggestion.parameters.stopLoss,
-                          ).change}
+                          {
+                            formatParameterChange(
+                              currentParameters.stopLoss,
+                              suggestion.parameters.stopLoss,
+                            ).change
+                          }
                         </span>
                       </div>
                     </div>
                   )}
 
                   {/* 止盈变化 */}
-                  {suggestion.parameters.takeProfit !== currentParameters.takeProfit && (
+                  {suggestion.parameters.takeProfit !==
+                    currentParameters.takeProfit && (
                     <div className="flex items-center justify-between">
                       <span className="text-gray-600">止盈:</span>
                       <div className="flex items-center space-x-2">
                         <span className="text-gray-500">
-                          {formatParameterChange(
-                            currentParameters.takeProfit,
-                            suggestion.parameters.takeProfit,
-                          ).current}%
+                          {
+                            formatParameterChange(
+                              currentParameters.takeProfit,
+                              suggestion.parameters.takeProfit,
+                            ).current
+                          }
+                          %
                         </span>
                         <span className="text-blue-600 font-medium">
-                          → {formatParameterChange(
-                            currentParameters.takeProfit,
-                            suggestion.parameters.takeProfit,
-                          ).suggested}%
+                          →{' '}
+                          {
+                            formatParameterChange(
+                              currentParameters.takeProfit,
+                              suggestion.parameters.takeProfit,
+                            ).suggested
+                          }
+                          %
                         </span>
                         <span className="text-xs text-gray-500">
-                          {formatParameterChange(
-                            currentParameters.takeProfit,
-                            suggestion.parameters.takeProfit,
-                          ).change}
+                          {
+                            formatParameterChange(
+                              currentParameters.takeProfit,
+                              suggestion.parameters.takeProfit,
+                            ).change
+                          }
                         </span>
                       </div>
                     </div>
@@ -400,7 +479,9 @@ export const OptimizationSuggestions: React.FC<OptimizationSuggestionsProps> = (
                   <Info className="h-4 w-4" />
                   <span className="font-medium">分析说明:</span>
                 </div>
-                <p className="text-sm text-gray-600 mt-1 leading-relaxed">{suggestion.reasoning}</p>
+                <p className="text-sm text-gray-600 mt-1 leading-relaxed">
+                  {suggestion.reasoning}
+                </p>
               </div>
 
               {/* 预期改进 */}
@@ -410,7 +491,9 @@ export const OptimizationSuggestions: React.FC<OptimizationSuggestionsProps> = (
                     <TrendingUp className="h-4 w-4" />
                     <span className="font-medium">预期改进:</span>
                   </div>
-                  <p className="text-sm text-green-600 mt-1">{suggestion.expectedImprovement}</p>
+                  <p className="text-sm text-green-600 mt-1">
+                    {suggestion.expectedImprovement}
+                  </p>
                 </div>
               )}
 

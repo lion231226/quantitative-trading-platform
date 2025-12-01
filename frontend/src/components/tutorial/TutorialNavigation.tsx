@@ -611,6 +611,3 @@ export function TutorialNavigation({
 }
 
 export default TutorialNavigation;
-  );
-}
-export default TutorialNavigation;

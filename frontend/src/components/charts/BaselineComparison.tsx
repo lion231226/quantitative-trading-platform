@@ -1,15 +1,18 @@
-'use client'
+'use client';
 
-import React, { useState, useCallback, useMemo } from 'react'
-import { FundCurveData, PerformanceMetrics } from '../../types/kline.types'
-import { useTheme } from '../theme/ThemeProvider'
-import { fundCurveService } from '../../services/fundCurveService'
+import React, { useCallback, useMemo, useState } from 'react';
+import { FundCurveData, PerformanceMetrics } from '../../types/kline.types';
+import { useTheme } from '../theme/ThemeProvider';
+import { fundCurveService } from '../../services/fundCurveService';
 
 interface BaselineComparisonProps {
-  strategyCurve: FundCurveData
-  priceData: Array<{ timestamp: number; price: number }>
-  onBaselineUpdate?: (baselineCurve: FundCurveData, metrics: PerformanceMetrics) => void
-  className?: string
+  strategyCurve: FundCurveData;
+  priceData: Array<{ timestamp: number; price: number }>;
+  onBaselineUpdate?: (
+    baselineCurve: FundCurveData,
+    metrics: PerformanceMetrics,
+  ) => void;
+  className?: string;
 }
 
 /**
@@ -20,121 +23,150 @@ const BaselineComparison: React.FC<BaselineComparisonProps> = ({
   strategyCurve,
   priceData,
   onBaselineUpdate,
-  className = ''
+  className = '',
 }) => {
-  const { currentTheme } = useTheme()
-  const [baselineEnabled, setBaselineEnabled] = useState(true)
-  const [customBaseline, setCustomBaseline] = useState<'buy-hold' | 'custom'>('buy-hold')
-  const [customReturn, setCustomReturn] = useState(8.0) // 默认8%年化收益
+  const { currentTheme } = useTheme();
+  const [baselineEnabled, setBaselineEnabled] = useState(true);
+  const [customBaseline, setCustomBaseline] = useState<'buy-hold' | 'custom'>(
+    'buy-hold',
+  );
+  const [customReturn, setCustomReturn] = useState(8.0); // 默认8%年化收益
 
   // 计算买入持有基准
   const buyAndHoldBaseline = useMemo(() => {
-    if (priceData.length === 0 || !baselineEnabled) return null
+    if (priceData.length === 0 || !baselineEnabled) return null;
 
-    const initialPrice = priceData[0].price
-    const initialCapital = 100000
+    const initialPrice = priceData[0].price;
+    const initialCapital = 100000;
 
     const baselineData = fundCurveService.calculateBuyAndHoldBaseline(
       initialPrice,
       priceData,
-      initialCapital
-    )
+      initialCapital,
+    );
 
     return fundCurveService.createFundCurveData(
       'buy-hold-baseline',
       '买入持有基准',
       baselineData,
-      currentTheme.colors.text + '80', // 添加透明度
-      'baseline'
-    )
-  }, [priceData, baselineEnabled, currentTheme.colors.text])
+      `${currentTheme.colors.text}80`, // 添加透明度
+      'baseline',
+    );
+  }, [priceData, baselineEnabled, currentTheme.colors.text]);
 
   // 计算自定义基准
   const customBaselineCurve = useMemo(() => {
-    if (!baselineEnabled || customBaseline !== 'custom') return null
+    if (!baselineEnabled || customBaseline !== 'custom') return null;
 
-    const startDate = Math.min(...strategyCurve.data.map(d => d.timestamp))
-    const endDate = Math.max(...strategyCurve.data.map(d => d.timestamp))
-    const daysDiff = (endDate - startDate) / (1000 * 60 * 60 * 24)
+    const startDate = Math.min(...strategyCurve.data.map((d) => d.timestamp));
+    const endDate = Math.max(...strategyCurve.data.map((d) => d.timestamp));
+    const daysDiff = (endDate - startDate) / (1000 * 60 * 60 * 24);
 
-    const initialCapital = 100000
-    const annualReturn = customReturn / 100
-    const periodReturn = Math.pow(1 + annualReturn, daysDiff / 365) - 1
-    const finalValue = initialCapital * (1 + periodReturn)
+    const initialCapital = 100000;
+    const annualReturn = customReturn / 100;
+    const periodReturn = Math.pow(1 + annualReturn, daysDiff / 365) - 1;
+    const finalValue = initialCapital * (1 + periodReturn);
 
     const baselineData = [
       {
         timestamp: startDate,
-        value: initialCapital
+        value: initialCapital,
       },
       {
         timestamp: endDate,
-        value: finalValue
-      }
-    ]
+        value: finalValue,
+      },
+    ];
 
     return fundCurveService.createFundCurveData(
       'custom-baseline',
       `自定义基准 (${customReturn}%年化)`,
       baselineData,
-      currentTheme.colors.text + '80',
-      'baseline'
-    )
-  }, [strategyCurve.data, baselineEnabled, customBaseline, customReturn, currentTheme.colors.text])
+      `${currentTheme.colors.text}80`,
+      'baseline',
+    );
+  }, [
+    strategyCurve.data,
+    baselineEnabled,
+    customBaseline,
+    customReturn,
+    currentTheme.colors.text,
+  ]);
 
   // 获取当前激活的基准曲线
-  const activeBaseline = customBaseline === 'buy-hold' ? buyAndHoldBaseline : customBaselineCurve
+  const activeBaseline =
+    customBaseline === 'buy-hold' ? buyAndHoldBaseline : customBaselineCurve;
 
   // 计算相对性能指标
   const relativeMetrics = useMemo(() => {
-    if (!activeBaseline) return null
+    if (!activeBaseline) return null;
 
-    const strategyMetrics = fundCurveService.calculateMetrics(strategyCurve.data)
-    const baselineMetrics = fundCurveService.calculateMetrics(activeBaseline.data)
+    const strategyMetrics = fundCurveService.calculateMetrics(
+      strategyCurve.data,
+    );
+    const baselineMetrics = fundCurveService.calculateMetrics(
+      activeBaseline.data,
+    );
 
-    return fundCurveService.calculateRelativeMetrics(strategyMetrics, baselineMetrics)
-  }, [strategyCurve.data, activeBaseline])
+    return fundCurveService.calculateRelativeMetrics(
+      strategyMetrics,
+      baselineMetrics,
+    );
+  }, [strategyCurve.data, activeBaseline]);
 
   // 通知父组件基准更新
   const handleBaselineUpdate = useCallback(() => {
     if (activeBaseline) {
-      const metrics = fundCurveService.calculateMetrics(activeBaseline.data)
-      onBaselineUpdate?.(activeBaseline, metrics)
+      const metrics = fundCurveService.calculateMetrics(activeBaseline.data);
+      onBaselineUpdate?.(activeBaseline, metrics);
     }
-  }, [activeBaseline, onBaselineUpdate])
+  }, [activeBaseline, onBaselineUpdate]);
 
   // 当基准发生变化时，通知父组件
   React.useEffect(() => {
-    handleBaselineUpdate()
-  }, [handleBaselineUpdate])
+    handleBaselineUpdate();
+  }, [handleBaselineUpdate]);
 
   // 格式化百分比
   const formatPercent = (value: number, decimals: number = 2): string => {
-    return `${value >= 0 ? '+' : ''}${value.toFixed(decimals)}%`
-  }
+    return `${value >= 0 ? '+' : ''}${value.toFixed(decimals)}%`;
+  };
 
   // 获取指标颜色
-  const getMetricColor = (value: number, isHigherBetter: boolean = true): string => {
-    if (value === 0) return currentTheme.colors.text
+  const getMetricColor = (
+    value: number,
+    isHigherBetter: boolean = true,
+  ): string => {
+    if (value === 0) return currentTheme.colors.text;
 
     if (isHigherBetter) {
-      return value > 0 ? currentTheme.colors.bullish : currentTheme.colors.bearish
+      return value > 0
+        ? currentTheme.colors.bullish
+        : currentTheme.colors.bearish;
     } else {
-      return value > 0 ? currentTheme.colors.bearish : currentTheme.colors.bullish
+      return value > 0
+        ? currentTheme.colors.bearish
+        : currentTheme.colors.bullish;
     }
-  }
+  };
 
   if (!activeBaseline) {
-    return null
+    return null;
   }
 
   return (
-    <div className={`baseline-comparison ${className}`} style={{
-      backgroundColor: currentTheme.colors.background,
-      borderColor: currentTheme.colors.grid,
-      color: currentTheme.colors.text
-    }}>
-      <div className="p-4 border-b" style={{ borderColor: currentTheme.colors.grid }}>
+    <div
+      className={`baseline-comparison ${className}`}
+      style={{
+        backgroundColor: currentTheme.colors.background,
+        borderColor: currentTheme.colors.grid,
+        color: currentTheme.colors.text,
+      }}
+    >
+      <div
+        className="p-4 border-b"
+        style={{ borderColor: currentTheme.colors.grid }}
+      >
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold">基准比较</h3>
           <label className="flex items-center space-x-2 cursor-pointer">
@@ -156,7 +188,9 @@ const BaselineComparison: React.FC<BaselineComparisonProps> = ({
               name="baseline-type"
               value="buy-hold"
               checked={customBaseline === 'buy-hold'}
-              onChange={(e) => setCustomBaseline(e.target.value as 'buy-hold' | 'custom')}
+              onChange={(e) =>
+                setCustomBaseline(e.target.value as 'buy-hold' | 'custom')
+              }
               disabled={!baselineEnabled}
               className="border-gray-300 text-blue-600 focus:ring-blue-500"
             />
@@ -168,7 +202,9 @@ const BaselineComparison: React.FC<BaselineComparisonProps> = ({
               name="baseline-type"
               value="custom"
               checked={customBaseline === 'custom'}
-              onChange={(e) => setCustomBaseline(e.target.value as 'buy-hold' | 'custom')}
+              onChange={(e) =>
+                setCustomBaseline(e.target.value as 'buy-hold' | 'custom')
+              }
               disabled={!baselineEnabled}
               className="border-gray-300 text-blue-600 focus:ring-blue-500"
             />
@@ -192,7 +228,7 @@ const BaselineComparison: React.FC<BaselineComparisonProps> = ({
               style={{
                 borderColor: currentTheme.colors.grid,
                 backgroundColor: currentTheme.colors.background,
-                color: currentTheme.colors.text
+                color: currentTheme.colors.text,
               }}
             />
             <span className="text-sm">%</span>
@@ -219,7 +255,11 @@ const BaselineComparison: React.FC<BaselineComparisonProps> = ({
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">信息比率:</span>
-              <span style={{ color: getMetricColor(relativeMetrics.informationRatio) }}>
+              <span
+                style={{
+                  color: getMetricColor(relativeMetrics.informationRatio),
+                }}
+              >
                 {relativeMetrics.informationRatio.toFixed(3)}
               </span>
             </div>
@@ -249,8 +289,8 @@ const BaselineComparison: React.FC<BaselineComparisonProps> = ({
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export { BaselineComparison }
-export default BaselineComparison
+export { BaselineComparison };
+export default BaselineComparison;

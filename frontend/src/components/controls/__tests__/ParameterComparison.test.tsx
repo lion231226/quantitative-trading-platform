@@ -6,7 +6,9 @@ import { parameterService } from '@/services/parameterService';
 
 // Mock parameterService
 jest.mock('@/services/parameterService');
-const mockedParameterService = parameterService as jest.Mocked<typeof parameterService>;
+const mockedParameterService = parameterService as jest.Mocked<
+  typeof parameterService
+>;
 
 // Mock parameter helpers
 let mockIdCounter = 0;
@@ -92,9 +94,9 @@ describe('ParameterComparison', () => {
     expect(screen.getByText(/2\/4/)).toBeInTheDocument();
 
     // Remove one group - find delete buttons (they have no accessible name but different classes)
-    const deleteButtons = screen.getAllByRole('button', { name: '' }).filter(
-      button => button.classList.contains('text-red-400'),
-    );
+    const deleteButtons = screen
+      .getAllByRole('button', { name: '' })
+      .filter((button) => button.classList.contains('text-red-400'));
     await user.click(deleteButtons[0]);
 
     expect(screen.getByText(/1\/4/)).toBeInTheDocument();
@@ -122,7 +124,9 @@ describe('ParameterComparison', () => {
 
     // Component has one group by default
     // Update moving average period - find slider by min/max attributes
-    const periodSlider = screen.getByRole('slider', { name: '' }) as HTMLInputElement;
+    const periodSlider = screen.getByRole('slider', {
+      name: '',
+    }) as HTMLInputElement;
     expect(periodSlider.min).toBe('5');
     expect(periodSlider.max).toBe('200');
     fireEvent.change(periodSlider, { target: { value: '50' } });
@@ -188,7 +192,7 @@ describe('ParameterComparison', () => {
   it('should show loading state during backtest', async () => {
     const user = userEvent.setup();
     let resolveBacktest: (value: any) => void;
-    const backtestPromise = new Promise(resolve => {
+    const backtestPromise = new Promise((resolve) => {
       resolveBacktest = resolve;
     });
     mockedParameterService.runBacktest.mockReturnValue(backtestPromise as any);

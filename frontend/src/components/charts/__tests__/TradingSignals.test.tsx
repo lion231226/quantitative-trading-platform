@@ -16,9 +16,24 @@ jest.mock('react-chartjs-2', () => ({
 
 describe('TradingSignals', () => {
   const mockSignals: TradingSignal[] = [
-    { timestamp: '2023-01-01T10:00:00Z', type: 'buy', price: 100, strategy: 'SMA' },
-    { timestamp: '2023-01-02T10:00:00Z', type: 'sell', price: 110, strategy: 'SMA' },
-    { timestamp: '2023-01-03T10:00:00Z', type: 'buy', price: 105, strategy: 'EMA' },
+    {
+      timestamp: '2023-01-01T10:00:00Z',
+      type: 'buy',
+      price: 100,
+      strategy: 'SMA',
+    },
+    {
+      timestamp: '2023-01-02T10:00:00Z',
+      type: 'sell',
+      price: 110,
+      strategy: 'SMA',
+    },
+    {
+      timestamp: '2023-01-03T10:00:00Z',
+      type: 'buy',
+      price: 105,
+      strategy: 'EMA',
+    },
   ];
 
   const defaultProps = {
@@ -99,7 +114,9 @@ describe('TradingSignals', () => {
     const customClass = 'custom-signals-class';
     render(<TradingSignals {...defaultProps} className={customClass} />);
 
-    const container = screen.getByTestId('chart-scatter').closest('.custom-signals-class');
+    const container = screen
+      .getByTestId('chart-scatter')
+      .closest('.custom-signals-class');
     expect(container).toBeInTheDocument();
   });
 
@@ -107,7 +124,13 @@ describe('TradingSignals', () => {
     const customHeight = 500;
     const customWidth = 700;
 
-    render(<TradingSignals {...defaultProps} height={customHeight} width={customWidth} />);
+    render(
+      <TradingSignals
+        {...defaultProps}
+        height={customHeight}
+        width={customWidth}
+      />,
+    );
 
     expect(screen.getByTestId('chart-scatter')).toBeInTheDocument();
   });
@@ -163,7 +186,12 @@ describe('TradingSignals', () => {
   describe('Edge Cases', () => {
     it('handles single signal', () => {
       const singleSignal: TradingSignal[] = [
-        { timestamp: '2023-01-01T10:00:00Z', type: 'buy', price: 100, strategy: 'SMA' },
+        {
+          timestamp: '2023-01-01T10:00:00Z',
+          type: 'buy',
+          price: 100,
+          strategy: 'SMA',
+        },
       ];
 
       render(<TradingSignals signals={singleSignal} />);
@@ -175,8 +203,18 @@ describe('TradingSignals', () => {
 
     it('handles only buy signals', () => {
       const onlyBuySignals: TradingSignal[] = [
-        { timestamp: '2023-01-01T10:00:00Z', type: 'buy', price: 100, strategy: 'SMA' },
-        { timestamp: '2023-01-02T10:00:00Z', type: 'buy', price: 105, strategy: 'EMA' },
+        {
+          timestamp: '2023-01-01T10:00:00Z',
+          type: 'buy',
+          price: 100,
+          strategy: 'SMA',
+        },
+        {
+          timestamp: '2023-01-02T10:00:00Z',
+          type: 'buy',
+          price: 105,
+          strategy: 'EMA',
+        },
       ];
 
       render(<TradingSignals signals={onlyBuySignals} />);
@@ -188,8 +226,18 @@ describe('TradingSignals', () => {
 
     it('handles only sell signals', () => {
       const onlySellSignals: TradingSignal[] = [
-        { timestamp: '2023-01-01T10:00:00Z', type: 'sell', price: 100, strategy: 'SMA' },
-        { timestamp: '2023-01-02T10:00:00Z', type: 'sell', price: 105, strategy: 'EMA' },
+        {
+          timestamp: '2023-01-01T10:00:00Z',
+          type: 'sell',
+          price: 100,
+          strategy: 'SMA',
+        },
+        {
+          timestamp: '2023-01-02T10:00:00Z',
+          type: 'sell',
+          price: 105,
+          strategy: 'EMA',
+        },
       ];
 
       render(<TradingSignals signals={onlySellSignals} />);
@@ -201,7 +249,12 @@ describe('TradingSignals', () => {
 
     it('handles signals with special characters in strategy name', () => {
       const signalsWithSpecialChars: TradingSignal[] = [
-        { timestamp: '2023-01-01T10:00:00Z', type: 'buy', price: 100, strategy: 'SMA-Cross_Over' },
+        {
+          timestamp: '2023-01-01T10:00:00Z',
+          type: 'buy',
+          price: 100,
+          strategy: 'SMA-Cross_Over',
+        },
       ];
 
       render(<TradingSignals signals={signalsWithSpecialChars} />);

@@ -1,4 +1,4 @@
-import { ThemeConfig } from '../../types/theme.types'
+import { ThemeConfig } from '../../types/theme.types';
 
 // 测试用的默认主题配置
 export const testTheme: ThemeConfig = {
@@ -12,7 +12,7 @@ export const testTheme: ThemeConfig = {
     mode: 'none',
     usePatterns: true,
     useShapes: true,
-    textureIntensity: 0.7
+    textureIntensity: 0.7,
   },
   colors: {
     bullish: '#10B981',
@@ -22,9 +22,9 @@ export const testTheme: ThemeConfig = {
     text: '#1F2937',
     border: '#D1D5DB',
     crosshair: '#6B7280',
-    volume: '#9CA3AF'
-  }
-}
+    volume: '#9CA3AF',
+  },
+};
 
 export const testThemeDark: ThemeConfig = {
   ...testTheme,
@@ -39,6 +39,6 @@ export const testThemeDark: ThemeConfig = {
     text: '#F9FAFB',
     border: '#4B5563',
     crosshair: '#6B7280',
-    volume: '#9CA3AF'
-  }
-}
+    volume: '#9CA3AF',
+  },
+};

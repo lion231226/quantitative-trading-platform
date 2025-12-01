@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { TutorialAnimation } from './TutorialAnimation';
 import { MovingAverageCalculation } from './MovingAverageCalculation';
 import { GoldenDeathCrossAnimation } from './GoldenDeathCrossAnimation';
-import { PlayCircle, Calculator, TrendingUp, Activity } from 'lucide-react';
+import { Activity, Calculator, PlayCircle, TrendingUp } from 'lucide-react';
 
 /**
  * 教程动画演示组件
@@ -21,9 +21,7 @@ export function TutorialAnimationDemo() {
         <h2 className="text-3xl font-bold text-gray-900 mb-2">
           交互式教程动画系统
         </h2>
-        <p className="text-gray-600">
-          通过可视化动画深入理解量化交易策略原理
-        </p>
+        <p className="text-gray-600">通过可视化动画深入理解量化交易策略原理</p>
       </div>
 
       {/* 功能概览 */}
@@ -205,7 +203,9 @@ export function TutorialAnimationDemo() {
 
               {/* 移动平均线动画 */}
               <div>
-                <h4 className="font-medium text-gray-900 mb-3">移动平均线原理</h4>
+                <h4 className="font-medium text-gray-900 mb-3">
+                  移动平均线原理
+                </h4>
                 <TutorialAnimation
                   type="moving-average"
                   autoPlay={false}

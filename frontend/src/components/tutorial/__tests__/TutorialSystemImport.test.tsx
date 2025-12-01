@@ -9,19 +9,25 @@ jest.mock('@/services/tutorialService', () => ({
     useTutorialProgress: () => ({ data: null, isLoading: false }),
     useUpdateProgress: () => ({ mutateAsync: jest.fn() }),
     saveUserPreferences: () => ({ mutateAsync: jest.fn() }),
-    progressManager: { currentStep: 0 }
+    progressManager: { currentStep: 0 },
   }),
 }));
 
 jest.mock('@/utils/tutorialHelpers', () => ({
   getStepNavigation: () => ({ previousStep: null, nextStep: null }),
-  generateProgressSummary: () => ({ completedSteps: 0, totalSteps: 1, progressPercentage: 0 }),
+  generateProgressSummary: () => ({
+    completedSteps: 0,
+    totalSteps: 1,
+    progressPercentage: 0,
+  }),
   canSkipStep: () => true,
-  createTutorialEvent: () => ({ type: 'test', timestamp: Date.now() })
+  createTutorialEvent: () => ({ type: 'test', timestamp: Date.now() }),
 }));
 
 jest.mock('@/components/ui/button', () => ({
-  Button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
+  Button: ({ children, ...props }: any) => (
+    <button {...props}>{children}</button>
+  ),
 }));
 
 jest.mock('@/components/ui/card', () => ({
@@ -63,7 +69,7 @@ describe('TutorialSystem Import Test', () => {
         tutorialId="test-tutorial"
         isOpen={true}
         onClose={() => {}}
-      />
+      />,
     );
   });
 });

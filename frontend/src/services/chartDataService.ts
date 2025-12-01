@@ -1,16 +1,29 @@
-import { UseQueryOptions, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useMemo, useEffect } from 'react';
+import {
+  UseQueryOptions,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
+import { useEffect, useMemo } from 'react';
 import { marketDataAPI, strategyAPI } from '@/lib/api';
-import { ChartData, MovingAverageLine, PricePoint, TradingSignal } from '@/types/chart.types';
-import { calculateSMA, calculateEMA } from '@/utils/chartHelpers';
+import {
+  ChartData,
+  MovingAverageLine,
+  PricePoint,
+  TradingSignal,
+} from '@/types/chart.types';
+import { calculateEMA, calculateSMA } from '@/utils/chartHelpers';
 
 // 查询键常量
 export const CHART_QUERY_KEYS = {
   marketData: (symbol: string, startDate: string, endDate: string) =>
     ['marketData', symbol, startDate, endDate] as const,
   strategyResults: (runId: string) => ['strategyResults', runId] as const,
-  chartData: (symbol: string, startDate: string, endDate: string, config: any) =>
-    ['chartData', symbol, startDate, endDate, config] as const,
+  chartData: (
+    symbol: string,
+    startDate: string,
+    endDate: string,
+    config: any,
+  ) => ['chartData', symbol, startDate, endDate, config] as const,
 } as const;
 
 // 数据缓存配置
@@ -34,11 +47,12 @@ export function useMarketData(
 ) {
   return useQuery({
     queryKey: CHART_QUERY_KEYS.marketData(symbol, startDate, endDate),
-    queryFn: () => marketDataAPI.getHistory({
-      symbol,
-      start_date: startDate,
-      end_date: endDate,
-    }),
+    queryFn: () =>
+      marketDataAPI.getHistory({
+        symbol,
+        start_date: startDate,
+        end_date: endDate,
+      }),
     staleTime: CACHE_CONFIG.marketData.staleTime,
     gcTime: CACHE_CONFIG.marketData.gcTime,
     enabled: !!(symbol && startDate && endDate),
@@ -76,13 +90,14 @@ export function useChartData(
   });
 
   const chartData = useMemo<ChartData>(() => {
-    const prices: PricePoint[] = marketDataQuery.data?.map(item => ({
-      timestamp: item.date,
-      open: item.open,
-      high: item.high,
-      low: item.low,
-      close: item.close,
-    })) || [];
+    const prices: PricePoint[] =
+      marketDataQuery.data?.map((item) => ({
+        timestamp: item.date,
+        open: item.open,
+        high: item.high,
+        low: item.low,
+        close: item.close,
+      })) || [];
 
     const signals: TradingSignal[] = [];
     const movingAverages: MovingAverageLine[] = [];
@@ -93,21 +108,24 @@ export function useChartData(
       // 暂时使用示例数据
       const strategyData = strategyResultsQuery.data;
       if (strategyData.signals) {
-        signals.push(...strategyData.signals.map((signal: any) => ({
-          timestamp: signal.timestamp,
-          type: signal.type,
-          price: signal.price,
-          strategy: signal.strategy || 'Unknown',
-        })));
+        signals.push(
+          ...strategyData.signals.map((signal: any) => ({
+            timestamp: signal.timestamp,
+            type: signal.type,
+            price: signal.price,
+            strategy: signal.strategy || 'Unknown',
+          })),
+        );
       }
     }
 
     // 计算移动平均线
     if (movingAverageConfig && prices.length > 0) {
-      const closePrices = prices.map(p => p.close);
-      const maValues = movingAverageConfig.type === 'SMA'
-        ? calculateSMA(closePrices, movingAverageConfig.period)
-        : calculateEMA(closePrices, movingAverageConfig.period);
+      const closePrices = prices.map((p) => p.close);
+      const maValues =
+        movingAverageConfig.type === 'SMA'
+          ? calculateSMA(closePrices, movingAverageConfig.period)
+          : calculateEMA(closePrices, movingAverageConfig.period);
 
       maValues.forEach((value, index) => {
         if (index + movingAverageConfig.period - 1 < prices.length) {
@@ -128,7 +146,9 @@ export function useChartData(
     };
   }, [marketDataQuery.data, strategyResultsQuery.data, movingAverageConfig]);
 
-  const isLoading = marketDataQuery.isLoading || (strategyRunId ? strategyResultsQuery.isLoading : false);
+  const isLoading =
+    marketDataQuery.isLoading ||
+    (strategyRunId ? strategyResultsQuery.isLoading : false);
   const error = marketDataQuery.error || strategyResultsQuery.error;
 
   return {
@@ -154,11 +174,12 @@ export class ChartDataPreloader {
   async preloadMarketData(symbol: string, startDate: string, endDate: string) {
     return this.queryClient.prefetchQuery({
       queryKey: CHART_QUERY_KEYS.marketData(symbol, startDate, endDate),
-      queryFn: () => marketDataAPI.getHistory({
-        symbol,
-        start_date: startDate,
-        end_date: endDate,
-      }),
+      queryFn: () =>
+        marketDataAPI.getHistory({
+          symbol,
+          start_date: startDate,
+          end_date: endDate,
+        }),
       staleTime: CACHE_CONFIG.marketData.staleTime,
     });
   }
@@ -244,7 +265,7 @@ export function validateChartData(data: ChartData): boolean {
 
   // 验证价格数据
   const invalidPrices = data.prices.filter(
-    point => !point.timestamp || point.close <= 0,
+    (point) => !point.timestamp || point.close <= 0,
   );
   if (invalidPrices.length > 0) {
     console.warn('Invalid price data found:', invalidPrices);
@@ -254,7 +275,7 @@ export function validateChartData(data: ChartData): boolean {
   // 验证信号数据
   if (data.signals) {
     const invalidSignals = data.signals.filter(
-      signal => !signal.timestamp || !signal.type || signal.price <= 0,
+      (signal) => !signal.timestamp || !signal.type || signal.price <= 0,
     );
     if (invalidSignals.length > 0) {
       console.warn('Invalid signal data found:', invalidSignals);
@@ -267,7 +288,7 @@ export function validateChartData(data: ChartData): boolean {
 // 数据转换工具
 export function transformMarketDataToChartData(marketData: any[]): ChartData {
   return {
-    prices: marketData.map(item => ({
+    prices: marketData.map((item) => ({
       timestamp: item.date,
       open: item.open,
       high: item.high,

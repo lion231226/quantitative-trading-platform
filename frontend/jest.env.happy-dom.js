@@ -10,7 +10,7 @@ class HappyDOMEnvironment extends TestEnvironment {
     const happyWindow = new GlobalWindow({
       url: config.testEnvironmentOptions?.url || 'http://localhost:3000',
       resources: config.testEnvironmentOptions?.resources || 'usable',
-      runScripts: config.testEnvironmentOptions?.runScripts || 'dangerously'
+      runScripts: config.testEnvironmentOptions?.runScripts || 'dangerously',
     });
 
     // Set up DOM globals properly
@@ -34,7 +34,7 @@ class HappyDOMEnvironment extends TestEnvironment {
     this.global.NodeList = happyWindow.NodeList;
     this.global.HTMLCollection = happyWindow.HTMLCollection;
     this.global.performance = happyWindow.performance || {
-      now: jest.fn(() => Date.now())
+      now: jest.fn(() => Date.now()),
     };
 
     // Fix getComputedStyle issue in happy-dom
@@ -70,7 +70,7 @@ class HappyDOMEnvironment extends TestEnvironment {
         justifyContent: 'flex-start',
         gap: '0px',
         gridTemplateColumns: 'none',
-        gridTemplateRows: 'none'
+        gridTemplateRows: 'none',
       });
 
       happyWindow.getComputedStyle = jest.fn(() => createStyleMock());
@@ -109,7 +109,7 @@ class HappyDOMEnvironment extends TestEnvironment {
     if (document.readyState !== 'complete') {
       Object.defineProperty(document, 'readyState', {
         value: 'complete',
-        writable: false
+        writable: false,
       });
     }
   }

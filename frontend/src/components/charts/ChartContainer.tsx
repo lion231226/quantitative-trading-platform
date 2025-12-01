@@ -1,25 +1,23 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   ChartConfig,
   ChartData,
-  ChartInteractionConfig,
-  ChartLayout,
-  ChartTheme,
   ExportFormat,
-  ExportPreferences,
-  PerformanceConfig,
   TradingSignal,
 } from '@/types/chart.types';
-import InteractivePriceChart from './InteractivePriceChart'
-import TradingSignals from './TradingSignals'
+import InteractivePriceChart from './InteractivePriceChart';
+import TradingSignals from './TradingSignals';
 import MovingAverages from './MovingAverages';
 import { ChartControls } from './ChartControls';
-import { ChartPreferencesManager, ChartPreferencesUtils, ResponsiveChartConfig } from '@/utils/chartPreferences';
-import { ChartExporter } from '@/utils/chartExport';
+import {
+  ChartPreferencesManager,
+  ChartPreferencesUtils,
+  ResponsiveChartConfig,
+} from '@/utils/chartPreferences';
 
 // 响应式断点
 const BREAKPOINTS = {
@@ -30,17 +28,17 @@ const BREAKPOINTS = {
 
 // 组件Props
 export interface ChartContainerProps {
-  data: ChartData
-  title?: string
-  description?: string
-  className?: string
-  enableAllFeatures?: boolean
-  showTitle?: boolean
-  showDescription?: boolean
-  enableResponsive?: boolean
-  userId?: string
-  onSignalClick?: (signal: TradingSignal) => void
-  onConfigChange?: (config: ChartConfig) => void
+  data: ChartData;
+  title?: string;
+  description?: string;
+  className?: string;
+  enableAllFeatures?: boolean;
+  showTitle?: boolean;
+  showDescription?: boolean;
+  enableResponsive?: boolean;
+  userId?: string;
+  onSignalClick?: (signal: TradingSignal) => void;
+  onConfigChange?: (config: ChartConfig) => void;
 }
 
 export function ChartContainer({
@@ -58,7 +56,9 @@ export function ChartContainer({
 }: ChartContainerProps) {
   const [screenWidth, setScreenWidth] = useState(1200);
   const [isClient, setIsClient] = useState(false);
-  const [activeTab, setActiveTab] = useState<'chart' | 'signals' | 'movingAverages'>('chart');
+  const [activeTab, setActiveTab] = useState<
+    'chart' | 'signals' | 'movingAverages'
+  >('chart');
   const [isExporting, setIsExporting] = useState(false);
   const [showPreferences, setShowPreferences] = useState(false);
 
@@ -72,52 +72,99 @@ export function ChartContainer({
 
   // 当前偏好设置
   const preferences = useMemo(() => {
-    return preferencesManager?.getPreferences() || {
-      chartConfig: {
-        showSignals: true,
-        showMovingAverages: true,
-        movingAverageType: 'SMA' as const,
-        movingAveragePeriod: 20,
-        showVolume: false,
-        animationDuration: 1000,
-      },
-      interactionConfig: {
-        enableZoom: true,
-        enablePan: true,
-        zoomMode: 'x' as const,
-        panMode: 'x' as const,
-        wheelSensitivity: 0.1,
-        enableTooltip: true,
-        enableCrosshair: false,
-        enableDataLabels: false,
-      },
-      performanceConfig: {
-        enableDataSampling: true,
-        maxDataPoints: 1000,
-        enableAnimation: true,
-        animationDuration: 750,
-      },
-      theme: ChartPreferencesUtils.detectSystemTheme() === 'dark'
-        ? { name: 'Dark', colors: { background: '#1f2937', grid: '#374151', text: '#f3f4f6', price: '#60a5fa', buySignal: '#34d399', sellSignal: '#f87171', movingAverage: '#fbbf24', volume: '#9ca3af' }, fonts: { family: 'Inter', size: { title: 16, legend: 12, axis: 11, tooltip: 12 } }, styles: { lineWidth: 2, pointRadius: 4, gridLines: true, animations: true } }
-        : { name: 'Light', colors: { background: '#ffffff', grid: '#e5e7eb', text: '#374151', price: '#3b82f6', buySignal: '#22c55e', sellSignal: '#ef4444', movingAverage: '#f59e0b', volume: '#6b7280' }, fonts: { family: 'Inter', size: { title: 16, legend: 12, axis: 11, tooltip: 12 } }, styles: { lineWidth: 2, pointRadius: 4, gridLines: true, animations: true } },
-      layout: {
-        height: 400,
-        padding: { top: 20, right: 20, bottom: 20, left: 20 },
-        showControls: true,
-        showLegend: true,
-        showTooltip: true,
-        responsive: true,
-      },
-      exportPreferences: {
-        defaultFormat: 'png' as const,
-        defaultFilename: 'chart',
-        includeMetadata: true,
-        backgroundColor: '#ffffff',
-        quality: 0.9,
-        dimensions: { width: 1200, height: 600 },
-      },
-      lastUpdated: new Date().toISOString(),
-    };
+    return (
+      preferencesManager?.getPreferences() || {
+        chartConfig: {
+          showSignals: true,
+          showMovingAverages: true,
+          movingAverageType: 'SMA' as const,
+          movingAveragePeriod: 20,
+          showVolume: false,
+          animationDuration: 1000,
+        },
+        interactionConfig: {
+          enableZoom: true,
+          enablePan: true,
+          zoomMode: 'x' as const,
+          panMode: 'x' as const,
+          wheelSensitivity: 0.1,
+          enableTooltip: true,
+          enableCrosshair: false,
+          enableDataLabels: false,
+        },
+        performanceConfig: {
+          enableDataSampling: true,
+          maxDataPoints: 1000,
+          enableAnimation: true,
+          animationDuration: 750,
+        },
+        theme:
+          ChartPreferencesUtils.detectSystemTheme() === 'dark'
+            ? {
+                name: 'Dark',
+                colors: {
+                  background: '#1f2937',
+                  grid: '#374151',
+                  text: '#f3f4f6',
+                  price: '#60a5fa',
+                  buySignal: '#34d399',
+                  sellSignal: '#f87171',
+                  movingAverage: '#fbbf24',
+                  volume: '#9ca3af',
+                },
+                fonts: {
+                  family: 'Inter',
+                  size: { title: 16, legend: 12, axis: 11, tooltip: 12 },
+                },
+                styles: {
+                  lineWidth: 2,
+                  pointRadius: 4,
+                  gridLines: true,
+                  animations: true,
+                },
+              }
+            : {
+                name: 'Light',
+                colors: {
+                  background: '#ffffff',
+                  grid: '#e5e7eb',
+                  text: '#374151',
+                  price: '#3b82f6',
+                  buySignal: '#22c55e',
+                  sellSignal: '#ef4444',
+                  movingAverage: '#f59e0b',
+                  volume: '#6b7280',
+                },
+                fonts: {
+                  family: 'Inter',
+                  size: { title: 16, legend: 12, axis: 11, tooltip: 12 },
+                },
+                styles: {
+                  lineWidth: 2,
+                  pointRadius: 4,
+                  gridLines: true,
+                  animations: true,
+                },
+              },
+        layout: {
+          height: 400,
+          padding: { top: 20, right: 20, bottom: 20, left: 20 },
+          showControls: true,
+          showLegend: true,
+          showTooltip: true,
+          responsive: true,
+        },
+        exportPreferences: {
+          defaultFormat: 'png' as const,
+          defaultFilename: 'chart',
+          includeMetadata: true,
+          backgroundColor: '#ffffff',
+          quality: 0.9,
+          dimensions: { width: 1200, height: 600 },
+        },
+        lastUpdated: new Date().toISOString(),
+      }
+    );
   }, [preferencesManager]);
 
   // 响应式配置
@@ -199,51 +246,59 @@ export function ChartContainer({
   }, [isClient, mergedConfig.theme]);
 
   // 处理配置变化
-  const handleConfigChange = useCallback((config: Partial<ChartConfig>) => {
-    const updatedConfig: ChartConfig = {
-      showSignals: config.showSignals ?? true,
-      showMovingAverages: config.showMovingAverages ?? true,
-      movingAverageType: config.movingAverageType ?? 'SMA',
-      movingAveragePeriod: config.movingAveragePeriod ?? 20,
-      showVolume: config.showVolume ?? false,
-      animationDuration: config.animationDuration ?? 1000,
-    };
-    onConfigChange?.(updatedConfig);
+  const handleConfigChange = useCallback(
+    (config: Partial<ChartConfig>) => {
+      const updatedConfig: ChartConfig = {
+        showSignals: config.showSignals ?? true,
+        showMovingAverages: config.showMovingAverages ?? true,
+        movingAverageType: config.movingAverageType ?? 'SMA',
+        movingAveragePeriod: config.movingAveragePeriod ?? 20,
+        showVolume: config.showVolume ?? false,
+        animationDuration: config.animationDuration ?? 1000,
+      };
+      onConfigChange?.(updatedConfig);
 
-    if (preferencesManager) {
-      preferencesManager.updateChartConfig(config);
-    }
-  }, [mergedConfig.chartConfig, onConfigChange, preferencesManager]);
+      if (preferencesManager) {
+        preferencesManager.updateChartConfig(config);
+      }
+    },
+    [mergedConfig.chartConfig, onConfigChange, preferencesManager],
+  );
 
   // 处理信号点击
-  const handleSignalClick = useCallback((signal: TradingSignal) => {
-    onSignalClick?.(signal);
-  }, [onSignalClick]);
+  const handleSignalClick = useCallback(
+    (signal: TradingSignal) => {
+      onSignalClick?.(signal);
+    },
+    [onSignalClick],
+  );
 
   // 导出功能
-  const handleExport = useCallback(async (format: ExportFormat) => {
-    if (!isClient) return;
+  const handleExport = useCallback(
+    async (format: ExportFormat) => {
+      if (!isClient) return;
 
-    setIsExporting(true);
-    try {
-      // 这里需要获取图表实例，暂时使用模拟实现
-      // Exporting chart as ${format}
-
-      // 实际实现需要从图表组件获取实例
-      // const exporter = new ChartExporter(chartInstance, data)
-      // await exporter.exportAndDownload(format, mergedConfig.exportPreferences)
-
-    } catch (error) {
-      console.error('Export failed:', error);
-    } finally {
-      setIsExporting(false);
-    }
-  }, [isClient, data, mergedConfig.exportPreferences]);
+      setIsExporting(true);
+      try {
+        // 这里需要获取图表实例，暂时使用模拟实现
+        // Exporting chart as ${format}
+        // 实际实现需要从图表组件获取实例
+        // const exporter = new ChartExporter(chartInstance, data)
+        // await exporter.exportAndDownload(format, mergedConfig.exportPreferences)
+      } catch (error) {
+        console.error('Export failed:', error);
+      } finally {
+        setIsExporting(false);
+      }
+    },
+    [isClient, data, mergedConfig.exportPreferences],
+  );
 
   // 渲染响应式布局
   const renderResponsiveLayout = () => {
     const isMobile = screenWidth < BREAKPOINTS.mobile;
-    const isTablet = screenWidth >= BREAKPOINTS.mobile && screenWidth < BREAKPOINTS.tablet;
+    const isTablet =
+      screenWidth >= BREAKPOINTS.mobile && screenWidth < BREAKPOINTS.tablet;
 
     if (isMobile) {
       return (
@@ -456,9 +511,7 @@ export function ChartContainer({
       {renderControls()}
 
       <Card>
-        <CardContent className="p-6">
-          {renderResponsiveLayout()}
-        </CardContent>
+        <CardContent className="p-6">{renderResponsiveLayout()}</CardContent>
       </Card>
 
       {/* 偏好设置面板 */}
@@ -486,10 +539,16 @@ export function ChartContainer({
                     {['light', 'dark', 'professional'].map((theme) => (
                       <Button
                         key={theme}
-                        variant={mergedConfig.theme.name.toLowerCase() === theme ? 'default' : 'outline'}
+                        variant={
+                          mergedConfig.theme.name.toLowerCase() === theme
+                            ? 'default'
+                            : 'outline'
+                        }
                         onClick={() => {
                           if (preferencesManager) {
-                            preferencesManager.updateTheme(theme.charAt(0).toUpperCase() + theme.slice(1));
+                            preferencesManager.updateTheme(
+                              theme.charAt(0).toUpperCase() + theme.slice(1),
+                            );
                           }
                         }}
                       >

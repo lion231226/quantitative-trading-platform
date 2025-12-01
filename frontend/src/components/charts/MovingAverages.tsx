@@ -20,18 +20,26 @@ import { Button } from '@/components/ui/button';
 import { calculateEMA, calculateSMA } from '@/utils/chartHelpers';
 
 // 注册 Chart.js 组件
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+);
 
 // 移动平均线配置接口
 export interface MovingAverageConfig {
-  type: 'SMA' | 'EMA'
-  period: number
-  color: string
-  lineWidth: number
-  showPoints: boolean
-  fillArea: boolean
-  fillOpacity: number
-  animationDuration: number
+  type: 'SMA' | 'EMA';
+  period: number;
+  color: string;
+  lineWidth: number;
+  showPoints: boolean;
+  fillArea: boolean;
+  fillOpacity: number;
+  animationDuration: number;
 }
 
 // 默认配置
@@ -48,16 +56,16 @@ const DEFAULT_MA_CONFIG: MovingAverageConfig = {
 
 // 组件Props
 export interface MovingAveragesProps {
-  priceData: PricePoint[]
-  movingAverages?: MovingAverageLine[]
-  config?: Partial<MovingAverageConfig>
-  onConfigChange?: (config: MovingAverageConfig) => void
-  onPeriodChange?: (period: number) => void
-  onTypeChange?: (type: 'SMA' | 'EMA') => void
-  className?: string
-  height?: number
-  width?: number
-  showControls?: boolean
+  priceData: PricePoint[];
+  movingAverages?: MovingAverageLine[];
+  config?: Partial<MovingAverageConfig>;
+  onConfigChange?: (config: MovingAverageConfig) => void;
+  onPeriodChange?: (period: number) => void;
+  onTypeChange?: (type: 'SMA' | 'EMA') => void;
+  className?: string;
+  height?: number;
+  width?: number;
+  showControls?: boolean;
 }
 
 // 预设的常用周期
@@ -85,7 +93,10 @@ export function MovingAverages({
   width,
   showControls = true,
 }: MovingAveragesProps) {
-  const [config, setConfig] = useState<MovingAverageConfig>({ ...DEFAULT_MA_CONFIG, ...userConfig });
+  const [config, setConfig] = useState<MovingAverageConfig>({
+    ...DEFAULT_MA_CONFIG,
+    ...userConfig,
+  });
   const [isCalculating, setIsCalculating] = useState(false);
 
   // 计算移动平均线数据
@@ -93,7 +104,9 @@ export function MovingAverages({
     (prices: number[], type: 'SMA' | 'EMA', period: number): number[] => {
       if (prices.length < period) return [];
 
-      return type === 'SMA' ? calculateSMA(prices, period) : calculateEMA(prices, period);
+      return type === 'SMA'
+        ? calculateSMA(prices, period)
+        : calculateEMA(prices, period);
     },
     [],
   );
@@ -117,15 +130,22 @@ export function MovingAverages({
   );
 
   // 获取价格数据
-  const priceValues = useMemo(() => priceData.map(p => p.close), [priceData]);
-  const priceLabels = useMemo(() => priceData.map(p => p.timestamp), [priceData]);
+  const priceValues = useMemo(() => priceData.map((p) => p.close), [priceData]);
+  const priceLabels = useMemo(
+    () => priceData.map((p) => p.timestamp),
+    [priceData],
+  );
 
   // 计算移动平均线
   const maData = useMemo(() => {
     if (priceValues.length === 0) return [];
 
     setIsCalculating(true);
-    const result = calculateMovingAverageData(priceValues, config.type, config.period);
+    const result = calculateMovingAverageData(
+      priceValues,
+      config.type,
+      config.period,
+    );
     setIsCalculating(false);
 
     return result;
@@ -157,7 +177,9 @@ export function MovingAverages({
         data: maData,
         borderColor: config.color,
         backgroundColor: config.fillArea
-          ? config.color.replace('rgb', 'rgba').replace(')', `, ${config.fillOpacity})`)
+          ? config.color
+              .replace('rgb', 'rgba')
+              .replace(')', `, ${config.fillOpacity})`)
           : 'transparent',
         borderWidth: config.lineWidth,
         pointRadius: config.showPoints ? 2 : 0,
@@ -174,73 +196,76 @@ export function MovingAverages({
   }, [priceValues, priceLabels, maData, config]);
 
   // 生成图表选项
-  const chartOptions = useMemo<ChartOptions<'line'>>(() => ({
-    responsive: true,
-    maintainAspectRatio: false,
-    animation: {
-      duration: config.animationDuration,
-    },
-    interaction: {
-      mode: 'index',
-      intersect: false,
-    },
-    plugins: {
-      legend: {
-        position: 'top',
-        labels: {
-          usePointStyle: true,
-          padding: 20,
-        },
+  const chartOptions = useMemo<ChartOptions<'line'>>(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: {
+        duration: config.animationDuration,
       },
-      tooltip: {
-        enabled: true,
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        titleColor: '#fff',
-        bodyColor: '#fff',
-        borderColor: '#ddd',
-        borderWidth: 1,
-        padding: 10,
-        displayColors: true,
-        callbacks: {
-          title(context) {
-            return context[0].label;
-          },
-          label(context) {
-            const label = context.dataset.label || '';
-            const value = context.parsed.y;
-            if (value === null) return `${label}: --`;
-            return `${label}: ${value.toFixed(2)}`;
+      interaction: {
+        mode: 'index',
+        intersect: false,
+      },
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: {
+            usePointStyle: true,
+            padding: 20,
           },
         },
+        tooltip: {
+          enabled: true,
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          borderColor: '#ddd',
+          borderWidth: 1,
+          padding: 10,
+          displayColors: true,
+          callbacks: {
+            title(context) {
+              return context[0].label;
+            },
+            label(context) {
+              const label = context.dataset.label || '';
+              const value = context.parsed.y;
+              if (value === null) return `${label}: --`;
+              return `${label}: ${value.toFixed(2)}`;
+            },
+          },
+        },
       },
-    },
-    scales: {
-      x: {
-        type: 'category',
-        display: true,
-        title: {
+      scales: {
+        x: {
+          type: 'category',
           display: true,
-          text: '时间',
+          title: {
+            display: true,
+            text: '时间',
+          },
+          ticks: {
+            maxTicksLimit: 8,
+          },
         },
-        ticks: {
-          maxTicksLimit: 8,
-        },
-      },
-      y: {
-        type: 'linear',
-        display: true,
-        title: {
+        y: {
+          type: 'linear',
           display: true,
-          text: '价格',
-        },
-        ticks: {
-          callback(value) {
-            return Number(value).toFixed(2);
+          title: {
+            display: true,
+            text: '价格',
+          },
+          ticks: {
+            callback(value) {
+              return Number(value).toFixed(2);
+            },
           },
         },
       },
-    },
-  }), [config]);
+    }),
+    [config],
+  );
 
   // 渲染控制面板
   const renderControls = () => {
@@ -277,7 +302,11 @@ export function MovingAverages({
                 <input
                   type="number"
                   value={config.period}
-                  onChange={(e) => handleConfigChange({ period: parseInt(e.target.value) || 20 })}
+                  onChange={(e) =>
+                    handleConfigChange({
+                      period: parseInt(e.target.value) || 20,
+                    })
+                  }
                   min="2"
                   max="500"
                   className="border rounded px-2 py-1 w-20"
@@ -304,7 +333,9 @@ export function MovingAverages({
                 <input
                   type="color"
                   value={config.color}
-                  onChange={(e) => handleConfigChange({ color: e.target.value })}
+                  onChange={(e) =>
+                    handleConfigChange({ color: e.target.value })
+                  }
                   className="w-8 h-8 border rounded"
                 />
                 <div className="flex space-x-1">
@@ -315,7 +346,9 @@ export function MovingAverages({
                       size="sm"
                       className="w-8 h-8 p-0"
                       style={{ backgroundColor: scheme.color }}
-                      onClick={() => handleConfigChange({ color: scheme.color })}
+                      onClick={() =>
+                        handleConfigChange({ color: scheme.color })
+                      }
                     />
                   ))}
                 </div>
@@ -324,13 +357,17 @@ export function MovingAverages({
 
             {/* 线宽 */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">线宽: {config.lineWidth}px</label>
+              <label className="text-sm font-medium">
+                线宽: {config.lineWidth}px
+              </label>
               <input
                 type="range"
                 min="1"
                 max="5"
                 value={config.lineWidth}
-                onChange={(e) => handleConfigChange({ lineWidth: parseInt(e.target.value) })}
+                onChange={(e) =>
+                  handleConfigChange({ lineWidth: parseInt(e.target.value) })
+                }
                 className="w-full"
               />
             </div>
@@ -341,7 +378,9 @@ export function MovingAverages({
               <input
                 type="checkbox"
                 checked={config.showPoints}
-                onChange={(e) => handleConfigChange({ showPoints: e.target.checked })}
+                onChange={(e) =>
+                  handleConfigChange({ showPoints: e.target.checked })
+                }
                 className="rounded"
               />
             </div>
@@ -352,7 +391,9 @@ export function MovingAverages({
               <input
                 type="checkbox"
                 checked={config.fillArea}
-                onChange={(e) => handleConfigChange({ fillArea: e.target.checked })}
+                onChange={(e) =>
+                  handleConfigChange({ fillArea: e.target.checked })
+                }
                 className="rounded"
               />
               {config.fillArea && (
@@ -364,7 +405,11 @@ export function MovingAverages({
                     max="0.5"
                     step="0.1"
                     value={config.fillOpacity}
-                    onChange={(e) => handleConfigChange({ fillOpacity: parseFloat(e.target.value) })}
+                    onChange={(e) =>
+                      handleConfigChange({
+                        fillOpacity: parseFloat(e.target.value),
+                      })
+                    }
                     className="w-20"
                   />
                 </div>
@@ -399,32 +444,46 @@ export function MovingAverages({
 
     const currentMA = maData[maData.length - 1];
     const currentPrice = priceValues[priceValues.length - 1];
-    const previousMA = maData.length > 1 ? maData[maData.length - 2] : currentMA;
-    const maTrend = currentMA > previousMA ? 'up' : currentMA < previousMA ? 'down' : 'flat';
+    const previousMA =
+      maData.length > 1 ? maData[maData.length - 2] : currentMA;
+    const maTrend =
+      currentMA > previousMA ? 'up' : currentMA < previousMA ? 'down' : 'flat';
     const priceVsMA = currentPrice > currentMA ? 'above' : 'below';
 
     return (
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-50 border-b">
         <div className="text-center">
-          <div className="text-lg font-semibold">
-            {currentMA.toFixed(2)}
+          <div className="text-lg font-semibold">{currentMA.toFixed(2)}</div>
+          <div className="text-xs text-gray-600">
+            当前 {config.type}({config.period})
           </div>
-          <div className="text-xs text-gray-600">当前 {config.type}({config.period})</div>
         </div>
 
         <div className="text-center">
-          <div className={`text-lg font-semibold ${
-            maTrend === 'up' ? 'text-green-600' : maTrend === 'down' ? 'text-red-600' : 'text-gray-600'
-          }`}>
-            {maTrend === 'up' ? '↑ 上升' : maTrend === 'down' ? '↓ 下降' : '→ 平稳'}
+          <div
+            className={`text-lg font-semibold ${
+              maTrend === 'up'
+                ? 'text-green-600'
+                : maTrend === 'down'
+                  ? 'text-red-600'
+                  : 'text-gray-600'
+            }`}
+          >
+            {maTrend === 'up'
+              ? '↑ 上升'
+              : maTrend === 'down'
+                ? '↓ 下降'
+                : '→ 平稳'}
           </div>
           <div className="text-xs text-gray-600">均线趋势</div>
         </div>
 
         <div className="text-center">
-          <div className={`text-lg font-semibold ${
-            priceVsMA === 'above' ? 'text-green-600' : 'text-red-600'
-          }`}>
+          <div
+            className={`text-lg font-semibold ${
+              priceVsMA === 'above' ? 'text-green-600' : 'text-red-600'
+            }`}
+          >
             {priceVsMA === 'above' ? '上方' : '下方'}
           </div>
           <div className="text-xs text-gray-600">价格相对位置</div>

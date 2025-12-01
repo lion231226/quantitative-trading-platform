@@ -1,5 +1,6 @@
 import {
   CategoryScale,
+  ChartConfiguration,
   Chart as ChartJS,
   ChartData as ChartJSData,
   ChartOptions,
@@ -11,9 +12,14 @@ import {
   PointElement,
   Title,
   Tooltip,
-  ChartConfiguration,
 } from 'chart.js';
-import { ChartConfig, ChartData, MovingAverageLine, PricePoint, TradingSignal } from '@/types/chart.types';
+import {
+  ChartConfig,
+  ChartData,
+  MovingAverageLine,
+  PricePoint,
+  TradingSignal,
+} from '@/types/chart.types';
 
 // Chart.js helpers类型定义
 interface ChartHelpersType {
@@ -107,7 +113,7 @@ export const defaultChartOptions: ChartOptions<'line'> = {
 export const createPriceDataset = (data: PricePoint[]) => {
   return {
     label: '价格',
-    data: data.map(point => ({
+    data: data.map((point) => ({
       x: new Date(point.timestamp).getTime(),
       y: point.close,
     })),
@@ -122,14 +128,17 @@ export const createPriceDataset = (data: PricePoint[]) => {
 };
 
 // 创建移动平均线数据集
-export const createMovingAverageDataset = (data: MovingAverageLine | MovingAverageLine[], color: string) => {
+export const createMovingAverageDataset = (
+  data: MovingAverageLine | MovingAverageLine[],
+  color: string,
+) => {
   // 处理单个对象或数组的情况
   const maArray = Array.isArray(data) ? data : [data];
   const period = maArray[0]?.period || '';
 
   return {
     label: `MA${period}`,
-    data: maArray.map(point => ({
+    data: maArray.map((point) => ({
       x: new Date(point.timestamp).getTime(),
       y: point.value,
     })),
@@ -146,13 +155,13 @@ export const createMovingAverageDataset = (data: MovingAverageLine | MovingAvera
 
 // 创建交易信号数据集
 export const createSignalDataset = (signals: TradingSignal[]) => {
-  const buySignals = signals.filter(s => s.type === 'buy');
-  const sellSignals = signals.filter(s => s.type === 'sell');
+  const buySignals = signals.filter((s) => s.type === 'buy');
+  const sellSignals = signals.filter((s) => s.type === 'sell');
 
   return [
     {
       label: '买入信号',
-      data: buySignals.map(signal => ({
+      data: buySignals.map((signal) => ({
         x: new Date(signal.timestamp).getTime(),
         y: signal.price,
       })),
@@ -166,7 +175,7 @@ export const createSignalDataset = (signals: TradingSignal[]) => {
     },
     {
       label: '卖出信号',
-      data: sellSignals.map(signal => ({
+      data: sellSignals.map((signal) => ({
         x: new Date(signal.timestamp).getTime(),
         y: signal.price,
       })),
@@ -202,13 +211,15 @@ export const formatPercent = (num: number, decimals: number = 2): string => {
 };
 
 // 计算数据范围
-export const calculateDataRange = (data: Array<{ x: any; y: number | null }>) => {
-  const validData = data.filter(d => d.y !== null);
+export const calculateDataRange = (
+  data: Array<{ x: any; y: number | null }>,
+) => {
+  const validData = data.filter((d) => d.y !== null);
   if (validData.length === 0) {
     return { min: 0, max: 100 };
   }
 
-  const values = validData.map(d => d.y as number);
+  const values = validData.map((d) => d.y as number);
   const min = Math.min(...values);
   const max = Math.max(...values);
   const padding = (max - min) * 0.1;
@@ -222,16 +233,17 @@ export const calculateDataRange = (data: Array<{ x: any; y: number | null }>) =>
 // 创建图表配置
 export const createChartConfig = (
   data: ChartData,
-  options: Partial<ChartOptions<'line'>> = {}
+  options: Partial<ChartOptions<'line'>> = {},
 ): ChartConfiguration<'line'> => {
   const datasets = [
     createPriceDataset(data.prices),
     ...data.movingAverages.map((ma, index) =>
-      createMovingAverageDataset(ma, [
-        chartColors.secondary,
-        chartColors.warning,
-        chartColors.info,
-      ][index % 3])
+      createMovingAverageDataset(
+        ma,
+        [chartColors.secondary, chartColors.warning, chartColors.info][
+          index % 3
+        ],
+      ),
     ),
     ...createSignalDataset(data.signals),
   ].filter(Boolean);
@@ -280,7 +292,7 @@ export const createCustomTooltip = (tooltipModel: any) => {
 export const findNearestSignal = (
   signals: TradingSignal[],
   targetDate: Date,
-  maxDistanceMs: number = 24 * 60 * 60 * 1000 // 24小时
+  maxDistanceMs: number = 24 * 60 * 60 * 1000, // 24小时
 ): TradingSignal | null => {
   if (signals.length === 0) return null;
 
@@ -288,7 +300,7 @@ export const findNearestSignal = (
   let nearestSignal: TradingSignal | null = null;
   let minDistance = maxDistanceMs;
 
-  signals.forEach(signal => {
+  signals.forEach((signal) => {
     const signalTime = new Date(signal.timestamp).getTime();
     const distance = Math.abs(signalTime - targetTime);
 
@@ -304,7 +316,7 @@ export const findNearestSignal = (
 // 计算移动平均线
 export const calculateMovingAverage = (
   data: PricePoint[],
-  period: number
+  period: number,
 ): MovingAverageLine[] => {
   const result: MovingAverageLine[] = [];
 
@@ -350,7 +362,7 @@ export const generateTestData = (days: number = 30): ChartData => {
   }
 
   // 生成移动平均线
-  const closePrices = prices.map(p => p.close);
+  const closePrices = prices.map((p) => p.close);
   const ma5Values = calculateSMA(closePrices, 5);
   const ma20Values = calculateSMA(closePrices, 20);
 
@@ -407,15 +419,32 @@ export const chartThemes = {
 };
 
 // 应用主题
-export const applyTheme = (options: ChartOptions<'line'>, theme: keyof typeof chartThemes) => {
+export const applyTheme = (
+  options: ChartOptions<'line'>,
+  theme: keyof typeof chartThemes,
+) => {
   const colors = chartThemes[theme];
 
   options.plugins?.title && (options.plugins.title.color = colors.text);
-  options.plugins?.legend && (options.plugins.legend.labels = { ...options.plugins.legend.labels, color: colors.text });
-  options.scales?.x && (options.scales.x.ticks = { ...options.scales.x.ticks, color: colors.text });
-  options.scales?.y && (options.scales.y.ticks = { ...options.scales.y.ticks, color: colors.text });
-  options.scales?.x && (options.scales.x.grid = { ...options.scales.x.grid, color: colors.grid });
-  options.scales?.y && (options.scales.y.grid = { ...options.scales.y.grid, color: colors.grid });
+  options.plugins?.legend &&
+    (options.plugins.legend.labels = {
+      ...options.plugins.legend.labels,
+      color: colors.text,
+    });
+  options.scales?.x &&
+    (options.scales.x.ticks = {
+      ...options.scales.x.ticks,
+      color: colors.text,
+    });
+  options.scales?.y &&
+    (options.scales.y.ticks = {
+      ...options.scales.y.ticks,
+      color: colors.text,
+    });
+  options.scales?.x &&
+    (options.scales.x.grid = { ...options.scales.x.grid, color: colors.grid });
+  options.scales?.y &&
+    (options.scales.y.grid = { ...options.scales.y.grid, color: colors.grid });
 
   return options;
 };
@@ -452,9 +481,15 @@ export const exportToCSV = (data: ChartData): string => {
   const rows: string[] = [];
   rows.push('Date,Open,High,Low,Close,Signal Type,Signal Price');
 
-  data.prices.forEach(price => {
-    const signal = data.signals.find(s => new Date(s.timestamp).toDateString() === new Date(price.timestamp).toDateString());
-    rows.push(`${price.timestamp},${price.open},${price.high},${price.low},${price.close},${signal ? signal.type : ''},${signal ? signal.price : ''}`);
+  data.prices.forEach((price) => {
+    const signal = data.signals.find(
+      (s) =>
+        new Date(s.timestamp).toDateString() ===
+        new Date(price.timestamp).toDateString(),
+    );
+    rows.push(
+      `${price.timestamp},${price.open},${price.high},${price.low},${price.close},${signal ? signal.type : ''},${signal ? signal.price : ''}`,
+    );
   });
 
   return rows.join('\n');
@@ -468,13 +503,22 @@ export const exportToJSON = (data: ChartData): string => {
 export const formatChartData = (data: ChartData): ChartData => {
   return {
     ...data,
-    prices: data.prices.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()),
-    signals: data.signals.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()),
+    prices: data.prices.sort(
+      (a, b) =>
+        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+    ),
+    signals: data.signals.sort(
+      (a, b) =>
+        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+    ),
   };
 };
 
 // 生成图表选项
-export const generateChartOptions = (config: any, onSignalClick?: (signal: TradingSignal) => void) => {
+export const generateChartOptions = (
+  config: any,
+  onSignalClick?: (signal: TradingSignal) => void,
+) => {
   return {
     ...defaultChartOptions,
     onClick: (event: any, elements: any[]) => {
@@ -496,7 +540,7 @@ export const generateSignalDatasets = (signals: TradingSignal[]) => {
 };
 
 // 数据采样
-export const sampleData = <T,>(data: T[], maxPoints: number): T[] => {
+export const sampleData = <T>(data: T[], maxPoints: number): T[] => {
   if (data.length <= maxPoints) return data;
   const step = Math.ceil(data.length / maxPoints);
   return data.filter((_, index) => index % step === 0);

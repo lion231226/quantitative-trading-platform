@@ -1,24 +1,24 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  Zap,
-  Eye,
-  EyeOff,
-  Volume2,
-  VolumeX,
-  Monitor,
-  Smartphone,
   Accessibility,
-  Timer,
-  Settings,
   ChevronDown,
   ChevronUp,
-  Sun,
+  Eye,
+  EyeOff,
+  Monitor,
   Moon,
   Palette,
+  RotateCcw,
+  Settings,
+  Smartphone,
+  Sun,
+  Timer,
   Type,
-  RotateCcw
+  Volume2,
+  VolumeX,
+  Zap,
 } from 'lucide-react';
 
 // 用户偏好设置
@@ -111,7 +111,9 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
     ...currentPreferences,
   });
   const [isExpanded, setIsExpanded] = useState(false);
-  const [activeTab, setActiveTab] = useState<'settings' | 'performance' | 'optimizations'>('settings');
+  const [activeTab, setActiveTab] = useState<
+    'settings' | 'performance' | 'optimizations'
+  >('settings');
   const [suggestions, setSuggestions] = useState<OptimizationSuggestion[]>([]);
   const performanceRef = useRef<PerformanceMetrics>();
 
@@ -121,7 +123,11 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
       const saved = localStorage.getItem('tutorial_user_preferences');
       if (saved) {
         const savedPreferences = JSON.parse(saved);
-        setPreferences({ ...DEFAULT_PREFERENCES, ...savedPreferences, ...currentPreferences });
+        setPreferences({
+          ...DEFAULT_PREFERENCES,
+          ...savedPreferences,
+          ...currentPreferences,
+        });
       }
     } catch (error) {
       console.warn('Failed to load user preferences:', error);
@@ -143,7 +149,10 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
       mediaQuery.addEventListener('change', handleChange);
       return () => mediaQuery.removeEventListener('change', handleChange);
     } else {
-      document.documentElement.classList.toggle('dark', preferences.theme === 'dark');
+      document.documentElement.classList.toggle(
+        'dark',
+        preferences.theme === 'dark',
+      );
     }
   }, [preferences.theme]);
 
@@ -151,9 +160,9 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
   useEffect(() => {
     const root = document.documentElement;
     const fontSizeMap = {
-      'small': '14px',
-      'medium': '16px',
-      'large': '18px',
+      small: '14px',
+      medium: '16px',
+      large: '18px',
       'extra-large': '20px',
     };
     root.style.fontSize = fontSizeMap[preferences.fontSize];
@@ -176,25 +185,31 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
   }, [preferences.highContrast]);
 
   // 保存偏好设置
-  const savePreferences = useCallback((newPreferences: UserPreferences) => {
-    setPreferences(newPreferences);
-    onPreferencesUpdate?.(newPreferences);
+  const savePreferences = useCallback(
+    (newPreferences: UserPreferences) => {
+      setPreferences(newPreferences);
+      onPreferencesUpdate?.(newPreferences);
 
-    try {
-      localStorage.setItem('tutorial_user_preferences', JSON.stringify(newPreferences));
-    } catch (error) {
-      console.warn('Failed to save user preferences:', error);
-    }
-  }, [onPreferencesUpdate]);
+      try {
+        localStorage.setItem(
+          'tutorial_user_preferences',
+          JSON.stringify(newPreferences),
+        );
+      } catch (error) {
+        console.warn('Failed to save user preferences:', error);
+      }
+    },
+    [onPreferencesUpdate],
+  );
 
   // 更新偏好设置
-  const updatePreference = useCallback(<K extends keyof UserPreferences>(
-    key: K,
-    value: UserPreferences[K]
-  ) => {
-    const newPreferences = { ...preferences, [key]: value };
-    savePreferences(newPreferences);
-  }, [preferences, savePreferences]);
+  const updatePreference = useCallback(
+    <K extends keyof UserPreferences>(key: K, value: UserPreferences[K]) => {
+      const newPreferences = { ...preferences, [key]: value };
+      savePreferences(newPreferences);
+    },
+    [preferences, savePreferences],
+  );
 
   // 生成优化建议
   const generateOptimizationSuggestions = useCallback(() => {
@@ -302,17 +317,28 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
     <div className="space-y-6">
       {/* 外观设置 */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">外观设置</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          外观设置
+        </h3>
         <div className="space-y-4">
           {/* 主题选择 */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              {preferences.theme === 'dark' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+              {preferences.theme === 'dark' ? (
+                <Moon className="w-4 h-4" />
+              ) : (
+                <Sun className="w-4 h-4" />
+              )}
               <span className="text-sm font-medium">主题</span>
             </div>
             <select
               value={preferences.theme}
-              onChange={(e) => updatePreference('theme', e.target.value as UserPreferences['theme'])}
+              onChange={(e) =>
+                updatePreference(
+                  'theme',
+                  e.target.value as UserPreferences['theme'],
+                )
+              }
               className="px-3 py-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="light">浅色</option>
@@ -329,7 +355,12 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
             </div>
             <select
               value={preferences.fontSize}
-              onChange={(e) => updatePreference('fontSize', e.target.value as UserPreferences['fontSize'])}
+              onChange={(e) =>
+                updatePreference(
+                  'fontSize',
+                  e.target.value as UserPreferences['fontSize'],
+                )
+              }
               className="px-3 py-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="small">小</option>
@@ -346,7 +377,9 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
               <span className="text-sm font-medium">高对比度</span>
             </div>
             <button
-              onClick={() => updatePreference('highContrast', !preferences.highContrast)}
+              onClick={() =>
+                updatePreference('highContrast', !preferences.highContrast)
+              }
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                 preferences.highContrast ? 'bg-blue-600' : 'bg-gray-200'
               }`}
@@ -363,7 +396,9 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
 
       {/* 交互设置 */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">交互设置</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          交互设置
+        </h3>
         <div className="space-y-4">
           {/* 动画效果 */}
           <div className="flex items-center justify-between">
@@ -372,14 +407,21 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
               <span className="text-sm font-medium">动画效果</span>
             </div>
             <button
-              onClick={() => updatePreference('animationsEnabled', !preferences.animationsEnabled)}
+              onClick={() =>
+                updatePreference(
+                  'animationsEnabled',
+                  !preferences.animationsEnabled,
+                )
+              }
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                 preferences.animationsEnabled ? 'bg-blue-600' : 'bg-gray-200'
               }`}
             >
               <span
                 className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  preferences.animationsEnabled ? 'translate-x-6' : 'translate-x-1'
+                  preferences.animationsEnabled
+                    ? 'translate-x-6'
+                    : 'translate-x-1'
                 }`}
               />
             </button>
@@ -388,11 +430,17 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
           {/* 声音效果 */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              {preferences.soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+              {preferences.soundEnabled ? (
+                <Volume2 className="w-4 h-4" />
+              ) : (
+                <VolumeX className="w-4 h-4" />
+              )}
               <span className="text-sm font-medium">声音效果</span>
             </div>
             <button
-              onClick={() => updatePreference('soundEnabled', !preferences.soundEnabled)}
+              onClick={() =>
+                updatePreference('soundEnabled', !preferences.soundEnabled)
+              }
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                 preferences.soundEnabled ? 'bg-blue-600' : 'bg-gray-200'
               }`}
@@ -412,7 +460,9 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
               <span className="text-sm font-medium">自动播放</span>
             </div>
             <button
-              onClick={() => updatePreference('autoPlay', !preferences.autoPlay)}
+              onClick={() =>
+                updatePreference('autoPlay', !preferences.autoPlay)
+              }
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                 preferences.autoPlay ? 'bg-blue-600' : 'bg-gray-200'
               }`}
@@ -430,7 +480,12 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
             <span className="text-sm font-medium">阅读速度</span>
             <select
               value={preferences.readingSpeed}
-              onChange={(e) => updatePreference('readingSpeed', e.target.value as UserPreferences['readingSpeed'])}
+              onChange={(e) =>
+                updatePreference(
+                  'readingSpeed',
+                  e.target.value as UserPreferences['readingSpeed'],
+                )
+              }
               className="px-3 py-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="slow">慢</option>
@@ -443,7 +498,9 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
 
       {/* 无障碍设置 */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">无障碍设置</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          无障碍设置
+        </h3>
         <div className="space-y-4">
           {/* 减少动画 */}
           <div className="flex items-center justify-between">
@@ -452,7 +509,9 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
               <span className="text-sm font-medium">减少动画</span>
             </div>
             <button
-              onClick={() => updatePreference('reducedMotion', !preferences.reducedMotion)}
+              onClick={() =>
+                updatePreference('reducedMotion', !preferences.reducedMotion)
+              }
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                 preferences.reducedMotion ? 'bg-blue-600' : 'bg-gray-200'
               }`}
@@ -472,14 +531,21 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
               <span className="text-sm font-medium">键盘导航</span>
             </div>
             <button
-              onClick={() => updatePreference('keyboardNavigation', !preferences.keyboardNavigation)}
+              onClick={() =>
+                updatePreference(
+                  'keyboardNavigation',
+                  !preferences.keyboardNavigation,
+                )
+              }
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                 preferences.keyboardNavigation ? 'bg-blue-600' : 'bg-gray-200'
               }`}
             >
               <span
                 className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  preferences.keyboardNavigation ? 'translate-x-6' : 'translate-x-1'
+                  preferences.keyboardNavigation
+                    ? 'translate-x-6'
+                    : 'translate-x-1'
                 }`}
               />
             </button>
@@ -492,14 +558,23 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
               <span className="text-sm font-medium">屏幕阅读器优化</span>
             </div>
             <button
-              onClick={() => updatePreference('screenReaderOptimized', !preferences.screenReaderOptimized)}
+              onClick={() =>
+                updatePreference(
+                  'screenReaderOptimized',
+                  !preferences.screenReaderOptimized,
+                )
+              }
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                preferences.screenReaderOptimized ? 'bg-blue-600' : 'bg-gray-200'
+                preferences.screenReaderOptimized
+                  ? 'bg-blue-600'
+                  : 'bg-gray-200'
               }`}
             >
               <span
                 className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  preferences.screenReaderOptimized ? 'translate-x-6' : 'translate-x-1'
+                  preferences.screenReaderOptimized
+                    ? 'translate-x-6'
+                    : 'translate-x-1'
                 }`}
               />
             </button>
@@ -509,7 +584,9 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
 
       {/* 性能设置 */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">性能设置</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          性能设置
+        </h3>
         <div className="space-y-4">
           {/* 数据节省 */}
           <div className="flex items-center justify-between">
@@ -518,7 +595,9 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
               <span className="text-sm font-medium">数据节省</span>
             </div>
             <button
-              onClick={() => updatePreference('dataSaver', !preferences.dataSaver)}
+              onClick={() =>
+                updatePreference('dataSaver', !preferences.dataSaver)
+              }
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                 preferences.dataSaver ? 'bg-blue-600' : 'bg-gray-200'
               }`}
@@ -535,14 +614,21 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">预取内容</span>
             <button
-              onClick={() => updatePreference('prefetchContent', !preferences.prefetchContent)}
+              onClick={() =>
+                updatePreference(
+                  'prefetchContent',
+                  !preferences.prefetchContent,
+                )
+              }
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                 preferences.prefetchContent ? 'bg-blue-600' : 'bg-gray-200'
               }`}
             >
               <span
                 className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  preferences.prefetchContent ? 'translate-x-6' : 'translate-x-1'
+                  preferences.prefetchContent
+                    ? 'translate-x-6'
+                    : 'translate-x-1'
                 }`}
               />
             </button>
@@ -553,7 +639,9 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
             <span className="text-sm font-medium">自动保存间隔</span>
             <select
               value={preferences.autoSaveInterval}
-              onChange={(e) => updatePreference('autoSaveInterval', parseInt(e.target.value))}
+              onChange={(e) =>
+                updatePreference('autoSaveInterval', parseInt(e.target.value))
+              }
               className="px-3 py-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value={1}>1分钟</option>
@@ -581,7 +669,9 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
   // 渲染性能面板
   const renderPerformancePanel = () => (
     <div className="space-y-6">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">性能指标</h3>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+        性能指标
+      </h3>
 
       {performanceMetrics ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -589,14 +679,18 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
             <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
               {Math.round(performanceMetrics.averageResponseTime)}ms
             </div>
-            <div className="text-sm text-blue-800 dark:text-blue-200">平均响应时间</div>
+            <div className="text-sm text-blue-800 dark:text-blue-200">
+              平均响应时间
+            </div>
           </div>
 
           <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
             <div className="text-2xl font-bold text-green-600 dark:text-green-400">
               {Math.round(performanceMetrics.completionRate * 100)}%
             </div>
-            <div className="text-sm text-green-800 dark:text-green-200">完成率</div>
+            <div className="text-sm text-green-800 dark:text-green-200">
+              完成率
+            </div>
           </div>
 
           <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
@@ -610,18 +704,20 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
             <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
               {Math.round(performanceMetrics.userSatisfaction * 100)}%
             </div>
-            <div className="text-sm text-purple-800 dark:text-purple-200">用户满意度</div>
+            <div className="text-sm text-purple-800 dark:text-purple-200">
+              用户满意度
+            </div>
           </div>
         </div>
       ) : (
-        <div className="text-center py-8 text-gray-500">
-          暂无性能数据
-        </div>
+        <div className="text-center py-8 text-gray-500">暂无性能数据</div>
       )}
 
       {/* 性能建议 */}
       <div>
-        <h4 className="text-md font-semibold text-gray-900 dark:text-white mb-3">性能优化建议</h4>
+        <h4 className="text-md font-semibold text-gray-900 dark:text-white mb-3">
+          性能优化建议
+        </h4>
         <div className="space-y-2">
           {preferences.dataSaver ? (
             <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg text-sm text-green-800 dark:text-green-200">
@@ -650,19 +746,21 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
   // 渲染优化建议
   const renderOptimizations = () => (
     <div className="space-y-6">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">优化建议</h3>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+        优化建议
+      </h3>
 
       {suggestions.length > 0 ? (
         <div className="space-y-3">
-          {suggestions.map(suggestion => (
+          {suggestions.map((suggestion) => (
             <div
               key={suggestion.id}
               className={`p-4 rounded-lg border ${
                 suggestion.priority === 'high'
                   ? 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800'
                   : suggestion.priority === 'medium'
-                  ? 'bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800'
-                  : 'bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800'
+                    ? 'bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800'
+                    : 'bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800'
               }`}
             >
               <div className="flex items-start justify-between gap-3">
@@ -697,18 +795,26 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
   );
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 ${className}`}>
+    <div
+      className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 ${className}`}
+    >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-2">
           <Settings className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">用户体验优化</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            用户体验优化
+          </h2>
         </div>
         <button
           onClick={() => setIsExpanded(!isExpanded)}
           className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
         >
-          {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+          {isExpanded ? (
+            <ChevronUp className="w-5 h-5" />
+          ) : (
+            <ChevronDown className="w-5 h-5" />
+          )}
         </button>
       </div>
 
@@ -717,22 +823,42 @@ const UserExperienceOptimizer: React.FC<UserExperienceOptimizerProps> = ({
         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex flex-wrap gap-2">
             <button
-              onClick={() => updatePreference('theme', preferences.theme === 'dark' ? 'light' : 'dark')}
+              onClick={() =>
+                updatePreference(
+                  'theme',
+                  preferences.theme === 'dark' ? 'light' : 'dark',
+                )
+              }
               className="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
             >
-              {preferences.theme === 'dark' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+              {preferences.theme === 'dark' ? (
+                <Moon className="w-4 h-4" />
+              ) : (
+                <Sun className="w-4 h-4" />
+              )}
             </button>
             <button
-              onClick={() => updatePreference('animationsEnabled', !preferences.animationsEnabled)}
+              onClick={() =>
+                updatePreference(
+                  'animationsEnabled',
+                  !preferences.animationsEnabled,
+                )
+              }
               className="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
             >
               <Zap className="w-4 h-4" />
             </button>
             <button
-              onClick={() => updatePreference('fontSize',
-                preferences.fontSize === 'medium' ? 'large' :
-                preferences.fontSize === 'large' ? 'small' : 'medium'
-              )}
+              onClick={() =>
+                updatePreference(
+                  'fontSize',
+                  preferences.fontSize === 'medium'
+                    ? 'large'
+                    : preferences.fontSize === 'large'
+                      ? 'small'
+                      : 'medium',
+                )
+              }
               className="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
             >
               <Type className="w-4 h-4" />

@@ -1,19 +1,19 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useMemo, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { debounce } from 'lodash';
 import { marketDataAPI } from '@/lib/api';
 import {
+  ComparisonError,
+  ComparisonService,
+  ComparisonSummary,
+  CorrelationMatrix,
+  PerformanceMetrics,
   VarietyComparisonRequest,
   VarietyComparisonResult,
-  VarietyResult,
-  ComparisonService,
-  ComparisonError,
-  PerformanceMetrics,
-  ComparisonSummary,
   VarietyRanking,
-  CorrelationMatrix
+  VarietyResult,
 } from '@/types/comparison.types';
 import { StrategyConfig } from '@/types/api';
 
@@ -23,7 +23,7 @@ const COMPARISON_ENDPOINTS = {
   GET_RESULTS: '/api/v1/comparison/results',
   CANCEL_COMPARISON: '/api/v1/comparison/cancel',
   GET_AVAILABLE_METRICS: '/api/v1/comparison/metrics',
-  HISTORICAL_COMPARISON: '/api/v1/comparison/historical'
+  HISTORICAL_COMPARISON: '/api/v1/comparison/historical',
 } as const;
 
 // 对比分析服务实现
@@ -34,15 +34,20 @@ class ComparisonServiceImplementation implements ComparisonService {
     this.baseURL = baseURL;
   }
 
-  async runComparison(request: VarietyComparisonRequest): Promise<VarietyComparisonResult> {
+  async runComparison(
+    request: VarietyComparisonRequest,
+  ): Promise<VarietyComparisonResult> {
     try {
-      const response = await fetch(`${this.baseURL}${COMPARISON_ENDPOINTS.RUN_COMPARISON}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `${this.baseURL}${COMPARISON_ENDPOINTS.RUN_COMPARISON}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(request),
         },
-        body: JSON.stringify(request),
-      });
+      );
 
       if (!response.ok) {
         const errorData: ComparisonError = await response.json();
@@ -56,9 +61,13 @@ class ComparisonServiceImplementation implements ComparisonService {
     }
   }
 
-  async getComparisonResults(requestId: string): Promise<VarietyComparisonResult> {
+  async getComparisonResults(
+    requestId: string,
+  ): Promise<VarietyComparisonResult> {
     try {
-      const response = await fetch(`${this.baseURL}${COMPARISON_ENDPOINTS.GET_RESULTS}/${requestId}`);
+      const response = await fetch(
+        `${this.baseURL}${COMPARISON_ENDPOINTS.GET_RESULTS}/${requestId}`,
+      );
 
       if (!response.ok) {
         throw new Error('获取对比结果失败');
@@ -73,9 +82,12 @@ class ComparisonServiceImplementation implements ComparisonService {
 
   async cancelComparison(requestId: string): Promise<void> {
     try {
-      const response = await fetch(`${this.baseURL}${COMPARISON_ENDPOINTS.CANCEL_COMPARISON}/${requestId}`, {
-        method: 'DELETE',
-      });
+      const response = await fetch(
+        `${this.baseURL}${COMPARISON_ENDPOINTS.CANCEL_COMPARISON}/${requestId}`,
+        {
+          method: 'DELETE',
+        },
+      );
 
       if (!response.ok) {
         throw new Error('取消对比分析失败');
@@ -88,7 +100,9 @@ class ComparisonServiceImplementation implements ComparisonService {
 
   async getAvailableMetrics(): Promise<string[]> {
     try {
-      const response = await fetch(`${this.baseURL}${COMPARISON_ENDPOINTS.GET_AVAILABLE_METRICS}`);
+      const response = await fetch(
+        `${this.baseURL}${COMPARISON_ENDPOINTS.GET_AVAILABLE_METRICS}`,
+      );
 
       if (!response.ok) {
         throw new Error('获取可用指标失败');
@@ -101,15 +115,21 @@ class ComparisonServiceImplementation implements ComparisonService {
     }
   }
 
-  async getHistoricalComparison(symbols: string[], days: number): Promise<VarietyComparisonResult> {
+  async getHistoricalComparison(
+    symbols: string[],
+    days: number,
+  ): Promise<VarietyComparisonResult> {
     try {
-      const response = await fetch(`${this.baseURL}${COMPARISON_ENDPOINTS.HISTORICAL_COMPARISON}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `${this.baseURL}${COMPARISON_ENDPOINTS.HISTORICAL_COMPARISON}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ symbols, days }),
         },
-        body: JSON.stringify({ symbols, days }),
-      });
+      );
 
       if (!response.ok) {
         throw new Error('获取历史对比数据失败');
@@ -130,7 +150,12 @@ const comparisonService = new ComparisonServiceImplementation();
 export const COMPARISON_QUERY_KEYS = {
   comparison: (requestId: string) => ['comparison', requestId],
   availableMetrics: () => ['comparison', 'metrics'],
-  historicalComparison: (symbols: string[], days: number) => ['comparison', 'historical', symbols, days],
+  historicalComparison: (symbols: string[], days: number) => [
+    'comparison',
+    'historical',
+    symbols,
+    days,
+  ],
 } as const;
 
 // 基础对比分析Hook
@@ -151,10 +176,10 @@ export function useVarietyComparison(request: VarietyComparisonRequest) {
     onSuccess: (data) => {
       // 预加载相关数据
       if (data.results?.length > 0) {
-        const symbols = data.results.map(r => r.symbol);
+        const symbols = data.results.map((r) => r.symbol);
         // 可以在这里预加载其他相关数据
       }
-    }
+    },
   });
 }
 
@@ -201,12 +226,12 @@ export function useComparisonMutation() {
     onSuccess: (data) => {
       queryClient.setQueryData(
         COMPARISON_QUERY_KEYS.comparison(data.requestId),
-        data
+        data,
       );
     },
     onError: (error) => {
       console.error('Comparison mutation error:', error);
-    }
+    },
   });
 }
 
@@ -215,10 +240,14 @@ export function useParallelComparison(requests: VarietyComparisonRequest[]) {
   const queryClient = useQueryClient();
 
   return useQuery({
-    queryKey: ['comparison', 'parallel', requests.map(r => r.symbols.join(',')).join('|')],
+    queryKey: [
+      'comparison',
+      'parallel',
+      requests.map((r) => r.symbols.join(',')).join('|'),
+    ],
     queryFn: async () => {
-      const promises = requests.map(request =>
-        comparisonService.runComparison(request)
+      const promises = requests.map((request) =>
+        comparisonService.runComparison(request),
       );
       return Promise.all(promises);
     },
@@ -230,14 +259,14 @@ export function useParallelComparison(requests: VarietyComparisonRequest[]) {
 // 防抖对比Hook（避免频繁请求）
 export function useDebouncedComparison(
   request: VarietyComparisonRequest,
-  delay: number = 1000
+  delay: number = 1000,
 ) {
   const [debouncedRequest, setDebouncedRequest] = useState(request);
 
   // 防抖处理
   const debouncedSetRequest = useMemo(
     () => debounce(setDebouncedRequest, delay),
-    [delay]
+    [delay],
   );
 
   useEffect(() => {
@@ -265,7 +294,7 @@ export function useComparisonCache() {
 
   const getComparisonData = (requestId: string) => {
     return queryClient.getQueryData<VarietyComparisonResult>(
-      COMPARISON_QUERY_KEYS.comparison(requestId)
+      COMPARISON_QUERY_KEYS.comparison(requestId),
     );
   };
 
@@ -290,15 +319,17 @@ export function useComparisonPreloader(varieties: string[]) {
         }
       }
 
-      commonPairs.forEach(pair => {
+      commonPairs.forEach((pair) => {
         const request: VarietyComparisonRequest = {
           symbols: pair,
-          startDate: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          startDate: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
+            .toISOString()
+            .split('T')[0],
           endDate: new Date().toISOString().split('T')[0],
           strategy: {
             name: 'SMA',
-            params: { short_window: 5, long_window: 20 }
-          }
+            params: { short_window: 5, long_window: 20 },
+          },
         };
         prefetchComparison(request);
       });
@@ -309,7 +340,7 @@ export function useComparisonPreloader(varieties: string[]) {
 // 对比数据变化检测Hook
 export function useComparisonChangeDetector(
   currentResults: VarietyComparisonResult | undefined,
-  previousResults: VarietyComparisonResult | undefined
+  previousResults: VarietyComparisonResult | undefined,
 ) {
   const [hasChanges, setHasChanges] = useState(false);
 
@@ -325,9 +356,12 @@ export function useComparisonChangeDetector(
       if (!prevResult) return true;
 
       return (
-        Math.abs(result.metrics.totalReturn - prevResult.metrics.totalReturn) > 0.01 ||
-        Math.abs(result.metrics.sharpeRatio - prevResult.metrics.sharpeRatio) > 0.01 ||
-        Math.abs(result.metrics.maxDrawdown - prevResult.metrics.maxDrawdown) > 0.01
+        Math.abs(result.metrics.totalReturn - prevResult.metrics.totalReturn) >
+          0.01 ||
+        Math.abs(result.metrics.sharpeRatio - prevResult.metrics.sharpeRatio) >
+          0.01 ||
+        Math.abs(result.metrics.maxDrawdown - prevResult.metrics.maxDrawdown) >
+          0.01
       );
     });
 

@@ -1,0 +1,203 @@
+<story-context id="4-2-code-quality-and-type-safety-enhancement" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>2</storyId>
+    <title>Code Quality and Type Safety Enhancement</title>
+    <status>ready-for-dev</status>
+    <generatedAt>2025-11-29</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/4-2-code-quality-and-type-safety-enhancement.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>development team</asA>
+    <iWant>have zero type errors and consistent code style in a high-quality codebase</iWant>
+    <soThat>we can improve development efficiency and code maintainability</soThat>
+    <tasks>- [ ] Task 1 (AC: 1): Enable strict TypeScript mode
+  - [ ] Subtask 1.1: Update TypeScript compiler options with strict mode enabled
+  - [ ] Subtask 1.2: Add `noUncheckedIndexedAccess: true` for array/object access safety
+  - [ ] Subtask 1.3: Add `exactOptionalPropertyTypes: true` for optional property precision
+  - [ ] Subtask 1.4: Fix any immediate type errors that arise from strict mode activation
+- [ ] Task 2 (AC: 2): Enhance ESLint configuration
+  - [ ] Subtask 2.1: Install and configure `@typescript-eslint/recommended-requiring-type-checking`
+  - [ ] Subtask 2.2: Add custom rules for code consistency and type safety
+  - [ ] Subtask 2.3: Integrate ESLint with IDE and build process
+  - [ ] Subtask 2.4: Fix all ESLint violations across the codebase
+- [ ] Task 3 (AC: 3): Establish Prettier standardization
+  - [ ] Subtask 3.1: Configure Prettier with team-standard formatting rules
+  - [ ] Subtask 3.2: Set up editor integration with VSCode and other IDEs
+  - [ ] Subtask 3.3: Add Prettier CLI scripts for manual formatting
+  - [ ] Subtask 3.4: Format entire codebase consistently
+- [ ] Task 4 (AC: 4): Add Pre-commit Hooks
+  - [ ] Subtask 4.1: Install and configure Husky for Git hooks
+  - [ ] Subtask 4.2: Set up lint-staged to run linting and formatting on staged files
+  - [ ] Subtask 4.3: Configure automated tests to run before commit
+  - [ ] Subtask 4.4: Document development workflow and standards
+- [ ] Task 5 (AC: 5): SonarQube/CodeClimate integration
+  - [ ] Subtask 5.1: Set up SonarQube server or CodeClimate integration
+  - [ ] Subtask 5.2: Configure quality gates and metrics thresholds
+  - [ ] Subtask 5.3: Integrate with CI/CD pipeline for automated analysis
+  - [ ] Subtask 5.4: Establish code quality trend tracking and reporting</tasks>
+  </story>
+
+  <acceptanceCriteria>1. Enable strict TypeScript mode - `strict: true`, `noUncheckedIndexedAccess: true`
+2. Enhance ESLint configuration - add `@typescript-eslint/recommended-requiring-type-checking`
+3. Establish Prettier standardization - unified code format, editor integration
+4. Add Pre-commit Hooks - Husky + lint-staged automated checks
+5. SonarQube/CodeClimate integration - code quality metrics and trend tracking</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/tech-spec.md</path>
+        <title>量化交易单均线策略分析平台 - Technical Specification</title>
+        <section>Quality Assurance - Code Quality</section>
+        <snippet>Static analysis: ESLint + Prettier (frontend), Black + isort (backend), TypeScript strict mode. Code review checkpoints: API design consistency, error handling completeness, performance consideration sufficiency, security verification.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/4-1-test-infrastructure-overhaul.md</path>
+        <title>Story 4.1: Test Infrastructure Overhaul</title>
+        <section>Technical Debt Analysis</section>
+        <snippet>TypeScript Configuration Issues: frontend/tsconfig.json strict mode not enabled (lines 10, 20-24). JSDOM Compatibility Problems: React 18 event handling issues revealed need for stricter type checking.</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD.md</path>
+        <title>量化交易单均线策略分析平台 Product Requirements Document</title>
+        <section>Goals and Background Context</section>
+        <snippet>Goals: 教育价值目标 - 创建一个完整的AI辅助开发教程案例，技术展示目标 - 验证BMAD V6方法论在快速项目开发中的有效性，知识传播目标 - 推动量化交易技术在开发者社区的普及</snippet>
+      </doc>
+      <doc>
+        <path>README.md</path>
+        <title>项目README文档</title>
+        <section>开发教程</section>
+        <snippet>AI辅助开发完整教程 - 从零开始的完整开发指南，详细介绍BMAD V6工作流的应用实践，GLM 4.6模型在开发中的协作经验，项目架构设计与技术选型</snippet>
+      </doc>
+      <doc>
+        <path>docs/quality-assurance-framework.md</path>
+        <title>质量保证框架</title>
+        <section>质量保证原则</section>
+        <snippet>零容忍原则: 零虚假声明、零编译错误、零测试失败、零文档缺失。验证优先原则: 实现必须可验证，自动化验证优先，证据链完整。质量门禁原则: 前置检查，分阶段验证，一票否决</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/4-2-1-business-logic-test-fixes-and-state-management.md</path>
+        <title>Story 4.2.1: Business Logic Test Fixes and State Management</title>
+        <section>TypeScript Enhancement Requirements</section>
+        <snippet>React 18 + JSDOM compatibility fixes, test infrastructure improvements, state management optimization with localStorage wrapper pattern</snippet>
+      </doc>
+      <doc>
+        <path>.github/workflows/coverage.yml</path>
+        <title>GitHub Actions测试覆盖率工作流</title>
+        <section>CI/CD Pipeline Configuration</section>
+        <snippet>name: 测试覆盖率报告，on: push/pull_request/workflow_dispatch，jobs: backend-tests/frontend-tests with automated quality gates</snippet>
+      </doc>
+      <doc>
+        <path>docs/state-management-best-practices.md</path>
+        <title>状态管理最佳实践</title>
+        <section>TypeScript Integration</section>
+        <snippet>TypeScript类型安全的状态管理模式，Redux Toolkit与React Query集成，类型定义的最佳实践和错误处理策略</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics/epic-4-technical-debt-cleanup-and-quality-enhancement.md</path>
+        <title>Epic 4: Technical Debt Cleanup and Quality Enhancement</title>
+        <section>Quality Enhancement Objectives</section>
+        <snippet>Technical debt reduction, code quality improvement, testing infrastructure enhancement, developer experience optimization</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>frontend/tsconfig.json</path>
+        <kind>TypeScript Configuration</kind>
+        <symbol>compilerOptions</symbol>
+        <lines>10</lines>
+        <reason>Current strict mode is disabled (strict: false) - this is the primary target for AC1 implementation</reason>
+      </artifact>
+      <artifact>
+        <path>frontend/tsconfig.json</path>
+        <kind>TypeScript Configuration</kind>
+        <symbol>compilerOptions</symbol>
+        <lines>20-24</lines>
+        <reason>Multiple type checking options are disabled (noImplicitAny, noImplicitReturns, etc.) - need to enable for comprehensive type safety</reason>
+      </artifact>
+      <artifact>
+        <path>frontend/.eslintrc.json</path>
+        <kind>ESLint Configuration</kind>
+        <symbol>extends</symbol>
+        <lines>2-4</lines>
+        <reason>Currently only extends next/core-web-vitals - needs @typescript-eslint/recommended-requiring-type-checking for AC2</reason>
+      </artifact>
+      <artifact>
+        <path>frontend/package.json</path>
+        <kind>Package Dependencies</kind>
+        <symbol>devDependencies</symbol>
+        <lines>57-58</lines>
+        <reason>TypeScript ESLint plugins already installed - need to configure recommended-requiring-type-checking ruleset</reason>
+      </artifact>
+      <artifact>
+        <path>frontend/package.json</path>
+        <kind>Package Dependencies</kind>
+        <symbol>devDependencies</symbol>
+        <lines>65-66</lines>
+        <reason>Prettier already installed - needs configuration and integration for AC3</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <frontend>
+        <package name="typescript" version="^5" />
+        <package name="@typescript-eslint/eslint-plugin" version="^7.18.0" />
+        <package name="@typescript-eslint/parser" version="^7.18.0" />
+        <package name="prettier" version="^3.3.2" />
+        <package name="prettier-plugin-tailwindcss" version="^0.6.5" />
+        <package name="eslint" version="^8" />
+        <package name="eslint-config-next" version="14.2.5" />
+      </frontend>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Must enable TypeScript strict mode without breaking existing functionality</constraint>
+    <constraint>ESLint configuration must include type-checking rules for enhanced type safety</constraint>
+    <constraint>Prettier configuration must maintain consistency with Tailwind CSS formatting</constraint>
+    <constraint>Pre-commit hooks must not significantly impact developer workflow performance</constraint>
+    <constraint>Quality gates integration must work with existing GitHub Actions CI/CD pipeline</constraint>
+    <constraint>All changes must be backward compatible and not require major refactoring</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>TypeScript Compiler API</name>
+      <kind>Language Service API</kind>
+      <signature>tsc --noEmit --strict</signature>
+      <path>frontend/tsconfig.json</path>
+    </interface>
+    <interface>
+      <name>ESLint CLI</name>
+      <kind>Command Line Interface</kind>
+      <signature>eslint --ext .ts,.tsx frontend/</signature>
+      <path>frontend/.eslintrc.json</path>
+    </interface>
+    <interface>
+      <name>Prettier CLI</name>
+      <kind>Command Line Interface</kind>
+      <signature>prettier --write "frontend/**/*.{ts,tsx,js,jsx,json,css,md}"</signature>
+      <path>frontend/.prettierrc</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Unit tests (>80%覆盖率): 策略算法计算准确性, API端点响应正确性, 数据处理逻辑完整性. Integration tests: 完整的数据获取到策略回测流程, 前后端API交互, 缓存机制有效性. End-to-end tests: 用户旅程完整性, 错误处理和恢复, 性能目标验证.</standards>
+    <locations>
+      <directory>frontend/src/**/*.test.ts</directory>
+      <directory>frontend/src/**/*.test.tsx</directory>
+      <directory>frontend/__tests__/**/*</directory>
+      <directory>backend/tests/**/*</directory>
+    </locations>
+    <ideas>
+      <test ideaId="AC1-1" description="Verify TypeScript compilation with strict mode enabled" />
+      <test ideaId="AC1-2" description="Test noUncheckedIndexedAccess catches unsafe array/object access" />
+      <test ideaId="AC2-1" description="Validate ESLint catches type-related issues with new ruleset" />
+      <test ideaId="AC3-1" description="Verify Prettier formatting consistency across file types" />
+      <test ideaId="AC4-1" description="Test pre-commit hooks block malformed commits" />
+      <test ideaId="AC5-1" description="Validate SonarQube quality metrics integration" />
+    </ideas>
+  </tests>
+</story-context>

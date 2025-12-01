@@ -1,36 +1,60 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useMemo, useState } from 'react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { VarietyRanking } from '@/types/comparison.types';
 import { cn } from '@/lib/utils';
-import { Trophy, Medal, Award, TrendingUp, Shield, Target } from 'lucide-react';
+import { Award, Medal, Shield, Target, TrendingUp, Trophy } from 'lucide-react';
 
 interface ComparisonRankingsProps {
-  rankings: VarietyRanking[]
-  className?: string
+  rankings: VarietyRanking[];
+  className?: string;
 }
 
-type RankingType = 'overall' | 'returns' | 'risk' | 'riskAdjusted' | 'consistency';
+type RankingType =
+  | 'overall'
+  | 'returns'
+  | 'risk'
+  | 'riskAdjusted'
+  | 'consistency';
 
-export function ComparisonRankings({ rankings, className }: ComparisonRankingsProps) {
-  const [selectedRanking, setSelectedRanking] = useState<RankingType>('overall');
+export function ComparisonRankings({
+  rankings,
+  className,
+}: ComparisonRankingsProps) {
+  const [selectedRanking, setSelectedRanking] =
+    useState<RankingType>('overall');
 
   // 根据不同类型排序
   const sortedRankings = useMemo(() => {
     switch (selectedRanking) {
       case 'returns':
-        return [...rankings].sort((a, b) => a.metrics.returnRank - b.metrics.returnRank);
+        return [...rankings].sort(
+          (a, b) => a.metrics.returnRank - b.metrics.returnRank,
+        );
       case 'risk':
-        return [...rankings].sort((a, b) => a.metrics.riskRank - b.metrics.riskRank);
+        return [...rankings].sort(
+          (a, b) => a.metrics.riskRank - b.metrics.riskRank,
+        );
       case 'riskAdjusted':
-        return [...rankings].sort((a, b) => a.metrics.riskAdjustedReturnRank - b.metrics.riskAdjustedReturnRank);
+        return [...rankings].sort(
+          (a, b) =>
+            a.metrics.riskAdjustedReturnRank - b.metrics.riskAdjustedReturnRank,
+        );
       case 'consistency':
-        return [...rankings].sort((a, b) => a.metrics.consistencyRank - b.metrics.consistencyRank);
+        return [...rankings].sort(
+          (a, b) => a.metrics.consistencyRank - b.metrics.consistencyRank,
+        );
       case 'overall':
       default:
         return [...rankings].sort((a, b) => a.rank - b.rank);
@@ -47,7 +71,11 @@ export function ComparisonRankings({ rankings, className }: ComparisonRankingsPr
       case 3:
         return <Award className="h-5 w-5 text-amber-600" />;
       default:
-        return <span className="h-5 w-5 flex items-center justify-center text-sm font-bold text-muted-foreground">{rank}</span>;
+        return (
+          <span className="h-5 w-5 flex items-center justify-center text-sm font-bold text-muted-foreground">
+            {rank}
+          </span>
+        );
     }
   };
 
@@ -80,7 +108,7 @@ export function ComparisonRankings({ rankings, className }: ComparisonRankingsPr
     { value: 'returns', label: '收益率排名', icon: TrendingUp },
     { value: 'risk', label: '风险控制排名', icon: Shield },
     { value: 'riskAdjusted', label: '风险调整收益排名', icon: Target },
-    { value: 'consistency', label: '稳定性排名', icon: Target }
+    { value: 'consistency', label: '稳定性排名', icon: Target },
   ] as const;
 
   return (
@@ -93,12 +121,19 @@ export function ComparisonRankings({ rankings, className }: ComparisonRankingsPr
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs value={selectedRanking} onValueChange={(value) => setSelectedRanking(value as RankingType)}>
+          <Tabs
+            value={selectedRanking}
+            onValueChange={(value) => setSelectedRanking(value as RankingType)}
+          >
             <TabsList className="grid w-full grid-cols-2 md:grid-cols-5">
               {rankingTypes.map((type) => {
                 const Icon = type.icon;
                 return (
-                  <TabsTrigger key={type.value} value={type.value} className="flex items-center gap-2">
+                  <TabsTrigger
+                    key={type.value}
+                    value={type.value}
+                    className="flex items-center gap-2"
+                  >
                     <Icon className="h-4 w-4" />
                     <span className="hidden sm:inline">{type.label}</span>
                   </TabsTrigger>
@@ -107,7 +142,11 @@ export function ComparisonRankings({ rankings, className }: ComparisonRankingsPr
             </TabsList>
 
             {rankingTypes.map((type) => (
-              <TabsContent key={type.value} value={type.value} className="space-y-4">
+              <TabsContent
+                key={type.value}
+                value={type.value}
+                className="space-y-4"
+              >
                 <div className="space-y-4">
                   {sortedRankings.slice(0, 10).map((ranking, index) => (
                     <RankingCard
@@ -140,7 +179,7 @@ function RankingCard({
   type,
   getRankIcon,
   getRankBadgeColor,
-  getProgressColor
+  getProgressColor,
 }: {
   ranking: VarietyRanking;
   position: number;
@@ -169,10 +208,12 @@ function RankingCard({
   const score = ranking.score;
 
   return (
-    <Card className={cn(
-      'transition-all hover:shadow-md',
-      position <= 3 && 'border-2 border-yellow-200'
-    )}>
+    <Card
+      className={cn(
+        'transition-all hover:shadow-md',
+        position <= 3 && 'border-2 border-yellow-200',
+      )}
+    >
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
@@ -185,7 +226,10 @@ function RankingCard({
             <div>
               <div className="flex items-center space-x-2">
                 <span className="font-medium text-lg">{ranking.symbol}</span>
-                <Badge variant="outline" className={getRankBadgeColor(position)}>
+                <Badge
+                  variant="outline"
+                  className={getRankBadgeColor(position)}
+                >
                   #{position}
                 </Badge>
               </div>
@@ -198,14 +242,13 @@ function RankingCard({
           {/* 评分和进度条 */}
           <div className="flex items-center space-x-4">
             <div className="text-right">
-              <div className="text-lg font-bold">{(score * 100).toFixed(1)}</div>
+              <div className="text-lg font-bold">
+                {(score * 100).toFixed(1)}
+              </div>
               <div className="text-xs text-muted-foreground">综合评分</div>
             </div>
             <div className="w-24">
-              <Progress
-                value={score * 100}
-                className="h-2"
-              />
+              <Progress value={score * 100} className="h-2" />
             </div>
           </div>
         </div>
@@ -231,36 +274,52 @@ function RankingCard({
 function RankingSummary({ rankings }: { rankings: VarietyRanking[] }) {
   const summary = useMemo(() => {
     // 计算各版块的平均排名
-    const sectorStats = rankings.reduce((acc, ranking) => {
-      if (!acc[ranking.sector]) {
-        acc[ranking.sector] = { total: 0, count: 0, bestRank: Infinity };
-      }
-      acc[ranking.sector].total += ranking.rank;
-      acc[ranking.sector].count += 1;
-      acc[ranking.sector].bestRank = Math.min(acc[ranking.sector].bestRank, ranking.rank);
-      return acc;
-    }, {} as Record<string, { total: number; count: number; bestRank: number }>);
+    const sectorStats = rankings.reduce(
+      (acc, ranking) => {
+        if (!acc[ranking.sector]) {
+          acc[ranking.sector] = { total: 0, count: 0, bestRank: Infinity };
+        }
+        acc[ranking.sector].total += ranking.rank;
+        acc[ranking.sector].count += 1;
+        acc[ranking.sector].bestRank = Math.min(
+          acc[ranking.sector].bestRank,
+          ranking.rank,
+        );
+        return acc;
+      },
+      {} as Record<string, { total: number; count: number; bestRank: number }>,
+    );
 
-    const sectorAverages = Object.entries(sectorStats).map(([sector, stats]) => ({
-      sector,
-      averageRank: stats.total / stats.count,
-      bestRank: stats.bestRank,
-      count: stats.count
-    })).sort((a, b) => a.averageRank - b.averageRank);
+    const sectorAverages = Object.entries(sectorStats)
+      .map(([sector, stats]) => ({
+        sector,
+        averageRank: stats.total / stats.count,
+        bestRank: stats.bestRank,
+        count: stats.count,
+      }))
+      .sort((a, b) => a.averageRank - b.averageRank);
 
     // 计算TOP 3的版块分布
-    const top3Distribution = rankings.slice(0, 3).reduce((acc, ranking) => {
-      acc[ranking.sector] = (acc[ranking.sector] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const top3Distribution = rankings.slice(0, 3).reduce(
+      (acc, ranking) => {
+        acc[ranking.sector] = (acc[ranking.sector] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
     return {
       totalVarieties: rankings.length,
       sectorAverages,
       top3Distribution,
       bestPerformer: rankings[0],
-      mostConsistent: rankings.sort((a, b) => a.metrics.consistencyRank - b.metrics.consistencyRank)[0],
-      bestRiskAdjusted: rankings.sort((a, b) => a.metrics.riskAdjustedReturnRank - b.metrics.riskAdjustedReturnRank)[0]
+      mostConsistent: rankings.sort(
+        (a, b) => a.metrics.consistencyRank - b.metrics.consistencyRank,
+      )[0],
+      bestRiskAdjusted: rankings.sort(
+        (a, b) =>
+          a.metrics.riskAdjustedReturnRank - b.metrics.riskAdjustedReturnRank,
+      )[0],
     };
   }, [rankings]);
 
@@ -278,7 +337,9 @@ function RankingSummary({ rankings }: { rankings: VarietyRanking[] }) {
               <span className="font-medium">{summary.totalVarieties}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">最佳表现品种</span>
+              <span className="text-sm text-muted-foreground">
+                最佳表现品种
+              </span>
               <Badge variant="secondary">{summary.bestPerformer.symbol}</Badge>
             </div>
             <div className="flex justify-between items-center">
@@ -286,8 +347,12 @@ function RankingSummary({ rankings }: { rankings: VarietyRanking[] }) {
               <Badge variant="secondary">{summary.mostConsistent.symbol}</Badge>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">最佳风险调整收益</span>
-              <Badge variant="secondary">{summary.bestRiskAdjusted.symbol}</Badge>
+              <span className="text-sm text-muted-foreground">
+                最佳风险调整收益
+              </span>
+              <Badge variant="secondary">
+                {summary.bestRiskAdjusted.symbol}
+              </Badge>
             </div>
           </div>
         </CardContent>
@@ -301,7 +366,10 @@ function RankingSummary({ rankings }: { rankings: VarietyRanking[] }) {
         <CardContent>
           <div className="space-y-3">
             {summary.sectorAverages.slice(0, 5).map((item, index) => (
-              <div key={item.sector} className="flex items-center justify-between">
+              <div
+                key={item.sector}
+                className="flex items-center justify-between"
+              >
                 <div className="flex items-center space-x-2">
                   <Badge variant="outline" className="text-xs">
                     #{index + 1}
@@ -309,7 +377,9 @@ function RankingSummary({ rankings }: { rankings: VarietyRanking[] }) {
                   <span className="text-sm">{item.sector}</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm font-medium">{item.averageRank.toFixed(1)}</span>
+                  <span className="text-sm font-medium">
+                    {item.averageRank.toFixed(1)}
+                  </span>
                   <span className="text-xs text-muted-foreground">
                     (最佳: #{item.bestRank})
                   </span>

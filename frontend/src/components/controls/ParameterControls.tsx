@@ -10,7 +10,12 @@ import {
   StrategyParameters,
   UserPreferences,
 } from '@/types/parameter.types';
-import { DEFAULT_PARAMETERS, formatParameterValue, getParameterRiskAssessment, validateAllParameters } from '@/utils/parameterHelpers';
+import {
+  DEFAULT_PARAMETERS,
+  formatParameterValue,
+  getParameterRiskAssessment,
+  validateAllParameters,
+} from '@/utils/parameterHelpers';
 import MovingAverageSlider from './MovingAverageSlider';
 import PercentageInput from './PercentageInput';
 import ParameterPresets from './ParameterPresets';
@@ -28,17 +33,17 @@ import {
 } from 'lucide-react';
 
 interface ParameterControlsProps {
-  parameters: StrategyParameters
-  onParametersChange: (parameters: StrategyParameters) => void
-  onParameterChange?: (event: ParameterChangeEvent) => void
-  onReset?: () => void
-  onSave?: (parameters: StrategyParameters) => void
-  disabled?: boolean
-  showPresets?: boolean
-  showAdvanced?: boolean
-  compact?: boolean
-  allowCustomPresets?: boolean
-  className?: string
+  parameters: StrategyParameters;
+  onParametersChange: (parameters: StrategyParameters) => void;
+  onParameterChange?: (event: ParameterChangeEvent) => void;
+  onReset?: () => void;
+  onSave?: (parameters: StrategyParameters) => void;
+  disabled?: boolean;
+  showPresets?: boolean;
+  showAdvanced?: boolean;
+  compact?: boolean;
+  allowCustomPresets?: boolean;
+  className?: string;
 }
 
 // 导出默认参数值供其他组件使用
@@ -101,8 +106,10 @@ export function ParameterControls({
   allowCustomPresets = false,
   className = '',
 }: ParameterControlsProps) {
-  const [localParameters, setLocalParameters] = useState<StrategyParameters>(parameters);
-  const [showAdvancedSettings, setShowAdvancedSettings] = useState(showAdvanced);
+  const [localParameters, setLocalParameters] =
+    useState<StrategyParameters>(parameters);
+  const [showAdvancedSettings, setShowAdvancedSettings] =
+    useState(showAdvanced);
   const [isDirty, setIsDirty] = useState(false);
 
   // 同步外部参数变化
@@ -112,42 +119,51 @@ export function ParameterControls({
   }, [parameters]);
 
   // 使用外部验证工具
-  const validation = useMemo(() => validateAllParameters(localParameters), [localParameters]);
+  const validation = useMemo(
+    () => validateAllParameters(localParameters),
+    [localParameters],
+  );
 
   // 获取风险评估
-  const riskAssessment = useMemo(() => getParameterRiskAssessment(localParameters), [localParameters]);
+  const riskAssessment = useMemo(
+    () => getParameterRiskAssessment(localParameters),
+    [localParameters],
+  );
 
   // 处理参数变化
-  const handleParameterChange = useCallback((
-    parameter: keyof StrategyParameters,
-    value: number,
-  ) => {
-    const previousValue = localParameters[parameter];
+  const handleParameterChange = useCallback(
+    (parameter: keyof StrategyParameters, value: number) => {
+      const previousValue = localParameters[parameter];
 
-    const newParameters = {
-      ...localParameters,
-      [parameter]: value,
-    };
+      const newParameters = {
+        ...localParameters,
+        [parameter]: value,
+      };
 
-    setLocalParameters(newParameters);
-    setIsDirty(true);
+      setLocalParameters(newParameters);
+      setIsDirty(true);
 
-    // 通知父组件
-    onParametersChange(newParameters);
+      // 通知父组件
+      onParametersChange(newParameters);
 
-    onParameterChange?.({
-      parameter,
-      value,
-      previousValue,
-    });
-  }, [localParameters, onParametersChange, onParameterChange]);
+      onParameterChange?.({
+        parameter,
+        value,
+        previousValue,
+      });
+    },
+    [localParameters, onParametersChange, onParameterChange],
+  );
 
   // 应用预设
-  const applyPreset = useCallback((preset: ParameterPreset) => {
-    setLocalParameters(preset.parameters);
-    setIsDirty(true);
-    onParametersChange(preset.parameters);
-  }, [onParametersChange]);
+  const applyPreset = useCallback(
+    (preset: ParameterPreset) => {
+      setLocalParameters(preset.parameters);
+      setIsDirty(true);
+      onParametersChange(preset.parameters);
+    },
+    [onParametersChange],
+  );
 
   // 重置参数
   const handleReset = useCallback(() => {
@@ -167,7 +183,9 @@ export function ParameterControls({
 
   if (compact) {
     return (
-      <div className={`flex items-center space-x-4 p-4 bg-background border rounded-lg ${className}`}>
+      <div
+        className={`flex items-center space-x-4 p-4 bg-background border rounded-lg ${className}`}
+      >
         <div className="flex items-center space-x-2">
           <Sliders className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm font-medium">策略参数</span>
@@ -176,20 +194,31 @@ export function ParameterControls({
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
             <label className="text-xs text-muted-foreground">周期:</label>
-            <span className="text-sm font-mono">{localParameters.movingAveragePeriod}</span>
+            <span className="text-sm font-mono">
+              {localParameters.movingAveragePeriod}
+            </span>
           </div>
           <div className="flex items-center space-x-2">
             <label className="text-xs text-muted-foreground">止损:</label>
-            <span className="text-sm font-mono">{localParameters.stopLoss}%</span>
+            <span className="text-sm font-mono">
+              {localParameters.stopLoss}%
+            </span>
           </div>
           <div className="flex items-center space-x-2">
             <label className="text-xs text-muted-foreground">止盈:</label>
-            <span className="text-sm font-mono">{localParameters.takeProfit}%</span>
+            <span className="text-sm font-mono">
+              {localParameters.takeProfit}%
+            </span>
           </div>
         </div>
 
         {isDirty && (
-          <Button size="sm" variant="outline" onClick={handleSave} disabled={disabled || !validation.isValid}>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleSave}
+            disabled={disabled || !validation.isValid}
+          >
             <Save className="h-3 w-3 mr-1" />
             保存
           </Button>
@@ -208,12 +237,22 @@ export function ParameterControls({
           </CardTitle>
           <div className="flex items-center space-x-2">
             {isDirty && (
-              <Button size="sm" variant="outline" onClick={handleSave} disabled={disabled || !validation.isValid}>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleSave}
+                disabled={disabled || !validation.isValid}
+              >
                 <Save className="h-4 w-4 mr-1" />
                 保存
               </Button>
             )}
-            <Button size="sm" variant="ghost" onClick={handleReset} disabled={disabled}>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handleReset}
+              disabled={disabled}
+            >
               <RotateCcw className="h-4 w-4 mr-1" />
               重置
             </Button>
@@ -237,7 +276,9 @@ export function ParameterControls({
           {/* 移动平均周期滑块 */}
           <MovingAverageSlider
             value={localParameters.movingAveragePeriod}
-            onChange={(value) => handleParameterChange('movingAveragePeriod', value)}
+            onChange={(value) =>
+              handleParameterChange('movingAveragePeriod', value)
+            }
             disabled={disabled}
             showAdvanced={showAdvancedSettings}
           />
@@ -298,26 +339,42 @@ export function ParameterControls({
                   <span>风险评估</span>
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Card className={`p-3 ${
-                    riskAssessment.level === 'low' ? 'border-green-200 bg-green-50' :
-                    riskAssessment.level === 'medium' ? 'border-yellow-200 bg-yellow-50' :
-                    riskAssessment.level === 'high' ? 'border-orange-200 bg-orange-50' :
-                    'border-red-200 bg-red-50'
-                  }`}>
+                  <Card
+                    className={`p-3 ${
+                      riskAssessment.level === 'low'
+                        ? 'border-green-200 bg-green-50'
+                        : riskAssessment.level === 'medium'
+                          ? 'border-yellow-200 bg-yellow-50'
+                          : riskAssessment.level === 'high'
+                            ? 'border-orange-200 bg-orange-50'
+                            : 'border-red-200 bg-red-50'
+                    }`}
+                  >
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium">风险等级</span>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        riskAssessment.level === 'low' ? 'bg-green-100 text-green-800' :
-                        riskAssessment.level === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                        riskAssessment.level === 'high' ? 'bg-orange-100 text-orange-800' :
-                        'bg-red-100 text-red-800'
-                      }`}>
-                        {riskAssessment.level === 'low' ? '低风险' :
-                         riskAssessment.level === 'medium' ? '中等风险' :
-                         riskAssessment.level === 'high' ? '高风险' : '极高风险'}
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          riskAssessment.level === 'low'
+                            ? 'bg-green-100 text-green-800'
+                            : riskAssessment.level === 'medium'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : riskAssessment.level === 'high'
+                                ? 'bg-orange-100 text-orange-800'
+                                : 'bg-red-100 text-red-800'
+                        }`}
+                      >
+                        {riskAssessment.level === 'low'
+                          ? '低风险'
+                          : riskAssessment.level === 'medium'
+                            ? '中等风险'
+                            : riskAssessment.level === 'high'
+                              ? '高风险'
+                              : '极高风险'}
                       </span>
                     </div>
-                    <div className="text-lg font-semibold">{riskAssessment.score}/100</div>
+                    <div className="text-lg font-semibold">
+                      {riskAssessment.score}/100
+                    </div>
                   </Card>
 
                   <Card className="p-3">
@@ -332,10 +389,18 @@ export function ParameterControls({
                   <Card className="p-3">
                     <div className="text-sm font-medium mb-2">收益风险比</div>
                     <div className="text-lg font-semibold text-blue-600">
-                      {localParameters.stopLoss > 0 ? (localParameters.takeProfit / localParameters.stopLoss).toFixed(2) : 'N/A'}
+                      {localParameters.stopLoss > 0
+                        ? (
+                            localParameters.takeProfit /
+                            localParameters.stopLoss
+                          ).toFixed(2)
+                        : 'N/A'}
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {localParameters.stopLoss > 0 && localParameters.takeProfit / localParameters.stopLoss >= 2 ? '良好' : '建议2:1以上'}
+                      {localParameters.stopLoss > 0 &&
+                      localParameters.takeProfit / localParameters.stopLoss >= 2
+                        ? '良好'
+                        : '建议2:1以上'}
                     </div>
                   </Card>
                 </div>
@@ -359,9 +424,15 @@ export function ParameterControls({
 
               {/* 参数说明 */}
               <div className="text-sm text-muted-foreground space-y-2">
-                <p>• <strong>移动平均周期:</strong> 计算均线所用的历史数据天数</p>
-                <p>• <strong>止损:</strong> 当价格下跌超过此百分比时卖出</p>
-                <p>• <strong>止盈:</strong> 当价格上涨超过此百分比时卖出</p>
+                <p>
+                  • <strong>移动平均周期:</strong> 计算均线所用的历史数据天数
+                </p>
+                <p>
+                  • <strong>止损:</strong> 当价格下跌超过此百分比时卖出
+                </p>
+                <p>
+                  • <strong>止盈:</strong> 当价格上涨超过此百分比时卖出
+                </p>
               </div>
             </div>
           )}

@@ -1,5 +1,11 @@
 import React from 'react';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { OptimizationSuggestions } from '../OptimizationSuggestions';
 import { StrategyParameters } from '@/types/parameter.types';
@@ -7,7 +13,9 @@ import { parameterService } from '@/services/parameterService';
 
 // Mock the parameterService
 jest.mock('@/services/parameterService');
-const mockParameterService = parameterService as jest.Mocked<typeof parameterService>;
+const mockParameterService = parameterService as jest.Mocked<
+  typeof parameterService
+>;
 
 const mockProps = {
   symbol: 'rb2401',
@@ -54,7 +62,9 @@ describe('OptimizationSuggestions', () => {
     jest.useFakeTimers();
 
     // Setup default parameterService mock
-    mockParameterService.getOptimizationSuggestions = jest.fn().mockResolvedValue(mockSuggestions);
+    mockParameterService.getOptimizationSuggestions = jest
+      .fn()
+      .mockResolvedValue(mockSuggestions);
   });
 
   afterEach(() => {
@@ -79,9 +89,12 @@ describe('OptimizationSuggestions', () => {
     });
 
     // Wait for loading to complete
-    await waitFor(() => {
-      expect(screen.queryByText('分析中...')).not.toBeInTheDocument();
-    }, { timeout: 5000 });
+    await waitFor(
+      () => {
+        expect(screen.queryByText('分析中...')).not.toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
 
     // Should show suggestion types
     expect(screen.getByText('风险优化')).toBeInTheDocument();
@@ -89,7 +102,9 @@ describe('OptimizationSuggestions', () => {
   });
 
   it('should show empty state when no suggestions', async () => {
-    mockParameterService.getOptimizationSuggestions = jest.fn().mockResolvedValue([]);
+    mockParameterService.getOptimizationSuggestions = jest
+      .fn()
+      .mockResolvedValue([]);
 
     await act(async () => {
       render(<OptimizationSuggestions {...mockProps} />);
@@ -99,9 +114,12 @@ describe('OptimizationSuggestions', () => {
       jest.advanceTimersByTime(100);
     });
 
-    await waitFor(() => {
-      expect(screen.queryByText('分析中...')).not.toBeInTheDocument();
-    }, { timeout: 5000 });
+    await waitFor(
+      () => {
+        expect(screen.queryByText('分析中...')).not.toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
 
     expect(screen.getByText('暂无优化建议')).toBeInTheDocument();
   });
@@ -110,16 +128,24 @@ describe('OptimizationSuggestions', () => {
     const onApplySuggestion = jest.fn();
 
     await act(async () => {
-      render(<OptimizationSuggestions {...mockProps} onApplySuggestion={onApplySuggestion} />);
+      render(
+        <OptimizationSuggestions
+          {...mockProps}
+          onApplySuggestion={onApplySuggestion}
+        />,
+      );
     });
 
     act(() => {
       jest.advanceTimersByTime(100);
     });
 
-    await waitFor(() => {
-      expect(screen.queryByText('分析中...')).not.toBeInTheDocument();
-    }, { timeout: 5000 });
+    await waitFor(
+      () => {
+        expect(screen.queryByText('分析中...')).not.toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
 
     // Find apply button by text and ensure it's not disabled
     const applyButtons = screen.getAllByText('应用建议');
@@ -131,9 +157,12 @@ describe('OptimizationSuggestions', () => {
     });
 
     // Wait for any async operations to complete
-    await waitFor(() => {
-      expect(onApplySuggestion).toHaveBeenCalledTimes(1);
-    }, { timeout: 1000 });
+    await waitFor(
+      () => {
+        expect(onApplySuggestion).toHaveBeenCalledTimes(1);
+      },
+      { timeout: 1000 },
+    );
   });
 
   it('should handle dismiss suggestion correctly', async () => {
@@ -145,9 +174,12 @@ describe('OptimizationSuggestions', () => {
       jest.advanceTimersByTime(100);
     });
 
-    await waitFor(() => {
-      expect(screen.queryByText('分析中...')).not.toBeInTheDocument();
-    }, { timeout: 5000 });
+    await waitFor(
+      () => {
+        expect(screen.queryByText('分析中...')).not.toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
 
     // Count initial suggestions
     const initialSuggestions = screen.getAllByText('应用建议');
@@ -164,7 +196,9 @@ describe('OptimizationSuggestions', () => {
     // Check that suggestion was dismissed
     await waitFor(() => {
       const remainingSuggestions = screen.queryAllByText('应用建议');
-      expect(remainingSuggestions.length).toBeLessThan(initialSuggestions.length);
+      expect(remainingSuggestions.length).toBeLessThan(
+        initialSuggestions.length,
+      );
     });
   });
 
@@ -177,9 +211,12 @@ describe('OptimizationSuggestions', () => {
       jest.advanceTimersByTime(100);
     });
 
-    await waitFor(() => {
-      expect(screen.queryByText('分析中...')).not.toBeInTheDocument();
-    }, { timeout: 5000 });
+    await waitFor(
+      () => {
+        expect(screen.queryByText('分析中...')).not.toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
 
     // Check for suggestion details
     expect(screen.getByText('风险优化')).toBeInTheDocument();
@@ -195,9 +232,12 @@ describe('OptimizationSuggestions', () => {
       jest.advanceTimersByTime(100);
     });
 
-    await waitFor(() => {
-      expect(screen.queryByText('分析中...')).not.toBeInTheDocument();
-    }, { timeout: 5000 });
+    await waitFor(
+      () => {
+        expect(screen.queryByText('分析中...')).not.toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
 
     // Should show parameter information - use getAllByText since there are multiple matches
     expect(screen.getAllByText(/均线周期/).length).toBeGreaterThan(0);
@@ -214,9 +254,12 @@ describe('OptimizationSuggestions', () => {
       jest.advanceTimersByTime(100);
     });
 
-    await waitFor(() => {
-      expect(screen.queryByText('分析中...')).not.toBeInTheDocument();
-    }, { timeout: 5000 });
+    await waitFor(
+      () => {
+        expect(screen.queryByText('分析中...')).not.toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
 
     // Should show confidence levels
     expect(screen.getByText('高可信度 (85%)')).toBeInTheDocument();
@@ -232,9 +275,12 @@ describe('OptimizationSuggestions', () => {
       jest.advanceTimersByTime(100);
     });
 
-    await waitFor(() => {
-      expect(screen.queryByText('分析中...')).not.toBeInTheDocument();
-    }, { timeout: 5000 });
+    await waitFor(
+      () => {
+        expect(screen.queryByText('分析中...')).not.toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
 
     // Find refresh button and verify it exists
     const refreshButton = screen.getByLabelText('刷新建议');
@@ -254,16 +300,24 @@ describe('OptimizationSuggestions', () => {
     const onApplySuggestion = jest.fn();
 
     await act(async () => {
-      render(<OptimizationSuggestions {...mockProps} onApplySuggestion={onApplySuggestion} />);
+      render(
+        <OptimizationSuggestions
+          {...mockProps}
+          onApplySuggestion={onApplySuggestion}
+        />,
+      );
     });
 
     act(() => {
       jest.advanceTimersByTime(100);
     });
 
-    await waitFor(() => {
-      expect(screen.queryByText('分析中...')).not.toBeInTheDocument();
-    }, { timeout: 5000 });
+    await waitFor(
+      () => {
+        expect(screen.queryByText('分析中...')).not.toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
 
     // Apply suggestion
     const applyButtons = screen.getAllByText('应用建议');
@@ -287,9 +341,12 @@ describe('OptimizationSuggestions', () => {
       jest.advanceTimersByTime(100);
     });
 
-    await waitFor(() => {
-      expect(screen.queryByText('分析中...')).not.toBeInTheDocument();
-    }, { timeout: 5000 });
+    await waitFor(
+      () => {
+        expect(screen.queryByText('分析中...')).not.toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
 
     // Should show expected improvements - use getAllByText for multiple matches
     expect(screen.getAllByText(/预期/).length).toBeGreaterThan(0);
@@ -304,9 +361,12 @@ describe('OptimizationSuggestions', () => {
       jest.advanceTimersByTime(100);
     });
 
-    await waitFor(() => {
-      expect(screen.queryByText('分析中...')).not.toBeInTheDocument();
-    }, { timeout: 5000 });
+    await waitFor(
+      () => {
+        expect(screen.queryByText('分析中...')).not.toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
 
     // Should show footer information
     expect(screen.getByText('关于优化建议')).toBeInTheDocument();
@@ -314,7 +374,9 @@ describe('OptimizationSuggestions', () => {
   });
 
   it('should handle error state correctly', async () => {
-    mockParameterService.getOptimizationSuggestions = jest.fn().mockRejectedValue(new Error('Network error'));
+    mockParameterService.getOptimizationSuggestions = jest
+      .fn()
+      .mockRejectedValue(new Error('Network error'));
 
     // Mock console.error to avoid test output pollution
     const originalError = console.error;
@@ -328,9 +390,12 @@ describe('OptimizationSuggestions', () => {
       jest.advanceTimersByTime(100);
     });
 
-    await waitFor(() => {
-      expect(screen.queryByText('分析中...')).not.toBeInTheDocument();
-    }, { timeout: 5000 });
+    await waitFor(
+      () => {
+        expect(screen.queryByText('分析中...')).not.toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
 
     // Should show error state or fallback
     expect(screen.getByText('参数优化建议')).toBeInTheDocument();

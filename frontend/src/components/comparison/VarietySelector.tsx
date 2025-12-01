@@ -1,8 +1,14 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Loading } from '@/components/ui/loading';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -11,17 +17,17 @@ import { Symbol } from '@/types/api';
 import { cn } from '@/lib/utils';
 
 interface VarietySelectorProps {
-  onVarietiesSelect: (varieties: string[]) => void
-  selectedVarieties?: string[]
-  maxSelection?: number
-  className?: string
+  onVarietiesSelect: (varieties: string[]) => void;
+  selectedVarieties?: string[];
+  maxSelection?: number;
+  className?: string;
 }
 
 export function VarietySelector({
   onVarietiesSelect,
   selectedVarieties = [],
   maxSelection = 10,
-  className
+  className,
 }: VarietySelectorProps) {
   const [symbols, setSymbols] = useState<Symbol[]>([]);
   const [sectors, setSectors] = useState<string[]>([]);
@@ -41,7 +47,7 @@ export function VarietySelector({
       setSymbols(data);
 
       // 提取所有版块
-      const uniqueSectors = Array.from(new Set(data.map(s => s.sector)));
+      const uniqueSectors = Array.from(new Set(data.map((s) => s.sector)));
       setSectors(['全部', ...uniqueSectors]);
 
       setError('');
@@ -59,16 +65,17 @@ export function VarietySelector({
 
     // 版块筛选
     if (selectedSector !== '全部') {
-      filtered = filtered.filter(s => s.sector === selectedSector);
+      filtered = filtered.filter((s) => s.sector === selectedSector);
     }
 
     // 搜索筛选
     if (searchTerm.trim()) {
       const searchLower = searchTerm.toLowerCase();
-      filtered = filtered.filter(s =>
-        s.symbol.toLowerCase().includes(searchLower) ||
-        s.name.toLowerCase().includes(searchLower) ||
-        s.exchange.toLowerCase().includes(searchLower)
+      filtered = filtered.filter(
+        (s) =>
+          s.symbol.toLowerCase().includes(searchLower) ||
+          s.name.toLowerCase().includes(searchLower) ||
+          s.exchange.toLowerCase().includes(searchLower),
       );
     }
 
@@ -77,11 +84,11 @@ export function VarietySelector({
 
   // 版块颜色映射
   const sectorColors: Record<string, string> = {
-    '能源': 'bg-blue-100 text-blue-800 border-blue-200',
-    '金属': 'bg-gray-100 text-gray-800 border-gray-200',
-    '农产品': 'bg-green-100 text-green-800 border-green-200',
-    '化工': 'bg-purple-100 text-purple-800 border-purple-200',
-    '其他': 'bg-orange-100 text-orange-800 border-orange-200'
+    能源: 'bg-blue-100 text-blue-800 border-blue-200',
+    金属: 'bg-gray-100 text-gray-800 border-gray-200',
+    农产品: 'bg-green-100 text-green-800 border-green-200',
+    化工: 'bg-purple-100 text-purple-800 border-purple-200',
+    其他: 'bg-orange-100 text-orange-800 border-orange-200',
   };
 
   const getSectorColor = (sector: string) => {
@@ -94,7 +101,7 @@ export function VarietySelector({
 
     if (isSelected) {
       // 取消选择
-      const newSelection = selectedVarieties.filter(v => v !== symbol);
+      const newSelection = selectedVarieties.filter((v) => v !== symbol);
       onVarietiesSelect(newSelection);
     } else {
       // 检查是否达到最大选择数量
@@ -110,12 +117,12 @@ export function VarietySelector({
   // 快速选择功能
   const handleQuickSelect = (sector: string) => {
     if (sector === '全部') {
-      const allSymbols = symbols.map(s => s.symbol).slice(0, maxSelection);
+      const allSymbols = symbols.map((s) => s.symbol).slice(0, maxSelection);
       onVarietiesSelect(allSymbols);
     } else {
       const sectorSymbols = symbols
-        .filter(s => s.sector === sector)
-        .map(s => s.symbol)
+        .filter((s) => s.sector === sector)
+        .map((s) => s.symbol)
         .slice(0, maxSelection);
       onVarietiesSelect(sectorSymbols);
     }
@@ -128,7 +135,7 @@ export function VarietySelector({
 
   // 获取品种信息
   const getSymbolInfo = (symbol: string) => {
-    return symbols.find(s => s.symbol === symbol);
+    return symbols.find((s) => s.symbol === symbol);
   };
 
   if (loading) {
@@ -136,7 +143,9 @@ export function VarietySelector({
       <Card className={cn('', className)}>
         <CardHeader>
           <CardTitle>多品种选择</CardTitle>
-          <CardDescription>选择要对比分析的期货品种（最多{maxSelection}个）</CardDescription>
+          <CardDescription>
+            选择要对比分析的期货品种（最多{maxSelection}个）
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
@@ -152,7 +161,9 @@ export function VarietySelector({
       <Card className={cn('', className)}>
         <CardHeader>
           <CardTitle>多品种选择</CardTitle>
-          <CardDescription>选择要对比分析的期货品种（最多{maxSelection}个）</CardDescription>
+          <CardDescription>
+            选择要对比分析的期货品种（最多{maxSelection}个）
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
@@ -171,7 +182,8 @@ export function VarietySelector({
       <CardHeader>
         <CardTitle>多品种选择</CardTitle>
         <CardDescription>
-          选择要对比分析的期货品种（已选择 {selectedVarieties.length}/{maxSelection} 个）
+          选择要对比分析的期货品种（已选择 {selectedVarieties.length}/
+          {maxSelection} 个）
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -189,7 +201,7 @@ export function VarietySelector({
               </Button>
             </div>
             <div className="flex flex-wrap gap-2">
-              {selectedVarieties.map(symbol => {
+              {selectedVarieties.map((symbol) => {
                 const info = getSymbolInfo(symbol);
                 return (
                   <Badge
@@ -221,7 +233,7 @@ export function VarietySelector({
         <div className="space-y-2">
           <div className="text-sm font-medium">版块筛选：</div>
           <div className="flex flex-wrap gap-2">
-            {sectors.map(sector => (
+            {sectors.map((sector) => (
               <div key={sector} className="flex gap-1">
                 <Button
                   variant={selectedSector === sector ? 'default' : 'outline'}
@@ -249,19 +261,22 @@ export function VarietySelector({
             可选品种（{filteredSymbols.length}个）：
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 max-h-80 overflow-y-auto custom-scrollbar">
-            {filteredSymbols.map(symbol => {
+            {filteredSymbols.map((symbol) => {
               const isSelected = selectedVarieties.includes(symbol.symbol);
-              const isDisabled = !isSelected && selectedVarieties.length >= maxSelection;
+              const isDisabled =
+                !isSelected && selectedVarieties.length >= maxSelection;
 
               return (
                 <Button
                   key={symbol.symbol}
                   variant={isSelected ? 'default' : 'outline'}
                   className={cn(
-                    "justify-start h-auto p-3 text-left relative",
-                    isDisabled && "opacity-50 cursor-not-allowed"
+                    'justify-start h-auto p-3 text-left relative',
+                    isDisabled && 'opacity-50 cursor-not-allowed',
                   )}
-                  onClick={() => !isDisabled && handleVarietyToggle(symbol.symbol)}
+                  onClick={() =>
+                    !isDisabled && handleVarietyToggle(symbol.symbol)
+                  }
                   disabled={isDisabled}
                 >
                   <div className="w-full">
@@ -277,11 +292,13 @@ export function VarietySelector({
                     <div className="flex items-center justify-between mt-1">
                       <Badge
                         variant="outline"
-                        className={cn("text-xs", getSectorColor(symbol.sector))}
+                        className={cn('text-xs', getSectorColor(symbol.sector))}
                       >
                         {symbol.sector}
                       </Badge>
-                      <div className="text-xs opacity-50">{symbol.exchange}</div>
+                      <div className="text-xs opacity-50">
+                        {symbol.exchange}
+                      </div>
                     </div>
                   </div>
                 </Button>

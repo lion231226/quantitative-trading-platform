@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { Skeleton, LazyLoad, VirtualList } from '../LoadingStates';
+import { LazyLoad, Skeleton, VirtualList } from '../LoadingStates';
 
 // Mock IntersectionObserver
 const mockIntersectionObserver = jest.fn();
@@ -51,7 +51,7 @@ describe('LazyLoad Component', () => {
     render(
       <LazyLoad fallback={<div>Fallback</div>}>
         <div>Content</div>
-      </LazyLoad>
+      </LazyLoad>,
     );
 
     expect(screen.getByText('Fallback')).toBeInTheDocument();
@@ -62,7 +62,7 @@ describe('LazyLoad Component', () => {
     render(
       <LazyLoad trigger={true}>
         <div>Content</div>
-      </LazyLoad>
+      </LazyLoad>,
     );
 
     expect(screen.getByText('Content')).toBeInTheDocument();
@@ -72,7 +72,7 @@ describe('LazyLoad Component', () => {
     render(
       <LazyLoad>
         <div>Content</div>
-      </LazyLoad>
+      </LazyLoad>,
     );
 
     expect(mockIntersectionObserver).toHaveBeenCalled();
@@ -96,7 +96,7 @@ describe('VirtualList Component', () => {
         itemHeight={50}
         containerHeight={200}
         renderItem={renderItem}
-      />
+      />,
     );
 
     // Should render a subset of items (overscan * 2 + visible)
@@ -112,7 +112,7 @@ describe('VirtualList Component', () => {
         itemHeight={50}
         containerHeight={200}
         renderItem={renderItem}
-      />
+      />,
     );
 
     const scrollContainer = container.querySelector('.overflow-auto');
@@ -127,7 +127,7 @@ describe('VirtualList Component', () => {
         containerHeight={200}
         renderItem={renderItem}
         className="custom-class"
-      />
+      />,
     );
 
     const container = document.querySelector('.custom-class');

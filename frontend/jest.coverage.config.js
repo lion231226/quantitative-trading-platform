@@ -44,13 +44,7 @@ const coverageConfig = {
   },
 
   // 覆盖率报告格式
-  coverageReporters: [
-    'text',
-    'text-summary',
-    'html',
-    'lcov',
-    'json',
-  ],
+  coverageReporters: ['text', 'text-summary', 'html', 'lcov', 'json'],
 
   // 覆盖率输出目录
   coverageDirectory: 'coverage',
@@ -61,6 +55,6 @@ const coverageConfig = {
     '<rootDir>/src/__tests__/',
     '<rootDir>/src/__mocks__/',
   ],
-}
+};
 
-module.exports = coverageConfig
+module.exports = coverageConfig;

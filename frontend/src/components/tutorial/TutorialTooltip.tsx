@@ -1,8 +1,14 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import * as Tooltip from '@radix-ui/react-tooltip';
-import { Search, HelpCircle, X, BookOpen, Lightbulb } from 'lucide-react';
+import { BookOpen, HelpCircle, Lightbulb, Search, X } from 'lucide-react';
 import { debounce } from 'lodash';
 
 // 帮助内容类型
@@ -63,7 +69,8 @@ const TutorialTooltip: React.FC<TutorialTooltipProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [contextAnalysis, setContextAnalysis] = useState<ContextAnalysis | null>(null);
+  const [contextAnalysis, setContextAnalysis] =
+    useState<ContextAnalysis | null>(null);
   const [recommendations, setRecommendations] = useState<HelpContent[]>([]);
   const [filteredContent, setFilteredContent] = useState<HelpContent[]>([]);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -73,70 +80,84 @@ const TutorialTooltip: React.FC<TutorialTooltipProps> = ({
     {
       id: 'ma-concept',
       title: '移动平均线 (MA)',
-      content: '移动平均线是技术分析中最常用的指标之一，通过计算特定周期内的平均价格来平滑价格波动，帮助识别趋势方向。',
+      content:
+        '移动平均线是技术分析中最常用的指标之一，通过计算特定周期内的平均价格来平滑价格波动，帮助识别趋势方向。',
       category: 'concept',
       relatedTerms: ['SMA', 'EMA', '趋势', '技术指标'],
       priority: 'high',
-      context: { component: 'MovingAverageCalculation', action: 'calculate' }
+      context: { component: 'MovingAverageCalculation', action: 'calculate' },
     },
     {
       id: 'golden-cross',
       title: '金叉信号',
-      content: '当短期移动平均线从下向上穿过长期移动平均线时，形成金叉，通常被视为买入信号。这表明短期趋势正在转为上升。',
+      content:
+        '当短期移动平均线从下向上穿过长期移动平均线时，形成金叉，通常被视为买入信号。这表明短期趋势正在转为上升。',
       category: 'concept',
       relatedTerms: ['买入信号', '趋势反转', '移动平均线'],
       priority: 'high',
-      context: { component: 'GoldenDeathCrossAnimation', action: 'identify_signal' }
+      context: {
+        component: 'GoldenDeathCrossAnimation',
+        action: 'identify_signal',
+      },
     },
     {
       id: 'death-cross',
       title: '死叉信号',
-      content: '当短期移动平均线从上向下穿过长期移动平均线时，形成死叉，通常被视为卖出信号。这表明短期趋势正在转为下降。',
+      content:
+        '当短期移动平均线从上向下穿过长期移动平均线时，形成死叉，通常被视为卖出信号。这表明短期趋势正在转为下降。',
       category: 'concept',
       relatedTerms: ['卖出信号', '趋势反转', '移动平均线'],
       priority: 'high',
-      context: { component: 'GoldenDeathCrossAnimation', action: 'identify_signal' }
+      context: {
+        component: 'GoldenDeathCrossAnimation',
+        action: 'identify_signal',
+      },
     },
     {
       id: 'backtesting',
       title: '策略回测',
-      content: '回测是使用历史数据验证交易策略有效性的过程。通过模拟过去的市场条件来评估策略的表现。',
+      content:
+        '回测是使用历史数据验证交易策略有效性的过程。通过模拟过去的市场条件来评估策略的表现。',
       category: 'feature',
       relatedTerms: ['历史数据', '策略验证', '性能评估'],
-      priority: 'medium'
+      priority: 'medium',
     },
     {
       id: 'risk-management',
       title: '风险管理',
-      content: '风险管理是量化交易中最重要的环节，包括止损设置、仓位控制和资金管理，以保护本金并控制损失。',
+      content:
+        '风险管理是量化交易中最重要的环节，包括止损设置、仓位控制和资金管理，以保护本金并控制损失。',
       category: 'best-practice',
       relatedTerms: ['止损', '仓位控制', '资金管理'],
-      priority: 'high'
+      priority: 'high',
     },
     {
       id: 'parameter-optimization',
       title: '参数优化',
-      content: '通过系统性地测试不同参数组合来找到策略的最优参数设置，需要避免过度拟合。',
+      content:
+        '通过系统性地测试不同参数组合来找到策略的最优参数设置，需要避免过度拟合。',
       category: 'feature',
       relatedTerms: ['参数调优', '策略优化', '过度拟合'],
-      priority: 'medium'
+      priority: 'medium',
     },
     {
       id: 'chart-interpretation',
       title: '图表解读技巧',
-      content: '学会识别图表中的关键模式，包括趋势线、支撑阻力位、价格形态等，这些都有助于做出更好的交易决策。',
+      content:
+        '学会识别图表中的关键模式，包括趋势线、支撑阻力位、价格形态等，这些都有助于做出更好的交易决策。',
       category: 'best-practice',
       relatedTerms: ['技术分析', '图表模式', '趋势分析'],
-      priority: 'medium'
+      priority: 'medium',
     },
     {
       id: 'common-mistakes',
       title: '常见交易错误',
-      content: '新手常犯的错误包括过度交易、追涨杀跌、没有止损计划等。了解这些错误有助于避免重复犯错。',
+      content:
+        '新手常犯的错误包括过度交易、追涨杀跌、没有止损计划等。了解这些错误有助于避免重复犯错。',
       category: 'troubleshooting',
       relatedTerms: ['交易错误', '新手陷阱', '心理偏差'],
-      priority: 'high'
-    }
+      priority: 'high',
+    },
   ];
 
   // 分析用户上下文
@@ -180,54 +201,60 @@ const TutorialTooltip: React.FC<TutorialTooltipProps> = ({
       currentStep,
       userAction,
       relevantTopics: [...new Set(relevantTopics)], // 去重
-      confidence
+      confidence,
     };
   }, [componentName, currentStep, userAction]);
 
   // 智能推荐算法
-  const generateRecommendations = useCallback((context: ContextAnalysis): HelpContent[] => {
-    if (!showSmartRecommendations) return [];
+  const generateRecommendations = useCallback(
+    (context: ContextAnalysis): HelpContent[] => {
+      if (!showSmartRecommendations) return [];
 
-    const scored = helpDatabase.map(help => {
-      let score = 0;
+      const scored = helpDatabase.map((help) => {
+        let score = 0;
 
-      // 基于优先级的评分
-      if (help.priority === 'high') score += 3;
-      else if (help.priority === 'medium') score += 2;
-      else score += 1;
+        // 基于优先级的评分
+        if (help.priority === 'high') score += 3;
+        else if (help.priority === 'medium') score += 2;
+        else score += 1;
 
-      // 基于上下文匹配的评分
-      if (help.context?.component === context.currentComponent) {
-        score += 5; // 组件完全匹配
-      }
+        // 基于上下文匹配的评分
+        if (help.context?.component === context.currentComponent) {
+          score += 5; // 组件完全匹配
+        }
 
-      if (help.context?.action === context.userAction) {
-        score += 4; // 操作完全匹配
-      }
+        if (help.context?.action === context.userAction) {
+          score += 4; // 操作完全匹配
+        }
 
-      // 基于相关主题匹配的评分
-      const topicMatches = context.relevantTopics.filter(topic =>
-        help.relatedTerms.some(term =>
-          term.toLowerCase().includes(topic.toLowerCase()) ||
-          topic.toLowerCase().includes(term.toLowerCase())
-        )
-      ).length;
-      score += topicMatches * 2;
+        // 基于相关主题匹配的评分
+        const topicMatches = context.relevantTopics.filter((topic) =>
+          help.relatedTerms.some(
+            (term) =>
+              term.toLowerCase().includes(topic.toLowerCase()) ||
+              topic.toLowerCase().includes(term.toLowerCase()),
+          ),
+        ).length;
+        score += topicMatches * 2;
 
-      // 基于用户水平的内容过滤
-      if (userLevel === 'beginner' && help.category === 'concept') score += 2;
-      if (userLevel === 'intermediate' && help.category === 'feature') score += 2;
-      if (userLevel === 'advanced' && help.category === 'best-practice') score += 2;
+        // 基于用户水平的内容过滤
+        if (userLevel === 'beginner' && help.category === 'concept') score += 2;
+        if (userLevel === 'intermediate' && help.category === 'feature')
+          score += 2;
+        if (userLevel === 'advanced' && help.category === 'best-practice')
+          score += 2;
 
-      return { help, score };
-    });
+        return { help, score };
+      });
 
-    // 排序并返回最高分的内容
-    return scored
-      .sort((a, b) => b.score - a.score)
-      .slice(0, maxRecommendations)
-      .map(item => item.help);
-  }, [showSmartRecommendations, userLevel, maxRecommendations]);
+      // 排序并返回最高分的内容
+      return scored
+        .sort((a, b) => b.score - a.score)
+        .slice(0, maxRecommendations)
+        .map((item) => item.help);
+    },
+    [showSmartRecommendations, userLevel, maxRecommendations],
+  );
 
   // 搜索功能
   const performSearch = useCallback((query: string) => {
@@ -236,12 +263,14 @@ const TutorialTooltip: React.FC<TutorialTooltipProps> = ({
       return;
     }
 
-    const filtered = helpDatabase.filter(help => {
+    const filtered = helpDatabase.filter((help) => {
       const searchLower = query.toLowerCase();
       return (
         help.title.toLowerCase().includes(searchLower) ||
         help.content.toLowerCase().includes(searchLower) ||
-        help.relatedTerms.some(term => term.toLowerCase().includes(searchLower)) ||
+        help.relatedTerms.some((term) =>
+          term.toLowerCase().includes(searchLower),
+        ) ||
         help.category.toLowerCase().includes(searchLower)
       );
     });
@@ -252,7 +281,7 @@ const TutorialTooltip: React.FC<TutorialTooltipProps> = ({
   // 防抖搜索
   const debouncedSearch = useMemo(
     () => debounce(performSearch, 300),
-    [performSearch]
+    [performSearch],
   );
 
   // 监听搜索查询变化
@@ -274,7 +303,12 @@ const TutorialTooltip: React.FC<TutorialTooltipProps> = ({
       const recs = generateRecommendations(context);
       setRecommendations(recs);
     }
-  }, [isOpen, analyzeContext, generateRecommendations, showSmartRecommendations]);
+  }, [
+    isOpen,
+    analyzeContext,
+    generateRecommendations,
+    showSmartRecommendations,
+  ]);
 
   // 处理工具提示打开
   const handleOpenChange = (open: boolean) => {
@@ -308,22 +342,30 @@ const TutorialTooltip: React.FC<TutorialTooltipProps> = ({
     >
       <div className="flex items-start justify-between mb-2">
         <h4 className="font-medium text-gray-900 text-sm">{help.title}</h4>
-        <span className={`px-2 py-1 text-xs rounded-full ${
-          help.category === 'concept' ? 'bg-blue-100 text-blue-700' :
-          help.category === 'feature' ? 'bg-green-100 text-green-700' :
-          help.category === 'troubleshooting' ? 'bg-red-100 text-red-700' :
-          'bg-purple-100 text-purple-700'
-        }`}>
-          {help.category === 'concept' ? '概念' :
-           help.category === 'feature' ? '功能' :
-           help.category === 'troubleshooting' ? '问题' :
-           '实践'}
+        <span
+          className={`px-2 py-1 text-xs rounded-full ${
+            help.category === 'concept'
+              ? 'bg-blue-100 text-blue-700'
+              : help.category === 'feature'
+                ? 'bg-green-100 text-green-700'
+                : help.category === 'troubleshooting'
+                  ? 'bg-red-100 text-red-700'
+                  : 'bg-purple-100 text-purple-700'
+          }`}
+        >
+          {help.category === 'concept'
+            ? '概念'
+            : help.category === 'feature'
+              ? '功能'
+              : help.category === 'troubleshooting'
+                ? '问题'
+                : '实践'}
         </span>
       </div>
       <p className="text-gray-600 text-sm leading-relaxed">{help.content}</p>
       {help.relatedTerms.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-1">
-          {help.relatedTerms.slice(0, 3).map(term => (
+          {help.relatedTerms.slice(0, 3).map((term) => (
             <span
               key={term}
               className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded"
@@ -366,7 +408,8 @@ const TutorialTooltip: React.FC<TutorialTooltipProps> = ({
                   <h3 className="font-medium text-gray-900">智能帮助</h3>
                   {contextAnalysis && (
                     <p className="text-xs text-gray-500">
-                      上下文匹配度: {Math.round(contextAnalysis.confidence * 100)}%
+                      上下文匹配度:{' '}
+                      {Math.round(contextAnalysis.confidence * 100)}%
                     </p>
                   )}
                 </div>
@@ -437,17 +480,23 @@ const TutorialTooltip: React.FC<TutorialTooltipProps> = ({
                 <div className="p-8 text-center">
                   <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                   <p className="text-gray-500 text-sm">未找到相关帮助内容</p>
-                  <p className="text-gray-400 text-xs mt-1">尝试使用其他关键词搜索</p>
+                  <p className="text-gray-400 text-xs mt-1">
+                    尝试使用其他关键词搜索
+                  </p>
                 </div>
               )}
 
               {/* 默认提示 */}
-              {!searchQuery && recommendations.length === 0 && customHelpContent.length === 0 && (
-                <div className="p-4 text-center">
-                  <HelpCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                  <p className="text-gray-500 text-sm">输入关键词搜索帮助内容</p>
-                </div>
-              )}
+              {!searchQuery &&
+                recommendations.length === 0 &&
+                customHelpContent.length === 0 && (
+                  <div className="p-4 text-center">
+                    <HelpCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                    <p className="text-gray-500 text-sm">
+                      输入关键词搜索帮助内容
+                    </p>
+                  </div>
+                )}
             </div>
 
             {/* 底部链接 */}

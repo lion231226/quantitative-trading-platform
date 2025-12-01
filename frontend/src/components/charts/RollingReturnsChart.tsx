@@ -1,6 +1,12 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Line } from 'react-chartjs-2';
 import {
   CategoryScale,
@@ -16,14 +22,14 @@ import {
   Tooltip,
 } from 'chart.js';
 import {
-  RollingReturnData,
-  PerformanceAnalysisRequest,
   CumulativeReturnData,
+  PerformanceAnalysisRequest,
   ReturnDataPoint,
+  RollingReturnData,
 } from '@/types/performance.types';
 import {
-  useCumulativeReturns,
   performanceService,
+  useCumulativeReturns,
 } from '@/services/performanceService';
 import {
   calculateRollingReturns,
@@ -34,13 +40,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loading } from '@/components/ui/loading';
 import {
-  TrendingUp,
-  TrendingDown,
-  RefreshCw,
-  Download,
-  Calendar,
   BarChart3,
+  Calendar,
+  Download,
+  RefreshCw,
   Settings,
+  TrendingDown,
+  TrendingUp,
 } from 'lucide-react';
 
 // 注册 Chart.js 组件
@@ -52,7 +58,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  Filler
+  Filler,
 );
 
 // 图表配置常量
@@ -94,7 +100,7 @@ const DEFAULT_CHART_OPTIONS: ChartOptions<'line'> = {
       padding: 12,
       displayColors: true,
       callbacks: {
-        label: function(context) {
+        label(context) {
           const value = context.parsed.y;
           if (value === null || value === undefined) return '';
           const label = context.dataset.label || '';
@@ -125,7 +131,7 @@ const DEFAULT_CHART_OPTIONS: ChartOptions<'line'> = {
       },
       ticks: {
         color: CHART_COLORS.text,
-        callback: function(value) {
+        callback(value) {
           return `${(Number(value) * 100).toFixed(1)}%`;
         },
       },
@@ -188,16 +194,19 @@ const RollingReturnsChartComponent: React.FC<RollingReturnsChartProps> = ({
   });
 
   // 构建分析请求
-  const analysisRequest = useMemo(() => ({
-    strategyId,
-    returnType: 'simple' as const,
-    initialCapital: 100000,
-    positionSize: 1,
-    riskFreeRate: 0.02,
-    includeCosts: true,
-    startDate,
-    endDate,
-  }), [strategyId, startDate, endDate]);
+  const analysisRequest = useMemo(
+    () => ({
+      strategyId,
+      returnType: 'simple' as const,
+      initialCapital: 100000,
+      positionSize: 1,
+      riskFreeRate: 0.02,
+      includeCosts: true,
+      startDate,
+      endDate,
+    }),
+    [strategyId, startDate, endDate],
+  );
 
   // 获取基础收益数据
   const {
@@ -214,8 +223,11 @@ const RollingReturnsChartComponent: React.FC<RollingReturnsChartProps> = ({
 
   // 计算滚动收益
   useEffect(() => {
-    if (!cumulativeReturns?.datasets || cumulativeReturns.datasets.length === 0) {
-      setState(prev => ({ ...prev, rollingData: [] }));
+    if (
+      !cumulativeReturns?.datasets ||
+      cumulativeReturns.datasets.length === 0
+    ) {
+      setState((prev) => ({ ...prev, rollingData: [] }));
       return;
     }
 
@@ -225,22 +237,26 @@ const RollingReturnsChartComponent: React.FC<RollingReturnsChartProps> = ({
     // 计算收益率数组（从累计收益计算）
     const returns: number[] = [0]; // 第一天收益率为0
     for (let i = 1; i < cumulativeData.length; i++) {
-      const dailyReturn = (cumulativeData[i] - cumulativeData[i - 1]) / Math.max(cumulativeData[i - 1], 1);
+      const dailyReturn =
+        (cumulativeData[i] - cumulativeData[i - 1]) /
+        Math.max(cumulativeData[i - 1], 1);
       returns.push(dailyReturn);
     }
 
-    const rollingData: RollingReturnData[] = state.selectedWindows.map(window => {
-      const rollingReturns = calculateRollingReturns(returns, window);
-      const rollingLabels = labels.slice(window - 1); // 滚动收益从窗口期后开始
+    const rollingData: RollingReturnData[] = state.selectedWindows.map(
+      (window) => {
+        const rollingReturns = calculateRollingReturns(returns, window);
+        const rollingLabels = labels.slice(window - 1); // 滚动收益从窗口期后开始
 
-      return {
-        window,
-        returns: rollingReturns,
-        labels: rollingLabels,
-      };
-    });
+        return {
+          window,
+          returns: rollingReturns,
+          labels: rollingLabels,
+        };
+      },
+    );
 
-    setState(prev => ({ ...prev, rollingData }));
+    setState((prev) => ({ ...prev, rollingData }));
   }, [cumulativeReturns, state.selectedWindows]);
 
   // 生成图表数据
@@ -248,14 +264,19 @@ const RollingReturnsChartComponent: React.FC<RollingReturnsChartProps> = ({
     if (!state.rollingData.length) return null;
 
     const datasets = state.rollingData.map((data, index) => {
-      const colors = [CHART_COLORS.primary, CHART_COLORS.secondary, CHART_COLORS.negative, '#8b5cf6'];
+      const colors = [
+        CHART_COLORS.primary,
+        CHART_COLORS.secondary,
+        CHART_COLORS.negative,
+        '#8b5cf6',
+      ];
       const color = colors[index % colors.length];
 
       return {
         label: `${data.window}日滚动收益`,
         data: data.returns,
         borderColor: color,
-        backgroundColor: color + '20',
+        backgroundColor: `${color}20`,
         fill: false,
         tension: 0.4,
         borderWidth: 2,
@@ -265,21 +286,28 @@ const RollingReturnsChartComponent: React.FC<RollingReturnsChartProps> = ({
     });
 
     // 使用最长的标签数组
-    const maxLength = Math.max(...state.rollingData.map(data => data.labels.length));
-    const labels = state.rollingData.find(data => data.labels.length === maxLength)?.labels || [];
+    const maxLength = Math.max(
+      ...state.rollingData.map((data) => data.labels.length),
+    );
+    const labels =
+      state.rollingData.find((data) => data.labels.length === maxLength)
+        ?.labels || [];
 
     // 采样数据以提高性能
     const sampledLabels = sampleDataForPerformance(
       labels.map((label, index) => ({ timestamp: label, value: index })),
-      500
-    ).map(point => point.timestamp);
+      500,
+    ).map((point) => point.timestamp);
 
-    const sampledDatasets = datasets.map(dataset => ({
+    const sampledDatasets = datasets.map((dataset) => ({
       ...dataset,
       data: sampleDataForPerformance(
-        dataset.data.map((value, index) => ({ timestamp: index.toString(), value })),
-        500
-      ).map(point => point.value),
+        dataset.data.map((value, index) => ({
+          timestamp: index.toString(),
+          value,
+        })),
+        500,
+      ).map((point) => point.value),
     }));
 
     return {
@@ -325,14 +353,15 @@ const RollingReturnsChartComponent: React.FC<RollingReturnsChartProps> = ({
 
         if (chartData && chartData.labels) {
           const timestamp = chartData.labels[index];
-          const value = chartData.datasets[element.datasetIndex]?.data[index] || 0;
+          const value =
+            chartData.datasets[element.datasetIndex]?.data[index] || 0;
 
           const point: ReturnDataPoint = {
             timestamp,
             value,
             date: new Date(timestamp),
           };
-          setState(prev => ({ ...prev, selectedPoint: point }));
+          setState((prev) => ({ ...prev, selectedPoint: point }));
           onDataPointClick?.(point);
         }
       }
@@ -343,9 +372,9 @@ const RollingReturnsChartComponent: React.FC<RollingReturnsChartProps> = ({
 
   // 窗口选择处理
   const handleWindowToggle = useCallback((window: number) => {
-    setState(prev => {
+    setState((prev) => {
       const newWindows = prev.selectedWindows.includes(window)
-        ? prev.selectedWindows.filter(w => w !== window)
+        ? prev.selectedWindows.filter((w) => w !== window)
         : [...prev.selectedWindows, window];
 
       return { ...prev, selectedWindows: newWindows };
@@ -354,7 +383,7 @@ const RollingReturnsChartComponent: React.FC<RollingReturnsChartProps> = ({
 
   // 设置面板切换
   const toggleSettings = useCallback(() => {
-    setState(prev => ({ ...prev, showSettings: !prev.showSettings }));
+    setState((prev) => ({ ...prev, showSettings: !prev.showSettings }));
   }, []);
 
   // 刷新数据
@@ -363,74 +392,81 @@ const RollingReturnsChartComponent: React.FC<RollingReturnsChartProps> = ({
   }, [refetchBase]);
 
   // 导出功能
-  const handleExport = useCallback(async (format: 'png' | 'csv' | 'json') => {
-    if (!chartRef.current || !chartData) return;
+  const handleExport = useCallback(
+    async (format: 'png' | 'csv' | 'json') => {
+      if (!chartRef.current || !chartData) return;
 
-    setState(prev => ({ ...prev, isExporting: true }));
+      setState((prev) => ({ ...prev, isExporting: true }));
 
-    try {
-      switch (format) {
-        case 'png':
-          const canvas = chartRef.current.canvas;
-          const url = canvas.toDataURL('image/png');
-          const link = document.createElement('a');
-          link.download = `rolling-returns-${strategyId}-${new Date().toISOString().split('T')[0]}.png`;
-          link.href = url;
-          link.click();
-          break;
+      try {
+        switch (format) {
+          case 'png':
+            const canvas = chartRef.current.canvas;
+            const url = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = `rolling-returns-${strategyId}-${new Date().toISOString().split('T')[0]}.png`;
+            link.href = url;
+            link.click();
+            break;
 
-        case 'csv':
-          let csvContent = 'Date';
-          state.rollingData.forEach(data => {
-            csvContent += `,${data.window}日滚动收益`;
-          });
-          csvContent += '\n';
-
-          const maxLength = Math.max(...state.rollingData.map(data => data.labels.length));
-          for (let i = 0; i < maxLength; i++) {
-            csvContent += state.rollingData[0]?.labels[i] || '';
-            state.rollingData.forEach(data => {
-              const value = data.returns[i] || 0;
-              csvContent += `,${value}`;
+          case 'csv':
+            let csvContent = 'Date';
+            state.rollingData.forEach((data) => {
+              csvContent += `,${data.window}日滚动收益`;
             });
             csvContent += '\n';
-          }
 
-          const csvBlob = new Blob([csvContent], { type: 'text/csv' });
-          const csvUrl = URL.createObjectURL(csvBlob);
-          const csvLink = document.createElement('a');
-          csvLink.download = `rolling-returns-${strategyId}-${new Date().toISOString().split('T')[0]}.csv`;
-          csvLink.href = csvUrl;
-          csvLink.click();
-          URL.revokeObjectURL(csvUrl);
-          break;
+            const maxLength = Math.max(
+              ...state.rollingData.map((data) => data.labels.length),
+            );
+            for (let i = 0; i < maxLength; i++) {
+              csvContent += state.rollingData[0]?.labels[i] || '';
+              state.rollingData.forEach((data) => {
+                const value = data.returns[i] || 0;
+                csvContent += `,${value}`;
+              });
+              csvContent += '\n';
+            }
 
-        case 'json':
-          const jsonData = {
-            strategyId,
-            windows: state.selectedWindows,
-            rollingData: state.rollingData.map(data => ({
-              window: data.window,
-              returns: data.returns,
-              labels: data.labels,
-            })),
-            exportDate: new Date().toISOString(),
-          };
-          const jsonBlob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
-          const jsonUrl = URL.createObjectURL(jsonBlob);
-          const jsonLink = document.createElement('a');
-          jsonLink.download = `rolling-returns-${strategyId}-${new Date().toISOString().split('T')[0]}.json`;
-          jsonLink.href = jsonUrl;
-          jsonLink.click();
-          URL.revokeObjectURL(jsonUrl);
-          break;
+            const csvBlob = new Blob([csvContent], { type: 'text/csv' });
+            const csvUrl = URL.createObjectURL(csvBlob);
+            const csvLink = document.createElement('a');
+            csvLink.download = `rolling-returns-${strategyId}-${new Date().toISOString().split('T')[0]}.csv`;
+            csvLink.href = csvUrl;
+            csvLink.click();
+            URL.revokeObjectURL(csvUrl);
+            break;
+
+          case 'json':
+            const jsonData = {
+              strategyId,
+              windows: state.selectedWindows,
+              rollingData: state.rollingData.map((data) => ({
+                window: data.window,
+                returns: data.returns,
+                labels: data.labels,
+              })),
+              exportDate: new Date().toISOString(),
+            };
+            const jsonBlob = new Blob([JSON.stringify(jsonData, null, 2)], {
+              type: 'application/json',
+            });
+            const jsonUrl = URL.createObjectURL(jsonBlob);
+            const jsonLink = document.createElement('a');
+            jsonLink.download = `rolling-returns-${strategyId}-${new Date().toISOString().split('T')[0]}.json`;
+            jsonLink.href = jsonUrl;
+            jsonLink.click();
+            URL.revokeObjectURL(jsonUrl);
+            break;
+        }
+      } catch (error) {
+        console.error('Export failed:', error);
+      } finally {
+        setState((prev) => ({ ...prev, isExporting: false }));
       }
-    } catch (error) {
-      console.error('Export failed:', error);
-    } finally {
-      setState(prev => ({ ...prev, isExporting: false }));
-    }
-  }, [chartRef, chartData, strategyId, state]);
+    },
+    [chartRef, chartData, strategyId, state],
+  );
 
   // 渲染控制工具栏
   const renderControls = useCallback(() => {
@@ -441,10 +477,12 @@ const RollingReturnsChartComponent: React.FC<RollingReturnsChartProps> = ({
         <div className="flex items-center space-x-4">
           <span className="text-sm font-medium">滚动窗口:</span>
           <div className="flex flex-wrap gap-2">
-            {ROLLING_WINDOWS.map(window => (
+            {ROLLING_WINDOWS.map((window) => (
               <Button
                 key={window}
-                variant={state.selectedWindows.includes(window) ? 'default' : 'outline'}
+                variant={
+                  state.selectedWindows.includes(window) ? 'default' : 'outline'
+                }
                 size="sm"
                 onClick={() => handleWindowToggle(window)}
               >
@@ -470,7 +508,9 @@ const RollingReturnsChartComponent: React.FC<RollingReturnsChartProps> = ({
             disabled={isBaseLoading}
             className="h-8 w-8 p-0"
           >
-            <RefreshCw className={`w-4 h-4 ${isBaseLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`w-4 h-4 ${isBaseLoading ? 'animate-spin' : ''}`}
+            />
           </Button>
           <Button
             variant="outline"
@@ -515,13 +555,18 @@ const RollingReturnsChartComponent: React.FC<RollingReturnsChartProps> = ({
 
         <div className="space-y-3">
           <div>
-            <label className="text-sm font-medium mb-2 block">选择的滚动窗口:</label>
+            <label className="text-sm font-medium mb-2 block">
+              选择的滚动窗口:
+            </label>
             <div className="text-sm text-gray-600">
               {state.selectedWindows.length === 0 ? (
                 <span className="text-red-600">请至少选择一个滚动窗口</span>
               ) : (
-                state.selectedWindows.map(window => (
-                  <span key={window} className="inline-block mr-2 mb-1 px-2 py-1 bg-blue-100 text-blue-800 rounded">
+                state.selectedWindows.map((window) => (
+                  <span
+                    key={window}
+                    className="inline-block mr-2 mb-1 px-2 py-1 bg-blue-100 text-blue-800 rounded"
+                  >
                     {window === 252 ? '1年' : `${window / 20}个月`}
                   </span>
                 ))
@@ -532,15 +577,21 @@ const RollingReturnsChartComponent: React.FC<RollingReturnsChartProps> = ({
           <div>
             <label className="text-sm font-medium mb-2 block">可用窗口:</label>
             <div className="grid grid-cols-2 gap-2">
-              {ROLLING_WINDOWS.map(window => (
+              {ROLLING_WINDOWS.map((window) => (
                 <Button
                   key={window}
-                  variant={state.selectedWindows.includes(window) ? 'default' : 'outline'}
+                  variant={
+                    state.selectedWindows.includes(window)
+                      ? 'default'
+                      : 'outline'
+                  }
                   size="sm"
                   onClick={() => handleWindowToggle(window)}
                   className="text-xs"
                 >
-                  {window === 252 ? '1年 (252天)' : `${window / 20}个月 (${window}天)`}
+                  {window === 252
+                    ? '1年 (252天)'
+                    : `${window / 20}个月 (${window}天)`}
                 </Button>
               ))}
             </div>
@@ -552,7 +603,12 @@ const RollingReturnsChartComponent: React.FC<RollingReturnsChartProps> = ({
         </div>
       </div>
     );
-  }, [state.showSettings, state.selectedWindows, toggleSettings, handleWindowToggle]);
+  }, [
+    state.showSettings,
+    state.selectedWindows,
+    toggleSettings,
+    handleWindowToggle,
+  ]);
 
   // 渲染数据点详情
   const renderPointDetails = useCallback(() => {
@@ -565,14 +621,18 @@ const RollingReturnsChartComponent: React.FC<RollingReturnsChartProps> = ({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setState(prev => ({ ...prev, selectedPoint: null }))}
+            onClick={() =>
+              setState((prev) => ({ ...prev, selectedPoint: null }))
+            }
             className="h-6 w-6 p-0"
           >
             ×
           </Button>
         </div>
         <div className="text-sm space-y-1">
-          <div>日期: {state.selectedPoint.date.toLocaleDateString('zh-CN')}</div>
+          <div>
+            日期: {state.selectedPoint.date.toLocaleDateString('zh-CN')}
+          </div>
           <div>滚动收益: {(state.selectedPoint.value * 100).toFixed(2)}%</div>
         </div>
       </div>
@@ -583,7 +643,10 @@ const RollingReturnsChartComponent: React.FC<RollingReturnsChartProps> = ({
   if (isBaseLoading && !cumulativeReturns) {
     return (
       <Card className={className}>
-        <CardContent className="flex items-center justify-center" style={{ height }}>
+        <CardContent
+          className="flex items-center justify-center"
+          style={{ height }}
+        >
           <Loading />
           <span className="ml-2 text-gray-600">加载滚动收益数据...</span>
         </CardContent>
@@ -595,7 +658,10 @@ const RollingReturnsChartComponent: React.FC<RollingReturnsChartProps> = ({
   if (baseError && !cumulativeReturns) {
     return (
       <Card className={className}>
-        <CardContent className="flex flex-col items-center justify-center" style={{ height }}>
+        <CardContent
+          className="flex flex-col items-center justify-center"
+          style={{ height }}
+        >
           <div className="text-red-600 mb-2">
             <TrendingDown className="w-8 h-8 mx-auto mb-2" />
             <p className="text-center">加载滚动收益数据失败</p>
@@ -637,12 +703,16 @@ const RollingReturnsChartComponent: React.FC<RollingReturnsChartProps> = ({
           策略ID: {strategyId}
           {startDate && endDate && (
             <span className="ml-2">
-              分析期间: {new Date(startDate).toLocaleDateString('zh-CN')} - {new Date(endDate).toLocaleDateString('zh-CN')}
+              分析期间: {new Date(startDate).toLocaleDateString('zh-CN')} -{' '}
+              {new Date(endDate).toLocaleDateString('zh-CN')}
             </span>
           )}
           {state.selectedWindows.length > 0 && (
             <span className="ml-2">
-              窗口: {state.selectedWindows.map(w => w === 252 ? '1年' : `${w / 20}个月`).join(', ')}
+              窗口:{' '}
+              {state.selectedWindows
+                .map((w) => (w === 252 ? '1年' : `${w / 20}个月`))
+                .join(', ')}
             </span>
           )}
         </div>
@@ -682,7 +752,12 @@ const RollingReturnsChartComponent: React.FC<RollingReturnsChartProps> = ({
             <div className="flex flex-col items-center justify-center h-full text-gray-500">
               <Calendar className="w-8 h-8 mb-2" />
               <p>请选择至少一个滚动窗口</p>
-              <Button variant="outline" size="sm" onClick={toggleSettings} className="mt-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={toggleSettings}
+                className="mt-2"
+              >
                 打开设置
               </Button>
             </div>

@@ -24,7 +24,9 @@ jest.mock('@/services/contextHelpService', () => ({
 jest.mock('@radix-ui/react-tooltip', () => ({
   Provider: ({ children }: any) => <div>{children}</div>,
   Root: ({ children }: any) => <div>{children}</div>,
-  Trigger: ({ children, ...props }: any) => <button {...props}>{children}</button>,
+  Trigger: ({ children, ...props }: any) => (
+    <button {...props}>{children}</button>
+  ),
   Portal: ({ children }: any) => <div>{children}</div>,
   Content: ({ children, ...props }: any) => <div {...props}>{children}</div>,
   Arrow: (props: any) => <div {...props}>↓</div>,
@@ -42,7 +44,7 @@ describe('TutorialTooltip Isolated Test', () => {
     render(
       <TutorialTooltip
         context={{ tutorialId: 'test-tutorial', stepId: 'step-1' }}
-      />
+      />,
     );
 
     // Check that the tooltip renders by looking for specific text

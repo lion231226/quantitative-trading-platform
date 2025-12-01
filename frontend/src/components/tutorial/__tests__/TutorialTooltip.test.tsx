@@ -1,5 +1,11 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import TutorialTooltip from '../TutorialTooltip';
 
@@ -15,7 +21,9 @@ afterEach(() => {
 
 // Mock Radix UI Tooltip
 jest.mock('@radix-ui/react-tooltip', () => ({
-  Provider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  Provider: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
   Root: ({ children, open, onOpenChange }: any) => {
     // 模拟点击触发器来打开/关闭工具提示
     const handleTriggerClick = () => {
@@ -40,15 +48,25 @@ jest.mock('@radix-ui/react-tooltip', () => ({
       // 如果是 asChild，直接渲染子元素并传递所有属性
       return { ...children, props: { ...children.props, ...props } };
     }
-    return <button data-testid="tooltip-trigger" {...props}>{children}</button>;
+    return (
+      <button data-testid="tooltip-trigger" {...props}>
+        {children}
+      </button>
+    );
   },
   Content: ({ children, ...props }: any) => {
     // 过滤掉非标准的DOM属性
     const { sideOffset, alignOffset, ...domProps } = props;
-    return <div data-testid="tooltip-content" {...domProps}>{children}</div>;
+    return (
+      <div data-testid="tooltip-content" {...domProps}>
+        {children}
+      </div>
+    );
   },
   Arrow: () => <div data-testid="tooltip-arrow" />,
-  Portal: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  Portal: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
 }));
 
 // Mock lodash debounce
@@ -138,10 +156,7 @@ describe('TutorialTooltip', () => {
 
   it('displays smart recommendations when enabled', async () => {
     render(
-      <TutorialTooltip
-        {...defaultProps}
-        showSmartRecommendations={true}
-      />
+      <TutorialTooltip {...defaultProps} showSmartRecommendations={true} />,
     );
 
     const trigger = screen.getByLabelText('帮助');
@@ -161,14 +176,14 @@ describe('TutorialTooltip', () => {
         category: 'concept' as const,
         relatedTerms: ['测试'],
         priority: 'high' as const,
-      }
+      },
     ];
 
     render(
       <TutorialTooltip
         {...defaultProps}
         customHelpContent={customHelpContent}
-      />
+      />,
     );
 
     const trigger = screen.getByLabelText('帮助');
@@ -206,16 +221,19 @@ describe('TutorialTooltip', () => {
     const trigger = screen.getByLabelText('帮助');
     fireEvent.click(trigger);
 
-    await waitFor(() => {
-      const link = screen.getByText('查看完整帮助文档 →');
-      expect(link).toBeInTheDocument();
-      expect(link.tagName).toBe('BUTTON'); // 修复：这是一个按钮，不是链接
-    }, { timeout: 5000 }); // 增加超时时间
+    await waitFor(
+      () => {
+        const link = screen.getByText('查看完整帮助文档 →');
+        expect(link).toBeInTheDocument();
+        expect(link.tagName).toBe('BUTTON'); // 修复：这是一个按钮，不是链接
+      },
+      { timeout: 5000 },
+    ); // 增加超时时间
   });
 
   it('renders with different trigger modes', () => {
     const { rerender } = render(
-      <TutorialTooltip {...defaultProps} trigger="click" />
+      <TutorialTooltip {...defaultProps} trigger="click" />,
     );
     expect(screen.getByLabelText('帮助')).toBeInTheDocument();
 
@@ -259,12 +277,7 @@ describe('TutorialTooltip', () => {
   });
 
   it('respects maxRecommendations prop', async () => {
-    render(
-      <TutorialTooltip
-        {...defaultProps}
-        maxRecommendations={1}
-      />
-    );
+    render(<TutorialTooltip {...defaultProps} maxRecommendations={1} />);
 
     const trigger = screen.getByLabelText('帮助');
     fireEvent.click(trigger);
@@ -278,12 +291,7 @@ describe('TutorialTooltip', () => {
   });
 
   it('adapts content based on user level', async () => {
-    render(
-      <TutorialTooltip
-        {...defaultProps}
-        userLevel="advanced"
-      />
-    );
+    render(<TutorialTooltip {...defaultProps} userLevel="advanced" />);
 
     const trigger = screen.getByLabelText('帮助');
     fireEvent.click(trigger);

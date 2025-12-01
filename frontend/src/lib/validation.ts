@@ -9,9 +9,12 @@ export function validateDate(dateString: string): boolean {
 }
 
 // 验证日期范围
-export function validateDateRange(startDate: string, endDate: string): {
-  isValid: boolean
-  error?: string
+export function validateDateRange(
+  startDate: string,
+  endDate: string,
+): {
+  isValid: boolean;
+  error?: string;
 } {
   if (!validateDate(startDate)) {
     return { isValid: false, error: '开始日期格式无效' };
@@ -54,12 +57,12 @@ export function validateSymbol(symbol: string): boolean {
 
 // 验证策略参数
 export function validateStrategyParams(params: {
-  ma_period?: number
-  window_size?: number
-  initial_capital?: number
+  ma_period?: number;
+  window_size?: number;
+  initial_capital?: number;
 }): {
-  isValid: boolean
-  errors: string[]
+  isValid: boolean;
+  errors: string[];
 } {
   const errors: string[] = [];
 
@@ -69,7 +72,11 @@ export function validateStrategyParams(params: {
     errors.push('均线周期必须在5-200天之间');
   }
 
-  if (!params || typeof params.initial_capital === 'undefined' || params.initial_capital < 1000) {
+  if (
+    !params ||
+    typeof params.initial_capital === 'undefined' ||
+    params.initial_capital < 1000
+  ) {
     errors.push('初始资金必须大于1000元');
   }
 
@@ -85,14 +92,14 @@ export function validateStrategyParams(params: {
 
 // 验证完整的策略提交表单
 export function validateStrategyForm(form: {
-  symbol: string
-  startDate: string
-  endDate: string
-  strategyType?: string
-  params: any
+  symbol: string;
+  startDate: string;
+  endDate: string;
+  strategyType?: string;
+  params: any;
 }): {
-  isValid: boolean
-  errors: string[]
+  isValid: boolean;
+  errors: string[];
 } {
   const errors: string[] = [];
 
@@ -113,7 +120,7 @@ export function validateStrategyForm(form: {
     const commonParams = {
       ma_period: form.params.ma_period || form.params.window_size,
       window_size: form.params.window_size || form.params.ma_period,
-      initial_capital: form.params.initial_capital
+      initial_capital: form.params.initial_capital,
     };
 
     const paramsValidation = validateStrategyParams(commonParams);

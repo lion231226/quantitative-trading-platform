@@ -21,8 +21,8 @@ import {
   PerformanceAnalysisRequest,
 } from '@/types/performance.types';
 import {
-  useDrawdownData,
   performanceService,
+  useDrawdownData,
 } from '@/services/performanceService';
 import {
   generateDrawdownChartData,
@@ -32,12 +32,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loading } from '@/components/ui/loading';
 import {
-  TrendingDown,
-  TrendingUp,
-  Download,
-  Calendar,
   AlertTriangle,
   BarChart3,
+  Calendar,
+  Download,
+  TrendingDown,
+  TrendingUp,
 } from 'lucide-react';
 
 // 注册 Chart.js 组件
@@ -49,7 +49,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  Filler
+  Filler,
 );
 
 // 图表配置常量
@@ -92,7 +92,7 @@ const DEFAULT_CHART_OPTIONS: ChartOptions<'line'> = {
       padding: 12,
       displayColors: true,
       callbacks: {
-        label: function(context) {
+        label(context) {
           const value = context.parsed.y;
           if (value === null || value === undefined) return '';
           const formattedValue = `${(value * 100).toFixed(2)}%`;
@@ -122,7 +122,7 @@ const DEFAULT_CHART_OPTIONS: ChartOptions<'line'> = {
       },
       ticks: {
         color: CHART_COLORS.text,
-        callback: function(value) {
+        callback(value) {
           return `${(Number(value) * 100).toFixed(1)}%`;
         },
       },
@@ -144,7 +144,10 @@ const DEFAULT_CHART_OPTIONS: ChartOptions<'line'> = {
 
 interface DrawdownChartState {
   isExporting: boolean;
-  selectedPoint: { timestamp: string; value: number } | null;
+  selectedPoint: {
+    timestamp: string | undefined;
+    value: number | undefined;
+  } | null;
   maxDrawdown: number;
   maxDrawdownDate: string;
   currentDrawdown: number;
@@ -173,16 +176,19 @@ const DrawdownChartComponent: React.FC<DrawdownChartProps> = ({
   });
 
   // 构建分析请求
-  const analysisRequest = useMemo(() => ({
-    strategyId,
-    returnType: 'simple' as const,
-    initialCapital: 100000,
-    positionSize: 1,
-    riskFreeRate: 0.02,
-    includeCosts: true,
-    startDate,
-    endDate,
-  }), [strategyId, startDate, endDate]);
+  const analysisRequest = useMemo(
+    () => ({
+      strategyId,
+      returnType: 'simple' as const,
+      initialCapital: 100000,
+      positionSize: 1,
+      riskFreeRate: 0.02,
+      includeCosts: true,
+      startDate,
+      endDate,
+    }),
+    [strategyId, startDate, endDate],
+  );
 
   // 获取回撤数据
   const {
@@ -199,15 +205,20 @@ const DrawdownChartComponent: React.FC<DrawdownChartProps> = ({
             timestamp: label,
             value: data.datasets[0]?.data[index] || 0,
           })),
-          1000
+          1000,
         );
 
         return {
-          labels: sampledData.map(point => point.timestamp),
-          datasets: [{
-            ...data.datasets[0],
-            data: sampledData.map(point => point.value),
-          }],
+          labels: sampledData.map((point) => point.timestamp),
+          datasets: [
+            {
+              label: data.datasets[0]?.label || 'Drawdown',
+              data: sampledData.map((point) => point.value),
+              borderColor: data.datasets[0]?.borderColor,
+              backgroundColor: data.datasets[0]?.backgroundColor,
+              fill: data.datasets[0]?.fill,
+            },
+          ],
         };
       }
       return data;
@@ -232,7 +243,8 @@ const DrawdownChartComponent: React.FC<DrawdownChartProps> = ({
       let daysInDrawdown = 0;
       let inDrawdown = false;
       for (let i = drawdownValues.length - 1; i >= 0; i--) {
-        if (drawdownValues[i] > 0.001) { // 大于0.1%认为是回撤
+        if (drawdownValues[i] > 0.001) {
+          // 大于0.1%认为是回撤
           if (!inDrawdown) {
             inDrawdown = true;
           }
@@ -242,7 +254,7 @@ const DrawdownChartComponent: React.FC<DrawdownChartProps> = ({
         }
       }
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         maxDrawdown,
         maxDrawdownDate,
@@ -258,7 +270,7 @@ const DrawdownChartComponent: React.FC<DrawdownChartProps> = ({
 
     return generateDrawdownChartData(
       drawdownData.labels,
-      drawdownData.datasets[0]?.data || []
+      drawdownData.datasets[0]?.data || [],
     );
   }, [drawdownData]);
 
@@ -302,17 +314,24 @@ const DrawdownChartComponent: React.FC<DrawdownChartProps> = ({
 
     // 点击事件处理
     options.onClick = (event, elements, chart) => {
-      if (elements.length > 0) {
+      if (elements.length > 0 && elements[0]) {
         const element = elements[0];
         const index = element.index;
 
-        if (chartData && chartData.datasets[0]) {
+        if (
+          chartData &&
+          chartData.datasets[0] &&
+          index >= 0 &&
+          index < chartData.labels.length
+        ) {
           const timestamp = chartData.labels[index];
           const value = chartData.datasets[0].data[index];
 
-          const point = { timestamp, value };
-          setState(prev => ({ ...prev, selectedPoint: point }));
-          onDrawdownClick?.(point);
+          if (timestamp !== undefined && value !== undefined) {
+            const point = { timestamp, value };
+            setState((prev) => ({ ...prev, selectedPoint: point }));
+            onDrawdownClick?.(point);
+          }
         }
       }
     };
@@ -321,67 +340,74 @@ const DrawdownChartComponent: React.FC<DrawdownChartProps> = ({
   }, [showTooltip, state.maxDrawdown, chartData, onDrawdownClick]);
 
   // 导出功能
-  const handleExport = useCallback(async (format: 'png' | 'csv' | 'json') => {
-    if (!chartRef.current || !chartData) return;
+  const handleExport = useCallback(
+    async (format: 'png' | 'csv' | 'json') => {
+      if (!chartRef.current || !chartData) return;
 
-    setState(prev => ({ ...prev, isExporting: true }));
+      setState((prev) => ({ ...prev, isExporting: true }));
 
-    try {
-      switch (format) {
-        case 'png':
-          const canvas = chartRef.current.canvas;
-          const url = canvas.toDataURL('image/png');
-          const link = document.createElement('a');
-          link.download = `drawdown-chart-${strategyId}-${new Date().toISOString().split('T')[0]}.png`;
-          link.href = url;
-          link.click();
-          break;
+      try {
+        switch (format) {
+          case 'png':
+            const canvas = chartRef.current.canvas;
+            const url = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = `drawdown-chart-${strategyId}-${new Date().toISOString().split('T')[0]}.png`;
+            link.href = url;
+            link.click();
+            break;
 
-        case 'csv':
-          const csvContent = 'Date,Drawdown\n' + chartData.labels.map((label, index) => {
-            const value = chartData.datasets[0]?.data[index] || 0;
-            return `${label},${value}`;
-          }).join('\n');
-          const csvBlob = new Blob([csvContent], { type: 'text/csv' });
-          const csvUrl = URL.createObjectURL(csvBlob);
-          const csvLink = document.createElement('a');
-          csvLink.download = `drawdown-chart-${strategyId}-${new Date().toISOString().split('T')[0]}.csv`;
-          csvLink.href = csvUrl;
-          csvLink.click();
-          URL.revokeObjectURL(csvUrl);
-          break;
+          case 'csv':
+            const csvContent = `Date,Drawdown\n${chartData.labels
+              .map((label, index) => {
+                const value = chartData.datasets[0]?.data[index] || 0;
+                return `${label},${value}`;
+              })
+              .join('\n')}`;
+            const csvBlob = new Blob([csvContent], { type: 'text/csv' });
+            const csvUrl = URL.createObjectURL(csvBlob);
+            const csvLink = document.createElement('a');
+            csvLink.download = `drawdown-chart-${strategyId}-${new Date().toISOString().split('T')[0]}.csv`;
+            csvLink.href = csvUrl;
+            csvLink.click();
+            URL.revokeObjectURL(csvUrl);
+            break;
 
-        case 'json':
-          const jsonData = {
-            strategyId,
-            labels: chartData.labels,
-            datasets: chartData.datasets.map(dataset => ({
-              label: dataset.label,
-              data: dataset.data,
-            })),
-            statistics: {
-              maxDrawdown: state.maxDrawdown,
-              maxDrawdownDate: state.maxDrawdownDate,
-              currentDrawdown: state.currentDrawdown,
-              daysInDrawdown: state.daysInDrawdown,
-            },
-            exportDate: new Date().toISOString(),
-          };
-          const jsonBlob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
-          const jsonUrl = URL.createObjectURL(jsonBlob);
-          const jsonLink = document.createElement('a');
-          jsonLink.download = `drawdown-chart-${strategyId}-${new Date().toISOString().split('T')[0]}.json`;
-          jsonLink.href = jsonUrl;
-          jsonLink.click();
-          URL.revokeObjectURL(jsonUrl);
-          break;
+          case 'json':
+            const jsonData = {
+              strategyId,
+              labels: chartData.labels,
+              datasets: chartData.datasets.map((dataset) => ({
+                label: dataset.label,
+                data: dataset.data,
+              })),
+              statistics: {
+                maxDrawdown: state.maxDrawdown,
+                maxDrawdownDate: state.maxDrawdownDate,
+                currentDrawdown: state.currentDrawdown,
+                daysInDrawdown: state.daysInDrawdown,
+              },
+              exportDate: new Date().toISOString(),
+            };
+            const jsonBlob = new Blob([JSON.stringify(jsonData, null, 2)], {
+              type: 'application/json',
+            });
+            const jsonUrl = URL.createObjectURL(jsonBlob);
+            const jsonLink = document.createElement('a');
+            jsonLink.download = `drawdown-chart-${strategyId}-${new Date().toISOString().split('T')[0]}.json`;
+            jsonLink.href = jsonUrl;
+            jsonLink.click();
+            URL.revokeObjectURL(jsonUrl);
+            break;
+        }
+      } catch (error) {
+        console.error('Export failed:', error);
+      } finally {
+        setState((prev) => ({ ...prev, isExporting: false }));
       }
-    } catch (error) {
-      console.error('Export failed:', error);
-    } finally {
-      setState(prev => ({ ...prev, isExporting: false }));
-    }
-  }, [chartRef, chartData, strategyId, state]);
+    },
+    [chartRef, chartData, strategyId, state],
+  );
 
   // 渲染控制工具栏
   const renderControls = useCallback(() => {
@@ -441,11 +467,7 @@ const DrawdownChartComponent: React.FC<DrawdownChartProps> = ({
         </div>
       </div>
     );
-  }, [
-    showControls,
-    state,
-    handleExport,
-  ]);
+  }, [showControls, state, handleExport]);
 
   // 渲染数据点详情
   const renderPointDetails = useCallback(() => {
@@ -458,14 +480,21 @@ const DrawdownChartComponent: React.FC<DrawdownChartProps> = ({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setState(prev => ({ ...prev, selectedPoint: null }))}
+            onClick={() =>
+              setState((prev) => ({ ...prev, selectedPoint: null }))
+            }
             className="h-6 w-6 p-0"
           >
             ×
           </Button>
         </div>
         <div className="text-sm space-y-1">
-          <div>日期: {new Date(state.selectedPoint.timestamp).toLocaleDateString('zh-CN')}</div>
+          <div>
+            日期:{' '}
+            {new Date(state.selectedPoint.timestamp).toLocaleDateString(
+              'zh-CN',
+            )}
+          </div>
           <div>回撤: {(state.selectedPoint.value * 100).toFixed(2)}%</div>
         </div>
       </div>
@@ -477,9 +506,24 @@ const DrawdownChartComponent: React.FC<DrawdownChartProps> = ({
     if (state.maxDrawdown < 0.1) return null; // 最大回撤小于10%不显示警告
 
     const getRiskLevel = (drawdown: number) => {
-      if (drawdown >= 0.3) return { level: '极高风险', color: 'text-red-600', icon: AlertTriangle };
-      if (drawdown >= 0.2) return { level: '高风险', color: 'text-orange-600', icon: TrendingDown };
-      if (drawdown >= 0.1) return { level: '中等风险', color: 'text-yellow-600', icon: AlertTriangle };
+      if (drawdown >= 0.3)
+        return {
+          level: '极高风险',
+          color: 'text-red-600',
+          icon: AlertTriangle,
+        };
+      if (drawdown >= 0.2)
+        return {
+          level: '高风险',
+          color: 'text-orange-600',
+          icon: TrendingDown,
+        };
+      if (drawdown >= 0.1)
+        return {
+          level: '中等风险',
+          color: 'text-yellow-600',
+          icon: AlertTriangle,
+        };
       return { level: '低风险', color: 'text-green-600', icon: TrendingUp };
     };
 
@@ -487,11 +531,15 @@ const DrawdownChartComponent: React.FC<DrawdownChartProps> = ({
     const Icon = risk.icon;
 
     return (
-      <div className={`flex items-center space-x-2 p-3 bg-gray-50 rounded-lg ${risk.color}`}>
+      <div
+        className={`flex items-center space-x-2 p-3 bg-gray-50 rounded-lg ${risk.color}`}
+      >
         <Icon className="w-5 h-5" />
         <div>
           <div className="font-medium">{risk.level}</div>
-          <div className="text-sm">最大回撤 {(state.maxDrawdown * 100).toFixed(2)}%</div>
+          <div className="text-sm">
+            最大回撤 {(state.maxDrawdown * 100).toFixed(2)}%
+          </div>
         </div>
       </div>
     );
@@ -501,7 +549,10 @@ const DrawdownChartComponent: React.FC<DrawdownChartProps> = ({
   if (isLoading && !drawdownData) {
     return (
       <Card className={className}>
-        <CardContent className="flex items-center justify-center" style={{ height }}>
+        <CardContent
+          className="flex items-center justify-center"
+          style={{ height }}
+        >
           <Loading />
           <span className="ml-2 text-gray-600">加载回撤数据...</span>
         </CardContent>
@@ -513,7 +564,10 @@ const DrawdownChartComponent: React.FC<DrawdownChartProps> = ({
   if (error && !drawdownData) {
     return (
       <Card className={className}>
-        <CardContent className="flex flex-col items-center justify-center" style={{ height }}>
+        <CardContent
+          className="flex flex-col items-center justify-center"
+          style={{ height }}
+        >
           <div className="text-red-600 mb-2">
             <TrendingDown className="w-8 h-8 mx-auto mb-2" />
             <p className="text-center">加载回撤数据失败</p>
@@ -546,7 +600,9 @@ const DrawdownChartComponent: React.FC<DrawdownChartProps> = ({
               disabled={isLoading}
               className="h-8 w-8 p-0"
             >
-              <TrendingDown className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+              <TrendingDown
+                className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`}
+              />
             </Button>
           </div>
         </div>
@@ -556,7 +612,8 @@ const DrawdownChartComponent: React.FC<DrawdownChartProps> = ({
           策略ID: {strategyId}
           {startDate && endDate && (
             <span className="ml-2">
-              分析期间: {new Date(startDate).toLocaleDateString('zh-CN')} - {new Date(endDate).toLocaleDateString('zh-CN')}
+              分析期间: {new Date(startDate).toLocaleDateString('zh-CN')} -{' '}
+              {new Date(endDate).toLocaleDateString('zh-CN')}
             </span>
           )}
         </div>

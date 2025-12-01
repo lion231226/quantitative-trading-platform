@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { PerformanceMonitorProps } from '../../types/kline.types'
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { PerformanceMonitorProps } from '../../types/kline.types';
 
 export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
   dataPoints,
@@ -7,11 +7,11 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
   fps,
   memoryUsage,
   className = '',
-  showDetails = false
+  showDetails = false,
 }) => {
-  const [isVisible, setIsVisible] = useState(true)
-  const [alerts, setAlerts] = useState<string[]>([])
-  const previousMetrics = useRef({ fps: 60, memory: 0 })
+  const [isVisible, setIsVisible] = useState(true);
+  const [alerts, setAlerts] = useState<string[]>([]);
+  const previousMetrics = useRef({ fps: 60, memory: 0 });
 
   // 性能阈值配置
   const THRESHOLDS = {
@@ -19,94 +19,108 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
       excellent: 60,
       good: 30,
       warning: 15,
-      critical: 10
+      critical: 10,
     },
     renderTime: {
-      excellent: 16,    // ~60fps
-      good: 33,        // ~30fps
-      warning: 66,     // ~15fps
-      critical: 100    // ~10fps
+      excellent: 16, // ~60fps
+      good: 33, // ~30fps
+      warning: 66, // ~15fps
+      critical: 100, // ~10fps
     },
     memoryUsage: {
-      good: 50 * 1024 * 1024,    // 50MB
+      good: 50 * 1024 * 1024, // 50MB
       warning: 100 * 1024 * 1024, // 100MB
-      critical: 200 * 1024 * 1024 // 200MB
-    }
-  }
+      critical: 200 * 1024 * 1024, // 200MB
+    },
+  };
 
   // 性能评估函数
-  const getPerformanceLevel = (metric: number, thresholds: typeof THRESHOLDS.fps): {
-    level: 'excellent' | 'good' | 'warning' | 'critical'
-    color: string
-    icon: string
+  const getPerformanceLevel = (
+    metric: number,
+    thresholds: typeof THRESHOLDS.fps,
+  ): {
+    level: 'excellent' | 'good' | 'warning' | 'critical';
+    color: string;
+    icon: string;
   } => {
     if (metric >= thresholds.excellent) {
-      return { level: 'excellent', color: 'text-green-600', icon: '🟢' }
+      return { level: 'excellent', color: 'text-green-600', icon: '🟢' };
     } else if (metric >= thresholds.warning) {
-      return { level: 'good', color: 'text-blue-600', icon: '🔵' }
+      return { level: 'good', color: 'text-blue-600', icon: '🔵' };
     } else if (metric >= thresholds.critical) {
-      return { level: 'warning', color: 'text-yellow-600', icon: '🟡' }
+      return { level: 'warning', color: 'text-yellow-600', icon: '🟡' };
     } else {
-      return { level: 'critical', color: 'text-red-600', icon: '🔴' }
+      return { level: 'critical', color: 'text-red-600', icon: '🔴' };
     }
-  }
+  };
 
   // 格式化内存大小
   const formatMemorySize = (bytes: number): string => {
     if (bytes >= 1024 * 1024 * 1024) {
-      return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)}GB`
+      return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)}GB`;
     } else if (bytes >= 1024 * 1024) {
-      return `${(bytes / (1024 * 1024)).toFixed(1)}MB`
+      return `${(bytes / (1024 * 1024)).toFixed(1)}MB`;
     } else if (bytes >= 1024) {
-      return `${(bytes / 1024).toFixed(0)}KB`
+      return `${(bytes / 1024).toFixed(0)}KB`;
     } else {
-      return `${bytes}B`
+      return `${bytes}B`;
     }
-  }
+  };
 
   // 性能警报检查
   useEffect(() => {
-    const newAlerts: string[] = []
+    const newAlerts: string[] = [];
 
     // FPS检查
     if (fps < THRESHOLDS.fps.critical) {
-      newAlerts.push(`严重性能问题: FPS ${fps.toFixed(1)} 低于 ${THRESHOLDS.fps.critical}`)
+      newAlerts.push(
+        `严重性能问题: FPS ${fps.toFixed(1)} 低于 ${THRESHOLDS.fps.critical}`,
+      );
     } else if (fps < THRESHOLDS.fps.warning) {
-      newAlerts.push(`性能警告: FPS ${fps.toFixed(1)} 低于建议值 ${THRESHOLDS.fps.warning}`)
+      newAlerts.push(
+        `性能警告: FPS ${fps.toFixed(1)} 低于建议值 ${THRESHOLDS.fps.warning}`,
+      );
     }
 
     // 渲染时间检查
     if (renderTime > THRESHOLDS.renderTime.critical) {
-      newAlerts.push(`渲染时间过长: ${renderTime.toFixed(1)}ms 超过临界值`)
+      newAlerts.push(`渲染时间过长: ${renderTime.toFixed(1)}ms 超过临界值`);
     }
 
     // 内存使用检查
     if (memoryUsage > THRESHOLDS.memoryUsage.critical) {
-      newAlerts.push(`内存使用过高: ${formatMemorySize(memoryUsage)}`)
+      newAlerts.push(`内存使用过高: ${formatMemorySize(memoryUsage)}`);
     }
 
     // 数据量检查
     if (dataPoints > 50000) {
-      newAlerts.push(`数据量过大: ${dataPoints.toLocaleString()} 数据点可能影响性能`)
+      newAlerts.push(
+        `数据量过大: ${dataPoints.toLocaleString()} 数据点可能影响性能`,
+      );
     }
 
     // FPS下降检测
-    const fpsDrop = previousMetrics.current.fps - fps
+    const fpsDrop = previousMetrics.current.fps - fps;
     if (fpsDrop > 20) {
-      newAlerts.push(`FPS显著下降: 从 ${previousMetrics.current.fps.toFixed(1)} 降至 ${fps.toFixed(1)}`)
+      newAlerts.push(
+        `FPS显著下降: 从 ${previousMetrics.current.fps.toFixed(1)} 降至 ${fps.toFixed(1)}`,
+      );
     }
 
-    setAlerts(newAlerts)
-    previousMetrics.current = { fps, memory: memoryUsage }
-  }, [dataPoints, renderTime, fps, memoryUsage])
+    setAlerts(newAlerts);
+    previousMetrics.current = { fps, memory: memoryUsage };
+  }, [dataPoints, renderTime, fps, memoryUsage]);
 
   // 获取FPS状态
-  const fpsStatus = getPerformanceLevel(fps, THRESHOLDS.fps)
-  const renderTimeStatus = getPerformanceLevel(1000 / renderTime, THRESHOLDS.fps) // 转换为等效FPS
+  const fpsStatus = getPerformanceLevel(fps, THRESHOLDS.fps);
+  const renderTimeStatus = getPerformanceLevel(
+    1000 / renderTime,
+    THRESHOLDS.fps,
+  ); // 转换为等效FPS
   const memoryStatus = getPerformanceLevel(
     THRESHOLDS.memoryUsage.good / (memoryUsage || 1), // 反向计算，内存越少越好
-    { ...THRESHOLDS.fps, excellent: 2, good: 1.5, warning: 1.2, critical: 1 }
-  )
+    { ...THRESHOLDS.fps, excellent: 2, good: 1.5, warning: 1.2, critical: 1 },
+  );
 
   if (!isVisible) {
     return (
@@ -117,7 +131,7 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
       >
         📊
       </button>
-    )
+    );
   }
 
   return (
@@ -152,7 +166,9 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
           {/* 渲染时间 */}
           <div className="text-center p-2 bg-gray-50 rounded">
             <div className={`text-2xl font-bold ${renderTimeStatus.color}`}>
-              {renderTime < 1 ? `${(renderTime * 1000).toFixed(0)}ms` : `${renderTime.toFixed(1)}s`}
+              {renderTime < 1
+                ? `${(renderTime * 1000).toFixed(0)}ms`
+                : `${renderTime.toFixed(1)}s`}
             </div>
             <div className="text-xs text-gray-600">渲染时间</div>
             <div className="text-xs">{renderTimeStatus.icon}</div>
@@ -161,7 +177,9 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
           {/* 数据点 */}
           <div className="text-center p-2 bg-gray-50 rounded">
             <div className="text-lg font-bold text-gray-700">
-              {dataPoints > 1000 ? `${(dataPoints / 1000).toFixed(1)}K` : dataPoints}
+              {dataPoints > 1000
+                ? `${(dataPoints / 1000).toFixed(1)}K`
+                : dataPoints}
             </div>
             <div className="text-xs text-gray-600">数据点</div>
             <div className="text-xs">📈</div>
@@ -186,9 +204,13 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
             <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
               <span className="text-sm text-gray-600">性能评分</span>
               <span className={`text-sm font-medium ${fpsStatus.color}`}>
-                {fpsStatus.level === 'excellent' ? '优秀' :
-                 fpsStatus.level === 'good' ? '良好' :
-                 fpsStatus.level === 'warning' ? '一般' : '需优化'}
+                {fpsStatus.level === 'excellent'
+                  ? '优秀'
+                  : fpsStatus.level === 'good'
+                    ? '良好'
+                    : fpsStatus.level === 'warning'
+                      ? '一般'
+                      : '需优化'}
               </span>
             </div>
 
@@ -213,7 +235,9 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
         {/* 警报 */}
         {alerts.length > 0 && (
           <div className="space-y-2">
-            <div className="text-sm font-medium text-red-800 mb-1">⚠️ 性能警报</div>
+            <div className="text-sm font-medium text-red-800 mb-1">
+              ⚠️ 性能警报
+            </div>
             {alerts.map((alert, index) => (
               <div
                 key={index}
@@ -236,7 +260,7 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default PerformanceMonitor
+export default PerformanceMonitor;

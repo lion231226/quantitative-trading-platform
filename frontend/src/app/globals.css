@@ -107,7 +107,7 @@
   }
 
   /* 隐藏不需要打印的元素 */
-  button:not([onclick*="window.print()"]),
+  button:not([onclick*='window.print()']),
   .no-print {
     display: none !important;
   }
@@ -124,24 +124,29 @@
   }
 
   /* 图表容器 */
-  [style*="height"] {
+  [style*='height'] {
     height: auto !important;
     max-height: 400px !important;
   }
 
   /* 确保文本不被截断 */
-  .text-2xl, .text-lg, .text-sm {
+  .text-2xl,
+  .text-lg,
+  .text-sm {
     color: #000 !important;
   }
 
   /* 背景色优化 */
-  .bg-blue-50, .bg-green-50, .bg-orange-50, .bg-purple-50 {
+  .bg-blue-50,
+  .bg-green-50,
+  .bg-orange-50,
+  .bg-purple-50 {
     background-color: #f8fafc !important;
     border: 1px solid #e2e8f0 !important;
   }
 
   /* 打印按钮样式 */
-  button[onclick*="window.print()"] {
+  button[onclick*='window.print()'] {
     background: #1e40af !important;
     color: white !important;
     border: 1px solid #1e40af !important;
@@ -154,7 +159,9 @@
   }
 
   /* 标题和内容 */
-  h1, h2, h3 {
+  h1,
+  h2,
+  h3 {
     color: #000 !important;
     page-break-after: avoid;
   }

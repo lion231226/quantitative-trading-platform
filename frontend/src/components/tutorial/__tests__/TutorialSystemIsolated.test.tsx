@@ -16,7 +16,9 @@ jest.mock('lucide-react', () => ({
 }));
 
 jest.mock('@/components/ui/button', () => ({
-  Button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
+  Button: ({ children, ...props }: any) => (
+    <button {...props}>{children}</button>
+  ),
 }));
 
 jest.mock('@/components/ui/card', () => ({
@@ -46,7 +48,7 @@ jest.mock('@/services/tutorialService', () => ({
             type: 'explanation' as const,
             estimatedTime: 60,
             isOptional: false,
-          }
+          },
         ],
       },
       isLoading: false,
@@ -115,7 +117,7 @@ describe('TutorialSystem Isolated Test', () => {
           isOpen={true}
           onClose={() => {}}
         />
-      </div>
+      </div>,
     );
 
     expect(screen.getByText('测试教程')).toBeInTheDocument();

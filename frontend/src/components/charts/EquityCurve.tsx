@@ -1,6 +1,12 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Line } from 'react-chartjs-2';
 import {
   CategoryScale,
@@ -16,14 +22,14 @@ import {
   Tooltip,
 } from 'chart.js';
 import {
-  EquityCurveProps,
   CumulativeReturnData,
-  ReturnDataPoint,
+  EquityCurveProps,
   PerformanceAnalysisRequest,
+  ReturnDataPoint,
 } from '@/types/performance.types';
 import {
-  useCumulativeReturns,
   performanceService,
+  useCumulativeReturns,
 } from '@/services/performanceService';
 import {
   generateCumulativeReturnChartData,
@@ -33,14 +39,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loading } from '@/components/ui/loading';
 import {
-  TrendingUp,
+  BarChart3,
+  Calendar,
+  Download,
+  RotateCcw,
   TrendingDown,
+  TrendingUp,
   ZoomIn,
   ZoomOut,
-  RotateCcw,
-  Download,
-  Calendar,
-  BarChart3,
 } from 'lucide-react';
 
 // 注册 Chart.js 组件
@@ -52,7 +58,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  Filler
+  Filler,
 );
 
 // 图表配置常量
@@ -94,7 +100,7 @@ const DEFAULT_CHART_OPTIONS: ChartOptions<'line'> = {
       padding: 12,
       displayColors: true,
       callbacks: {
-        label: function(context) {
+        label(context) {
           const value = context.parsed.y;
           if (value === null || value === undefined) return '';
           const label = context.dataset.label || '';
@@ -125,7 +131,7 @@ const DEFAULT_CHART_OPTIONS: ChartOptions<'line'> = {
       },
       ticks: {
         color: CHART_COLORS.text,
-        callback: function(value) {
+        callback(value) {
           return `${(Number(value) * 100).toFixed(1)}%`;
         },
       },
@@ -172,17 +178,20 @@ const EquityCurveComponent: React.FC<EquityCurveProps> = ({
   });
 
   // 构建分析请求
-  const analysisRequest = useMemo(() => ({
-    strategyId,
-    returnType: 'simple' as const,
-    initialCapital: 100000,
-    positionSize: 1,
-    riskFreeRate: 0.02,
-    includeCosts: true,
-    startDate,
-    endDate,
-    benchmarkId,
-  }), [strategyId, startDate, endDate, benchmarkId]);
+  const analysisRequest = useMemo(
+    () => ({
+      strategyId,
+      returnType: 'simple' as const,
+      initialCapital: 100000,
+      positionSize: 1,
+      riskFreeRate: 0.02,
+      includeCosts: true,
+      startDate,
+      endDate,
+      benchmarkId,
+    }),
+    [strategyId, startDate, endDate, benchmarkId],
+  );
 
   // 获取累计收益数据
   const {
@@ -199,15 +208,17 @@ const EquityCurveComponent: React.FC<EquityCurveProps> = ({
             timestamp: label,
             value: data.datasets[0]?.data[index] || 0,
           })),
-          1000
+          1000,
         );
 
         return {
-          labels: sampledData.map(point => point.timestamp),
-          datasets: [{
-            ...data.datasets[0],
-            data: sampledData.map(point => point.value),
-          }],
+          labels: sampledData.map((point) => point.timestamp),
+          datasets: [
+            {
+              ...data.datasets[0],
+              data: sampledData.map((point) => point.value),
+            },
+          ],
         };
       }
       return data;
@@ -220,7 +231,7 @@ const EquityCurveComponent: React.FC<EquityCurveProps> = ({
 
     const baseData = generateCumulativeReturnChartData(
       cumulativeReturns.labels,
-      cumulativeReturns.datasets[0]?.data || []
+      cumulativeReturns.datasets[0]?.data || [],
     );
 
     // 如果有基准数据，添加基准线
@@ -277,7 +288,7 @@ const EquityCurveComponent: React.FC<EquityCurveProps> = ({
             date: new Date(timestamp),
           };
 
-          setState(prev => ({ ...prev, selectedPoint: point }));
+          setState((prev) => ({ ...prev, selectedPoint: point }));
           onDataPointClick?.(point);
         }
       }
@@ -289,73 +300,80 @@ const EquityCurveComponent: React.FC<EquityCurveProps> = ({
   // 缩放控制 - 简化版本
   const handleZoomIn = useCallback(() => {
     // 简化版本：仅设置状态，实际缩放需要插件支持
-    setState(prev => ({ ...prev, isZoomed: true }));
+    setState((prev) => ({ ...prev, isZoomed: true }));
   }, []);
 
   const handleZoomOut = useCallback(() => {
-    setState(prev => ({ ...prev, isZoomed: false }));
+    setState((prev) => ({ ...prev, isZoomed: false }));
   }, []);
 
   const handleResetZoom = useCallback(() => {
-    setState(prev => ({ ...prev, isZoomed: false }));
+    setState((prev) => ({ ...prev, isZoomed: false }));
   }, []);
 
   // 导出功能
-  const handleExport = useCallback(async (format: 'png' | 'csv' | 'json') => {
-    if (!chartRef.current || !chartData) return;
+  const handleExport = useCallback(
+    async (format: 'png' | 'csv' | 'json') => {
+      if (!chartRef.current || !chartData) return;
 
-    setState(prev => ({ ...prev, isExporting: true }));
+      setState((prev) => ({ ...prev, isExporting: true }));
 
-    try {
-      switch (format) {
-        case 'png':
-          const canvas = chartRef.current.canvas;
-          const url = canvas.toDataURL('image/png');
-          const link = document.createElement('a');
-          link.download = `equity-curve-${strategyId}-${new Date().toISOString().split('T')[0]}.png`;
-          link.href = url;
-          link.click();
-          break;
+      try {
+        switch (format) {
+          case 'png':
+            const canvas = chartRef.current.canvas;
+            const url = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = `equity-curve-${strategyId}-${new Date().toISOString().split('T')[0]}.png`;
+            link.href = url;
+            link.click();
+            break;
 
-        case 'csv':
-          const csvContent = 'Date,Value\n' + chartData.labels.map((label, index) => {
-            const value = chartData.datasets[0]?.data[index] || 0;
-            return `${label},${value}`;
-          }).join('\n');
-          const csvBlob = new Blob([csvContent], { type: 'text/csv' });
-          const csvUrl = URL.createObjectURL(csvBlob);
-          const csvLink = document.createElement('a');
-          csvLink.download = `equity-curve-${strategyId}-${new Date().toISOString().split('T')[0]}.csv`;
-          csvLink.href = csvUrl;
-          csvLink.click();
-          URL.revokeObjectURL(csvUrl);
-          break;
+          case 'csv':
+            const csvContent = `Date,Value\n${chartData.labels
+              .map((label, index) => {
+                const value = chartData.datasets[0]?.data[index] || 0;
+                return `${label},${value}`;
+              })
+              .join('\n')}`;
+            const csvBlob = new Blob([csvContent], { type: 'text/csv' });
+            const csvUrl = URL.createObjectURL(csvBlob);
+            const csvLink = document.createElement('a');
+            csvLink.download = `equity-curve-${strategyId}-${new Date().toISOString().split('T')[0]}.csv`;
+            csvLink.href = csvUrl;
+            csvLink.click();
+            URL.revokeObjectURL(csvUrl);
+            break;
 
-        case 'json':
-          const jsonData = {
-            strategyId,
-            labels: chartData.labels,
-            datasets: chartData.datasets.map(dataset => ({
-              label: dataset.label,
-              data: dataset.data,
-            })),
-            exportDate: new Date().toISOString(),
-          };
-          const jsonBlob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
-          const jsonUrl = URL.createObjectURL(jsonBlob);
-          const jsonLink = document.createElement('a');
-          jsonLink.download = `equity-curve-${strategyId}-${new Date().toISOString().split('T')[0]}.json`;
-          jsonLink.href = jsonUrl;
-          jsonLink.click();
-          URL.revokeObjectURL(jsonUrl);
-          break;
+          case 'json':
+            const jsonData = {
+              strategyId,
+              labels: chartData.labels,
+              datasets: chartData.datasets.map((dataset) => ({
+                label: dataset.label,
+                data: dataset.data,
+              })),
+              exportDate: new Date().toISOString(),
+            };
+            const jsonBlob = new Blob([JSON.stringify(jsonData, null, 2)], {
+              type: 'application/json',
+            });
+            const jsonUrl = URL.createObjectURL(jsonBlob);
+            const jsonLink = document.createElement('a');
+            jsonLink.download = `equity-curve-${strategyId}-${new Date().toISOString().split('T')[0]}.json`;
+            jsonLink.href = jsonUrl;
+            jsonLink.click();
+            URL.revokeObjectURL(jsonUrl);
+            break;
+        }
+      } catch (error) {
+        console.error('Export failed:', error);
+      } finally {
+        setState((prev) => ({ ...prev, isExporting: false }));
       }
-    } catch (error) {
-      console.error('Export failed:', error);
-    } finally {
-      setState(prev => ({ ...prev, isExporting: false }));
-    }
-  }, [chartRef, chartData, strategyId]);
+    },
+    [chartRef, chartData, strategyId],
+  );
 
   // 渲染控制工具栏
   const renderControls = useCallback(() => {
@@ -452,14 +470,18 @@ const EquityCurveComponent: React.FC<EquityCurveProps> = ({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setState(prev => ({ ...prev, selectedPoint: null }))}
+            onClick={() =>
+              setState((prev) => ({ ...prev, selectedPoint: null }))
+            }
             className="h-6 w-6 p-0"
           >
             ×
           </Button>
         </div>
         <div className="text-sm space-y-1">
-          <div>日期: {state.selectedPoint.date.toLocaleDateString('zh-CN')}</div>
+          <div>
+            日期: {state.selectedPoint.date.toLocaleDateString('zh-CN')}
+          </div>
           <div>收益: {(state.selectedPoint.value * 100).toFixed(2)}%</div>
         </div>
       </div>
@@ -470,7 +492,10 @@ const EquityCurveComponent: React.FC<EquityCurveProps> = ({
   if (isLoading && !cumulativeReturns) {
     return (
       <Card className={className}>
-        <CardContent className="flex items-center justify-center" style={{ height }}>
+        <CardContent
+          className="flex items-center justify-center"
+          style={{ height }}
+        >
           <Loading />
           <span className="ml-2 text-gray-600">加载收益曲线...</span>
         </CardContent>
@@ -482,7 +507,10 @@ const EquityCurveComponent: React.FC<EquityCurveProps> = ({
   if (error && !cumulativeReturns) {
     return (
       <Card className={className}>
-        <CardContent className="flex flex-col items-center justify-center" style={{ height }}>
+        <CardContent
+          className="flex flex-col items-center justify-center"
+          style={{ height }}
+        >
           <div className="text-red-600 mb-2">
             <TrendingDown className="w-8 h-8 mx-auto mb-2" />
             <p className="text-center">加载收益曲线失败</p>
@@ -517,7 +545,8 @@ const EquityCurveComponent: React.FC<EquityCurveProps> = ({
             <div className="flex items-center space-x-1">
               <Calendar className="w-3 h-3" />
               <span>
-                {new Date(startDate).toLocaleDateString('zh-CN')} - {new Date(endDate).toLocaleDateString('zh-CN')}
+                {new Date(startDate).toLocaleDateString('zh-CN')} -{' '}
+                {new Date(endDate).toLocaleDateString('zh-CN')}
               </span>
             </div>
           )}

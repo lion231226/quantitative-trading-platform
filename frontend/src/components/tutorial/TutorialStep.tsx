@@ -1,10 +1,18 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Play, Pause, RotateCcw, Volume2, VolumeX, Maximize2, Minimize2 } from 'lucide-react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  TutorialStep,
-  TutorialContext,
+  Maximize2,
+  Minimize2,
+  Pause,
+  Play,
+  RotateCcw,
+  Volume2,
+  VolumeX,
+} from 'lucide-react';
+import {
   CompletionCondition,
+  TutorialContext,
   TutorialResource,
+  TutorialStep,
 } from '@/types/tutorial.types';
 import { checkCompletionConditions, formatTime } from '@/utils/tutorialHelpers';
 import { Button } from '@/components/ui/button';
@@ -54,7 +62,7 @@ export function TutorialStep({
   useEffect(() => {
     if (isActive && !isCompleted) {
       timerRef.current = setInterval(() => {
-        setTimeSpent(prev => prev + 1);
+        setTimeSpent((prev) => prev + 1);
       }, 1000);
     } else {
       if (timerRef.current) {
@@ -86,14 +94,24 @@ export function TutorialStep({
     if (isComplete && !isCompleted) {
       setIsCompleted(true);
     }
-  }, [timeSpent, actionsCompleted, animationWatched, quizPassed, step.completionConditions, isCompleted]);
+  }, [
+    timeSpent,
+    actionsCompleted,
+    animationWatched,
+    quizPassed,
+    step.completionConditions,
+    isCompleted,
+  ]);
 
   // 标记动作完成
-  const markActionCompleted = useCallback((actionId: string) => {
-    if (!actionsCompleted.includes(actionId)) {
-      setActionsCompleted(prev => [...prev, actionId]);
-    }
-  }, [actionsCompleted]);
+  const markActionCompleted = useCallback(
+    (actionId: string) => {
+      if (!actionsCompleted.includes(actionId)) {
+        setActionsCompleted((prev) => [...prev, actionId]);
+      }
+    },
+    [actionsCompleted],
+  );
 
   // 标记动画观看完成
   const markAnimationWatched = useCallback(() => {
@@ -123,10 +141,26 @@ export function TutorialStep({
   // 渲染步骤类型标识
   const renderStepTypeBadge = () => {
     const typeConfig = {
-      explanation: { label: '说明', variant: 'default' as const, color: 'bg-blue-100 text-blue-800' },
-      animation: { label: '动画', variant: 'secondary' as const, color: 'bg-green-100 text-green-800' },
-      interactive: { label: '交互', variant: 'outline' as const, color: 'bg-purple-100 text-purple-800' },
-      quiz: { label: '测验', variant: 'destructive' as const, color: 'bg-red-100 text-red-800' },
+      explanation: {
+        label: '说明',
+        variant: 'default' as const,
+        color: 'bg-blue-100 text-blue-800',
+      },
+      animation: {
+        label: '动画',
+        variant: 'secondary' as const,
+        color: 'bg-green-100 text-green-800',
+      },
+      interactive: {
+        label: '交互',
+        variant: 'outline' as const,
+        color: 'bg-purple-100 text-purple-800',
+      },
+      quiz: {
+        label: '测验',
+        variant: 'destructive' as const,
+        color: 'bg-red-100 text-red-800',
+      },
     };
 
     const config = typeConfig[step.type];
@@ -164,11 +198,15 @@ export function TutorialStep({
                 <div className="flex items-center space-x-2">
                   <Badge variant="outline">{resource.type}</Badge>
                   {resource.label && (
-                    <span className="text-sm font-medium">{resource.label}</span>
+                    <span className="text-sm font-medium">
+                      {resource.label}
+                    </span>
                   )}
                 </div>
                 {resource.type === 'text' && (
-                  <p className="text-sm text-gray-600 mt-2">{resource.content}</p>
+                  <p className="text-sm text-gray-600 mt-2">
+                    {resource.content}
+                  </p>
                 )}
               </Card>
             ))}
@@ -212,7 +250,8 @@ export function TutorialStep({
             </div>
             <p className="text-lg mb-2">动画演示区域</p>
             <p className="text-sm text-gray-400">
-              这里将显示{step.interactionType === 'chart' ? '图表动画' : '原理演示'}
+              这里将显示
+              {step.interactionType === 'chart' ? '图表动画' : '原理演示'}
             </p>
           </div>
         </div>
@@ -227,7 +266,11 @@ export function TutorialStep({
                 onClick={() => setIsPlaying(!isPlaying)}
                 className="text-white hover:text-white"
               >
-                {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                {isPlaying ? (
+                  <Pause className="h-4 w-4" />
+                ) : (
+                  <Play className="h-4 w-4" />
+                )}
               </Button>
               <Button
                 variant="ghost"
@@ -243,14 +286,20 @@ export function TutorialStep({
             </div>
 
             <div className="flex items-center space-x-3">
-              <span className="text-sm">速度: {userPreferences.animationSpeed}x</span>
+              <span className="text-sm">
+                速度: {userPreferences.animationSpeed}x
+              </span>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsFullscreen(!isFullscreen)}
                 className="text-white hover:text-white"
               >
-                {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+                {isFullscreen ? (
+                  <Minimize2 className="h-4 w-4" />
+                ) : (
+                  <Maximize2 className="h-4 w-4" />
+                )}
               </Button>
             </div>
           </div>
@@ -386,15 +435,15 @@ export function TutorialStep({
 
     const quizQuestions = [
       {
-        question: "什么是金叉信号？",
+        question: '什么是金叉信号？',
         options: [
-          "短期均线从下方穿越长期均线",
-          "长期均线从下方穿越短期均线",
-          "两条均线平行移动",
-          "均线方向向上"
+          '短期均线从下方穿越长期均线',
+          '长期均线从下方穿越短期均线',
+          '两条均线平行移动',
+          '均线方向向上',
         ],
-        correct: 0
-      }
+        correct: 0,
+      },
     ];
 
     const currentQuestion = quizQuestions[0];
@@ -431,13 +480,13 @@ export function TutorialStep({
             {currentQuestion.options.map((option, index) => (
               <Button
                 key={index}
-                variant={selectedAnswer === index ? "default" : "outline"}
+                variant={selectedAnswer === index ? 'default' : 'outline'}
                 className={`w-full text-left justify-start h-auto p-4 ${
                   showResult && index === currentQuestion.correct
                     ? 'bg-green-100 border-green-500 text-green-800'
                     : showResult && selectedAnswer === index && !isCorrect
-                    ? 'bg-red-100 border-red-500 text-red-800'
-                    : ''
+                      ? 'bg-red-100 border-red-500 text-red-800'
+                      : ''
                 }`}
                 onClick={() => handleAnswerSelect(index)}
                 disabled={showResult}
@@ -453,9 +502,13 @@ export function TutorialStep({
           </div>
 
           {showResult && (
-            <div className={`mt-4 p-4 rounded-lg ${
-              isCorrect ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
-            }`}>
+            <div
+              className={`mt-4 p-4 rounded-lg ${
+                isCorrect
+                  ? 'bg-green-50 text-green-800'
+                  : 'bg-red-50 text-red-800'
+              }`}
+            >
               <p className="font-medium">
                 {isCorrect ? '✅ 回答正确！' : '❌ 回答错误'}
               </p>
@@ -507,9 +560,7 @@ export function TutorialStep({
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
           {renderStepTypeBadge()}
-          <h2 className="text-xl font-semibold text-gray-900">
-            {step.title}
-          </h2>
+          <h2 className="text-xl font-semibold text-gray-900">{step.title}</h2>
         </div>
 
         <div className="flex items-center space-x-3">
@@ -545,15 +596,15 @@ export function TutorialStep({
             className={`h-2 rounded-full transition-all duration-300 ${
               isCompleted ? 'bg-green-600' : 'bg-blue-600'
             }`}
-            style={{ width: `${isCompleted ? 100 : Math.min(95, (timeSpent / (step.estimatedTime || 60)) * 100)}%` }}
+            style={{
+              width: `${isCompleted ? 100 : Math.min(95, (timeSpent / (step.estimatedTime || 60)) * 100)}%`,
+            }}
           ></div>
         </div>
       </div>
 
       {/* 步骤内容 */}
-      <div className="flex-1 overflow-y-auto">
-        {renderStepContent()}
-      </div>
+      <div className="flex-1 overflow-y-auto">{renderStepContent()}</div>
 
       {/* 导航控制 */}
       <div className="flex items-center justify-between mt-6 pt-4 border-t">
@@ -574,9 +625,7 @@ export function TutorialStep({
             下一步
           </Button>
         ) : (
-          <div className="text-sm text-gray-500">
-            完成当前步骤后继续
-          </div>
+          <div className="text-sm text-gray-500">完成当前步骤后继续</div>
         )}
       </div>
     </div>

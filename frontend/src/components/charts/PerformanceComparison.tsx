@@ -1,32 +1,35 @@
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import {
-  Chart as ChartJS,
   CategoryScale,
+  Chart as ChartJS,
+  Filler,
+  Legend,
+  LineElement,
   LinearScale,
   PointElement,
-  LineElement,
   Title,
   Tooltip,
-  Legend,
-  Filler,
 } from 'chart.js';
 import {
-  Plus,
-  X,
-  BarChart3,
-  TrendingUp,
-  TrendingDown,
   Activity,
-  Target,
-  Award,
   AlertCircle,
+  Award,
+  BarChart3,
   Download,
+  Plus,
   RefreshCw,
+  Target,
+  TrendingDown,
+  TrendingUp,
+  X,
 } from 'lucide-react';
-import { PerformanceMetrics, PerformanceComparisonProps } from '@/types/performance.types';
+import {
+  PerformanceComparisonProps,
+  PerformanceMetrics,
+} from '@/types/performance.types';
 import { usePerformanceComparison } from '@/services/performanceService';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -42,17 +45,47 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  Filler
+  Filler,
 );
 
 // 策略颜色配置
 const STRATEGY_COLORS = [
-  { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700', chart: '#3B82F6' },
-  { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-700', chart: '#10B981' },
-  { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-700', chart: '#8B5CF6' },
-  { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-700', chart: '#F97316' },
-  { bg: 'bg-pink-50', border: 'border-pink-200', text: 'text-pink-700', chart: '#EC4899' },
-  { bg: 'bg-indigo-50', border: 'border-indigo-200', text: 'text-indigo-700', chart: '#6366F1' },
+  {
+    bg: 'bg-blue-50',
+    border: 'border-blue-200',
+    text: 'text-blue-700',
+    chart: '#3B82F6',
+  },
+  {
+    bg: 'bg-green-50',
+    border: 'border-green-200',
+    text: 'text-green-700',
+    chart: '#10B981',
+  },
+  {
+    bg: 'bg-purple-50',
+    border: 'border-purple-200',
+    text: 'text-purple-700',
+    chart: '#8B5CF6',
+  },
+  {
+    bg: 'bg-orange-50',
+    border: 'border-orange-200',
+    text: 'text-orange-700',
+    chart: '#F97316',
+  },
+  {
+    bg: 'bg-pink-50',
+    border: 'border-pink-200',
+    text: 'text-pink-700',
+    chart: '#EC4899',
+  },
+  {
+    bg: 'bg-indigo-50',
+    border: 'border-indigo-200',
+    text: 'text-indigo-700',
+    chart: '#6366F1',
+  },
 ];
 
 interface StrategyResult {
@@ -118,16 +151,21 @@ export const PerformanceComparison: React.FC<PerformanceComparisonProps> = ({
     const labels = comparisonData.strategies.map((s) => s.name);
 
     // 根据选择的策略获取数据
-    const strategiesToShow = selectedStrategies.length > 0
-      ? comparisonData.strategies.filter((s) => selectedStrategies.includes(s.id))
-      : comparisonData.strategies;
+    const strategiesToShow =
+      selectedStrategies.length > 0
+        ? comparisonData.strategies.filter((s) =>
+            selectedStrategies.includes(s.id),
+          )
+        : comparisonData.strategies;
 
     const datasets = selectedMetrics.map((metricKey, index) => {
       const color = STRATEGY_COLORS[index % STRATEGY_COLORS.length];
 
       return {
         label: METRIC_LABELS[metricKey] || metricKey,
-        data: strategiesToShow.map((s) => s.metrics[metricKey as keyof PerformanceMetrics] as number),
+        data: strategiesToShow.map(
+          (s) => s.metrics[metricKey as keyof PerformanceMetrics] as number,
+        ),
         backgroundColor: `${color.chart}20`,
         borderColor: color.chart,
         borderWidth: 2,
@@ -160,7 +198,9 @@ export const PerformanceComparison: React.FC<PerformanceComparisonProps> = ({
       const values = comparisonData.strategies.map((strategy) => ({
         strategyId: strategy.id,
         strategyName: strategy.name,
-        value: strategy.metrics[metric.key as keyof PerformanceMetrics] as number,
+        value: strategy.metrics[
+          metric.key as keyof PerformanceMetrics
+        ] as number,
       }));
 
       // 找出最优值（最大或最小，取决于指标类型）
@@ -216,21 +256,21 @@ export const PerformanceComparison: React.FC<PerformanceComparisonProps> = ({
         y: {
           beginAtZero: true,
           ticks: {
-            callback: function (value: any) {
+            callback(value: any) {
               return typeof value === 'number' ? value.toFixed(2) : value;
             },
           },
         },
       },
     }),
-    []
+    [],
   );
 
   const toggleMetric = useCallback((metricKey: string) => {
     setSelectedMetrics((prev) =>
       prev.includes(metricKey)
         ? prev.filter((m) => m !== metricKey)
-        : [...prev, metricKey]
+        : [...prev, metricKey],
     );
   }, []);
 
@@ -238,7 +278,7 @@ export const PerformanceComparison: React.FC<PerformanceComparisonProps> = ({
     setSelectedStrategies((prev) =>
       prev.includes(strategyId)
         ? prev.filter((id) => id !== strategyId)
-        : [...prev, strategyId]
+        : [...prev, strategyId],
     );
   }, []);
 
@@ -296,13 +336,15 @@ export const PerformanceComparison: React.FC<PerformanceComparisonProps> = ({
           <div className="flex flex-wrap gap-2">
             {comparisonData.strategies.map((strategy, index) => {
               const color = STRATEGY_COLORS[index % STRATEGY_COLORS.length];
-              const isSelected = !selectedStrategies.length || selectedStrategies.includes(strategy.id);
+              const isSelected =
+                !selectedStrategies.length ||
+                selectedStrategies.includes(strategy.id);
 
               return (
                 <Badge
                   key={strategy.id}
                   variant={isSelected ? 'default' : 'outline'}
-                  className={`cursor-pointer transition-all ${isSelected ? color.bg + ' ' + color.border : ''}`}
+                  className={`cursor-pointer transition-all ${isSelected ? `${color.bg} ${color.border}` : ''}`}
                   onClick={() => toggleStrategy(strategy.id)}
                 >
                   <div className="flex items-center gap-2">
@@ -344,21 +386,22 @@ export const PerformanceComparison: React.FC<PerformanceComparisonProps> = ({
       </Card>
 
       {/* 对比图表 */}
-      {(comparisonType === 'charts' || comparisonType === 'both') && chartData && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <TrendingUp className="mr-2 h-5 w-5" />
-              绩效指标对比图表
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div style={{ height: `${height}px` }}>
-              <Line data={chartData} options={chartOptions} />
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {(comparisonType === 'charts' || comparisonType === 'both') &&
+        chartData && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <TrendingUp className="mr-2 h-5 w-5" />
+                绩效指标对比图表
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div style={{ height: `${height}px` }}>
+                <Line data={chartData} options={chartOptions} />
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
       {/* 关键指标对比表格 */}
       <Card>
@@ -375,7 +418,8 @@ export const PerformanceComparison: React.FC<PerformanceComparisonProps> = ({
                 <tr className="border-b">
                   <th className="text-left p-2">指标</th>
                   {comparisonData.strategies.map((strategy, index) => {
-                    const color = STRATEGY_COLORS[index % STRATEGY_COLORS.length];
+                    const color =
+                      STRATEGY_COLORS[index % STRATEGY_COLORS.length];
                     return (
                       <th key={strategy.id} className="text-left p-2">
                         <div className="flex items-center gap-2">
@@ -392,17 +436,20 @@ export const PerformanceComparison: React.FC<PerformanceComparisonProps> = ({
               </thead>
               <tbody>
                 {keyMetricsComparison.map((metric) => (
-                  <tr key={metric.metricKey} className="border-b hover:bg-gray-50">
-                    <td className={`p-2 font-medium ${metric.important ? 'text-blue-700' : ''}`}>
+                  <tr
+                    key={metric.metricKey}
+                    className="border-b hover:bg-gray-50"
+                  >
+                    <td
+                      className={`p-2 font-medium ${metric.important ? 'text-blue-700' : ''}`}
+                    >
                       {metric.label}
                     </td>
                     {metric.values.map((value, idx) => (
                       <td
                         key={value.strategyId}
                         className={`p-2 ${
-                          value.isBest
-                            ? 'font-bold text-green-600'
-                            : ''
+                          value.isBest ? 'font-bold text-green-600' : ''
                         }`}
                       >
                         {formatMetricValue(value.value, metric.metricKey)}

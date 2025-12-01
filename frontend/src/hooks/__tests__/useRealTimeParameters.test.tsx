@@ -21,14 +21,27 @@ jest.mock('@/utils/parameterHelpers', () => ({
   validateAllParameters: jest.fn(),
 }));
 
-import { useRealTimeStrategyResults, useParameterValidation, useOptimizationSuggestions } from '@/services/parameterService';
+import {
+  useOptimizationSuggestions,
+  useParameterValidation,
+  useRealTimeStrategyResults,
+} from '@/services/parameterService';
 import { validateAllParameters } from '@/utils/parameterHelpers';
 import { useRealTimeParameters } from '../useRealTimeParameters';
 
-const mockUseRealTimeStrategyResults = useRealTimeStrategyResults as jest.MockedFunction<typeof useRealTimeStrategyResults>;
-const mockUseParameterValidation = useParameterValidation as jest.MockedFunction<typeof useParameterValidation>;
-const mockUseOptimizationSuggestions = useOptimizationSuggestions as jest.MockedFunction<typeof useOptimizationSuggestions>;
-const mockValidateAllParameters = validateAllParameters as jest.MockedFunction<typeof validateAllParameters>;
+const mockUseRealTimeStrategyResults =
+  useRealTimeStrategyResults as jest.MockedFunction<
+    typeof useRealTimeStrategyResults
+  >;
+const mockUseParameterValidation =
+  useParameterValidation as jest.MockedFunction<typeof useParameterValidation>;
+const mockUseOptimizationSuggestions =
+  useOptimizationSuggestions as jest.MockedFunction<
+    typeof useOptimizationSuggestions
+  >;
+const mockValidateAllParameters = validateAllParameters as jest.MockedFunction<
+  typeof validateAllParameters
+>;
 
 // Test wrapper
 const createWrapper = () => {
@@ -40,9 +53,7 @@ const createWrapper = () => {
   });
 
   return ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 };
 
@@ -85,10 +96,9 @@ describe('useRealTimeParameters', () => {
   });
 
   it('应该返回正确的初始状态', () => {
-    const { result } = renderHook(
-      () => useRealTimeParameters(defaultProps),
-      { wrapper: createWrapper() },
-    );
+    const { result } = renderHook(() => useRealTimeParameters(defaultProps), {
+      wrapper: createWrapper(),
+    });
 
     expect(result.current.parameters).toEqual(defaultParams);
     expect(result.current.isLoading).toBe(false);
@@ -99,7 +109,11 @@ describe('useRealTimeParameters', () => {
   it('应该使用自定义初始参数', () => {
     const customParams = { ...defaultParams, movingAveragePeriod: 50 };
     const { result } = renderHook(
-      () => useRealTimeParameters({ ...defaultProps, initialParameters: customParams }),
+      () =>
+        useRealTimeParameters({
+          ...defaultProps,
+          initialParameters: customParams,
+        }),
       { wrapper: createWrapper() },
     );
 
@@ -107,10 +121,9 @@ describe('useRealTimeParameters', () => {
   });
 
   it('应该处理参数更新', () => {
-    const { result } = renderHook(
-      () => useRealTimeParameters(defaultProps),
-      { wrapper: createWrapper() },
-    );
+    const { result } = renderHook(() => useRealTimeParameters(defaultProps), {
+      wrapper: createWrapper(),
+    });
 
     const newParams = { ...defaultParams, movingAveragePeriod: 30 };
 
@@ -124,10 +137,9 @@ describe('useRealTimeParameters', () => {
   });
 
   it('应该立即更新参数', () => {
-    const { result } = renderHook(
-      () => useRealTimeParameters(defaultProps),
-      { wrapper: createWrapper() },
-    );
+    const { result } = renderHook(() => useRealTimeParameters(defaultProps), {
+      wrapper: createWrapper(),
+    });
 
     const newParams = { ...defaultParams, stopLoss: 8 };
 
@@ -141,10 +153,9 @@ describe('useRealTimeParameters', () => {
   });
 
   it('应该重置参数', () => {
-    const { result } = renderHook(
-      () => useRealTimeParameters(defaultProps),
-      { wrapper: createWrapper() },
-    );
+    const { result } = renderHook(() => useRealTimeParameters(defaultProps), {
+      wrapper: createWrapper(),
+    });
 
     // 先修改参数
     const modifiedParams = { ...defaultParams, movingAveragePeriod: 40 };
@@ -157,10 +168,9 @@ describe('useRealTimeParameters', () => {
   });
 
   it('应该切换实时模式', () => {
-    const { result } = renderHook(
-      () => useRealTimeParameters(defaultProps),
-      { wrapper: createWrapper() },
-    );
+    const { result } = renderHook(() => useRealTimeParameters(defaultProps), {
+      wrapper: createWrapper(),
+    });
 
     expect(result.current.isRealTimeEnabled).toBe(false);
 
@@ -182,20 +192,18 @@ describe('useRealTimeParameters', () => {
       refetch: refetchSpy,
     });
 
-    const { result } = renderHook(
-      () => useRealTimeParameters(defaultProps),
-      { wrapper: createWrapper() },
-    );
+    const { result } = renderHook(() => useRealTimeParameters(defaultProps), {
+      wrapper: createWrapper(),
+    });
 
     result.current.forceRefresh();
     expect(refetchSpy).toHaveBeenCalled();
   });
 
   it('应该生成参数描述', () => {
-    const { result } = renderHook(
-      () => useRealTimeParameters(defaultProps),
-      { wrapper: createWrapper() },
-    );
+    const { result } = renderHook(() => useRealTimeParameters(defaultProps), {
+      wrapper: createWrapper(),
+    });
 
     const description = result.current.getParameterDescription();
     expect(description).toContain('20日移动平均线');

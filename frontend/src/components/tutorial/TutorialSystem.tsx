@@ -1,20 +1,30 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { ChevronLeft, ChevronRight, X, Bookmark, BookOpen, PlayCircle, CheckCircle, Clock, Award } from 'lucide-react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  Award,
+  BookOpen,
+  Bookmark,
+  CheckCircle,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  PlayCircle,
+  X,
+} from 'lucide-react';
 import { useTutorialService } from '@/services/tutorialService';
 import {
+  Achievement,
   Tutorial,
   TutorialContext,
   TutorialProgress,
-  TutorialStep,
   TutorialProgressUpdate,
+  TutorialStep,
   TutorialUserPreferences,
-  Achievement,
 } from '@/types/tutorial.types';
 import {
-  getStepNavigation,
-  generateProgressSummary,
   canSkipStep,
   createTutorialEvent,
+  generateProgressSummary,
+  getStepNavigation,
 } from '@/utils/tutorialHelpers';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -49,17 +59,20 @@ function TutorialSystem({
 
   const [isStarted, setIsStarted] = useState(autoStart);
   const [stepStartTime, setStepStartTime] = useState<number>(Date.now());
-  const [showAchievement, setShowAchievement] = useState<Achievement | null>(null);
-  const [userPreferences, setUserPreferences] = useState<TutorialUserPreferences>(() => {
-    // 在初始化时直接设置用户偏好，避免 useEffect 的问题
-    try {
-      const stored = localStorage.getItem('tutorial_preferences');
-      return stored ? JSON.parse(stored) : {};
-    } catch (error) {
-      console.error('Failed to load user preferences:', error);
-      return {};
-    }
-  });
+  const [showAchievement, setShowAchievement] = useState<Achievement | null>(
+    null,
+  );
+  const [userPreferences, setUserPreferences] =
+    useState<TutorialUserPreferences>(() => {
+      // 在初始化时直接设置用户偏好，避免 useEffect 的问题
+      try {
+        const stored = localStorage.getItem('tutorial_preferences');
+        return stored ? JSON.parse(stored) : {};
+      } catch (error) {
+        console.error('Failed to load user preferences:', error);
+        return {};
+      }
+    });
 
   // 获取教程数据
   const tutorial = useTutorial(tutorialId, {
@@ -86,12 +99,14 @@ function TutorialSystem({
     if (!tutorial.data || !progress.data) return null;
 
     const currentStep = tutorial.data.steps[progress.data.currentStep];
-    const previousStep = progress.data.currentStep > 0
-      ? tutorial.data.steps[progress.data.currentStep - 1]
-      : undefined;
-    const nextStep = progress.data.currentStep < tutorial.data.steps.length - 1
-      ? tutorial.data.steps[progress.data.currentStep + 1]
-      : undefined;
+    const previousStep =
+      progress.data.currentStep > 0
+        ? tutorial.data.steps[progress.data.currentStep - 1]
+        : undefined;
+    const nextStep =
+      progress.data.currentStep < tutorial.data.steps.length - 1
+        ? tutorial.data.steps[progress.data.currentStep + 1]
+        : undefined;
 
     return {
       currentStep,
@@ -107,7 +122,7 @@ function TutorialSystem({
     if (tutorial.data && !progress.data && isOpen) {
       const newProgress = progressManager.createProgress(
         tutorialId,
-        tutorial.data.steps.length
+        tutorial.data.steps.length,
       );
       // 使用正确的 React Query mutation 方式更新进度
       updateProgress.mutate({
@@ -168,7 +183,14 @@ function TutorialSystem({
       // 开始下一步计时
       startStepTimer();
     }
-  }, [tutorialContext, progress.data, tutorialId, updateProgress, stepStartTime, startStepTimer]);
+  }, [
+    tutorialContext,
+    progress.data,
+    tutorialId,
+    updateProgress,
+    stepStartTime,
+    startStepTimer,
+  ]);
 
   // 跳过当前步骤
   const skipCurrentStep = useCallback(async () => {
@@ -215,23 +237,30 @@ function TutorialSystem({
   }, [tutorialContext, tutorialId, updateProgress]);
 
   // 导航到指定步骤
-  const navigateToStep = useCallback(async (stepIndex: number) => {
-    if (!tutorialContext || stepIndex < 0 || stepIndex >= tutorialContext.tutorial.steps.length) {
-      return;
-    }
+  const navigateToStep = useCallback(
+    async (stepIndex: number) => {
+      if (
+        !tutorialContext ||
+        stepIndex < 0 ||
+        stepIndex >= tutorialContext.tutorial.steps.length
+      ) {
+        return;
+      }
 
-    await updateProgress.mutateAsync({
-      tutorialId,
-      stepIndex,
-      action: {
-        stepId: tutorialContext.tutorial.steps[stepIndex].id,
-        action: 'start',
-        timestamp: new Date().toISOString(),
-      },
-    });
+      await updateProgress.mutateAsync({
+        tutorialId,
+        stepIndex,
+        action: {
+          stepId: tutorialContext.tutorial.steps[stepIndex].id,
+          action: 'start',
+          timestamp: new Date().toISOString(),
+        },
+      });
 
-    startStepTimer();
-  }, [tutorialContext, tutorialId, updateProgress, startStepTimer]);
+      startStepTimer();
+    },
+    [tutorialContext, tutorialId, updateProgress, startStepTimer],
+  );
 
   // 后退到上一步
   const goToPreviousStep = useCallback(() => {
@@ -252,33 +281,36 @@ function TutorialSystem({
   }, [tutorialContext, navigateToStep]);
 
   // 检查并解锁成就
-  const checkAndUnlockAchievements = useCallback((stepIndex: number) => {
-    if (!tutorial.data || !progress.data) return;
+  const checkAndUnlockAchievements = useCallback(
+    (stepIndex: number) => {
+      if (!tutorial.data || !progress.data) return;
 
-    // 第一步完成成就
-    if (stepIndex === 0 && progress.data.completedSteps.length === 1) {
-      const achievement = {
-        id: `first_step_${tutorialId}`,
-        title: '初学者',
-        description: `完成了《${tutorial.data.title}》的第一步`,
-        unlockedAt: new Date().toISOString(),
-        icon: '🎯',
-      };
-      unlockAchievement(achievement);
-    }
+      // 第一步完成成就
+      if (stepIndex === 0 && progress.data.completedSteps.length === 1) {
+        const achievement = {
+          id: `first_step_${tutorialId}`,
+          title: '初学者',
+          description: `完成了《${tutorial.data.title}》的第一步`,
+          unlockedAt: new Date().toISOString(),
+          icon: '🎯',
+        };
+        unlockAchievement(achievement);
+      }
 
-    // 教程完成成就
-    if (stepIndex === tutorial.data.steps.length - 1) {
-      const achievement = {
-        id: `complete_${tutorialId}`,
-        title: '教程完成者',
-        description: `成功完成了《${tutorial.data.title}》教程`,
-        unlockedAt: new Date().toISOString(),
-        icon: '🎉',
-      };
-      unlockAchievement(achievement);
-    }
-  }, [tutorial.data, progress.data, tutorialId]);
+      // 教程完成成就
+      if (stepIndex === tutorial.data.steps.length - 1) {
+        const achievement = {
+          id: `complete_${tutorialId}`,
+          title: '教程完成者',
+          description: `成功完成了《${tutorial.data.title}》教程`,
+          unlockedAt: new Date().toISOString(),
+          icon: '🎉',
+        };
+        unlockAchievement(achievement);
+      }
+    },
+    [tutorial.data, progress.data, tutorialId],
+  );
 
   // 解锁成就
   const unlockAchievement = useCallback((achievement: Achievement) => {
@@ -331,7 +363,6 @@ function TutorialSystem({
     };
   }, []);
 
-  
   if (!isOpen) return null;
 
   if (tutorial.isLoading || progress.isLoading) {
@@ -350,9 +381,7 @@ function TutorialSystem({
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <Card className="p-6 max-w-md">
           <h3 className="text-lg font-semibold text-red-600 mb-2">加载失败</h3>
-          <p className="text-gray-600 mb-4">
-            无法加载教程内容，请稍后重试。
-          </p>
+          <p className="text-gray-600 mb-4">无法加载教程内容，请稍后重试。</p>
           <Button onClick={onClose}>关闭</Button>
         </Card>
       </div>
@@ -363,48 +392,65 @@ function TutorialSystem({
     return null;
   }
 
-  const navigation = tutorialContext ? getStepNavigation(tutorialContext) : null;
-  const progressSummary = progress.data ? generateProgressSummary(progress.data, tutorial.data) : null;
+  const navigation = tutorialContext
+    ? getStepNavigation(tutorialContext)
+    : null;
+  const progressSummary = progress.data
+    ? generateProgressSummary(progress.data, tutorial.data)
+    : null;
 
   // 键盘导航处理（在navigation定义之后）
-  const handleKeyDown = useCallback((event: KeyboardEvent) => {
-    if (!isOpen) return;
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (!isOpen) return;
 
-    // ESC键关闭教程
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      onClose();
-      return;
-    }
-
-    // 当教程开始后，支持步骤导航
-    if (isStarted && tutorialContext) {
-      switch (event.key) {
-        case 'ArrowLeft':
-          event.preventDefault();
-          goToPreviousStep();
-          break;
-        case 'ArrowRight':
-          event.preventDefault();
-          goToNextStep();
-          break;
-        case 'Home':
-          event.preventDefault();
-          // 跳转到第一步
-          if (progress && tutorialContext) {
-            navigateToStep(0);
-          }
-          break;
-        case 'End':
-          event.preventDefault();
-          // 跳转到最后一步
-          if (progress && navigation) {
-            navigateToStep(navigation.totalSteps - 1);
-          }
-          break;
+      // ESC键关闭教程
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        onClose();
+        return;
       }
-    }
-  }, [isOpen, isStarted, onClose, goToPreviousStep, goToNextStep, navigateToStep, progress, navigation, tutorialContext]);
+
+      // 当教程开始后，支持步骤导航
+      if (isStarted && tutorialContext) {
+        switch (event.key) {
+          case 'ArrowLeft':
+            event.preventDefault();
+            goToPreviousStep();
+            break;
+          case 'ArrowRight':
+            event.preventDefault();
+            goToNextStep();
+            break;
+          case 'Home':
+            event.preventDefault();
+            // 跳转到第一步
+            if (progress && tutorialContext) {
+              navigateToStep(0);
+            }
+            break;
+          case 'End':
+            event.preventDefault();
+            // 跳转到最后一步
+            if (progress && navigation) {
+              navigateToStep(navigation.totalSteps - 1);
+            }
+            break;
+        }
+      }
+    },
+    [
+      isOpen,
+      isStarted,
+      onClose,
+      goToPreviousStep,
+      goToNextStep,
+      navigateToStep,
+      progress,
+      navigation,
+      tutorialContext,
+    ],
+  );
 
   // 键盘事件监听
   useEffect(() => {
@@ -428,7 +474,12 @@ function TutorialSystem({
               </h2>
               <p className="text-gray-600">{tutorial.data.description}</p>
             </div>
-            <Button variant="ghost" size="sm" onClick={onClose} aria-label="Close">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              aria-label="Close"
+            >
               <X className="h-4 w-4" />
             </Button>
           </div>
@@ -447,13 +498,24 @@ function TutorialSystem({
               </p>
             </div>
             <div className="text-center">
-              <Badge variant={tutorial.data.difficulty === 'beginner' ? 'default' : 'secondary'}>
-                {tutorial.data.difficulty === 'beginner' ? '初级' :
-                 tutorial.data.difficulty === 'intermediate' ? '中级' : '高级'}
+              <Badge
+                variant={
+                  tutorial.data.difficulty === 'beginner'
+                    ? 'default'
+                    : 'secondary'
+                }
+              >
+                {tutorial.data.difficulty === 'beginner'
+                  ? '初级'
+                  : tutorial.data.difficulty === 'intermediate'
+                    ? '中级'
+                    : '高级'}
               </Badge>
             </div>
             <div className="text-center">
-              <span className="text-sm text-gray-600">{tutorial.data.category}</span>
+              <span className="text-sm text-gray-600">
+                {tutorial.data.category}
+              </span>
             </div>
           </div>
 
@@ -496,56 +558,61 @@ function TutorialSystem({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div
-          className="bg-white rounded-lg w-full max-w-4xl h-[80vh] flex flex-col"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="tutorial-title"
-          aria-describedby="tutorial-progress"
-        >
-          {/* 顶部导航栏 */}
-          <div className="flex items-center justify-between p-4 border-b">
-            <div className="flex items-center space-x-4">
-              <h3 id="tutorial-title" className="text-lg font-semibold">{tutorial.data.title}</h3>
-              {progressSummary && (
-                <div
-                  id="tutorial-progress"
-                  className="flex items-center space-x-2 text-sm text-gray-600"
-                  aria-live="polite"
-                  aria-atomic="true"
-                >
-                  <span>{progress.data.completedSteps.length}/{navigation?.totalSteps} 步骤</span>
-                  <span>•</span>
-                  <span>{progressSummary.percentage}%</span>
-                </div>
-              )}
-            </div>
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={addBookmark}
-                aria-label="添加书签"
+        className="bg-white rounded-lg w-full max-w-4xl h-[80vh] flex flex-col"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tutorial-title"
+        aria-describedby="tutorial-progress"
+      >
+        {/* 顶部导航栏 */}
+        <div className="flex items-center justify-between p-4 border-b">
+          <div className="flex items-center space-x-4">
+            <h3 id="tutorial-title" className="text-lg font-semibold">
+              {tutorial.data.title}
+            </h3>
+            {progressSummary && (
+              <div
+                id="tutorial-progress"
+                className="flex items-center space-x-2 text-sm text-gray-600"
+                aria-live="polite"
+                aria-atomic="true"
               >
-                <Bookmark className="h-4 w-4" aria-hidden="true" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={restartTutorial}
-                aria-label="重新开始教程"
-              >
-                重新开始
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onClose}
-                aria-label="关闭教程"
-              >
-                <X className="h-4 w-4" aria-hidden="true" />
-              </Button>
-            </div>
+                <span>
+                  {progress.data.completedSteps.length}/{navigation?.totalSteps}{' '}
+                  步骤
+                </span>
+                <span>•</span>
+                <span>{progressSummary.percentage}%</span>
+              </div>
+            )}
           </div>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={addBookmark}
+              aria-label="添加书签"
+            >
+              <Bookmark className="h-4 w-4" aria-hidden="true" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={restartTutorial}
+              aria-label="重新开始教程"
+            >
+              重新开始
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              aria-label="关闭教程"
+            >
+              <X className="h-4 w-4" aria-hidden="true" />
+            </Button>
+          </div>
+        </div>
 
         {/* 进度条 */}
         {progressSummary && (
@@ -583,17 +650,25 @@ function TutorialSystem({
                 </header>
                 <div className="prose max-w-none" aria-labelledby="step-title">
                   {/* 这里将根据步骤类型渲染不同的内容 */}
-                  <section className="bg-gray-50 p-6 rounded-lg" aria-label="步骤内容">
+                  <section
+                    className="bg-gray-50 p-6 rounded-lg"
+                    aria-label="步骤内容"
+                  >
                     <p className="text-gray-700">
                       {tutorialContext.currentStep.content}
                     </p>
                     <footer className="mt-4 text-sm text-gray-500">
-                      <span aria-label={`步骤类型: ${tutorialContext.currentStep.type}`}>
+                      <span
+                        aria-label={`步骤类型: ${tutorialContext.currentStep.type}`}
+                      >
                         步骤类型: {tutorialContext.currentStep.type}
                       </span>
                       {tutorialContext.currentStep.estimatedTime && (
-                        <span aria-label={`预计时间: ${tutorialContext.currentStep.estimatedTime}秒`}>
-                          • 预计时间: {tutorialContext.currentStep.estimatedTime}秒
+                        <span
+                          aria-label={`预计时间: ${tutorialContext.currentStep.estimatedTime}秒`}
+                        >
+                          • 预计时间:{' '}
+                          {tutorialContext.currentStep.estimatedTime}秒
                         </span>
                       )}
                     </footer>
@@ -605,7 +680,10 @@ function TutorialSystem({
         </div>
 
         {/* 底部控制栏 */}
-        <footer className="flex items-center justify-between p-4 border-t bg-gray-50" role="contentinfo">
+        <footer
+          className="flex items-center justify-between p-4 border-t bg-gray-50"
+          role="contentinfo"
+        >
           <nav className="flex items-center space-x-3" aria-label="步骤导航">
             <Button
               variant="outline"
@@ -634,12 +712,15 @@ function TutorialSystem({
               aria-live="polite"
               aria-atomic="true"
             >
-              第 {navigation?.currentIndex + 1} 步，共 {navigation?.totalSteps} 步
+              第 {navigation?.currentIndex + 1} 步，共 {navigation?.totalSteps}{' '}
+              步
             </span>
             <Button
-              onClick={navigation?.isLastStep ? completeCurrentStep : goToNextStep}
+              onClick={
+                navigation?.isLastStep ? completeCurrentStep : goToNextStep
+              }
               className="bg-blue-600 hover:bg-blue-700"
-              aria-label={navigation?.isLastStep ? "完成教程" : "下一步"}
+              aria-label={navigation?.isLastStep ? '完成教程' : '下一步'}
               aria-describedby="step-navigation-status"
             >
               {navigation?.isLastStep ? (

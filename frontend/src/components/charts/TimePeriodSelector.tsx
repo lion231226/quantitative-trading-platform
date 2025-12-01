@@ -1,13 +1,16 @@
-import React from 'react'
-import { TimePeriodSelectorProps, TimePeriod } from '../../types/kline.types'
-import { getTimePeriodDisplayName, isValidTimePeriod } from '../../utils/klineHelpers'
+import React from 'react';
+import { TimePeriod, TimePeriodSelectorProps } from '../../types/kline.types';
+import {
+  getTimePeriodDisplayName,
+  isValidTimePeriod,
+} from '../../utils/klineHelpers';
 
 export const TimePeriodSelector: React.FC<TimePeriodSelectorProps> = ({
   currentPeriod,
   availablePeriods,
   onPeriodChange,
   className = '',
-  disabled = false
+  disabled = false,
 }) => {
   // 时间周期的显示顺序和分组
   const getGroupedPeriods = (periods: TimePeriod[]) => {
@@ -15,41 +18,42 @@ export const TimePeriodSelector: React.FC<TimePeriodSelectorProps> = ({
       minutes: [] as TimePeriod[],
       hours: [] as TimePeriod[],
       days: [] as TimePeriod[],
-      months: [] as TimePeriod[]
-    }
+      months: [] as TimePeriod[],
+    };
 
-    periods.forEach(period => {
+    periods.forEach((period) => {
       if (period.includes('m')) {
-        groups.minutes.push(period)
+        groups.minutes.push(period);
       } else if (period.includes('h')) {
-        groups.hours.push(period)
+        groups.hours.push(period);
       } else if (period === '1d') {
-        groups.days.push(period)
+        groups.days.push(period);
       } else if (period.includes('M')) {
-        groups.months.push(period)
+        groups.months.push(period);
       }
-    })
+    });
 
-    return groups
-  }
+    return groups;
+  };
 
   // 获取按钮样式
   const getButtonStyles = (period: TimePeriod) => {
-    const isActive = period === currentPeriod
-    const baseStyles = 'px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200'
+    const isActive = period === currentPeriod;
+    const baseStyles =
+      'px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200';
 
     if (disabled) {
-      return `${baseStyles} text-gray-400 bg-gray-100 cursor-not-allowed`
+      return `${baseStyles} text-gray-400 bg-gray-100 cursor-not-allowed`;
     }
 
     if (isActive) {
-      return `${baseStyles} text-white bg-blue-600 shadow-md transform scale-105`
+      return `${baseStyles} text-white bg-blue-600 shadow-md transform scale-105`;
     }
 
-    return `${baseStyles} text-gray-700 bg-white border border-gray-300 hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700`
-  }
+    return `${baseStyles} text-gray-700 bg-white border border-gray-300 hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700`;
+  };
 
-  const groups = getGroupedPeriods(availablePeriods)
+  const groups = getGroupedPeriods(availablePeriods);
 
   return (
     <div className={`time-period-selector ${className}`}>
@@ -57,7 +61,7 @@ export const TimePeriodSelector: React.FC<TimePeriodSelectorProps> = ({
         {/* 分钟级别 */}
         {groups.minutes.length > 0 && (
           <div className="flex gap-1">
-            {groups.minutes.map(period => (
+            {groups.minutes.map((period) => (
               <button
                 key={period}
                 onClick={() => !disabled && onPeriodChange(period)}
@@ -74,7 +78,7 @@ export const TimePeriodSelector: React.FC<TimePeriodSelectorProps> = ({
         {/* 小时级别 */}
         {groups.hours.length > 0 && (
           <div className="flex gap-1">
-            {groups.hours.map(period => (
+            {groups.hours.map((period) => (
               <button
                 key={period}
                 onClick={() => !disabled && onPeriodChange(period)}
@@ -91,7 +95,7 @@ export const TimePeriodSelector: React.FC<TimePeriodSelectorProps> = ({
         {/* 日级别 */}
         {groups.days.length > 0 && (
           <div className="flex gap-1">
-            {groups.days.map(period => (
+            {groups.days.map((period) => (
               <button
                 key={period}
                 onClick={() => !disabled && onPeriodChange(period)}
@@ -108,7 +112,7 @@ export const TimePeriodSelector: React.FC<TimePeriodSelectorProps> = ({
         {/* 月级别 */}
         {groups.months.length > 0 && (
           <div className="flex gap-1">
-            {groups.months.map(period => (
+            {groups.months.map((period) => (
               <button
                 key={period}
                 onClick={() => !disabled && onPeriodChange(period)}
@@ -125,10 +129,13 @@ export const TimePeriodSelector: React.FC<TimePeriodSelectorProps> = ({
 
       {/* 当前选择显示 */}
       <div className="mt-2 text-sm text-gray-600">
-        当前选择: <span className="font-medium">{getTimePeriodDisplayName(currentPeriod)}</span>
+        当前选择:{' '}
+        <span className="font-medium">
+          {getTimePeriodDisplayName(currentPeriod)}
+        </span>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default TimePeriodSelector
+export default TimePeriodSelector;

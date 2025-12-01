@@ -1,7 +1,14 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
-import { Calendar, Download, Filter, RefreshCw, Settings, TrendingUp } from 'lucide-react';
+import React, { useCallback, useState } from 'react';
+import {
+  Calendar,
+  Download,
+  Filter,
+  RefreshCw,
+  Settings,
+  TrendingUp,
+} from 'lucide-react';
 import { PerformanceControlsProps } from '@/types/performance.types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,9 +17,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
   Popover,
@@ -69,7 +76,9 @@ export const PerformanceControls: React.FC<PerformanceControlsProps> = ({
       };
     }
 
-    const selectedRange = TIME_RANGES.find((r) => r.value === selectedTimeRange);
+    const selectedRange = TIME_RANGES.find(
+      (r) => r.value === selectedTimeRange,
+    );
     if (!selectedRange || selectedRange.value === 'all') {
       return {
         startDate: undefined,
@@ -97,7 +106,7 @@ export const PerformanceControls: React.FC<PerformanceControlsProps> = ({
       const dateRange = getDateRange();
       onTimeRangeChange?.(dateRange.startDate || '', dateRange.endDate || '');
     },
-    [getDateRange, onTimeRangeChange]
+    [getDateRange, onTimeRangeChange],
   );
 
   // 处理基准变化
@@ -106,7 +115,7 @@ export const PerformanceControls: React.FC<PerformanceControlsProps> = ({
       setSelectedBenchmark(benchmarkId);
       onBenchmarkChange?.(benchmarkId);
     },
-    [onBenchmarkChange]
+    [onBenchmarkChange],
   );
 
   // 处理导出
@@ -121,7 +130,7 @@ export const PerformanceControls: React.FC<PerformanceControlsProps> = ({
         setIsExporting(false);
       }
     },
-    [onExport]
+    [onExport],
   );
 
   // 处理自定义日期范围
@@ -151,7 +160,9 @@ export const PerformanceControls: React.FC<PerformanceControlsProps> = ({
             {TIME_RANGES.map((range) => (
               <Badge
                 key={range.value}
-                variant={selectedTimeRange === range.value ? 'default' : 'outline'}
+                variant={
+                  selectedTimeRange === range.value ? 'default' : 'outline'
+                }
                 className="cursor-pointer"
                 onClick={() => handleTimeRangeChange(range.value)}
               >
@@ -176,11 +187,13 @@ export const PerformanceControls: React.FC<PerformanceControlsProps> = ({
                     variant="outline"
                     className={cn(
                       'w-[180px] justify-start text-left font-normal',
-                      !customStartDate && 'text-muted-foreground'
+                      !customStartDate && 'text-muted-foreground',
                     )}
                   >
                     <Calendar className="mr-2 h-4 w-4" />
-                    {customStartDate ? format(customStartDate, 'yyyy-MM-dd', { locale: zhCN }) : '开始日期'}
+                    {customStartDate
+                      ? format(customStartDate, 'yyyy-MM-dd', { locale: zhCN })
+                      : '开始日期'}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -200,11 +213,13 @@ export const PerformanceControls: React.FC<PerformanceControlsProps> = ({
                     variant="outline"
                     className={cn(
                       'w-[180px] justify-start text-left font-normal',
-                      !customEndDate && 'text-muted-foreground'
+                      !customEndDate && 'text-muted-foreground',
                     )}
                   >
                     <Calendar className="mr-2 h-4 w-4" />
-                    {customEndDate ? format(customEndDate, 'yyyy-MM-dd', { locale: zhCN }) : '结束日期'}
+                    {customEndDate
+                      ? format(customEndDate, 'yyyy-MM-dd', { locale: zhCN })
+                      : '结束日期'}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -247,7 +262,9 @@ export const PerformanceControls: React.FC<PerformanceControlsProps> = ({
             {BENCHMARK_OPTIONS.map((benchmark) => (
               <Badge
                 key={benchmark.id}
-                variant={selectedBenchmark === benchmark.id ? 'default' : 'outline'}
+                variant={
+                  selectedBenchmark === benchmark.id ? 'default' : 'outline'
+                }
                 className="cursor-pointer"
                 onClick={() => handleBenchmarkChange(benchmark.id)}
               >

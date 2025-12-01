@@ -1,17 +1,22 @@
-import { UseQueryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  UseQueryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import React, { useCallback, useMemo, useRef } from 'react';
 import {
-  Tutorial,
-  TutorialProgress,
-  TutorialSession,
-  TutorialContext,
-  TutorialStep,
-  Achievement,
-  TutorialStats,
-  TutorialProgressUpdate,
-  TutorialUserPreferences,
   APIResponse,
-  TutorialEvent
+  Achievement,
+  Tutorial,
+  TutorialContext,
+  TutorialEvent,
+  TutorialProgress,
+  TutorialProgressUpdate,
+  TutorialSession,
+  TutorialStats,
+  TutorialStep,
+  TutorialUserPreferences,
 } from '@/types/tutorial.types';
 
 // 本地存储键名
@@ -62,14 +67,17 @@ const DEFAULT_PREFERENCES: TutorialUserPreferences = {
  */
 export class TutorialProgressManager {
   private queryClient = useQueryClient();
-  private eventListeners: Map<string, ((event: TutorialEvent) => void)[]> = new Map();
+  private eventListeners: Map<string, ((event: TutorialEvent) => void)[]> =
+    new Map();
 
   /**
    * 获取教程进度
    */
   getProgress(tutorialId: string): TutorialProgress | null {
     try {
-      const stored = localStorage.getItem(`${STORAGE_KEYS.TUTORIAL_PROGRESS}_${tutorialId}`);
+      const stored = localStorage.getItem(
+        `${STORAGE_KEYS.TUTORIAL_PROGRESS}_${tutorialId}`,
+      );
       return stored ? JSON.parse(stored) : null;
     } catch (error) {
       console.error('Failed to get tutorial progress:', error);
@@ -82,8 +90,14 @@ export class TutorialProgressManager {
    */
   saveProgress(tutorialId: string, progress: TutorialProgress): void {
     try {
-      localStorage.setItem(`${STORAGE_KEYS.TUTORIAL_PROGRESS}_${tutorialId}`, JSON.stringify(progress));
-      this.queryClient.setQueryData(TUTORIAL_QUERY_KEYS.progress(tutorialId), progress);
+      localStorage.setItem(
+        `${STORAGE_KEYS.TUTORIAL_PROGRESS}_${tutorialId}`,
+        JSON.stringify(progress),
+      );
+      this.queryClient.setQueryData(
+        TUTORIAL_QUERY_KEYS.progress(tutorialId),
+        progress,
+      );
 
       // 触发进度更新事件
       this.emitEvent({
@@ -120,7 +134,11 @@ export class TutorialProgressManager {
   /**
    * 更新步骤进度
    */
-  updateStepProgress(tutorialId: string, stepIndex: number, action: TutorialProgressUpdate): TutorialProgress | null {
+  updateStepProgress(
+    tutorialId: string,
+    stepIndex: number,
+    action: TutorialProgressUpdate,
+  ): TutorialProgress | null {
     const progress = this.getProgress(tutorialId);
     if (!progress) return null;
 
@@ -142,7 +160,10 @@ export class TutorialProgressManager {
           progress.lastAccessTime = now;
 
           // 自动推进到下一步
-          if (stepIndex === progress.currentStep && stepIndex < progress.totalSteps - 1) {
+          if (
+            stepIndex === progress.currentStep &&
+            stepIndex < progress.totalSteps - 1
+          ) {
             progress.currentStep = stepIndex + 1;
           }
           updated = true;
@@ -176,7 +197,10 @@ export class TutorialProgressManager {
   /**
    * 添加事件监听器
    */
-  addEventListener(eventType: string, listener: (event: TutorialEvent) => void): void {
+  addEventListener(
+    eventType: string,
+    listener: (event: TutorialEvent) => void,
+  ): void {
     if (!this.eventListeners.has(eventType)) {
       this.eventListeners.set(eventType, []);
     }
@@ -188,7 +212,7 @@ export class TutorialProgressManager {
    */
   private emitEvent(event: TutorialEvent): void {
     const listeners = this.eventListeners.get(event.type) || [];
-    listeners.forEach(listener => {
+    listeners.forEach((listener) => {
       try {
         listener(event);
       } catch (error) {
@@ -277,7 +301,10 @@ export function useTutorialService() {
   /**
    * 获取单个教程
    */
-  const useTutorial = (tutorialId: string, options?: UseQueryOptions<Tutorial, Error>) => {
+  const useTutorial = (
+    tutorialId: string,
+    options?: UseQueryOptions<Tutorial, Error>,
+  ) => {
     return useQuery({
       queryKey: TUTORIAL_QUERY_KEYS.tutorial(tutorialId),
       queryFn: async (): Promise<Tutorial> => {
@@ -287,7 +314,7 @@ export function useTutorialService() {
           queryFn: () => [],
         });
 
-        const tutorial = tutorials.find(t => t.id === tutorialId);
+        const tutorial = tutorials.find((t) => t.id === tutorialId);
         if (!tutorial) {
           throw new Error(`Tutorial ${tutorialId} not found`);
         }
@@ -303,7 +330,10 @@ export function useTutorialService() {
   /**
    * 获取教程进度
    */
-  const useTutorialProgress = (tutorialId: string, options?: UseQueryOptions<TutorialProgress | null, Error>) => {
+  const useTutorialProgress = (
+    tutorialId: string,
+    options?: UseQueryOptions<TutorialProgress | null, Error>,
+  ) => {
     return useQuery({
       queryKey: TUTORIAL_QUERY_KEYS.progress(tutorialId),
       queryFn: (): TutorialProgress | null => {
@@ -320,19 +350,27 @@ export function useTutorialService() {
    */
   const useUpdateProgress = () => {
     return useMutation({
-      mutationFn: async ({ tutorialId, stepIndex, action }: {
+      mutationFn: async ({
+        tutorialId,
+        stepIndex,
+        action,
+      }: {
         tutorialId: string;
         stepIndex: number;
         action: TutorialProgressUpdate;
       }) => {
         const progressManager = progressManagerRef.current;
-        return progressManager.updateStepProgress(tutorialId, stepIndex, action);
+        return progressManager.updateStepProgress(
+          tutorialId,
+          stepIndex,
+          action,
+        );
       },
       onSuccess: (updatedProgress, variables) => {
         // 更新缓存
         queryClient.setQueryData(
           TUTORIAL_QUERY_KEYS.progress(variables.tutorialId),
-          updatedProgress
+          updatedProgress,
         );
       },
     });
@@ -345,7 +383,10 @@ export function useTutorialService() {
     return useMemo(() => {
       try {
         const stored = localStorage.getItem(STORAGE_KEYS.USER_PREFERENCES);
-        return { ...DEFAULT_PREFERENCES, ...(stored ? JSON.parse(stored) : {}) };
+        return {
+          ...DEFAULT_PREFERENCES,
+          ...(stored ? JSON.parse(stored) : {}),
+        };
       } catch (error) {
         console.error('Failed to load user preferences:', error);
         return DEFAULT_PREFERENCES;
@@ -356,25 +397,34 @@ export function useTutorialService() {
   /**
    * 保存用户偏好设置
    */
-  const saveUserPreferences = useCallback((preferences: Partial<TutorialUserPreferences>) => {
-    try {
-      const current = progressManagerRef.current.constructor === TutorialProgressManager
-        ? DEFAULT_PREFERENCES
-        : useUserPreferences();
+  const saveUserPreferences = useCallback(
+    (preferences: Partial<TutorialUserPreferences>) => {
+      try {
+        const current =
+          progressManagerRef.current.constructor === TutorialProgressManager
+            ? DEFAULT_PREFERENCES
+            : useUserPreferences();
 
-      const updated = { ...current, ...preferences };
-      localStorage.setItem(STORAGE_KEYS.USER_PREFERENCES, JSON.stringify(updated));
-      return updated;
-    } catch (error) {
-      console.error('Failed to save user preferences:', error);
-      return null;
-    }
-  }, []);
+        const updated = { ...current, ...preferences };
+        localStorage.setItem(
+          STORAGE_KEYS.USER_PREFERENCES,
+          JSON.stringify(updated),
+        );
+        return updated;
+      } catch (error) {
+        console.error('Failed to save user preferences:', error);
+        return null;
+      }
+    },
+    [],
+  );
 
   /**
    * 获取教程统计信息
    */
-  const useTutorialStats = (options?: UseQueryOptions<TutorialStats, Error>) => {
+  const useTutorialStats = (
+    options?: UseQueryOptions<TutorialStats, Error>,
+  ) => {
     return useQuery({
       queryKey: TUTORIAL_QUERY_KEYS.stats,
       queryFn: async (): Promise<TutorialStats> => {
@@ -404,7 +454,8 @@ export function useTutorialService() {
           totalTutorials: tutorials.length,
           completedTutorials,
           totalTimeSpent,
-          averageCompletionTime: completedTutorials > 0 ? totalTimeSpent / completedTutorials : 0,
+          averageCompletionTime:
+            completedTutorials > 0 ? totalTimeSpent / completedTutorials : 0,
           achievementCount,
           currentStreak: 1, // 简化实现
         };
@@ -428,12 +479,14 @@ export function useTutorialService() {
       }
 
       const currentStep = tutorial.data.steps[progress.data.currentStep];
-      const previousStep = progress.data.currentStep > 0
-        ? tutorial.data.steps[progress.data.currentStep - 1]
-        : undefined;
-      const nextStep = progress.data.currentStep < tutorial.data.steps.length - 1
-        ? tutorial.data.steps[progress.data.currentStep + 1]
-        : undefined;
+      const previousStep =
+        progress.data.currentStep > 0
+          ? tutorial.data.steps[progress.data.currentStep - 1]
+          : undefined;
+      const nextStep =
+        progress.data.currentStep < tutorial.data.steps.length - 1
+          ? tutorial.data.steps[progress.data.currentStep + 1]
+          : undefined;
 
       return {
         currentStep,

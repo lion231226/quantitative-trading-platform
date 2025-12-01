@@ -1,8 +1,20 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { AlertCircle, Check, Download, RotateCcw, Save, Settings, Upload, X } from 'lucide-react';
-import { StrategyParameters, UserPreferences as UserPreferencesType } from '@/types/parameter.types';
+import {
+  AlertCircle,
+  Check,
+  Download,
+  RotateCcw,
+  Save,
+  Settings,
+  Upload,
+  X,
+} from 'lucide-react';
+import {
+  StrategyParameters,
+  UserPreferences as UserPreferencesType,
+} from '@/types/parameter.types';
 
 // localStorage wrapper for testability
 const getLocalStorage = () => {
@@ -21,9 +33,9 @@ const getLocalStorage = () => {
 };
 
 interface UserPreferencesProps {
-  currentParameters: StrategyParameters
-  onParametersChange?: (parameters: StrategyParameters) => void
-  className?: string
+  currentParameters: StrategyParameters;
+  onParametersChange?: (parameters: StrategyParameters) => void;
+  className?: string;
 }
 
 // 默认配置
@@ -55,10 +67,14 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({
   onParametersChange,
   className = '',
 }) => {
-  const [preferences, setPreferences] = useState<UserPreferencesType>(DEFAULT_PREFERENCES);
+  const [preferences, setPreferences] =
+    useState<UserPreferencesType>(DEFAULT_PREFERENCES);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: 'success' | 'error';
+    text: string;
+  } | null>(null);
 
   // 显示消息
   const showMessage = useCallback((type: 'success' | 'error', text: string) => {
@@ -85,29 +101,38 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({
   }, []);
 
   // 保存用户偏好
-  const savePreferences = useCallback(async (newPreferences: UserPreferencesType) => {
-    setIsSaving(true);
-    const storage = getLocalStorage();
+  const savePreferences = useCallback(
+    async (newPreferences: UserPreferencesType) => {
+      setIsSaving(true);
+      const storage = getLocalStorage();
 
-    try {
-      storage.setItem(STORAGE_KEYS.PREFERENCES, JSON.stringify(newPreferences));
-      setPreferences(newPreferences);
+      try {
+        storage.setItem(
+          STORAGE_KEYS.PREFERENCES,
+          JSON.stringify(newPreferences),
+        );
+        setPreferences(newPreferences);
 
-      // 自动保存当前参数
-      if (newPreferences.autoSave) {
-        storage.setItem(STORAGE_KEYS.LAST_USED, JSON.stringify(currentParameters));
+        // 自动保存当前参数
+        if (newPreferences.autoSave) {
+          storage.setItem(
+            STORAGE_KEYS.LAST_USED,
+            JSON.stringify(currentParameters),
+          );
+        }
+
+        setMessage({ type: 'success', text: '偏好设置已保存' });
+        setTimeout(() => setMessage(null), 3000);
+      } catch (error) {
+        console.error('保存用户偏好失败:', error);
+        setMessage({ type: 'error', text: '保存偏好设置失败' });
+        setTimeout(() => setMessage(null), 3000);
+      } finally {
+        setIsSaving(false);
       }
-
-      setMessage({ type: 'success', text: '偏好设置已保存' });
-      setTimeout(() => setMessage(null), 3000);
-    } catch (error) {
-      console.error('保存用户偏好失败:', error);
-      setMessage({ type: 'error', text: '保存偏好设置失败' });
-      setTimeout(() => setMessage(null), 3000);
-    } finally {
-      setIsSaving(false);
-    }
-  }, [currentParameters]);
+    },
+    [currentParameters],
+  );
 
   // 重置为默认设置
   const resetToDefaults = useCallback(async () => {
@@ -153,42 +178,45 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({
   }, [preferences, currentParameters]);
 
   // 导入配置
-  const importConfiguration = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const importConfiguration = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const content = e.target?.result as string;
-        const importedData = JSON.parse(content);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const content = e.target?.result as string;
+          const importedData = JSON.parse(content);
 
-        // 验证导入数据格式
-        if (!importedData.preferences || !importedData.currentParameters) {
-          throw new Error('无效的配置文件格式');
+          // 验证导入数据格式
+          if (!importedData.preferences || !importedData.currentParameters) {
+            throw new Error('无效的配置文件格式');
+          }
+
+          // 创建备份
+          createBackup();
+
+          // 应用导入的配置
+          savePreferences(importedData.preferences);
+          onParametersChange?.(importedData.currentParameters);
+
+          setMessage({ type: 'success', text: '配置导入成功' });
+          setTimeout(() => setMessage(null), 3000);
+        } catch (error) {
+          console.error('导入配置失败:', error);
+          setMessage({ type: 'error', text: '导入配置失败：文件格式无效' });
+          setTimeout(() => setMessage(null), 3000);
         }
+      };
 
-        // 创建备份
-        createBackup();
+      reader.readAsText(file);
 
-        // 应用导入的配置
-        savePreferences(importedData.preferences);
-        onParametersChange?.(importedData.currentParameters);
-
-        setMessage({ type: 'success', text: '配置导入成功' });
-        setTimeout(() => setMessage(null), 3000);
-      } catch (error) {
-        console.error('导入配置失败:', error);
-        setMessage({ type: 'error', text: '导入配置失败：文件格式无效' });
-        setTimeout(() => setMessage(null), 3000);
-      }
-    };
-
-    reader.readAsText(file);
-
-    // 清空文件输入
-    event.target.value = '';
-  }, [savePreferences, onParametersChange]);
+      // 清空文件输入
+      event.target.value = '';
+    },
+    [savePreferences, onParametersChange],
+  );
 
   // 创建备份
   const createBackup = useCallback(() => {
@@ -228,38 +256,54 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({
   }, []);
 
   // 恢复备份
-  const restoreBackup = useCallback(async (backup: any) => {
-    if (window.confirm(`确定要恢复 ${new Date(backup.timestamp).toLocaleString()} 的备份配置吗？`)) {
-      await savePreferences(backup.preferences);
-      onParametersChange?.(backup.currentParameters);
-      setMessage({ type: 'success', text: `已恢复 ${new Date(backup.timestamp).toLocaleString()} 的备份配置` });
-      setTimeout(() => setMessage(null), 3000);
-    }
-  }, [savePreferences, onParametersChange]);
+  const restoreBackup = useCallback(
+    async (backup: any) => {
+      if (
+        window.confirm(
+          `确定要恢复 ${new Date(backup.timestamp).toLocaleString()} 的备份配置吗？`,
+        )
+      ) {
+        await savePreferences(backup.preferences);
+        onParametersChange?.(backup.currentParameters);
+        setMessage({
+          type: 'success',
+          text: `已恢复 ${new Date(backup.timestamp).toLocaleString()} 的备份配置`,
+        });
+        setTimeout(() => setMessage(null), 3000);
+      }
+    },
+    [savePreferences, onParametersChange],
+  );
 
   // 更新默认参数
-  const updateDefaultParameters = useCallback((field: keyof StrategyParameters, value: number) => {
-    const updatedPreferences = {
-      ...preferences,
-      defaultParameters: {
-        ...preferences.defaultParameters,
-        [field]: value,
-      },
-    };
-    savePreferences(updatedPreferences);
-  }, [preferences, savePreferences]);
+  const updateDefaultParameters = useCallback(
+    (field: keyof StrategyParameters, value: number) => {
+      const updatedPreferences = {
+        ...preferences,
+        defaultParameters: {
+          ...preferences.defaultParameters,
+          [field]: value,
+        },
+      };
+      savePreferences(updatedPreferences);
+    },
+    [preferences, savePreferences],
+  );
 
   // 更新图表偏好
-  const updateChartPreferences = useCallback((field: keyof UserPreferencesType['chartPreferences'], value: any) => {
-    const updatedPreferences = {
-      ...preferences,
-      chartPreferences: {
-        ...preferences.chartPreferences,
-        [field]: value,
-      },
-    };
-    savePreferences(updatedPreferences);
-  }, [preferences, savePreferences]);
+  const updateChartPreferences = useCallback(
+    (field: keyof UserPreferencesType['chartPreferences'], value: any) => {
+      const updatedPreferences = {
+        ...preferences,
+        chartPreferences: {
+          ...preferences.chartPreferences,
+          [field]: value,
+        },
+      };
+      savePreferences(updatedPreferences);
+    },
+    [preferences, savePreferences],
+  );
 
   // 组件挂载时加载偏好
   useEffect(() => {
@@ -271,7 +315,10 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({
     if (preferences.autoSave && !isLoading) {
       const timer = setTimeout(() => {
         const storage = getLocalStorage();
-        storage.setItem(STORAGE_KEYS.LAST_USED, JSON.stringify(currentParameters));
+        storage.setItem(
+          STORAGE_KEYS.LAST_USED,
+          JSON.stringify(currentParameters),
+        );
       }, 1000);
       return () => clearTimeout(timer);
     }
@@ -289,11 +336,13 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({
     <div className={`space-y-6 ${className}`}>
       {/* 消息提示 */}
       {message && (
-        <div className={`flex items-center space-x-2 p-3 rounded-lg ${
-          message.type === 'success'
-            ? 'bg-green-50 text-green-700 border border-green-200'
-            : 'bg-red-50 text-red-700 border border-red-200'
-        }`}>
+        <div
+          className={`flex items-center space-x-2 p-3 rounded-lg ${
+            message.type === 'success'
+              ? 'bg-green-50 text-green-700 border border-green-200'
+              : 'bg-red-50 text-red-700 border border-red-200'
+          }`}
+        >
           {message.type === 'success' ? (
             <Check className="h-5 w-5" />
           ) : (
@@ -324,19 +373,27 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({
       <div className="space-y-6">
         {/* 默认参数设置 */}
         <div className="bg-gray-50 rounded-lg p-4">
-          <h4 className="text-md font-semibold text-gray-900 mb-4">默认参数设置</h4>
+          <h4 className="text-md font-semibold text-gray-900 mb-4">
+            默认参数设置
+          </h4>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                默认均线周期: {preferences.defaultParameters.movingAveragePeriod}
+                默认均线周期:{' '}
+                {preferences.defaultParameters.movingAveragePeriod}
               </label>
               <input
                 type="range"
                 min="5"
                 max="200"
                 value={preferences.defaultParameters.movingAveragePeriod}
-                onChange={(e) => updateDefaultParameters('movingAveragePeriod', Number(e.target.value))}
+                onChange={(e) =>
+                  updateDefaultParameters(
+                    'movingAveragePeriod',
+                    Number(e.target.value),
+                  )
+                }
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
               />
             </div>
@@ -351,7 +408,9 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({
                 max="50"
                 step="0.1"
                 value={preferences.defaultParameters.stopLoss}
-                onChange={(e) => updateDefaultParameters('stopLoss', Number(e.target.value))}
+                onChange={(e) =>
+                  updateDefaultParameters('stopLoss', Number(e.target.value))
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
               />
             </div>
@@ -366,14 +425,18 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({
                 max="50"
                 step="0.1"
                 value={preferences.defaultParameters.takeProfit}
-                onChange={(e) => updateDefaultParameters('takeProfit', Number(e.target.value))}
+                onChange={(e) =>
+                  updateDefaultParameters('takeProfit', Number(e.target.value))
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
               />
             </div>
 
             <div className="flex items-end">
               <button
-                onClick={() => onParametersChange?.(preferences.defaultParameters)}
+                onClick={() =>
+                  onParametersChange?.(preferences.defaultParameters)
+                }
                 className="w-full px-3 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700"
               >
                 应用默认参数
@@ -384,14 +447,18 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({
 
         {/* 图表偏好设置 */}
         <div className="bg-gray-50 rounded-lg p-4">
-          <h4 className="text-md font-semibold text-gray-900 mb-4">图表偏好设置</h4>
+          <h4 className="text-md font-semibold text-gray-900 mb-4">
+            图表偏好设置
+          </h4>
 
           <div className="space-y-3">
             <label className="flex items-center space-x-2">
               <input
                 type="checkbox"
                 checked={preferences.chartPreferences.showGrid}
-                onChange={(e) => updateChartPreferences('showGrid', e.target.checked)}
+                onChange={(e) =>
+                  updateChartPreferences('showGrid', e.target.checked)
+                }
                 className="rounded border-gray-300"
               />
               <span className="text-sm text-gray-700">显示图表网格</span>
@@ -401,7 +468,9 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({
               <input
                 type="checkbox"
                 checked={preferences.chartPreferences.showVolume}
-                onChange={(e) => updateChartPreferences('showVolume', e.target.checked)}
+                onChange={(e) =>
+                  updateChartPreferences('showVolume', e.target.checked)
+                }
                 className="rounded border-gray-300"
               />
               <span className="text-sm text-gray-700">显示成交量</span>
@@ -417,7 +486,12 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({
                 max="1000"
                 step="50"
                 value={preferences.chartPreferences.animationDuration}
-                onChange={(e) => updateChartPreferences('animationDuration', Number(e.target.value))}
+                onChange={(e) =>
+                  updateChartPreferences(
+                    'animationDuration',
+                    Number(e.target.value),
+                  )
+                }
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
               />
             </div>
@@ -433,7 +507,12 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({
               <input
                 type="checkbox"
                 checked={preferences.autoSave}
-                onChange={(e) => savePreferences({ ...preferences, autoSave: e.target.checked })}
+                onChange={(e) =>
+                  savePreferences({
+                    ...preferences,
+                    autoSave: e.target.checked,
+                  })
+                }
                 className="rounded border-gray-300"
               />
               <span className="text-sm text-gray-700">自动保存参数变更</span>
@@ -443,7 +522,12 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({
               <input
                 type="checkbox"
                 checked={preferences.showAdvanced}
-                onChange={(e) => savePreferences({ ...preferences, showAdvanced: e.target.checked })}
+                onChange={(e) =>
+                  savePreferences({
+                    ...preferences,
+                    showAdvanced: e.target.checked,
+                  })
+                }
                 className="rounded border-gray-300"
               />
               <span className="text-sm text-gray-700">显示高级选项</span>
@@ -457,7 +541,9 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">导出配置</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                导出配置
+              </label>
               <button
                 onClick={exportConfiguration}
                 className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700"
@@ -468,7 +554,9 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">导入配置</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                导入配置
+              </label>
               <label className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 cursor-pointer">
                 <Upload className="h-4 w-4" />
                 <span>选择JSON文件</span>
@@ -484,31 +572,35 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({
 
           {/* 备份历史 */}
           <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">备份历史</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              备份历史
+            </label>
             <div className="max-h-32 overflow-y-auto border border-gray-200 rounded-md">
               {(() => {
                 const backups = getBackupHistory();
                 return backups.length === 0 ? (
-                  <div className="p-3 text-sm text-gray-500 text-center">暂无备份</div>
+                  <div className="p-3 text-sm text-gray-500 text-center">
+                    暂无备份
+                  </div>
                 ) : (
                   <div className="divide-y divide-gray-200">
                     {backups.map((backup: any, index: number) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-2 hover:bg-gray-100"
-                    >
-                      <span className="text-sm text-gray-700">
-                        {new Date(backup.timestamp).toLocaleString()}
-                      </span>
-                      <button
-                        onClick={() => restoreBackup(backup)}
-                        className="text-sm text-blue-600 hover:text-blue-800"
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-2 hover:bg-gray-100"
                       >
-                        恢复
-                      </button>
-                    </div>
-                  ))}
-                </div>
+                        <span className="text-sm text-gray-700">
+                          {new Date(backup.timestamp).toLocaleString()}
+                        </span>
+                        <button
+                          onClick={() => restoreBackup(backup)}
+                          className="text-sm text-blue-600 hover:text-blue-800"
+                        >
+                          恢复
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 );
               })()}
             </div>

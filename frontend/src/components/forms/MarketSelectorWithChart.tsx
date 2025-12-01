@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Loading } from '@/components/ui/loading';
 import { marketDataAPI } from '@/lib/api';
 import { Symbol } from '@/types/api';
@@ -11,9 +17,9 @@ import CandlestickChart from '@/components/charts/CandlestickChart';
 import { TimePeriod } from '@/types/kline.types';
 
 interface MarketSelectorWithChartProps {
-  onSymbolSelect: (symbol: string) => void
-  selectedSymbol?: string
-  className?: string
+  onSymbolSelect: (symbol: string) => void;
+  selectedSymbol?: string;
+  className?: string;
 }
 
 interface MockKlineData {
@@ -51,7 +57,7 @@ const generateMockKlineData = (symbol: string): MockKlineData[] => {
       high,
       low,
       close,
-      volume
+      volume,
     });
 
     basePrice = close; // 下一期基于本期收盘价
@@ -60,7 +66,11 @@ const generateMockKlineData = (symbol: string): MockKlineData[] => {
   return data;
 };
 
-export function MarketSelectorWithChart({ onSymbolSelect, selectedSymbol, className }: MarketSelectorWithChartProps) {
+export function MarketSelectorWithChart({
+  onSymbolSelect,
+  selectedSymbol,
+  className,
+}: MarketSelectorWithChartProps) {
   const [symbols, setSymbols] = useState<Symbol[]>([]);
   const [sectors, setSectors] = useState<string[]>([]);
   const [selectedSector, setSelectedSector] = useState<string>('全部');
@@ -71,11 +81,11 @@ export function MarketSelectorWithChart({ onSymbolSelect, selectedSymbol, classN
 
   // 英文板块名称到中文的映射
   const sectorNameMap: Record<string, string> = {
-    'index': '股指',
-    'energy': '能源',
-    'metal': '金属',
-    'agriculture': '农产品',
-    'chemical': '化工'
+    index: '股指',
+    energy: '能源',
+    metal: '金属',
+    agriculture: '农产品',
+    chemical: '化工',
   };
 
   useEffect(() => {
@@ -104,19 +114,22 @@ export function MarketSelectorWithChart({ onSymbolSelect, selectedSymbol, classN
       setSymbols(data);
 
       // 提取所有版块并转换为中文
-      const uniqueSectors = Array.from(new Set(data.map(s => s.sector)));
+      const uniqueSectors = Array.from(new Set(data.map((s) => s.sector)));
       console.log('提取的版块:', uniqueSectors);
 
       // 确保所有板块都有对应的中文映射
-      const chineseSectors = uniqueSectors.map(sector => sectorNameMap[sector as keyof typeof sectorNameMap] || sector);
+      const chineseSectors = uniqueSectors.map(
+        (sector) =>
+          sectorNameMap[sector as keyof typeof sectorNameMap] || sector,
+      );
       console.log('中文版块:', chineseSectors);
 
       setSectors(['全部', ...chineseSectors]);
       console.log('期货品种加载成功，总数:', data.length);
-
     } catch (err) {
       console.error('加载期货品种失败:', err);
-      const errorMessage = err instanceof Error ? err.message : '加载期货品种失败';
+      const errorMessage =
+        err instanceof Error ? err.message : '加载期货品种失败';
       setError(errorMessage);
 
       // 添加更详细的错误信息
@@ -124,7 +137,7 @@ export function MarketSelectorWithChart({ onSymbolSelect, selectedSymbol, classN
         console.error('错误详情:', {
           name: err.name,
           message: err.message,
-          stack: err.stack
+          stack: err.stack,
         });
       }
     } finally {
@@ -132,13 +145,16 @@ export function MarketSelectorWithChart({ onSymbolSelect, selectedSymbol, classN
     }
   };
 
-  const filteredSymbols = selectedSector === '全部'
-    ? symbols
-    : symbols.filter(s => {
-        // 找到中文显示对应的英文名称
-        const englishSector = Object.keys(sectorNameMap).find(key => sectorNameMap[key] === selectedSector);
-        return englishSector && s.sector === englishSector;
-      });
+  const filteredSymbols =
+    selectedSector === '全部'
+      ? symbols
+      : symbols.filter((s) => {
+          // 找到中文显示对应的英文名称
+          const englishSector = Object.keys(sectorNameMap).find(
+            (key) => sectorNameMap[key] === selectedSector,
+          );
+          return englishSector && s.sector === englishSector;
+        });
 
   const handleSymbolSelect = (symbol: string) => {
     onSymbolSelect(symbol);
@@ -189,7 +205,7 @@ export function MarketSelectorWithChart({ onSymbolSelect, selectedSymbol, classN
         <CardContent className="space-y-4">
           {/* 版块筛选 */}
           <div className="flex flex-wrap gap-2">
-            {sectors.map(sector => (
+            {sectors.map((sector) => (
               <Button
                 key={sector}
                 variant={selectedSector === sector ? 'default' : 'outline'}
@@ -203,10 +219,12 @@ export function MarketSelectorWithChart({ onSymbolSelect, selectedSymbol, classN
 
           {/* 期货品种列表 */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 max-h-60 overflow-y-auto custom-scrollbar">
-            {filteredSymbols.map(symbol => (
+            {filteredSymbols.map((symbol) => (
               <Button
                 key={symbol.symbol}
-                variant={selectedSymbol === symbol.symbol ? 'default' : 'outline'}
+                variant={
+                  selectedSymbol === symbol.symbol ? 'default' : 'outline'
+                }
                 className="justify-start h-auto p-3 text-left"
                 onClick={() => handleSymbolSelect(symbol.symbol)}
               >
@@ -241,9 +259,7 @@ export function MarketSelectorWithChart({ onSymbolSelect, selectedSymbol, classN
                 {showChart ? '隐藏' : '显示'}图表
               </Button>
             </CardTitle>
-            <CardDescription>
-              近60个交易日价格走势（模拟数据）
-            </CardDescription>
+            <CardDescription>近60个交易日价格走势（模拟数据）</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-80">
@@ -261,8 +277,8 @@ export function MarketSelectorWithChart({ onSymbolSelect, selectedSymbol, classN
                     grid: '#e0e0e0',
                     text: '#424242',
                     background: '#ffffff',
-                    crosshair: '#757575'
-                  }
+                    crosshair: '#757575',
+                  },
                 }}
                 height={320}
               />

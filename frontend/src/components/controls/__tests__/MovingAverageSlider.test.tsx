@@ -19,7 +19,9 @@ describe('MovingAverageSlider', () => {
     expect(screen.getByText('移动平均周期')).toBeInTheDocument();
     expect(screen.getByText('20')).toBeInTheDocument();
     expect(screen.getByText('天')).toBeInTheDocument();
-    expect(screen.getByText('计算移动平均线所用的历史数据天数')).toBeInTheDocument();
+    expect(
+      screen.getByText('计算移动平均线所用的历史数据天数'),
+    ).toBeInTheDocument();
   });
 
   it('应该显示当前值', () => {
@@ -65,7 +67,7 @@ describe('MovingAverageSlider', () => {
     expect(slider).toBeDisabled();
 
     const presetButtons = screen.getAllByRole('button');
-    presetButtons.forEach(button => {
+    presetButtons.forEach((button) => {
       expect(button).toBeDisabled();
     });
   });
@@ -74,7 +76,9 @@ describe('MovingAverageSlider', () => {
     render(<MovingAverageSlider {...defaultProps} value={5} showAdvanced />);
 
     expect(screen.getByText('超短期')).toBeInTheDocument();
-    expect(screen.getByText('剥头皮交易，对价格变化极其敏感')).toBeInTheDocument();
+    expect(
+      screen.getByText('剥头皮交易，对价格变化极其敏感'),
+    ).toBeInTheDocument();
   });
 
   it('应该显示高级设置当showAdvanced为true时', () => {

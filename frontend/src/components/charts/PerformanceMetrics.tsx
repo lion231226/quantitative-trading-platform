@@ -1,39 +1,39 @@
 'use client';
 
-import React, { useMemo, useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
+  MetricDisplayConfig,
   PerformanceMetrics,
   PerformanceMetricsProps,
-  MetricDisplayConfig,
 } from '@/types/performance.types';
 import {
-  usePerformanceMetrics,
   performanceService,
+  usePerformanceMetrics,
 } from '@/services/performanceService';
 import {
-  formatMetricValue,
-  getMetricColorClass,
-  validatePerformanceMetrics,
-  groupMetricsByImportance,
-  groupMetricsByCategory,
   METRIC_DISPLAY_CONFIGS,
+  formatMetricValue,
   generatePerformanceSummary,
+  getMetricColorClass,
+  groupMetricsByCategory,
+  groupMetricsByImportance,
+  validatePerformanceMetrics,
 } from '@/utils/performanceHelpers';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loading } from '@/components/ui/loading';
 import {
-  RefreshCw,
-  TrendingUp,
-  TrendingDown,
-  Info,
+  BarChart3,
   ChevronDown,
   ChevronUp,
-  BarChart3,
+  DollarSign,
+  Info,
+  RefreshCw,
   Shield,
   Target,
-  DollarSign
+  TrendingDown,
+  TrendingUp,
 } from 'lucide-react';
 
 // 组件状态
@@ -74,17 +74,20 @@ const PerformanceMetricsComponent: React.FC<PerformanceMetricsProps> = ({
   });
 
   // 构建分析请求
-  const analysisRequest = useMemo(() => ({
-    strategyId,
-    returnType: 'simple' as const,
-    initialCapital: 100000,
-    positionSize: 1,
-    riskFreeRate: 0.02,
-    includeCosts: true,
-    startDate,
-    endDate,
-    benchmarkId,
-  }), [strategyId, startDate, endDate, benchmarkId]);
+  const analysisRequest = useMemo(
+    () => ({
+      strategyId,
+      returnType: 'simple' as const,
+      initialCapital: 100000,
+      positionSize: 1,
+      riskFreeRate: 0.02,
+      includeCosts: true,
+      startDate,
+      endDate,
+      benchmarkId,
+    }),
+    [strategyId, startDate, endDate, benchmarkId],
+  );
 
   // 获取绩效指标
   const {
@@ -100,7 +103,7 @@ const PerformanceMetricsComponent: React.FC<PerformanceMetricsProps> = ({
     if (metrics) {
       // 验证数据
       const validation = validatePerformanceMetrics(metrics);
-      setState(prev => ({ ...prev, validationErrors: validation.errors }));
+      setState((prev) => ({ ...prev, validationErrors: validation.errors }));
 
       // 调用回调
       onMetricsUpdate?.(metrics);
@@ -114,13 +117,16 @@ const PerformanceMetricsComponent: React.FC<PerformanceMetricsProps> = ({
 
   // 切换详情显示
   const toggleDetails = useCallback(() => {
-    setState(prev => ({ ...prev, showDetails: !prev.showDetails }));
+    setState((prev) => ({ ...prev, showDetails: !prev.showDetails }));
   }, []);
 
   // 切换类别
-  const handleCategoryChange = useCallback((category: typeof state.selectedCategory) => {
-    setState(prev => ({ ...prev, selectedCategory: category }));
-  }, []);
+  const handleCategoryChange = useCallback(
+    (category: typeof state.selectedCategory) => {
+      setState((prev) => ({ ...prev, selectedCategory: category }));
+    },
+    [],
+  );
 
   // 分组指标
   const groupedMetrics = useMemo(() => {
@@ -134,63 +140,67 @@ const PerformanceMetricsComponent: React.FC<PerformanceMetricsProps> = ({
   }, [metrics]);
 
   // 渲染单个指标
-  const renderMetric = useCallback((
-    config: MetricDisplayConfig,
-    value: number | string | undefined,
-    showLabel: boolean = true
-  ) => {
-    const colorClass = getMetricColorClass(
-      typeof value === 'number' ? value : undefined,
-      config.format
-    );
-    const formattedValue = formatMetricValue(value, config.format);
-    const importanceBadge = IMPORTANCE_ICONS[config.importance];
+  const renderMetric = useCallback(
+    (
+      config: MetricDisplayConfig,
+      value: number | string | undefined,
+      showLabel: boolean = true,
+    ) => {
+      const colorClass = getMetricColorClass(
+        typeof value === 'number' ? value : undefined,
+        config.format,
+      );
+      const formattedValue = formatMetricValue(value, config.format);
+      const importanceBadge = IMPORTANCE_ICONS[config.importance];
 
-    return (
-      <div
-        key={config.key}
-        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-      >
-        <div className="flex items-center space-x-2">
-          {importanceBadge && (
-            <span className="text-sm" title={`重要性: ${config.importance}`}>
-              {importanceBadge}
-            </span>
-          )}
-          {showLabel && (
-            <span className="text-sm font-medium text-gray-700">
-              {config.label}
-            </span>
-          )}
+      return (
+        <div
+          key={config.key}
+          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+        >
+          <div className="flex items-center space-x-2">
+            {importanceBadge && (
+              <span className="text-sm" title={`重要性: ${config.importance}`}>
+                {importanceBadge}
+              </span>
+            )}
+            {showLabel && (
+              <span className="text-sm font-medium text-gray-700">
+                {config.label}
+              </span>
+            )}
+          </div>
+          <div className={`text-lg font-semibold ${colorClass}`}>
+            {formattedValue}
+          </div>
         </div>
-        <div className={`text-lg font-semibold ${colorClass}`}>
-          {formattedValue}
-        </div>
-      </div>
-    );
-  }, []);
+      );
+    },
+    [],
+  );
 
   // 渲染指标组
-  const renderMetricGroup = useCallback((
-    title: string,
-    configs: MetricDisplayConfig[],
-    icon?: React.ReactNode
-  ) => {
-    if (configs.length === 0) return null;
+  const renderMetricGroup = useCallback(
+    (title: string, configs: MetricDisplayConfig[], icon?: React.ReactNode) => {
+      if (configs.length === 0) return null;
 
-    return (
-      <div className="space-y-3">
-        <div className="flex items-center space-x-2">
-          {icon}
-          <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
-          <Badge variant="secondary">{configs.length}</Badge>
+      return (
+        <div className="space-y-3">
+          <div className="flex items-center space-x-2">
+            {icon}
+            <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
+            <Badge variant="secondary">{configs.length}</Badge>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {configs.map((config) =>
+              renderMetric(config, metrics?.[config.key]),
+            )}
+          </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {configs.map(config => renderMetric(config, metrics?.[config.key]))}
-        </div>
-      </div>
-    );
-  }, [metrics, renderMetric]);
+      );
+    },
+    [metrics, renderMetric],
+  );
 
   // 渲染类别标签
   const renderCategoryTabs = useCallback(() => {
@@ -229,7 +239,9 @@ const PerformanceMetricsComponent: React.FC<PerformanceMetricsProps> = ({
         <div className="flex items-start space-x-2">
           <Info className="w-4 h-4 text-yellow-600 mt-0.5" />
           <div>
-            <h4 className="text-sm font-medium text-yellow-800">数据验证警告</h4>
+            <h4 className="text-sm font-medium text-yellow-800">
+              数据验证警告
+            </h4>
             <ul className="mt-1 text-sm text-yellow-700 list-disc list-inside">
               {state.validationErrors.map((error, index) => (
                 <li key={index}>{error}</li>
@@ -254,7 +266,9 @@ const PerformanceMetricsComponent: React.FC<PerformanceMetricsProps> = ({
 
     return (
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {importantMetrics.map(config => renderMetric(config, metrics[config.key], false))}
+        {importantMetrics.map((config) =>
+          renderMetric(config, metrics[config.key], false),
+        )}
       </div>
     );
   }, [metrics, renderMetric]);
@@ -290,21 +304,31 @@ const PerformanceMetricsComponent: React.FC<PerformanceMetricsProps> = ({
         {renderCategoryTabs()}
 
         {/* 高重要性指标 */}
-        {state.selectedCategory === 'all' && groupedMetrics.high.length > 0 && (
-          renderMetricGroup('核心指标', groupedMetrics.high, <DollarSign className="w-5 h-5 text-red-500" />)
-        )}
+        {state.selectedCategory === 'all' &&
+          groupedMetrics.high.length > 0 &&
+          renderMetricGroup(
+            '核心指标',
+            groupedMetrics.high,
+            <DollarSign className="w-5 h-5 text-red-500" />,
+          )}
 
         {/* 选类别指标 */}
-        {configs.length > 0 && (
+        {configs.length > 0 &&
           renderMetricGroup(
-            state.selectedCategory === 'all' ? '其他重要指标' :
-            CATEGORIES[state.selectedCategory as keyof typeof CATEGORIES]?.label || '指标',
+            state.selectedCategory === 'all'
+              ? '其他重要指标'
+              : CATEGORIES[state.selectedCategory as keyof typeof CATEGORIES]
+                  ?.label || '指标',
             configs,
-            React.createElement(CATEGORY_ICONS[state.selectedCategory as keyof typeof CATEGORY_ICONS] || BarChart3, {
-              className: "w-5 h-5 text-blue-500"
-            })
-          )
-        )}
+            React.createElement(
+              CATEGORY_ICONS[
+                state.selectedCategory as keyof typeof CATEGORY_ICONS
+              ] || BarChart3,
+              {
+                className: 'w-5 h-5 text-blue-500',
+              },
+            ),
+          )}
       </div>
     );
   }, [
@@ -392,7 +416,9 @@ const PerformanceMetricsComponent: React.FC<PerformanceMetricsProps> = ({
               disabled={isFetching}
               className="h-8 w-8 p-0"
             >
-              <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
+              <RefreshCw
+                className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`}
+              />
             </Button>
           </div>
         </div>
@@ -403,7 +429,8 @@ const PerformanceMetricsComponent: React.FC<PerformanceMetricsProps> = ({
             策略ID: {metrics.strategyId}
             {metrics.calculationDate && (
               <span className="ml-2">
-                更新时间: {new Date(metrics.calculationDate).toLocaleString('zh-CN')}
+                更新时间:{' '}
+                {new Date(metrics.calculationDate).toLocaleString('zh-CN')}
               </span>
             )}
           </div>
@@ -435,9 +462,7 @@ const PerformanceMetricsComponent: React.FC<PerformanceMetricsProps> = ({
             )}
           </>
         ) : (
-          <div className="text-center text-gray-500 py-4">
-            暂无绩效数据
-          </div>
+          <div className="text-center text-gray-500 py-4">暂无绩效数据</div>
         )}
       </CardContent>
     </Card>

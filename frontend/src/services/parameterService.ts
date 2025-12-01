@@ -1,8 +1,22 @@
-import { UseQueryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  UseQueryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { marketDataAPI, strategyAPI } from '@/lib/api';
-import { ParameterGroup, ParameterValidationResult, StrategyParameters, StrategyResult } from '@/types/parameter.types';
-import { areParametersEqual, generateParameterDescription, validateAllParameters } from '@/utils/parameterHelpers';
+import {
+  ParameterGroup,
+  ParameterValidationResult,
+  StrategyParameters,
+  StrategyResult,
+} from '@/types/parameter.types';
+import {
+  areParametersEqual,
+  generateParameterDescription,
+  validateAllParameters,
+} from '@/utils/parameterHelpers';
 
 // 扩展API响应类型以处理不同的响应格式
 interface APIResponse<T = any> {
@@ -14,8 +28,12 @@ interface APIResponse<T = any> {
 
 // 查询键常量
 export const PARAMETER_QUERY_KEYS = {
-  strategyResults: (symbol: string, params: StrategyParameters, startDate: string, endDate: string) =>
-    ['strategyResults', symbol, params, startDate, endDate] as const,
+  strategyResults: (
+    symbol: string,
+    params: StrategyParameters,
+    startDate: string,
+    endDate: string,
+  ) => ['strategyResults', symbol, params, startDate, endDate] as const,
   parameterValidation: (params: StrategyParameters) =>
     ['parameterValidation', params] as const,
   parameterComparison: (groups: ParameterGroup[]) =>
@@ -51,7 +69,8 @@ const DEBOUNCE_CONFIG = {
  */
 export class ParameterChangeDetector {
   private lastParameters: StrategyParameters | null = null;
-  private changeCallbacks: Map<string, (params: StrategyParameters) => void> = new Map();
+  private changeCallbacks: Map<string, (params: StrategyParameters) => void> =
+    new Map();
   private debounceTimers: Map<string, NodeJS.Timeout> = new Map();
 
   constructor(
@@ -64,8 +83,14 @@ export class ParameterChangeDetector {
   /**
    * 检测参数变化并触发回调
    */
-  detectChange(newParameters: StrategyParameters, immediate: boolean = false): boolean {
-    if (this.lastParameters && areParametersEqual(this.lastParameters, newParameters)) {
+  detectChange(
+    newParameters: StrategyParameters,
+    immediate: boolean = false,
+  ): boolean {
+    if (
+      this.lastParameters &&
+      areParametersEqual(this.lastParameters, newParameters)
+    ) {
       return false; // 参数没有变化
     }
 
@@ -108,7 +133,7 @@ export class ParameterChangeDetector {
     this.onParametersChange?.(params);
 
     // 通知所有注册的回调
-    this.changeCallbacks.forEach(callback => callback(params));
+    this.changeCallbacks.forEach((callback) => callback(params));
   }
 
   /**
@@ -138,7 +163,7 @@ export class ParameterChangeDetector {
    * 清理资源
    */
   destroy(): void {
-    this.debounceTimers.forEach(timer => clearTimeout(timer));
+    this.debounceTimers.forEach((timer) => clearTimeout(timer));
     this.debounceTimers.clear();
     this.changeCallbacks.clear();
     this.lastParameters = null;
@@ -161,18 +186,20 @@ export function useRealTimeStrategyResults(
 
   // 创建或获取参数变更检测器
   if (!changeDetectorRef.current) {
-    changeDetectorRef.current = new ParameterChangeDetector(
-      (params) => {
-        // 参数变化时重新获取策略结果
-        queryClient.invalidateQueries({
-          queryKey: ['strategyResults', symbol],
-        });
-      },
-      DEBOUNCE_CONFIG.delay,
-    );
+    changeDetectorRef.current = new ParameterChangeDetector((params) => {
+      // 参数变化时重新获取策略结果
+      queryClient.invalidateQueries({
+        queryKey: ['strategyResults', symbol],
+      });
+    }, DEBOUNCE_CONFIG.delay);
   }
 
-  const queryKey = PARAMETER_QUERY_KEYS.strategyResults(symbol, parameters, startDate, endDate);
+  const queryKey = PARAMETER_QUERY_KEYS.strategyResults(
+    symbol,
+    parameters,
+    startDate,
+    endDate,
+  );
 
   const query = useQuery({
     queryKey,
@@ -207,10 +234,13 @@ export function useRealTimeStrategyResults(
         // 缓存结果
         const cacheKey = `strategy_result_${symbol}_${JSON.stringify(parameters)}_${startDate}_${endDate}`;
         if (typeof window !== 'undefined') {
-          localStorage.setItem(cacheKey, JSON.stringify({
-            data: result,
-            timestamp: Date.now(),
-          }));
+          localStorage.setItem(
+            cacheKey,
+            JSON.stringify({
+              data: result,
+              timestamp: Date.now(),
+            }),
+          );
         }
 
         return result;
@@ -350,7 +380,10 @@ export function useOptimizationSuggestions(
   options?: Partial<UseQueryOptions<any[], Error>>,
 ) {
   return useQuery({
-    queryKey: PARAMETER_QUERY_KEYS.optimizationSuggestions(symbol, baseParameters),
+    queryKey: PARAMETER_QUERY_KEYS.optimizationSuggestions(
+      symbol,
+      baseParameters,
+    ),
     queryFn: async () => {
       try {
         // 这里应该调用后端的优化建议API
@@ -374,9 +407,10 @@ export function useOptimizationSuggestions(
             confidence: 72,
             parameters: {
               ...baseParameters,
-              movingAveragePeriod: baseParameters.movingAveragePeriod > 20
-                ? Math.max(baseParameters.movingAveragePeriod - 5, 15)
-                : Math.min(baseParameters.movingAveragePeriod + 5, 35),
+              movingAveragePeriod:
+                baseParameters.movingAveragePeriod > 20
+                  ? Math.max(baseParameters.movingAveragePeriod - 5, 15)
+                  : Math.min(baseParameters.movingAveragePeriod + 5, 35),
             },
             reasoning: '当前市场呈现趋势特征，调整均线周期可以更好地捕捉趋势',
             expectedImprovement: '预计提高信号质量，减少假信号',
@@ -398,7 +432,10 @@ export function useOptimizationSuggestions(
 /**
  * 轮询策略结果
  */
-export async function pollStrategyResult(taskId: string, maxAttempts: number = 30): Promise<StrategyResult> {
+export async function pollStrategyResult(
+  taskId: string,
+  maxAttempts: number = 30,
+): Promise<StrategyResult> {
   let attempts = 0;
 
   while (attempts < maxAttempts) {
@@ -415,18 +452,20 @@ export async function pollStrategyResult(taskId: string, maxAttempts: number = 3
         const result = await strategyAPI.getResults(taskId);
         return transformApiResultToStrategyResult(result.data);
       } else if (status === 'failed') {
-        throw new Error(`策略执行失败: ${statusResponse.data.error || '未知错误'}`);
+        throw new Error(
+          `策略执行失败: ${statusResponse.data.error || '未知错误'}`,
+        );
       }
 
       // 等待1秒后重试
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       attempts++;
     } catch (error) {
       if (attempts >= maxAttempts - 1) {
         throw error;
       }
       attempts++;
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
   }
 
@@ -436,7 +475,9 @@ export async function pollStrategyResult(taskId: string, maxAttempts: number = 3
 /**
  * 转换API结果为策略结果格式
  */
-export function transformApiResultToStrategyResult(apiData: any): StrategyResult {
+export function transformApiResultToStrategyResult(
+  apiData: any,
+): StrategyResult {
   return {
     totalReturn: apiData.total_return || 0,
     sharpeRatio: apiData.sharpe_ratio || 0,
@@ -470,7 +511,12 @@ export class ParameterServicePreloader {
     endDate: string,
   ) {
     return this.queryClient.prefetchQuery({
-      queryKey: PARAMETER_QUERY_KEYS.strategyResults(symbol, parameters, startDate, endDate),
+      queryKey: PARAMETER_QUERY_KEYS.strategyResults(
+        symbol,
+        parameters,
+        startDate,
+        endDate,
+      ),
       queryFn: async () => {
         const apiParams = {
           window_size: parameters.movingAveragePeriod,
@@ -503,9 +549,15 @@ export class ParameterServicePreloader {
   /**
    * 预加载优化建议
    */
-  async preloadOptimizationSuggestions(symbol: string, parameters: StrategyParameters) {
+  async preloadOptimizationSuggestions(
+    symbol: string,
+    parameters: StrategyParameters,
+  ) {
     return this.queryClient.prefetchQuery({
-      queryKey: PARAMETER_QUERY_KEYS.optimizationSuggestions(symbol, parameters),
+      queryKey: PARAMETER_QUERY_KEYS.optimizationSuggestions(
+        symbol,
+        parameters,
+      ),
       queryFn: async () => {
         // 调用优化建议API
         return [];
@@ -546,10 +598,10 @@ export class ParameterServicePreloader {
  * 运行单个回测的简化方法
  */
 export async function runBacktest(params: {
-  symbol: string
-  startDate: string
-  endDate: string
-  parameters: StrategyParameters
+  symbol: string;
+  startDate: string;
+  endDate: string;
+  parameters: StrategyParameters;
 }): Promise<StrategyResult> {
   try {
     const apiParams = {
@@ -587,13 +639,13 @@ export async function runBacktest(params: {
  */
 export async function runBatchBacktests(
   testConfigs: Array<{
-    symbol: string
-    startDate: string
-    endDate: string
-    parameters: StrategyParameters
+    symbol: string;
+    startDate: string;
+    endDate: string;
+    parameters: StrategyParameters;
   }>,
 ): Promise<StrategyResult[]> {
-  const promises = testConfigs.map(config => runBacktest(config));
+  const promises = testConfigs.map((config) => runBacktest(config));
   return Promise.all(promises);
 }
 
@@ -631,9 +683,10 @@ export async function getOptimizationSuggestions(
         confidence: 72,
         parameters: {
           ...baseParameters,
-          movingAveragePeriod: baseParameters.movingAveragePeriod > 20
-            ? Math.max(baseParameters.movingAveragePeriod - 5, 15)
-            : Math.min(baseParameters.movingAveragePeriod + 5, 35),
+          movingAveragePeriod:
+            baseParameters.movingAveragePeriod > 20
+              ? Math.max(baseParameters.movingAveragePeriod - 5, 15)
+              : Math.min(baseParameters.movingAveragePeriod + 5, 35),
         },
         reasoning: '当前市场呈现趋势特征，调整均线周期可以更好地捕捉趋势',
         expectedImprovement: '预计提高信号质量，减少假信号',

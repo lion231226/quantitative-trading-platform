@@ -1,20 +1,25 @@
-import { UseQueryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  UseQueryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { marketDataAPI, strategyAPI } from '@/lib/api';
 import {
-  PerformanceMetrics,
-  PerformanceAnalysisRequest,
-  PerformanceAnalysisResponse,
-  PerformanceReport,
-  PerformanceReportConfig,
   CumulativeReturnData,
   DrawdownData,
-  RollingReturnData,
-  PerformanceComparison,
   PerformanceAPIResponse,
+  PerformanceAnalysisRequest,
+  PerformanceAnalysisResponse,
   PerformanceCacheConfig,
+  PerformanceComparison,
   PerformanceError,
-  ReturnDataPoint
+  PerformanceMetrics,
+  PerformanceReport,
+  PerformanceReportConfig,
+  ReturnDataPoint,
+  RollingReturnData,
 } from '@/types/performance.types';
 
 // 扩展API响应类型以处理不同的响应格式
@@ -27,14 +32,32 @@ interface APIResponse<T = any> {
 
 // 查询键常量
 export const PERFORMANCE_QUERY_KEYS = {
-  metrics: (strategyId: string, startDate?: string, endDate?: string, benchmarkId?: string) =>
-    ['performanceMetrics', strategyId, startDate, endDate, benchmarkId] as const,
-  cumulativeReturns: (strategyId: string, startDate?: string, endDate?: string) =>
-    ['cumulativeReturns', strategyId, startDate, endDate] as const,
+  metrics: (
+    strategyId: string,
+    startDate?: string,
+    endDate?: string,
+    benchmarkId?: string,
+  ) =>
+    [
+      'performanceMetrics',
+      strategyId,
+      startDate,
+      endDate,
+      benchmarkId,
+    ] as const,
+  cumulativeReturns: (
+    strategyId: string,
+    startDate?: string,
+    endDate?: string,
+  ) => ['cumulativeReturns', strategyId, startDate, endDate] as const,
   drawdown: (strategyId: string, startDate?: string, endDate?: string) =>
     ['drawdown', strategyId, startDate, endDate] as const,
-  rollingReturns: (strategyId: string, window: number, startDate?: string, endDate?: string) =>
-    ['rollingReturns', strategyId, window, startDate, endDate] as const,
+  rollingReturns: (
+    strategyId: string,
+    window: number,
+    startDate?: string,
+    endDate?: string,
+  ) => ['rollingReturns', strategyId, window, startDate, endDate] as const,
   comparison: (strategyIds: string[], benchmarkId?: string) =>
     ['performanceComparison', strategyIds, benchmarkId] as const,
   report: (config: PerformanceReportConfig) =>
@@ -59,7 +82,10 @@ const DEBOUNCE_CONFIG = {
  */
 export class PerformanceChangeDetector {
   private lastRequest: PerformanceAnalysisRequest | null = null;
-  private changeCallbacks: Map<string, (request: PerformanceAnalysisRequest) => void> = new Map();
+  private changeCallbacks: Map<
+    string,
+    (request: PerformanceAnalysisRequest) => void
+  > = new Map();
   private debounceTimers: Map<string, NodeJS.Timeout> = new Map();
 
   constructor(
@@ -72,8 +98,14 @@ export class PerformanceChangeDetector {
   /**
    * 检测请求参数变化并触发回调
    */
-  detectChange(newRequest: PerformanceAnalysisRequest, immediate: boolean = false): boolean {
-    if (this.lastRequest && this.areParametersEqual(this.lastRequest, newRequest)) {
+  detectChange(
+    newRequest: PerformanceAnalysisRequest,
+    immediate: boolean = false,
+  ): boolean {
+    if (
+      this.lastRequest &&
+      this.areParametersEqual(this.lastRequest, newRequest)
+    ) {
       return false; // 参数没有变化
     }
 
@@ -91,7 +123,10 @@ export class PerformanceChangeDetector {
   /**
    * 比较两个请求参数是否相等
    */
-  private areParametersEqual(req1: PerformanceAnalysisRequest, req2: PerformanceAnalysisRequest): boolean {
+  private areParametersEqual(
+    req1: PerformanceAnalysisRequest,
+    req2: PerformanceAnalysisRequest,
+  ): boolean {
     return (
       req1.strategyId === req2.strategyId &&
       req1.returnType === req2.returnType &&
@@ -133,13 +168,16 @@ export class PerformanceChangeDetector {
     this.onParametersChange?.(request);
 
     // 通知所有注册的回调
-    this.changeCallbacks.forEach(callback => callback(request));
+    this.changeCallbacks.forEach((callback) => callback(request));
   }
 
   /**
    * 注册参数变化回调
    */
-  onChange(id: string, callback: (request: PerformanceAnalysisRequest) => void): void {
+  onChange(
+    id: string,
+    callback: (request: PerformanceAnalysisRequest) => void,
+  ): void {
     this.changeCallbacks.set(id, callback);
   }
 
@@ -163,7 +201,7 @@ export class PerformanceChangeDetector {
    * 清理资源
    */
   destroy(): void {
-    this.debounceTimers.forEach(timer => clearTimeout(timer));
+    this.debounceTimers.forEach((timer) => clearTimeout(timer));
     this.debounceTimers.clear();
     this.changeCallbacks.clear();
     this.lastRequest = null;
@@ -182,34 +220,34 @@ export function usePerformanceMetrics(
 
   // 创建或获取参数变更检测器
   if (!changeDetectorRef.current) {
-    changeDetectorRef.current = new PerformanceChangeDetector(
-      (params) => {
-        // 参数变化时重新获取绩效指标
-        queryClient.invalidateQueries({
-          queryKey: ['performanceMetrics', params.strategyId],
-        });
-      },
-      DEBOUNCE_CONFIG.delay,
-    );
+    changeDetectorRef.current = new PerformanceChangeDetector((params) => {
+      // 参数变化时重新获取绩效指标
+      queryClient.invalidateQueries({
+        queryKey: ['performanceMetrics', params.strategyId],
+      });
+    }, DEBOUNCE_CONFIG.delay);
   }
 
   const queryKey = PERFORMANCE_QUERY_KEYS.metrics(
     request.strategyId,
     request.startDate,
     request.endDate,
-    request.benchmarkId
+    request.benchmarkId,
   );
 
   const query = useQuery({
     queryKey,
     queryFn: async (): Promise<PerformanceMetrics> => {
       try {
-        const response = await marketDataAPI.getPerformanceMetrics(request.strategyId, {
-          return_type: request.returnType,
-          benchmark_id: request.benchmarkId,
-          start_date: request.startDate,
-          end_date: request.endDate,
-        });
+        const response = await marketDataAPI.getPerformanceMetrics(
+          request.strategyId,
+          {
+            return_type: request.returnType,
+            benchmark_id: request.benchmarkId,
+            start_date: request.startDate,
+            end_date: request.endDate,
+          },
+        );
 
         if (!response.success) {
           throw new Error(response.message || '获取绩效指标失败');
@@ -259,7 +297,7 @@ export function useCumulativeReturns(
   const queryKey = PERFORMANCE_QUERY_KEYS.cumulativeReturns(
     request.strategyId,
     request.startDate,
-    request.endDate
+    request.endDate,
   );
 
   return useQuery({
@@ -285,14 +323,16 @@ export function useCumulativeReturns(
         const data = response.data;
         return {
           labels: data.timestamps || [],
-          datasets: [{
-            label: '累计收益',
-            data: data.cumulative_returns || [],
-            borderColor: '#10b981',
-            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-            fill: true,
-            tension: 0.4,
-          }],
+          datasets: [
+            {
+              label: '累计收益',
+              data: data.cumulative_returns || [],
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              fill: true,
+              tension: 0.4,
+            },
+          ],
         };
       } catch (error) {
         console.error('累计收益数据获取失败:', error);
@@ -316,7 +356,7 @@ export function useDrawdownData(
   const queryKey = PERFORMANCE_QUERY_KEYS.drawdown(
     request.strategyId,
     request.startDate,
-    request.endDate
+    request.endDate,
   );
 
   return useQuery({
@@ -345,13 +385,15 @@ export function useDrawdownData(
 
         return {
           labels: returnsResponse.data.timestamps || [],
-          datasets: [{
-            label: '回撤',
-            data: drawdownData,
-            borderColor: '#ef4444',
-            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-            fill: true,
-          }],
+          datasets: [
+            {
+              label: '回撤',
+              data: drawdownData,
+              borderColor: '#ef4444',
+              backgroundColor: 'rgba(239, 68, 68, 0.1)',
+              fill: true,
+            },
+          ],
         };
       } catch (error) {
         console.error('回撤数据获取失败:', error);
@@ -382,11 +424,14 @@ export function usePerformanceComparison(
     queryFn: async (): Promise<PerformanceComparison> => {
       try {
         const comparisonPromises = strategyIds.map(async (strategyId) => {
-          const response = await marketDataAPI.getPerformanceMetrics(strategyId, {
-            benchmark_id: benchmarkId,
-            start_date: startDate,
-            end_date: endDate,
-          });
+          const response = await marketDataAPI.getPerformanceMetrics(
+            strategyId,
+            {
+              benchmark_id: benchmarkId,
+              start_date: startDate,
+              end_date: endDate,
+            },
+          );
 
           if (!response.success) {
             throw new Error(`获取策略 ${strategyId} 绩效指标失败`);
@@ -493,15 +538,18 @@ export class PerformanceServicePreloader {
         request.strategyId,
         request.startDate,
         request.endDate,
-        request.benchmarkId
+        request.benchmarkId,
       ),
       queryFn: async () => {
-        const response = await marketDataAPI.getPerformanceMetrics(request.strategyId, {
-          return_type: request.returnType,
-          benchmark_id: request.benchmarkId,
-          start_date: request.startDate,
-          end_date: request.endDate,
-        });
+        const response = await marketDataAPI.getPerformanceMetrics(
+          request.strategyId,
+          {
+            return_type: request.returnType,
+            benchmark_id: request.benchmarkId,
+            start_date: request.startDate,
+            end_date: request.endDate,
+          },
+        );
 
         if (!response.success) {
           throw new Error(response.message || '获取绩效指标失败');
@@ -521,7 +569,7 @@ export class PerformanceServicePreloader {
       queryKey: PERFORMANCE_QUERY_KEYS.cumulativeReturns(
         request.strategyId,
         request.startDate,
-        request.endDate
+        request.endDate,
       ),
       queryFn: async () => {
         const response = await marketDataAPI.calculateReturns({
@@ -542,14 +590,16 @@ export class PerformanceServicePreloader {
         const data = response.data;
         return {
           labels: data.timestamps || [],
-          datasets: [{
-            label: '累计收益',
-            data: data.cumulative_returns || [],
-            borderColor: '#10b981',
-            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-            fill: true,
-            tension: 0.4,
-          }],
+          datasets: [
+            {
+              label: '累计收益',
+              data: data.cumulative_returns || [],
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              fill: true,
+              tension: 0.4,
+            },
+          ],
         };
       },
       staleTime: PERFORMANCE_CACHE_CONFIG.chartsTtl * 1000,

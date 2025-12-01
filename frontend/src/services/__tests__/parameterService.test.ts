@@ -23,11 +23,18 @@ jest.mock('@/utils/parameterHelpers', () => ({
 }));
 
 import { strategyAPI } from '@/lib/api';
-import { areParametersEqual, validateAllParameters } from '@/utils/parameterHelpers';
+import {
+  areParametersEqual,
+  validateAllParameters,
+} from '@/utils/parameterHelpers';
 
 const mockStrategyAPI = strategyAPI as jest.Mocked<typeof strategyAPI>;
-const mockValidateAllParameters = validateAllParameters as jest.MockedFunction<typeof validateAllParameters>;
-const mockAreParametersEqual = areParametersEqual as jest.MockedFunction<typeof areParametersEqual>;
+const mockValidateAllParameters = validateAllParameters as jest.MockedFunction<
+  typeof validateAllParameters
+>;
+const mockAreParametersEqual = areParametersEqual as jest.MockedFunction<
+  typeof areParametersEqual
+>;
 
 describe('ParameterChangeDetector', () => {
   let detector: ParameterChangeDetector;
@@ -43,8 +50,16 @@ describe('ParameterChangeDetector', () => {
   });
 
   it('应该检测参数变化', () => {
-    const params1: StrategyParameters = { movingAveragePeriod: 20, stopLoss: 5.0, takeProfit: 10.0 };
-    const params2: StrategyParameters = { movingAveragePeriod: 25, stopLoss: 5.0, takeProfit: 10.0 };
+    const params1: StrategyParameters = {
+      movingAveragePeriod: 20,
+      stopLoss: 5.0,
+      takeProfit: 10.0,
+    };
+    const params2: StrategyParameters = {
+      movingAveragePeriod: 25,
+      stopLoss: 5.0,
+      takeProfit: 10.0,
+    };
 
     // 先调用一次设置lastParameters
     detector.detectChange(params1);
@@ -59,7 +74,11 @@ describe('ParameterChangeDetector', () => {
   });
 
   it('应该忽略相同的参数', () => {
-    const params: StrategyParameters = { movingAveragePeriod: 20, stopLoss: 5.0, takeProfit: 10.0 };
+    const params: StrategyParameters = {
+      movingAveragePeriod: 20,
+      stopLoss: 5.0,
+      takeProfit: 10.0,
+    };
 
     // 先设置一次参数
     detector.detectChange(params);
@@ -75,7 +94,11 @@ describe('ParameterChangeDetector', () => {
   });
 
   it('应该立即执行变化当immediate为true', (done) => {
-    const params: StrategyParameters = { movingAveragePeriod: 20, stopLoss: 5.0, takeProfit: 10.0 };
+    const params: StrategyParameters = {
+      movingAveragePeriod: 20,
+      stopLoss: 5.0,
+      takeProfit: 10.0,
+    };
 
     mockAreParametersEqual.mockReturnValue(false);
 
@@ -87,9 +110,21 @@ describe('ParameterChangeDetector', () => {
   });
 
   it('应该防抖执行变化', (done) => {
-    const params1: StrategyParameters = { movingAveragePeriod: 20, stopLoss: 5.0, takeProfit: 10.0 };
-    const params2: StrategyParameters = { movingAveragePeriod: 25, stopLoss: 5.0, takeProfit: 10.0 };
-    const params3: StrategyParameters = { movingAveragePeriod: 30, stopLoss: 5.0, takeProfit: 10.0 };
+    const params1: StrategyParameters = {
+      movingAveragePeriod: 20,
+      stopLoss: 5.0,
+      takeProfit: 10.0,
+    };
+    const params2: StrategyParameters = {
+      movingAveragePeriod: 25,
+      stopLoss: 5.0,
+      takeProfit: 10.0,
+    };
+    const params3: StrategyParameters = {
+      movingAveragePeriod: 30,
+      stopLoss: 5.0,
+      takeProfit: 10.0,
+    };
 
     mockAreParametersEqual.mockReturnValue(false);
 
@@ -108,7 +143,11 @@ describe('ParameterChangeDetector', () => {
   it('应该支持注册和移除回调', () => {
     const callback1 = jest.fn();
     const callback2 = jest.fn();
-    const params: StrategyParameters = { movingAveragePeriod: 20, stopLoss: 5.0, takeProfit: 10.0 };
+    const params: StrategyParameters = {
+      movingAveragePeriod: 20,
+      stopLoss: 5.0,
+      takeProfit: 10.0,
+    };
 
     mockAreParametersEqual.mockReturnValue(false);
 
@@ -127,7 +166,11 @@ describe('ParameterChangeDetector', () => {
   });
 
   it('应该强制立即执行', () => {
-    const params: StrategyParameters = { movingAveragePeriod: 20, stopLoss: 5.0, takeProfit: 10.0 };
+    const params: StrategyParameters = {
+      movingAveragePeriod: 20,
+      stopLoss: 5.0,
+      takeProfit: 10.0,
+    };
 
     mockAreParametersEqual.mockReturnValue(false);
 
@@ -139,7 +182,11 @@ describe('ParameterChangeDetector', () => {
 
   it('应该正确清理资源', () => {
     const callback = jest.fn();
-    const params: StrategyParameters = { movingAveragePeriod: 20, stopLoss: 5.0, takeProfit: 10.0 };
+    const params: StrategyParameters = {
+      movingAveragePeriod: 20,
+      stopLoss: 5.0,
+      takeProfit: 10.0,
+    };
 
     mockAreParametersEqual.mockReturnValue(false);
 
@@ -216,7 +263,9 @@ describe('pollStrategyResult', () => {
       },
     });
 
-    await expect(pollStrategyResult(taskId, 1)).rejects.toThrow('策略执行失败: 策略执行失败');
+    await expect(pollStrategyResult(taskId, 1)).rejects.toThrow(
+      '策略执行失败: 策略执行失败',
+    );
   });
 
   it('应该在超时时抛出错误', async () => {
@@ -310,7 +359,11 @@ describe('ParameterServicePreloader', () => {
 
   it('应该预加载策略结果', async () => {
     const symbol = 'AAPL';
-    const params: StrategyParameters = { movingAveragePeriod: 20, stopLoss: 5.0, takeProfit: 10.0 };
+    const params: StrategyParameters = {
+      movingAveragePeriod: 20,
+      stopLoss: 5.0,
+      takeProfit: 10.0,
+    };
     const startDate = '2023-01-01';
     const endDate = '2023-12-31';
 
@@ -327,7 +380,11 @@ describe('ParameterServicePreloader', () => {
 
   it('应该预加载优化建议', async () => {
     const symbol = 'AAPL';
-    const params: StrategyParameters = { movingAveragePeriod: 20, stopLoss: 5.0, takeProfit: 10.0 };
+    const params: StrategyParameters = {
+      movingAveragePeriod: 20,
+      stopLoss: 5.0,
+      takeProfit: 10.0,
+    };
 
     await preloader.preloadOptimizationSuggestions(symbol, params);
 

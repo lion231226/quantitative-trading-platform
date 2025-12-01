@@ -2,24 +2,26 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 export default function HelpPage() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            帮助中心
-          </h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">帮助中心</h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             了解如何使用量化交易策略分析平台，掌握单均线交易策略的核心概念
           </p>
           <div className="mt-6">
             <Link href="/">
-              <Button variant="outline">
-                返回首页
-              </Button>
+              <Button variant="outline">返回首页</Button>
             </Link>
           </div>
         </div>
@@ -31,9 +33,7 @@ export default function HelpPage() {
               <CardTitle className="flex items-center gap-2">
                 🚀 新手入门
               </CardTitle>
-              <CardDescription>
-                30分钟掌握平台使用
-              </CardDescription>
+              <CardDescription>30分钟掌握平台使用</CardDescription>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm">
@@ -45,7 +45,11 @@ export default function HelpPage() {
               <Button
                 className="w-full mt-4"
                 variant="outline"
-                onClick={() => document.getElementById('tutorial-section')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() =>
+                  document
+                    .getElementById('tutorial-section')
+                    ?.scrollIntoView({ behavior: 'smooth' })
+                }
               >
                 查看新手教程
               </Button>
@@ -57,9 +61,7 @@ export default function HelpPage() {
               <CardTitle className="flex items-center gap-2">
                 📚 使用指南
               </CardTitle>
-              <CardDescription>
-                详细的功能说明
-              </CardDescription>
+              <CardDescription>详细的功能说明</CardDescription>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm">
@@ -71,7 +73,11 @@ export default function HelpPage() {
               <Button
                 className="w-full mt-4"
                 variant="outline"
-                onClick={() => document.getElementById('guide-section')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() =>
+                  document
+                    .getElementById('guide-section')
+                    ?.scrollIntoView({ behavior: 'smooth' })
+                }
               >
                 查看使用指南
               </Button>
@@ -83,9 +89,7 @@ export default function HelpPage() {
               <CardTitle className="flex items-center gap-2">
                 ❓ 常见问题
               </CardTitle>
-              <CardDescription>
-                解答使用中的疑问
-              </CardDescription>
+              <CardDescription>解答使用中的疑问</CardDescription>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm">
@@ -97,7 +101,11 @@ export default function HelpPage() {
               <Button
                 className="w-full mt-4"
                 variant="outline"
-                onClick={() => document.getElementById('faq-section')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() =>
+                  document
+                    .getElementById('faq-section')
+                    ?.scrollIntoView({ behavior: 'smooth' })
+                }
               >
                 查看常见问题
               </Button>
@@ -204,9 +212,7 @@ export default function HelpPage() {
         <Card className="mb-8" id="guide-section">
           <CardHeader>
             <CardTitle>📚 使用指南</CardTitle>
-            <CardDescription>
-              详细的功能说明和最佳实践
-            </CardDescription>
+            <CardDescription>详细的功能说明和最佳实践</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
@@ -260,11 +266,26 @@ export default function HelpPage() {
             <div>
               <h3 className="font-semibold mb-3">结果解读技巧</h3>
               <div className="text-sm space-y-2 text-gray-600">
-                <p><strong>总收益率：</strong>策略的整体收益表现，需要结合风险指标一起评估。</p>
-                <p><strong>胜率：</strong>盈利交易的比例。高胜率不一定代表好策略，还需看盈亏比。</p>
-                <p><strong>最大回撤：</strong>策略从峰值到谷值的最大跌幅，是重要的风险指标。</p>
-                <p><strong>夏普比率：</strong>风险调整后的收益指标，&gt;1表示良好，&gt;2表示优秀。</p>
-                <p><strong>波动率：</strong>收益的波动程度，低波动率通常意味着更稳定的收益。</p>
+                <p>
+                  <strong>总收益率：</strong>
+                  策略的整体收益表现，需要结合风险指标一起评估。
+                </p>
+                <p>
+                  <strong>胜率：</strong>
+                  盈利交易的比例。高胜率不一定代表好策略，还需看盈亏比。
+                </p>
+                <p>
+                  <strong>最大回撤：</strong>
+                  策略从峰值到谷值的最大跌幅，是重要的风险指标。
+                </p>
+                <p>
+                  <strong>夏普比率：</strong>
+                  风险调整后的收益指标，&gt;1表示良好，&gt;2表示优秀。
+                </p>
+                <p>
+                  <strong>波动率：</strong>
+                  收益的波动程度，低波动率通常意味着更稳定的收益。
+                </p>
               </div>
             </div>
           </CardContent>
@@ -274,51 +295,61 @@ export default function HelpPage() {
         <Card id="faq-section">
           <CardHeader>
             <CardTitle>❓ 常见问题</CardTitle>
-            <CardDescription>
-              解答使用过程中的常见疑问
-            </CardDescription>
+            <CardDescription>解答使用过程中的常见疑问</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold mb-2">Q: 数据来源是什么？准确性如何？</h3>
+                <h3 className="font-semibold mb-2">
+                  Q: 数据来源是什么？准确性如何？
+                </h3>
                 <p className="text-sm text-gray-600">
-                  A: 我们使用AKShare作为数据源，这是国内知名的金融数据接口。数据来源于交易所官方发布，
+                  A:
+                  我们使用AKShare作为数据源，这是国内知名的金融数据接口。数据来源于交易所官方发布，
                   经过严格的清洗和处理，确保准确性。但历史数据可能存在少量缺失或错误，
                   建议在实际使用前进行数据验证。
                 </p>
               </div>
 
               <div>
-                <h3 className="font-semibold mb-2">Q: 为什么某些品种的数据加载失败？</h3>
+                <h3 className="font-semibold mb-2">
+                  Q: 为什么某些品种的数据加载失败？
+                </h3>
                 <p className="text-sm text-gray-600">
-                  A: 可能的原因包括：1) 品种已退市或暂停交易；2) 数据源临时故障；
-                  3) 网络连接问题。建议稍后重试，或选择其他活跃品种进行分析。
+                  A: 可能的原因包括：1) 品种已退市或暂停交易；2)
+                  数据源临时故障； 3)
+                  网络连接问题。建议稍后重试，或选择其他活跃品种进行分析。
                 </p>
               </div>
 
               <div>
-                <h3 className="font-semibold mb-2">Q: 回测结果能代表未来表现吗？</h3>
+                <h3 className="font-semibold mb-2">
+                  Q: 回测结果能代表未来表现吗？
+                </h3>
                 <p className="text-sm text-gray-600">
-                  A: 历史回测结果仅供参考，不能保证未来表现。市场环境会发生变化，
+                  A:
+                  历史回测结果仅供参考，不能保证未来表现。市场环境会发生变化，
                   建议结合多个时间段的回测结果，并考虑实盘交易中的滑点、手续费等成本因素。
                 </p>
               </div>
 
               <div>
-                <h3 className="font-semibold mb-2">Q: 如何选择最佳的均线周期？</h3>
+                <h3 className="font-semibold mb-2">
+                  Q: 如何选择最佳的均线周期？
+                </h3>
                 <p className="text-sm text-gray-600">
                   A: 最佳周期因品种和市场环境而异。建议：1) 测试多个周期组合；
-                  2) 考虑品种的历史波动特性；3) 结合自己的交易风格；
-                  4) 定期重新评估和调整参数。
+                  2) 考虑品种的历史波动特性；3) 结合自己的交易风格； 4)
+                  定期重新评估和调整参数。
                 </p>
               </div>
 
               <div>
                 <h3 className="font-semibold mb-2">Q: 策略运行失败怎么办？</h3>
                 <p className="text-sm text-gray-600">
-                  A: 首先检查网络连接，然后确认：1) 选择的品种在指定时间段内有数据；
-                  2) 日期范围设置合理；3) 参数在有效范围内。如果问题持续，
+                  A: 首先检查网络连接，然后确认：1)
+                  选择的品种在指定时间段内有数据； 2) 日期范围设置合理；3)
+                  参数在有效范围内。如果问题持续，
                   请尝试刷新页面或联系技术支持。
                 </p>
               </div>

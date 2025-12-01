@@ -1,15 +1,15 @@
-'use client'
+'use client';
 
-import React, { useState, useCallback } from 'react'
-import { Eye, EyeOff, Info, Settings } from 'lucide-react'
-import { useTheme } from './ThemeProvider'
-import { ColorblindMode } from '../../types/theme.types'
+import React, { useCallback, useState } from 'react';
+import { Eye, EyeOff, Info, Settings } from 'lucide-react';
+import { useTheme } from './ThemeProvider';
+import { ColorblindMode } from '../../types/theme.types';
 
 interface ColorblindHelperProps {
-  className?: string
-  showPreview?: boolean
-  showControls?: boolean
-  variant?: 'default' | 'compact' | 'overlay'
+  className?: string;
+  showPreview?: boolean;
+  showControls?: boolean;
+  variant?: 'default' | 'compact' | 'overlay';
 }
 
 /**
@@ -20,16 +20,12 @@ export const ColorblindHelper: React.FC<ColorblindHelperProps> = ({
   className = '',
   showPreview = true,
   showControls = true,
-  variant = 'default'
+  variant = 'default',
 }) => {
-  const {
-    colorblindConfig,
-    setColorblindMode,
-    currentTheme,
-    marketMode
-  } = useTheme()
+  const { colorblindConfig, setColorblindMode, currentTheme, marketMode } =
+    useTheme();
 
-  const [showSettings, setShowSettings] = useState(false)
+  const [showSettings, setShowSettings] = useState(false);
 
   // 色盲模式选项
   const colorblindModes = [
@@ -37,61 +33,64 @@ export const ColorblindHelper: React.FC<ColorblindHelperProps> = ({
       value: 'none' as ColorblindMode,
       label: '无辅助',
       description: '正常色彩视觉',
-      icon: '👁️'
+      icon: '👁️',
     },
     {
       value: 'protanopia' as ColorblindMode,
       label: '红色盲辅助',
       description: '使用形状和纹理区分涨跌',
-      icon: '🔴'
+      icon: '🔴',
     },
     {
       value: 'deuteranopia' as ColorblindMode,
       label: '绿色盲辅助',
       description: '使用蓝色和紫色区分信号',
-      icon: '🟢'
+      icon: '🟢',
     },
     {
       value: 'tritanopia' as ColorblindMode,
       label: '蓝色盲辅助',
       description: '使用红绿色系区分信号',
-      icon: '🔵'
+      icon: '🔵',
     },
     {
       value: 'achromatopsia' as ColorblindMode,
       label: '全色盲辅助',
       description: '使用高对比度灰度',
-      icon: '⚫'
-    }
-  ]
+      icon: '⚫',
+    },
+  ];
 
   // 生成涨跌图案预览
-  const generatePatternPreview = useCallback((type: 'bullish' | 'bearish') => {
-    const patterns = {
-      protanopia: {
-        bullish: '▲', // 三角形
-        bearish: '▼'  // 倒三角
-      },
-      deuteranopia: {
-        bullish: '◆', // 菱形
-        bearish: '●'  // 圆形
-      },
-      tritanopia: {
-        bullish: '■', // 方形
-        bearish: '⬟'  // 六边形
-      },
-      achromatopsia: {
-        bullish: '━', // 粗线
-        bearish: '┃'  // 粗线
+  const generatePatternPreview = useCallback(
+    (type: 'bullish' | 'bearish') => {
+      const patterns = {
+        protanopia: {
+          bullish: '▲', // 三角形
+          bearish: '▼', // 倒三角
+        },
+        deuteranopia: {
+          bullish: '◆', // 菱形
+          bearish: '●', // 圆形
+        },
+        tritanopia: {
+          bullish: '■', // 方形
+          bearish: '⬟', // 六边形
+        },
+        achromatopsia: {
+          bullish: '━', // 粗线
+          bearish: '┃', // 粗线
+        },
+      };
+
+      if (colorblindConfig.mode === 'none') {
+        return null;
       }
-    }
 
-    if (colorblindConfig.mode === 'none') {
-      return null
-    }
-
-    return patterns[colorblindConfig.mode]?.[type] || null
-  }, [colorblindConfig.mode])
+      return patterns[colorblindConfig.mode]?.[type] || null;
+    },
+    [colorblindConfig.mode],
+  );
 
   // 切换色盲模式
   const handleModeChange = (mode: ColorblindMode) => {
@@ -101,30 +100,35 @@ export const ColorblindHelper: React.FC<ColorblindHelperProps> = ({
       mode,
       usePatterns: mode !== 'none',
       useShapes: mode !== 'none',
-      textureIntensity: 0.7
-    })
-  }
+      textureIntensity: 0.7,
+    });
+  };
 
   // 更新色盲配置
   const updateConfig = (updates: Partial<typeof colorblindConfig>) => {
     setColorblindMode({
       ...colorblindConfig,
-      ...updates
-    })
-  }
+      ...updates,
+    });
+  };
 
   // 变体样式
   const variantClasses = {
     default: 'bg-white border border-gray-200 rounded-lg shadow-sm p-4',
     compact: 'bg-white border border-gray-200 rounded-md p-3',
-    overlay: 'bg-white/95 backdrop-blur-sm border border-gray-200 rounded-lg shadow-lg p-4 fixed top-4 right-4 z-50 max-w-sm'
-  }[variant]
+    overlay:
+      'bg-white/95 backdrop-blur-sm border border-gray-200 rounded-lg shadow-lg p-4 fixed top-4 right-4 z-50 max-w-sm',
+  }[variant];
 
-  const currentMode = colorblindModes.find(mode => mode.value === colorblindConfig.mode)
+  const currentMode = colorblindModes.find(
+    (mode) => mode.value === colorblindConfig.mode,
+  );
 
   if (variant === 'overlay') {
     return (
-      <div className={`colorblind-helper-overlay ${variantClasses} ${className}`}>
+      <div
+        className={`colorblind-helper-overlay ${variantClasses} ${className}`}
+      >
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2">
             <Eye className="w-4 h-4 text-blue-600" />
@@ -153,7 +157,9 @@ export const ColorblindHelper: React.FC<ColorblindHelperProps> = ({
                 <span className="text-lg">{mode.icon}</span>
                 <div className="flex-1">
                   <div className="font-medium text-sm">{mode.label}</div>
-                  <div className="text-xs text-gray-500">{mode.description}</div>
+                  <div className="text-xs text-gray-500">
+                    {mode.description}
+                  </div>
                 </div>
               </button>
             ))}
@@ -161,12 +167,16 @@ export const ColorblindHelper: React.FC<ColorblindHelperProps> = ({
         ) : (
           <div className="text-center">
             <div className="text-lg mb-2">{currentMode?.icon}</div>
-            <div className="text-sm font-medium text-gray-900">{currentMode?.label}</div>
-            <div className="text-xs text-gray-500">{currentMode?.description}</div>
+            <div className="text-sm font-medium text-gray-900">
+              {currentMode?.label}
+            </div>
+            <div className="text-xs text-gray-500">
+              {currentMode?.description}
+            </div>
           </div>
         )}
       </div>
-    )
+    );
   }
 
   return (
@@ -182,9 +192,11 @@ export const ColorblindHelper: React.FC<ColorblindHelperProps> = ({
           <h3 className="text-lg font-semibold text-gray-900">色盲辅助</h3>
         </div>
         <div className="flex items-center space-x-2">
-          <div className={`w-2 h-2 rounded-full ${
-            colorblindConfig.enabled ? 'bg-green-500' : 'bg-gray-300'
-          }`} />
+          <div
+            className={`w-2 h-2 rounded-full ${
+              colorblindConfig.enabled ? 'bg-green-500' : 'bg-gray-300'
+            }`}
+          />
           <span className="text-sm text-gray-600">
             {colorblindConfig.enabled ? '已启用' : '未启用'}
           </span>
@@ -212,7 +224,9 @@ export const ColorblindHelper: React.FC<ColorblindHelperProps> = ({
                   <span className="text-xl">{mode.icon}</span>
                   <div className="text-left">
                     <div className="font-medium text-sm">{mode.label}</div>
-                    <div className="text-xs text-gray-500">{mode.description}</div>
+                    <div className="text-xs text-gray-500">
+                      {mode.description}
+                    </div>
                   </div>
                 </button>
               ))}
@@ -230,19 +244,27 @@ export const ColorblindHelper: React.FC<ColorblindHelperProps> = ({
                   <input
                     type="checkbox"
                     checked={colorblindConfig.usePatterns}
-                    onChange={(e) => updateConfig({ usePatterns: e.target.checked })}
+                    onChange={(e) =>
+                      updateConfig({ usePatterns: e.target.checked })
+                    }
                     className="rounded border-gray-300"
                   />
-                  <span className="text-sm text-gray-700">使用图案纹理区分</span>
+                  <span className="text-sm text-gray-700">
+                    使用图案纹理区分
+                  </span>
                 </label>
                 <label className="flex items-center space-x-2">
                   <input
                     type="checkbox"
                     checked={colorblindConfig.useShapes}
-                    onChange={(e) => updateConfig({ useShapes: e.target.checked })}
+                    onChange={(e) =>
+                      updateConfig({ useShapes: e.target.checked })
+                    }
                     className="rounded border-gray-300"
                   />
-                  <span className="text-sm text-gray-700">使用形状符号区分</span>
+                  <span className="text-sm text-gray-700">
+                    使用形状符号区分
+                  </span>
                 </label>
               </div>
 
@@ -250,16 +272,19 @@ export const ColorblindHelper: React.FC<ColorblindHelperProps> = ({
               {colorblindConfig.usePatterns && (
                 <div className="mt-3">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    纹理强度: {Math.round(colorblindConfig.textureIntensity * 100)}%
+                    纹理强度:{' '}
+                    {Math.round(colorblindConfig.textureIntensity * 100)}%
                   </label>
                   <input
                     type="range"
                     min="0"
                     max="100"
                     value={colorblindConfig.textureIntensity * 100}
-                    onChange={(e) => updateConfig({
-                      textureIntensity: Number(e.target.value) / 100
-                    })}
+                    onChange={(e) =>
+                      updateConfig({
+                        textureIntensity: Number(e.target.value) / 100,
+                      })
+                    }
                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                   />
                 </div>
@@ -282,13 +307,15 @@ export const ColorblindHelper: React.FC<ColorblindHelperProps> = ({
                 className="w-full h-16 rounded-lg border-2 border-gray-300 flex items-center justify-center text-2xl font-bold"
                 style={{
                   backgroundColor: currentTheme.colors.bullish,
-                  color: marketMode === 'chinese' ? 'white' : 'black'
+                  color: marketMode === 'chinese' ? 'white' : 'black',
                 }}
               >
                 {generatePatternPreview('bullish') || '涨'}
               </div>
               <div className="mt-1 text-xs text-gray-600">涨颜色</div>
-              <div className="text-xs text-gray-500">{currentTheme.colors.bullish}</div>
+              <div className="text-xs text-gray-500">
+                {currentTheme.colors.bullish}
+              </div>
             </div>
 
             {/* 跌颜色 */}
@@ -297,13 +324,15 @@ export const ColorblindHelper: React.FC<ColorblindHelperProps> = ({
                 className="w-full h-16 rounded-lg border-2 border-gray-300 flex items-center justify-center text-2xl font-bold"
                 style={{
                   backgroundColor: currentTheme.colors.bearish,
-                  color: marketMode === 'chinese' ? 'black' : 'white'
+                  color: marketMode === 'chinese' ? 'black' : 'white',
                 }}
               >
                 {generatePatternPreview('bearish') || '跌'}
               </div>
               <div className="mt-1 text-xs text-gray-600">跌颜色</div>
-              <div className="text-xs text-gray-500">{currentTheme.colors.bearish}</div>
+              <div className="text-xs text-gray-500">
+                {currentTheme.colors.bearish}
+              </div>
             </div>
           </div>
 
@@ -315,16 +344,14 @@ export const ColorblindHelper: React.FC<ColorblindHelperProps> = ({
                 ? '色盲辅助已启用，使用形状和图案帮助区分涨跌信号。'
                 : '色盲辅助未启用，仅使用颜色区分涨跌信号。'}
               {colorblindConfig.enabled && colorblindConfig.mode !== 'none' && (
-                <div className="mt-1">
-                  当前模式: {currentMode?.description}
-                </div>
+                <div className="mt-1">当前模式: {currentMode?.description}</div>
               )}
             </div>
           </div>
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default ColorblindHelper
+export default ColorblindHelper;

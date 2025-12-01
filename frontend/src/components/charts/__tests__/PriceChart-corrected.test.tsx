@@ -44,12 +44,8 @@ describe('PriceChart', () => {
       { date: new Date('2023-01-03'), price: 98, volume: 900000 },
     ],
     movingAverages: [
-      [
-        { date: new Date('2023-01-03'), value: 100, period: 5 },
-      ],
-      [
-        { date: new Date('2023-01-03'), value: 99, period: 20 },
-      ],
+      [{ date: new Date('2023-01-03'), value: 100, period: 5 }],
+      [{ date: new Date('2023-01-03'), value: 99, period: 20 }],
     ],
     signals: [
       { date: new Date('2023-01-02'), price: 102, type: 'buy', strength: 0.8 },
@@ -100,7 +96,9 @@ describe('PriceChart', () => {
   });
 
   it('应该支持响应式大小', () => {
-    const { container } = render(<PriceChart data={mockData} width={800} height={400} />);
+    const { container } = render(
+      <PriceChart data={mockData} width={800} height={400} />,
+    );
 
     expect(container.firstChild).toHaveStyle('width: 800px');
   });

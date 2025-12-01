@@ -1,20 +1,20 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
+  CandlestickData,
+  KlineChartEvent,
   KlineChartProps,
+  KlineConfig,
   KlineData,
   TimePeriod,
-  CandlestickData,
-  KlineConfig,
-  KlineChartEvent
-} from '../../types/kline.types'
-import { createDefaultKlineConfig } from '../../utils/klineHelpers'
-import { createTimePeriodDataManager } from '../../services/timePeriodDataManager'
-import { adaptivePerformanceService } from '../../services/adaptivePerformanceService'
-import { klineDataService } from '../../services/klineService'
-import { PerformanceMonitor } from './PerformanceMonitor'
-import CandlestickChart from './CandlestickChart'
-import TimePeriodSelector from './TimePeriodSelector'
-import KlineChartControls from './KlineChartControls'
+} from '../../types/kline.types';
+import { createDefaultKlineConfig } from '../../utils/klineHelpers';
+import { createTimePeriodDataManager } from '../../services/timePeriodDataManager';
+import { adaptivePerformanceService } from '../../services/adaptivePerformanceService';
+import { klineDataService } from '../../services/klineService';
+import { PerformanceMonitor } from './PerformanceMonitor';
+import CandlestickChart from './CandlestickChart';
+import TimePeriodSelector from './TimePeriodSelector';
+import KlineChartControls from './KlineChartControls';
 
 export const KlineChartContainer: React.FC<KlineChartProps> = ({
   data,
@@ -23,28 +23,28 @@ export const KlineChartContainer: React.FC<KlineChartProps> = ({
   onSignalClick,
   onTimePeriodChange,
   onDataPointHover,
-  onChartReady
+  onChartReady,
 }) => {
   // 状态管理
   const [config, setConfig] = useState<KlineConfig>(() =>
-    createDefaultKlineConfig(userConfig)
-  )
+    createDefaultKlineConfig(userConfig),
+  );
   const [currentTimePeriod, setCurrentTimePeriod] = useState<TimePeriod>(
-    userConfig?.timePeriod || TimePeriod.DAY_1
-  )
-  const [showPerformanceMonitor, setShowPerformanceMonitor] = useState(false)
+    userConfig?.timePeriod || TimePeriod.DAY_1,
+  );
+  const [showPerformanceMonitor, setShowPerformanceMonitor] = useState(false);
   const [performanceMetrics, setPerformanceMetrics] = useState({
     dataPoints: data.candlesticks.length,
     renderTime: 0,
     fps: 60,
-    memoryUsage: 0
-  })
-  const [chartInstance, setChartInstance] = useState<any>(null)
+    memoryUsage: 0,
+  });
+  const [chartInstance, setChartInstance] = useState<any>(null);
 
   // 时间周期数据管理器
-  const [dataManager] = useState(() => createTimePeriodDataManager('BTC-USDT'))
-  const [currentData, setCurrentData] = useState<KlineData>(data)
-  const [isLoading, setIsLoading] = useState(false)
+  const [dataManager] = useState(() => createTimePeriodDataManager('BTC-USDT'));
+  const [currentData, setCurrentData] = useState<KlineData>(data);
+  const [isLoading, setIsLoading] = useState(false);
 
   // 可用时间周期
   const availableTimePeriods: TimePeriod[] = [
@@ -56,13 +56,13 @@ export const KlineChartContainer: React.FC<KlineChartProps> = ({
     TimePeriod.HOUR_4,
     TimePeriod.DAY_1,
     TimePeriod.DAY_7,
-    TimePeriod.MONTH_1
-  ]
+    TimePeriod.MONTH_1,
+  ];
 
   // 优化后的数据
   const optimizedData = useMemo(() => {
     if (!config.performance.enableDataSampling) {
-      return data
+      return data;
     }
 
     const metrics = {
@@ -70,241 +70,263 @@ export const KlineChartContainer: React.FC<KlineChartProps> = ({
       renderTime: performanceMetrics.renderTime,
       fps: performanceMetrics.fps,
       memoryUsage: performanceMetrics.memoryUsage,
-      timestamp: Date.now()
-    }
+      timestamp: Date.now(),
+    };
 
     const optimization = adaptivePerformanceService.optimize(
       config,
       data.candlesticks,
-      metrics
-    )
+      metrics,
+    );
 
     // 记录优化结果
     if (optimization.appliedStrategies.length > 0) {
-      console.log('🔧 应用自适应优化策略:', optimization.appliedStrategies)
+      console.log('🔧 应用自适应优化策略:', optimization.appliedStrategies);
     }
 
     return {
       ...data,
-      candlesticks: optimization.data
-    }
-  }, [data, config, performanceMetrics])
+      candlesticks: optimization.data,
+    };
+  }, [data, config, performanceMetrics]);
 
   // 处理时间周期变化
-  const handleTimePeriodChange = useCallback(async (newPeriod: TimePeriod) => {
-    if (newPeriod === currentTimePeriod) return
+  const handleTimePeriodChange = useCallback(
+    async (newPeriod: TimePeriod) => {
+      if (newPeriod === currentTimePeriod) return;
 
-    setCurrentTimePeriod(newPeriod)
+      setCurrentTimePeriod(newPeriod);
 
-    // 获取新周期的数据
-    const newData = await klineDataService.getData('BTC-USDT', newPeriod, false)
-    if (newData) {
-      // 这里应该触发父组件的数据更新
-      onTimePeriodChange?.(newPeriod)
-    }
-  }, [currentTimePeriod, onTimePeriodChange])
+      // 获取新周期的数据
+      const newData = await klineDataService.getData(
+        'BTC-USDT',
+        newPeriod,
+        false,
+      );
+      if (newData) {
+        // 这里应该触发父组件的数据更新
+        onTimePeriodChange?.(newPeriod);
+      }
+    },
+    [currentTimePeriod, onTimePeriodChange],
+  );
 
   // 图表控制器事件处理
   const handleZoomIn = useCallback(() => {
     if (chartInstance) {
-      const timeScale = chartInstance.timeScale()
-      const visibleRange = timeScale.getVisibleLogicalRange()
+      const timeScale = chartInstance.timeScale();
+      const visibleRange = timeScale.getVisibleLogicalRange();
       if (visibleRange) {
-        const center = (visibleRange.from + visibleRange.to) / 2
-        const newRange = (visibleRange.to - visibleRange.from) * 0.8
+        const center = (visibleRange.from + visibleRange.to) / 2;
+        const newRange = (visibleRange.to - visibleRange.from) * 0.8;
         timeScale.setVisibleLogicalRange({
           from: center - newRange / 2,
-          to: center + newRange / 2
-        })
+          to: center + newRange / 2,
+        });
       }
     }
-  }, [chartInstance])
+  }, [chartInstance]);
 
   const handleZoomOut = useCallback(() => {
     if (chartInstance) {
-      const timeScale = chartInstance.timeScale()
-      const visibleRange = timeScale.getVisibleLogicalRange()
+      const timeScale = chartInstance.timeScale();
+      const visibleRange = timeScale.getVisibleLogicalRange();
       if (visibleRange) {
-        const center = (visibleRange.from + visibleRange.to) / 2
-        const newRange = (visibleRange.to - visibleRange.from) * 1.25
+        const center = (visibleRange.from + visibleRange.to) / 2;
+        const newRange = (visibleRange.to - visibleRange.from) * 1.25;
         timeScale.setVisibleLogicalRange({
           from: center - newRange / 2,
-          to: center + newRange / 2
-        })
+          to: center + newRange / 2,
+        });
       }
     }
-  }, [chartInstance])
+  }, [chartInstance]);
 
   const handleResetZoom = useCallback(() => {
     if (chartInstance) {
-      chartInstance.timeScale().fitContent()
+      chartInstance.timeScale().fitContent();
     }
-  }, [chartInstance])
+  }, [chartInstance]);
 
   const handleToggleCrosshair = useCallback(() => {
-    setConfig(prev => ({
+    setConfig((prev) => ({
       ...prev,
-      showCrosshair: !prev.showCrosshair
-    }))
-  }, [])
+      showCrosshair: !prev.showCrosshair,
+    }));
+  }, []);
 
   const handleToggleGrid = useCallback(() => {
-    setConfig(prev => ({
+    setConfig((prev) => ({
       ...prev,
-      showGrid: !prev.showGrid
-    }))
-  }, [])
+      showGrid: !prev.showGrid,
+    }));
+  }, []);
 
   const handleExport = useCallback(() => {
     if (chartInstance) {
       // 实现图表导出功能
-      const canvas = chartInstance.takeScreenshot()
-      const link = document.createElement('a')
-      link.download = `kline-chart-${Date.now()}.png`
-      link.href = canvas.toDataURL()
-      link.click()
+      const canvas = chartInstance.takeScreenshot();
+      const link = document.createElement('a');
+      link.download = `kline-chart-${Date.now()}.png`;
+      link.href = canvas.toDataURL();
+      link.click();
     }
-  }, [chartInstance])
+  }, [chartInstance]);
 
   const handleFullscreen = useCallback(() => {
-    const container = document.querySelector('.kline-chart-container')
+    const container = document.querySelector('.kline-chart-container');
     if (container && !document.fullscreenElement) {
-      container.requestFullscreen()
+      container.requestFullscreen();
     } else if (document.fullscreenElement) {
-      document.exitFullscreen()
+      document.exitFullscreen();
     }
-  }, [])
+  }, []);
 
   // 处理图表准备就绪
-  const handleChartReady = useCallback((chart: any) => {
-    setChartInstance(chart)
-    onChartReady?.()
+  const handleChartReady = useCallback(
+    (chart: any) => {
+      setChartInstance(chart);
+      onChartReady?.();
 
-    // 性能监控：记录渲染时间
-    const startTime = performance.now()
-    requestAnimationFrame(() => {
-      const endTime = performance.now()
-      const renderTime = endTime - startTime
+      // 性能监控：记录渲染时间
+      const startTime = performance.now();
+      requestAnimationFrame(() => {
+        const endTime = performance.now();
+        const renderTime = endTime - startTime;
 
-      setPerformanceMetrics(prev => ({
-        ...prev,
-        renderTime,
-        fps: 1000 / renderTime
-      }))
+        setPerformanceMetrics((prev) => ({
+          ...prev,
+          renderTime,
+          fps: 1000 / renderTime,
+        }));
 
-      // 记录到自适应性能服务
-      adaptivePerformanceService.recordMetrics({
-        dataPoints: optimizedData.candlesticks.length,
-        renderTime,
-        fps: 1000 / renderTime,
-        memoryUsage: performance.memory?.usedJSHeapSize || 0,
-        timestamp: Date.now()
-      })
-    })
-  }, [optimizedData, onChartReady])
+        // 记录到自适应性能服务
+        adaptivePerformanceService.recordMetrics({
+          dataPoints: optimizedData.candlesticks.length,
+          renderTime,
+          fps: 1000 / renderTime,
+          memoryUsage: performance.memory?.usedJSHeapSize || 0,
+          timestamp: Date.now(),
+        });
+      });
+    },
+    [optimizedData, onChartReady],
+  );
 
   // 处理K线点击事件
-  const handleCandlestickClick = useCallback((candleData: CandlestickData, event: any) => {
-    // 查找对应的交易信号
-    const signals = data.signals?.filter(signal =>
-      signal.timestamp === candleData.timestamp
-    )
+  const handleCandlestickClick = useCallback(
+    (candleData: CandlestickData, event: any) => {
+      // 查找对应的交易信号
+      const signals = data.signals?.filter(
+        (signal) => signal.timestamp === candleData.timestamp,
+      );
 
-    if (signals && signals.length > 0) {
-      signals.forEach(onSignalClick || (() => {}))
-    }
-  }, [data.signals, onSignalClick])
+      if (signals && signals.length > 0) {
+        signals.forEach(onSignalClick || (() => {}));
+      }
+    },
+    [data.signals, onSignalClick],
+  );
 
   // 处理K线悬停事件
-  const handleCandlestickHover = useCallback((candleData: CandlestickData | null, event: any) => {
-    onDataPointHover?.(candleData)
-  }, [onDataPointHover])
+  const handleCandlestickHover = useCallback(
+    (candleData: CandlestickData | null, event: any) => {
+      onDataPointHover?.(candleData);
+    },
+    [onDataPointHover],
+  );
 
   // 监听自适应性能优化事件
   useEffect(() => {
     const handleOptimizationEvent = (event: any) => {
-      const { strategy, metrics } = event.detail
-      console.log(`🔧 自适应优化触发: ${strategy}`, metrics)
+      const { strategy, metrics } = event.detail;
+      console.log(`🔧 自适应优化触发: ${strategy}`, metrics);
 
       // 更新性能指标
-      setPerformanceMetrics(prev => ({
+      setPerformanceMetrics((prev) => ({
         ...prev,
         fps: metrics.fps,
-        renderTime: 1000 / metrics.fps
-      }))
+        renderTime: 1000 / metrics.fps,
+      }));
 
       // 更新配置
-      setConfig(prev => ({
+      setConfig((prev) => ({
         ...prev,
         performance: {
           ...prev.performance,
-          enableDataSampling: metrics.dataPoints > 5000
-        }
-      }))
-    }
+          enableDataSampling: metrics.dataPoints > 5000,
+        },
+      }));
+    };
 
-    window.addEventListener('klinePerformanceOptimization', handleOptimizationEvent)
+    window.addEventListener(
+      'klinePerformanceOptimization',
+      handleOptimizationEvent,
+    );
     return () => {
-      window.removeEventListener('klinePerformanceOptimization', handleOptimizationEvent)
-    }
-  }, [])
+      window.removeEventListener(
+        'klinePerformanceOptimization',
+        handleOptimizationEvent,
+      );
+    };
+  }, []);
 
   // 监听配置变化
   useEffect(() => {
-    setConfig(prev => ({ ...prev, ...userConfig }))
-  }, [userConfig])
+    setConfig((prev) => ({ ...prev, ...userConfig }));
+  }, [userConfig]);
 
   // 键盘快捷键处理
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (!config.interactions.keyboardShortcuts) return
+      if (!config.interactions.keyboardShortcuts) return;
 
       switch (event.key) {
         case '+':
         case '=':
-          event.preventDefault()
-          handleZoomIn()
-          break
+          event.preventDefault();
+          handleZoomIn();
+          break;
         case '-':
         case '_':
-          event.preventDefault()
-          handleZoomOut()
-          break
+          event.preventDefault();
+          handleZoomOut();
+          break;
         case 'r':
         case 'R':
-          event.preventDefault()
-          handleResetZoom()
-          break
+          event.preventDefault();
+          handleResetZoom();
+          break;
         case 'c':
         case 'C':
-          event.preventDefault()
-          handleToggleCrosshair()
-          break
+          event.preventDefault();
+          handleToggleCrosshair();
+          break;
         case 'g':
         case 'G':
-          event.preventDefault()
-          handleToggleGrid()
-          break
+          event.preventDefault();
+          handleToggleGrid();
+          break;
         case 'e':
         case 'E':
-          event.preventDefault()
-          handleExport()
-          break
+          event.preventDefault();
+          handleExport();
+          break;
         case 'f':
         case 'F':
-          event.preventDefault()
-          handleFullscreen()
-          break
+          event.preventDefault();
+          handleFullscreen();
+          break;
         case 'p':
         case 'P':
-          event.preventDefault()
-          setShowPerformanceMonitor(prev => !prev)
-          break
+          event.preventDefault();
+          setShowPerformanceMonitor((prev) => !prev);
+          break;
       }
-    }
+    };
 
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, [
     config.interactions.keyboardShortcuts,
     handleZoomIn,
@@ -313,8 +335,8 @@ export const KlineChartContainer: React.FC<KlineChartProps> = ({
     handleToggleCrosshair,
     handleToggleGrid,
     handleExport,
-    handleFullscreen
-  ])
+    handleFullscreen,
+  ]);
 
   return (
     <div className={`kline-chart-container ${className}`}>
@@ -370,14 +392,17 @@ export const KlineChartContainer: React.FC<KlineChartProps> = ({
           数据点: {optimizedData.candlesticks.length.toLocaleString()}
           {optimizedData.candlesticks.length < data.candlesticks.length && (
             <span className="ml-2 text-yellow-600">
-              (优化: {((optimizedData.candlesticks.length / data.candlesticks.length) * 100).toFixed(1)}%)
+              (优化:{' '}
+              {(
+                (optimizedData.candlesticks.length / data.candlesticks.length) *
+                100
+              ).toFixed(1)}
+              %)
             </span>
           )}
         </div>
 
-        <div>
-          当前周期: {currentTimePeriod}
-        </div>
+        <div>当前周期: {currentTimePeriod}</div>
 
         <div>
           性能: {performanceMetrics.fps.toFixed(1)} FPS
@@ -398,7 +423,7 @@ export const KlineChartContainer: React.FC<KlineChartProps> = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default KlineChartContainer
+export default KlineChartContainer;

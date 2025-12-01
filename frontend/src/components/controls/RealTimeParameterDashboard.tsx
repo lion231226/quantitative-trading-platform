@@ -7,7 +7,10 @@ import { Switch } from '@/components/ui/switch';
 import ParameterControls from './ParameterControls';
 import RealTimeResults from './RealTimeResults';
 import { useRealTimeParameters } from '@/hooks/useRealTimeParameters';
-import { ParameterChangeEvent, StrategyParameters } from '@/types/parameter.types';
+import {
+  ParameterChangeEvent,
+  StrategyParameters,
+} from '@/types/parameter.types';
 import {
   Activity,
   Info,
@@ -19,17 +22,17 @@ import {
 } from 'lucide-react';
 
 interface RealTimeParameterDashboardProps {
-  symbol: string
-  startDate: string
-  endDate: string
-  initialParameters?: StrategyParameters
-  onParametersChange?: (parameters: StrategyParameters) => void
-  onStrategyResultUpdate?: (result: any) => void
-  showControls?: boolean
-  showResults?: boolean
-  compactResults?: boolean
-  enableAutoRefresh?: boolean
-  className?: string
+  symbol: string;
+  startDate: string;
+  endDate: string;
+  initialParameters?: StrategyParameters;
+  onParametersChange?: (parameters: StrategyParameters) => void;
+  onStrategyResultUpdate?: (result: any) => void;
+  showControls?: boolean;
+  showResults?: boolean;
+  compactResults?: boolean;
+  enableAutoRefresh?: boolean;
+  className?: string;
 }
 
 export function RealTimeParameterDashboard({
@@ -46,7 +49,8 @@ export function RealTimeParameterDashboard({
   className = '',
 }: RealTimeParameterDashboardProps) {
   const [showAdvancedControls, setShowAdvancedControls] = useState(false);
-  const [autoRefreshEnabled, setAutoRefreshEnabled] = useState(enableAutoRefresh);
+  const [autoRefreshEnabled, setAutoRefreshEnabled] =
+    useState(enableAutoRefresh);
 
   // 使用实时参数Hook
   const {
@@ -87,9 +91,12 @@ export function RealTimeParameterDashboard({
   });
 
   // 处理参数变化
-  const handleParametersChange = useCallback((newParameters: StrategyParameters) => {
-    updateParameters(newParameters);
-  }, [updateParameters]);
+  const handleParametersChange = useCallback(
+    (newParameters: StrategyParameters) => {
+      updateParameters(newParameters);
+    },
+    [updateParameters],
+  );
 
   // 处理参数重置
   const handleReset = useCallback(() => {
@@ -99,7 +106,7 @@ export function RealTimeParameterDashboard({
   // 切换实时更新
   const handleToggleRealTime = useCallback(() => {
     toggleRealTime();
-    setAutoRefreshEnabled(prev => !prev);
+    setAutoRefreshEnabled((prev) => !prev);
   }, [toggleRealTime]);
 
   // 处理强制刷新
@@ -111,7 +118,9 @@ export function RealTimeParameterDashboard({
   const SystemStatusIndicator = () => (
     <div className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
       <div className="flex items-center space-x-2">
-        <Activity className={`h-4 w-4 ${isRealTimeEnabled ? 'text-green-600' : 'text-gray-400'}`} />
+        <Activity
+          className={`h-4 w-4 ${isRealTimeEnabled ? 'text-green-600' : 'text-gray-400'}`}
+        />
         <span className="text-sm font-medium">实时更新</span>
         <Switch
           checked={isRealTimeEnabled}
@@ -121,17 +130,29 @@ export function RealTimeParameterDashboard({
       </div>
 
       <div className="flex items-center space-x-2">
-        <div className={`w-2 h-2 rounded-full ${
-          isUpdating ? 'bg-yellow-500 animate-pulse' :
-          isLoading ? 'bg-blue-500 animate-pulse' :
-          error ? 'bg-red-500' :
-          isParametersValid ? 'bg-green-500' : 'bg-orange-500'
-        }`} />
+        <div
+          className={`w-2 h-2 rounded-full ${
+            isUpdating
+              ? 'bg-yellow-500 animate-pulse'
+              : isLoading
+                ? 'bg-blue-500 animate-pulse'
+                : error
+                  ? 'bg-red-500'
+                  : isParametersValid
+                    ? 'bg-green-500'
+                    : 'bg-orange-500'
+          }`}
+        />
         <span className="text-sm text-muted-foreground">
-          {isUpdating ? '更新中' :
-           isLoading ? '分析中' :
-           error ? '错误' :
-           isParametersValid ? '正常' : '参数无效'}
+          {isUpdating
+            ? '更新中'
+            : isLoading
+              ? '分析中'
+              : error
+                ? '错误'
+                : isParametersValid
+                  ? '正常'
+                  : '参数无效'}
         </span>
       </div>
 
@@ -149,7 +170,9 @@ export function RealTimeParameterDashboard({
         disabled={isLoading || isUpdating}
         className="ml-auto"
       >
-        <RefreshCw className={`h-4 w-4 mr-1 ${isUpdating ? 'animate-spin' : ''}`} />
+        <RefreshCw
+          className={`h-4 w-4 mr-1 ${isUpdating ? 'animate-spin' : ''}`}
+        />
         刷新
       </Button>
     </div>
@@ -201,9 +224,7 @@ export function RealTimeParameterDashboard({
               <Play className="h-5 w-5 text-green-600" />
               <div>
                 <p className="text-sm font-medium text-green-900">响应时间</p>
-                <p className="text-xs text-green-700">
-                  &lt;500ms (防抖优化)
-                </p>
+                <p className="text-xs text-green-700">&lt;500ms (防抖优化)</p>
               </div>
             </div>
 
@@ -211,9 +232,7 @@ export function RealTimeParameterDashboard({
               <Info className="h-5 w-5 text-purple-600" />
               <div>
                 <p className="text-sm font-medium text-purple-900">数据缓存</p>
-                <p className="text-xs text-purple-700">
-                  智能缓存减少API调用
-                </p>
+                <p className="text-xs text-purple-700">智能缓存减少API调用</p>
               </div>
             </div>
           </div>
@@ -244,7 +263,13 @@ export function RealTimeParameterDashboard({
 
             {/* 参数验证状态 */}
             {validationResult && (
-              <Card className={validationResult.isValid ? 'border-green-200' : 'border-red-200'}>
+              <Card
+                className={
+                  validationResult.isValid
+                    ? 'border-green-200'
+                    : 'border-red-200'
+                }
+              >
                 <CardContent className="p-4">
                   <div className="flex items-center space-x-2">
                     {validationResult.isValid ? (
@@ -253,19 +278,22 @@ export function RealTimeParameterDashboard({
                       <div className="w-4 h-4 rounded-full bg-red-500" />
                     )}
                     <span className="text-sm font-medium">
-                      {validationResult.isValid ? '参数验证通过' : '参数验证失败'}
+                      {validationResult.isValid
+                        ? '参数验证通过'
+                        : '参数验证失败'}
                     </span>
                   </div>
 
-                  {!validationResult.isValid && validationResult.errors.length > 0 && (
-                    <div className="mt-2 text-sm text-red-700">
-                      <ul className="list-disc list-inside space-y-1">
-                        {validationResult.errors.map((error, index) => (
-                          <li key={index}>{error}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                  {!validationResult.isValid &&
+                    validationResult.errors.length > 0 && (
+                      <div className="mt-2 text-sm text-red-700">
+                        <ul className="list-disc list-inside space-y-1">
+                          {validationResult.errors.map((error, index) => (
+                            <li key={index}>{error}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
 
                   {validationResult.warnings.length > 0 && (
                     <div className="mt-2 text-sm text-yellow-700">

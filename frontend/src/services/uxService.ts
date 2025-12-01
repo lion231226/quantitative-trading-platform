@@ -1,5 +1,10 @@
-import { UseQueryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import React, { useCallback, useMemo, useRef, useEffect } from 'react';
+import {
+  UseQueryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { marketDataAPI } from '@/lib/api';
 
 // UX相关类型定义
@@ -57,7 +62,8 @@ const DEFAULT_CONFIG: UXOptimizationConfig = {
 
 // 查询键常量
 export const UX_QUERY_KEYS = {
-  performanceMetrics: (componentName?: string) => ['uxPerformanceMetrics', componentName] as const,
+  performanceMetrics: (componentName?: string) =>
+    ['uxPerformanceMetrics', componentName] as const,
   userBehavior: (sessionId: string) => ['uxUserBehavior', sessionId] as const,
   optimizationConfig: () => ['uxOptimizationConfig'] as const,
 } as const;
@@ -129,7 +135,6 @@ export class UXPerformanceMonitor {
       });
       resourceObserver.observe({ entryTypes: ['resource'] });
       this.observers.push(resourceObserver);
-
     } catch (error) {
       console.warn('Performance observers not supported:', error);
     }
@@ -162,20 +167,38 @@ export class UXPerformanceMonitor {
     const { performanceThresholds } = this.config;
     const warnings: string[] = [];
 
-    if (metric.actionType === 'render' && metric.componentRenderTime > performanceThresholds.componentRenderTime) {
-      warnings.push(`Component render time (${metric.componentRenderTime}ms) exceeds threshold (${performanceThresholds.componentRenderTime}ms)`);
+    if (
+      metric.actionType === 'render' &&
+      metric.componentRenderTime > performanceThresholds.componentRenderTime
+    ) {
+      warnings.push(
+        `Component render time (${metric.componentRenderTime}ms) exceeds threshold (${performanceThresholds.componentRenderTime}ms)`,
+      );
     }
 
-    if (metric.actionType === 'api_call' && metric.apiResponseTime > performanceThresholds.apiResponseTime) {
-      warnings.push(`API response time (${metric.apiResponseTime}ms) exceeds threshold (${performanceThresholds.apiResponseTime}ms)`);
+    if (
+      metric.actionType === 'api_call' &&
+      metric.apiResponseTime > performanceThresholds.apiResponseTime
+    ) {
+      warnings.push(
+        `API response time (${metric.apiResponseTime}ms) exceeds threshold (${performanceThresholds.apiResponseTime}ms)`,
+      );
     }
 
-    if (metric.actionType === 'user_interaction' && metric.userInteractionTime > performanceThresholds.userInteractionTime) {
-      warnings.push(`User interaction time (${metric.userInteractionTime}ms) exceeds threshold (${performanceThresholds.userInteractionTime}ms)`);
+    if (
+      metric.actionType === 'user_interaction' &&
+      metric.userInteractionTime > performanceThresholds.userInteractionTime
+    ) {
+      warnings.push(
+        `User interaction time (${metric.userInteractionTime}ms) exceeds threshold (${performanceThresholds.userInteractionTime}ms)`,
+      );
     }
 
     if (warnings.length > 0) {
-      console.warn(`[UX Performance Warning] ${metric.componentName}:`, warnings.join(', '));
+      console.warn(
+        `[UX Performance Warning] ${metric.componentName}:`,
+        warnings.join(', '),
+      );
     }
   }
 
@@ -197,30 +220,47 @@ export class UXPerformanceMonitor {
     averageRenderTime: number;
     averageApiResponseTime: number;
     averageUserInteractionTime: number;
-    slowestComponents: Array<{ componentName: string; time: number; actionType: string }>;
+    slowestComponents: Array<{
+      componentName: string;
+      time: number;
+      actionType: string;
+    }>;
   } {
-    const renderMetrics = this.metrics.filter(m => m.actionType === 'render');
-    const apiMetrics = this.metrics.filter(m => m.actionType === 'api_call');
-    const interactionMetrics = this.metrics.filter(m => m.actionType === 'user_interaction');
+    const renderMetrics = this.metrics.filter((m) => m.actionType === 'render');
+    const apiMetrics = this.metrics.filter((m) => m.actionType === 'api_call');
+    const interactionMetrics = this.metrics.filter(
+      (m) => m.actionType === 'user_interaction',
+    );
 
-    const averageRenderTime = renderMetrics.length > 0
-      ? renderMetrics.reduce((sum, m) => sum + m.componentRenderTime, 0) / renderMetrics.length
-      : 0;
+    const averageRenderTime =
+      renderMetrics.length > 0
+        ? renderMetrics.reduce((sum, m) => sum + m.componentRenderTime, 0) /
+          renderMetrics.length
+        : 0;
 
-    const averageApiResponseTime = apiMetrics.length > 0
-      ? apiMetrics.reduce((sum, m) => sum + m.apiResponseTime, 0) / apiMetrics.length
-      : 0;
+    const averageApiResponseTime =
+      apiMetrics.length > 0
+        ? apiMetrics.reduce((sum, m) => sum + m.apiResponseTime, 0) /
+          apiMetrics.length
+        : 0;
 
-    const averageUserInteractionTime = interactionMetrics.length > 0
-      ? interactionMetrics.reduce((sum, m) => sum + m.userInteractionTime, 0) / interactionMetrics.length
-      : 0;
+    const averageUserInteractionTime =
+      interactionMetrics.length > 0
+        ? interactionMetrics.reduce(
+            (sum, m) => sum + m.userInteractionTime,
+            0,
+          ) / interactionMetrics.length
+        : 0;
 
     const slowestComponents = this.metrics
-      .map(m => ({
+      .map((m) => ({
         componentName: m.componentName,
-        time: m.actionType === 'render' ? m.componentRenderTime :
-              m.actionType === 'api_call' ? m.apiResponseTime :
-              m.userInteractionTime,
+        time:
+          m.actionType === 'render'
+            ? m.componentRenderTime
+            : m.actionType === 'api_call'
+              ? m.apiResponseTime
+              : m.userInteractionTime,
         actionType: m.actionType,
       }))
       .sort((a, b) => b.time - a.time)
@@ -239,7 +279,7 @@ export class UXPerformanceMonitor {
    * 清理资源
    */
   destroy(): void {
-    this.observers.forEach(observer => observer.disconnect());
+    this.observers.forEach((observer) => observer.disconnect());
     this.observers = [];
     this.metrics = [];
   }
@@ -284,10 +324,14 @@ export class UserBehaviorTracker {
 
     // 滚动事件（节流）
     let scrollTimer: NodeJS.Timeout;
-    document.addEventListener('scroll', () => {
-      clearTimeout(scrollTimer);
-      scrollTimer = setTimeout(this.handleScroll, 100);
-    }, true);
+    document.addEventListener(
+      'scroll',
+      () => {
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(this.handleScroll, 100);
+      },
+      true,
+    );
 
     // 表单提交事件
     document.addEventListener('submit', this.handleSubmit, true);
@@ -351,7 +395,9 @@ export class UserBehaviorTracker {
   /**
    * 记录用户行为
    */
-  private recordBehavior(behavior: Omit<UserBehaviorData, 'sessionId' | 'timestamp'>): void {
+  private recordBehavior(
+    behavior: Omit<UserBehaviorData, 'sessionId' | 'timestamp'>,
+  ): void {
     if (!this.isTracking) return;
 
     const fullBehavior: UserBehaviorData = {
@@ -397,35 +443,44 @@ export function useUXPerformanceMonitor(componentName: string) {
     };
   }, []);
 
-  const recordRenderTime = useCallback((renderTime: number) => {
-    monitorRef.current?.recordMetric({
-      componentName,
-      actionType: 'render',
-      componentRenderTime: renderTime,
-      apiResponseTime: 0,
-      userInteractionTime: 0,
-    });
-  }, [componentName]);
+  const recordRenderTime = useCallback(
+    (renderTime: number) => {
+      monitorRef.current?.recordMetric({
+        componentName,
+        actionType: 'render',
+        componentRenderTime: renderTime,
+        apiResponseTime: 0,
+        userInteractionTime: 0,
+      });
+    },
+    [componentName],
+  );
 
-  const recordApiResponseTime = useCallback((responseTime: number, apiName?: string) => {
-    monitorRef.current?.recordMetric({
-      componentName: apiName || componentName,
-      actionType: 'api_call',
-      componentRenderTime: 0,
-      apiResponseTime: responseTime,
-      userInteractionTime: 0,
-    });
-  }, [componentName]);
+  const recordApiResponseTime = useCallback(
+    (responseTime: number, apiName?: string) => {
+      monitorRef.current?.recordMetric({
+        componentName: apiName || componentName,
+        actionType: 'api_call',
+        componentRenderTime: 0,
+        apiResponseTime: responseTime,
+        userInteractionTime: 0,
+      });
+    },
+    [componentName],
+  );
 
-  const recordUserInteractionTime = useCallback((interactionTime: number, action?: string) => {
-    monitorRef.current?.recordMetric({
-      componentName: action || componentName,
-      actionType: 'user_interaction',
-      componentRenderTime: 0,
-      apiResponseTime: 0,
-      userInteractionTime: interactionTime,
-    });
-  }, [componentName]);
+  const recordUserInteractionTime = useCallback(
+    (interactionTime: number, action?: string) => {
+      monitorRef.current?.recordMetric({
+        componentName: action || componentName,
+        actionType: 'user_interaction',
+        componentRenderTime: 0,
+        apiResponseTime: 0,
+        userInteractionTime: interactionTime,
+      });
+    },
+    [componentName],
+  );
 
   return {
     recordRenderTime,
@@ -507,12 +562,15 @@ export function useUXThrottle<T>(value: T, limit: number): T {
   const lastRan = useRef(Date.now());
 
   useEffect(() => {
-    const handler = setTimeout(() => {
-      if (Date.now() - lastRan.current >= limit) {
-        setThrottledValue(value);
-        lastRan.current = Date.now();
-      }
-    }, limit - (Date.now() - lastRan.current));
+    const handler = setTimeout(
+      () => {
+        if (Date.now() - lastRan.current >= limit) {
+          setThrottledValue(value);
+          lastRan.current = Date.now();
+        }
+      },
+      limit - (Date.now() - lastRan.current),
+    );
 
     return () => {
       clearTimeout(handler);

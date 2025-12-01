@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Loading, LoadingSpinner } from '@/components/ui/loading';
 import { strategyAPI } from '@/lib/api';
 import { cn, formatPercentage } from '@/lib/utils';
@@ -16,8 +22,14 @@ interface ResultsDisplayProps {
   className?: string;
 }
 
-export function ResultsDisplay({ strategyRun, onReset, className }: ResultsDisplayProps) {
-  const [result, setResult] = useState<StrategyResult & { rawData?: any } | null>(null);
+export function ResultsDisplay({
+  strategyRun,
+  onReset,
+  className,
+}: ResultsDisplayProps) {
+  const [result, setResult] = useState<
+    (StrategyResult & { rawData?: any }) | null
+  >(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
 
@@ -57,7 +69,9 @@ export function ResultsDisplay({ strategyRun, onReset, className }: ResultsDispl
             <div className="text-center">
               <LoadingSpinner size="lg" />
               <p className="mt-4 text-muted-foreground">
-                {strategyRun?.progress !== undefined ? `进度: ${strategyRun.progress}%` : '正在处理...'}
+                {strategyRun?.progress !== undefined
+                  ? `进度: ${strategyRun.progress}%`
+                  : '正在处理...'}
               </p>
             </div>
           </div>
@@ -82,9 +96,7 @@ export function ResultsDisplay({ strategyRun, onReset, className }: ResultsDispl
               <Button onClick={onReset} variant="outline">
                 重新配置
               </Button>
-              <Button onClick={() => window.location.reload()}>
-                刷新页面
-              </Button>
+              <Button onClick={() => window.location.reload()}>刷新页面</Button>
             </div>
           </div>
         </CardContent>
@@ -136,13 +148,15 @@ export function ResultsDisplay({ strategyRun, onReset, className }: ResultsDispl
             height={400}
             className="w-full"
             strategyInfo={
-              result.rawData ? {
-                symbol: result.rawData.symbol,
-                strategyType: result.rawData.strategy_type,
-                parameters: result.rawData.parameters,
-                startDate: result.rawData.start_date,
-                endDate: result.rawData.end_date,
-              } : undefined
+              result.rawData
+                ? {
+                    symbol: result.rawData.symbol,
+                    strategyType: result.rawData.strategy_type,
+                    parameters: result.rawData.parameters,
+                    startDate: result.rawData.start_date,
+                    endDate: result.rawData.end_date,
+                  }
+                : undefined
             }
           />
         )}
@@ -192,15 +206,21 @@ export function ResultsDisplay({ strategyRun, onReset, className }: ResultsDispl
                   </div>
                   <div className="flex justify-between">
                     <span>盈利交易</span>
-                    <span className="font-medium text-green-600">{result.profit_trades}</span>
+                    <span className="font-medium text-green-600">
+                      {result.profit_trades}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span>亏损交易</span>
-                    <span className="font-medium text-red-600">{result.loss_trades}</span>
+                    <span className="font-medium text-red-600">
+                      {result.loss_trades}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span>平均收益</span>
-                    <span className="font-medium">{formatPercentage(result.average_return)}</span>
+                    <span className="font-medium">
+                      {formatPercentage(result.average_return)}
+                    </span>
                   </div>
                 </CardContent>
               </Card>
@@ -220,16 +240,22 @@ export function ResultsDisplay({ strategyRun, onReset, className }: ResultsDispl
                     <span>夏普比率</span>
                     <span className="font-medium">
                       {result.sharpe_ratio > 1 ? (
-                        <span className="text-green-600">{result.sharpe_ratio.toFixed(2)}</span>
+                        <span className="text-green-600">
+                          {result.sharpe_ratio.toFixed(2)}
+                        </span>
                       ) : (
-                        <span className="text-red-600">{result.sharpe_ratio.toFixed(2)}</span>
+                        <span className="text-red-600">
+                          {result.sharpe_ratio.toFixed(2)}
+                        </span>
                       )}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span>收益风险比</span>
                     <span className="font-medium">
-                      {((result.total_return / Math.abs(result.max_drawdown)) || 0).toFixed(2)}
+                      {(
+                        result.total_return / Math.abs(result.max_drawdown) || 0
+                      ).toFixed(2)}
                     </span>
                   </div>
                 </CardContent>

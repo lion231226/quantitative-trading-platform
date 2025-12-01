@@ -1,5 +1,10 @@
-import { UseQueryOptions, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useMemo, useRef, useEffect } from 'react';
+import {
+  UseQueryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 // 使用统计类型
 export interface HelpUsageStats {
@@ -122,7 +127,8 @@ export interface ABTestResult {
 export const HELP_ANALYTICS_QUERY_KEYS = {
   usageStats: (contentId?: string) => ['helpUsageStats', contentId] as const,
   userBehavior: (userId: string) => ['userBehaviorAnalysis', userId] as const,
-  contentPerformance: (contentId: string) => ['contentPerformance', contentId] as const,
+  contentPerformance: (contentId: string) =>
+    ['contentPerformance', contentId] as const,
   recommendationAnalytics: () => ['recommendationAnalytics'] as const,
   abTestResults: () => ['abTestResults'] as const,
   trendingContent: () => ['trendingContent'] as const,
@@ -143,7 +149,8 @@ class HelpAnalyticsService {
   private queryClient: any;
   private usageStatsCache: Map<string, HelpUsageStats> = new Map();
   private userBehaviorCache: Map<string, UserBehaviorAnalysis> = new Map();
-  private contentPerformanceCache: Map<string, ContentPerformanceMetrics> = new Map();
+  private contentPerformanceCache: Map<string, ContentPerformanceMetrics> =
+    new Map();
   private sessionStartTime: number = Date.now();
   private currentSession: string;
 
@@ -181,11 +188,16 @@ class HelpAnalyticsService {
       }
 
       // 加载内容性能数据
-      const performanceData = localStorage.getItem(STORAGE_KEYS.CONTENT_PERFORMANCE);
+      const performanceData = localStorage.getItem(
+        STORAGE_KEYS.CONTENT_PERFORMANCE,
+      );
       if (performanceData) {
         const performance = JSON.parse(performanceData);
         Object.entries(performance).forEach(([contentId, metrics]) => {
-          this.contentPerformanceCache.set(contentId, metrics as ContentPerformanceMetrics);
+          this.contentPerformanceCache.set(
+            contentId,
+            metrics as ContentPerformanceMetrics,
+          );
         });
       }
     } catch (error) {
@@ -198,15 +210,26 @@ class HelpAnalyticsService {
     try {
       // 保存使用统计
       const usageStatsObject = Object.fromEntries(this.usageStatsCache);
-      localStorage.setItem(STORAGE_KEYS.USAGE_STATS, JSON.stringify(usageStatsObject));
+      localStorage.setItem(
+        STORAGE_KEYS.USAGE_STATS,
+        JSON.stringify(usageStatsObject),
+      );
 
       // 保存用户行为分析
       const behaviorObject = Object.fromEntries(this.userBehaviorCache);
-      localStorage.setItem(STORAGE_KEYS.USER_BEHAVIOR, JSON.stringify(behaviorObject));
+      localStorage.setItem(
+        STORAGE_KEYS.USER_BEHAVIOR,
+        JSON.stringify(behaviorObject),
+      );
 
       // 保存内容性能数据
-      const performanceObject = Object.fromEntries(this.contentPerformanceCache);
-      localStorage.setItem(STORAGE_KEYS.CONTENT_PERFORMANCE, JSON.stringify(performanceObject));
+      const performanceObject = Object.fromEntries(
+        this.contentPerformanceCache,
+      );
+      localStorage.setItem(
+        STORAGE_KEYS.CONTENT_PERFORMANCE,
+        JSON.stringify(performanceObject),
+      );
     } catch (error) {
       console.warn('Failed to save analytics data to storage:', error);
     }
@@ -283,21 +306,31 @@ class HelpAnalyticsService {
   }
 
   // 跟踪内容完成
-  trackContentComplete(contentId: string, timeSpent: number, rating?: number, userId?: string) {
-    let stats = this.usageStatsCache.get(contentId);
+  trackContentComplete(
+    contentId: string,
+    timeSpent: number,
+    rating?: number,
+    userId?: string,
+  ) {
+    const stats = this.usageStatsCache.get(contentId);
     if (stats) {
       // 更新平均阅读时间
-      const totalTimeSpent = stats.averageReadTime * (stats.totalViews - 1) + timeSpent;
+      const totalTimeSpent =
+        stats.averageReadTime * (stats.totalViews - 1) + timeSpent;
       stats.averageReadTime = totalTimeSpent / stats.totalViews;
 
       // 更新完成率
-      stats.completionRate = ((stats.completionRate * (stats.totalViews - 1)) + 1) / stats.totalViews;
+      stats.completionRate =
+        (stats.completionRate * (stats.totalViews - 1) + 1) / stats.totalViews;
 
       // 更新用户评分
       if (rating !== undefined) {
-        const totalRatings = stats.userRatings.helpful + stats.userRatings.notHelpful;
+        const totalRatings =
+          stats.userRatings.helpful + stats.userRatings.notHelpful;
         const newTotalRatings = totalRatings + 1;
-        const newAverageRating = ((stats.userRatings.averageRating * totalRatings) + rating) / newTotalRatings;
+        const newAverageRating =
+          (stats.userRatings.averageRating * totalRatings + rating) /
+          newTotalRatings;
 
         stats.userRatings.averageRating = newAverageRating;
         if (rating >= 0.6) {
@@ -314,7 +347,8 @@ class HelpAnalyticsService {
     if (userId) {
       const userAnalysis = this.userBehaviorCache.get(userId);
       if (userAnalysis) {
-        const lastPathItem = userAnalysis.learningPath[userAnalysis.learningPath.length - 1];
+        const lastPathItem =
+          userAnalysis.learningPath[userAnalysis.learningPath.length - 1];
         if (lastPathItem && lastPathItem.contentId === contentId) {
           lastPathItem.timeSpent = timeSpent;
           lastPathItem.completed = true;
@@ -343,7 +377,12 @@ class HelpAnalyticsService {
   }
 
   // 跟踪搜索行为
-  trackSearch(query: string, resultsCount: number, selectedResult?: string, userId?: string) {
+  trackSearch(
+    query: string,
+    resultsCount: number,
+    selectedResult?: string,
+    userId?: string,
+  ) {
     // 更新搜索出现次数
     // 这里需要遍历所有相关的帮助内容并更新搜索出现次数
 
@@ -384,7 +423,12 @@ class HelpAnalyticsService {
   }
 
   // 跟踪推荐效果
-  trackRecommendation(recommendationData: Omit<RecommendationAnalytics, 'recommendationId' | 'timestamp'>) {
+  trackRecommendation(
+    recommendationData: Omit<
+      RecommendationAnalytics,
+      'recommendationId' | 'timestamp'
+    >,
+  ) {
     const recommendation: RecommendationAnalytics = {
       ...recommendationData,
       recommendationId: this.generateRecommendationId(),
@@ -428,7 +472,9 @@ class HelpAnalyticsService {
   }
 
   // 创建初始用户行为分析
-  private createInitialUserBehaviorAnalysis(userId: string): UserBehaviorAnalysis {
+  private createInitialUserBehaviorAnalysis(
+    userId: string,
+  ): UserBehaviorAnalysis {
     return {
       userId,
       sessionId: this.currentSession,
@@ -447,7 +493,10 @@ class HelpAnalyticsService {
   }
 
   // 更新最常查看的分类
-  private updateMostViewedCategories(userAnalysis: UserBehaviorAnalysis, contentId: string) {
+  private updateMostViewedCategories(
+    userAnalysis: UserBehaviorAnalysis,
+    contentId: string,
+  ) {
     // 这里需要根据contentId推断分类
     // 简化实现，实际应该有分类映射
     const category = this.inferContentCategory(contentId);
@@ -462,26 +511,36 @@ class HelpAnalyticsService {
     }
 
     // 保持前5个分类
-    userAnalysis.mostViewedCategories = userAnalysis.mostViewedCategories.slice(0, 5);
+    userAnalysis.mostViewedCategories = userAnalysis.mostViewedCategories.slice(
+      0,
+      5,
+    );
   }
 
   // 更新技能进度
-  private updateSkillProgress(userAnalysis: UserBehaviorAnalysis, contentId: string, rating?: number) {
+  private updateSkillProgress(
+    userAnalysis: UserBehaviorAnalysis,
+    contentId: string,
+    rating?: number,
+  ) {
     const skills = this.inferContentSkills(contentId);
     const scoreAdjustment = rating ? rating : 0.5; // 默认中等评分
 
-    skills.forEach(skill => {
+    skills.forEach((skill) => {
       const currentProgress = userAnalysis.skillProgress[skill] || 0;
-      const newProgress = Math.min(1, currentProgress + (scoreAdjustment * 0.1));
+      const newProgress = Math.min(1, currentProgress + scoreAdjustment * 0.1);
       userAnalysis.skillProgress[skill] = newProgress;
     });
   }
 
   // 推断内容分类（简化实现）
   private inferContentCategory(contentId: string): string {
-    if (contentId.includes('concept') || contentId.includes('ma-')) return 'concepts';
-    if (contentId.includes('troubleshooting') || contentId.includes('error')) return 'troubleshooting';
-    if (contentId.includes('feature') || contentId.includes('parameter')) return 'features';
+    if (contentId.includes('concept') || contentId.includes('ma-'))
+      return 'concepts';
+    if (contentId.includes('troubleshooting') || contentId.includes('error'))
+      return 'troubleshooting';
+    if (contentId.includes('feature') || contentId.includes('parameter'))
+      return 'features';
     if (contentId.includes('getting-started')) return 'getting-started';
     if (contentId.includes('advanced')) return 'advanced';
     return 'concepts'; // 默认分类
@@ -567,15 +626,17 @@ class HelpAnalyticsService {
   // 获取热门内容
   getTrendingContent(limit: number = 10): HelpUsageStats[] {
     return Array.from(this.usageStatsCache.values())
-      .filter(stats => stats.trending)
+      .filter((stats) => stats.trending)
       .sort((a, b) => {
         // 综合评分算法
-        const scoreA = a.totalViews * 0.3 +
-                      a.userRatings.averageRating * a.totalViews * 0.4 +
-                      a.completionRate * a.totalViews * 0.3;
-        const scoreB = b.totalViews * 0.3 +
-                      b.userRatings.averageRating * b.totalViews * 0.4 +
-                      b.completionRate * b.totalViews * 0.3;
+        const scoreA =
+          a.totalViews * 0.3 +
+          a.userRatings.averageRating * a.totalViews * 0.4 +
+          a.completionRate * a.totalViews * 0.3;
+        const scoreB =
+          b.totalViews * 0.3 +
+          b.userRatings.averageRating * b.totalViews * 0.4 +
+          b.completionRate * b.totalViews * 0.3;
         return scoreB - scoreA;
       })
       .slice(0, limit);
@@ -693,7 +754,7 @@ export const useHelpAnalyticsService = () => {
 // 使用统计 Hook
 export const useHelpUsageStats = (
   contentId?: string,
-  options?: UseQueryOptions<HelpUsageStats[], Error>
+  options?: UseQueryOptions<HelpUsageStats[], Error>,
 ) => {
   const helpAnalyticsService = useHelpAnalyticsService();
 
@@ -708,7 +769,7 @@ export const useHelpUsageStats = (
 // 用户行为分析 Hook
 export const useUserBehaviorAnalysis = (
   userId: string,
-  options?: UseQueryOptions<UserBehaviorAnalysis | null, Error>
+  options?: UseQueryOptions<UserBehaviorAnalysis | null, Error>,
 ) => {
   const helpAnalyticsService = useHelpAnalyticsService();
 
@@ -723,7 +784,7 @@ export const useUserBehaviorAnalysis = (
 // 内容性能指标 Hook
 export const useContentPerformance = (
   contentId: string,
-  options?: UseQueryOptions<ContentPerformanceMetrics | null, Error>
+  options?: UseQueryOptions<ContentPerformanceMetrics | null, Error>,
 ) => {
   const helpAnalyticsService = useHelpAnalyticsService();
 
@@ -738,7 +799,7 @@ export const useContentPerformance = (
 // 热门内容 Hook
 export const useTrendingContent = (
   limit: number = 10,
-  options?: UseQueryOptions<HelpUsageStats[], Error>
+  options?: UseQueryOptions<HelpUsageStats[], Error>,
 ) => {
   const helpAnalyticsService = useHelpAnalyticsService();
 
@@ -752,13 +813,16 @@ export const useTrendingContent = (
 
 // 内容优化建议 Hook
 export const useContentOptimizationSuggestions = (
-  options?: UseQueryOptions<Array<{
-    contentId: string;
-    issue: string;
-    suggestion: string;
-    priority: 'high' | 'medium' | 'low';
-    potentialImpact: string;
-  }>, Error>
+  options?: UseQueryOptions<
+    Array<{
+      contentId: string;
+      issue: string;
+      suggestion: string;
+      priority: 'high' | 'medium' | 'low';
+      potentialImpact: string;
+    }>,
+    Error
+  >,
 ) => {
   const helpAnalyticsService = useHelpAnalyticsService();
 

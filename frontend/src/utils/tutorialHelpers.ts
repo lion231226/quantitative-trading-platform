@@ -1,11 +1,11 @@
 import {
-  Tutorial,
-  TutorialStep,
-  TutorialProgress,
-  TutorialContext,
-  CompletionCondition,
   Achievement,
+  CompletionCondition,
+  Tutorial,
+  TutorialContext,
   TutorialEvent,
+  TutorialProgress,
+  TutorialStep,
 } from '@/types/tutorial.types';
 
 /**
@@ -23,13 +23,13 @@ export function checkCompletionConditions(
     actionsCompleted: string[];
     animationWatched: boolean;
     quizPassed: boolean;
-  }
+  },
 ): boolean {
   if (!conditions || conditions.length === 0) {
     return true; // 无条件时默认完成
   }
 
-  return conditions.every(condition => {
+  return conditions.every((condition) => {
     const { type, value, operator = '=' } = condition;
 
     switch (type) {
@@ -54,23 +54,37 @@ export function checkCompletionConditions(
 /**
  * 数字比较辅助函数
  */
-function compareNumbers(actual: number, expected: number, operator: string): boolean {
+function compareNumbers(
+  actual: number,
+  expected: number,
+  operator: string,
+): boolean {
   switch (operator) {
-    case '>': return actual > expected;
-    case '<': return actual < expected;
-    case '>=': return actual >= expected;
-    case '<=': return actual <= expected;
-    case '=': return actual === expected;
-    default: return false;
+    case '>':
+      return actual > expected;
+    case '<':
+      return actual < expected;
+    case '>=':
+      return actual >= expected;
+    case '<=':
+      return actual <= expected;
+    case '=':
+      return actual === expected;
+    default:
+      return false;
   }
 }
 
 /**
  * 计算教程完成百分比
  */
-export function calculateCompletionPercentage(progress: TutorialProgress): number {
+export function calculateCompletionPercentage(
+  progress: TutorialProgress,
+): number {
   if (progress.totalSteps === 0) return 0;
-  return Math.round((progress.completedSteps.length / progress.totalSteps) * 100);
+  return Math.round(
+    (progress.completedSteps.length / progress.totalSteps) * 100,
+  );
 }
 
 /**
@@ -78,10 +92,10 @@ export function calculateCompletionPercentage(progress: TutorialProgress): numbe
  */
 export function calculateEstimatedTimeRemaining(
   tutorial: Tutorial,
-  progress: TutorialProgress
+  progress: TutorialProgress,
 ): number {
   const remainingSteps = tutorial.steps.filter(
-    (_, index) => !progress.completedSteps.includes(index)
+    (_, index) => !progress.completedSteps.includes(index),
   );
 
   return remainingSteps.reduce((total, step) => {
@@ -112,7 +126,7 @@ export function formatTime(seconds: number): string {
 export function generateAchievement(
   type: 'first_step' | 'complete_tutorial' | 'speed_learner' | 'explorer',
   tutorialTitle: string,
-  data?: any
+  data?: any,
 ): Achievement {
   const now = new Date().toISOString();
 
@@ -167,7 +181,10 @@ export function generateAchievement(
 /**
  * 验证步骤跳转是否允许
  */
-export function canSkipStep(step: TutorialStep, progress: TutorialProgress): boolean {
+export function canSkipStep(
+  step: TutorialStep,
+  progress: TutorialProgress,
+): boolean {
   // 必需步骤不能跳过
   if (!step.isOptional) {
     return false;
@@ -186,7 +203,9 @@ export function canSkipStep(step: TutorialStep, progress: TutorialProgress): boo
  */
 export function getStepNavigation(context: TutorialContext) {
   const { currentStep, progress, tutorial } = context;
-  const currentIndex = tutorial.steps.findIndex(step => step.id === currentStep.id);
+  const currentIndex = tutorial.steps.findIndex(
+    (step) => step.id === currentStep.id,
+  );
 
   return {
     currentIndex,
@@ -202,7 +221,10 @@ export function getStepNavigation(context: TutorialContext) {
 /**
  * 生成教程进度摘要
  */
-export function generateProgressSummary(progress: TutorialProgress, tutorial: Tutorial): {
+export function generateProgressSummary(
+  progress: TutorialProgress,
+  tutorial: Tutorial,
+): {
   status: 'not_started' | 'in_progress' | 'completed';
   percentage: number;
   timeSpent: string;
@@ -211,7 +233,9 @@ export function generateProgressSummary(progress: TutorialProgress, tutorial: Tu
 } {
   const percentage = calculateCompletionPercentage(progress);
   const timeSpent = formatTime(progress.totalTimeSpent);
-  const estimatedRemaining = formatTime(calculateEstimatedTimeRemaining(tutorial, progress));
+  const estimatedRemaining = formatTime(
+    calculateEstimatedTimeRemaining(tutorial, progress),
+  );
 
   let status: 'not_started' | 'in_progress' | 'completed';
   if (percentage === 0) {
@@ -222,9 +246,10 @@ export function generateProgressSummary(progress: TutorialProgress, tutorial: Tu
     status = 'in_progress';
   }
 
-  const nextStep = status === 'in_progress' && progress.currentStep < tutorial.steps.length
-    ? tutorial.steps[progress.currentStep]
-    : undefined;
+  const nextStep =
+    status === 'in_progress' && progress.currentStep < tutorial.steps.length
+      ? tutorial.steps[progress.currentStep]
+      : undefined;
 
   return {
     status,
@@ -238,7 +263,10 @@ export function generateProgressSummary(progress: TutorialProgress, tutorial: Tu
 /**
  * 解析教程内容中的变量
  */
-export function parseTutorialContent(content: string, variables: Record<string, any> = {}): string {
+export function parseTutorialContent(
+  content: string,
+  variables: Record<string, any> = {},
+): string {
   return content.replace(/\{\{(\w+)\}\}/g, (match, key) => {
     return variables[key] || match;
   });
@@ -293,7 +321,7 @@ export function validateTutorial(tutorial: Tutorial): {
 export function createTutorialEvent(
   type: TutorialEvent['type'],
   data: any,
-  tutorialId?: string
+  tutorialId?: string,
 ): TutorialEvent {
   return {
     type,
@@ -307,7 +335,7 @@ export function createTutorialEvent(
  */
 export function calculateLearningStats(
   allProgress: TutorialProgress[],
-  tutorials: Tutorial[]
+  tutorials: Tutorial[],
 ): {
   totalTutorials: number;
   completedTutorials: number;
@@ -317,20 +345,32 @@ export function calculateLearningStats(
   achievements: number;
 } {
   const completedTutorials = allProgress.filter(
-    progress => progress.completedSteps.length >= tutorials.find(t => t.steps.length === progress.totalSteps)?.steps.length
+    (progress) =>
+      progress.completedSteps.length >=
+      tutorials.find((t) => t.steps.length === progress.totalSteps)?.steps
+        .length,
   ).length;
 
   const totalCompletionRate = allProgress.reduce((sum, progress, index) => {
     const tutorial = tutorials[index];
-    const rate = tutorial ? (progress.completedSteps.length / tutorial.steps.length) * 100 : 0;
+    const rate = tutorial
+      ? (progress.completedSteps.length / tutorial.steps.length) * 100
+      : 0;
     return sum + rate;
   }, 0);
 
-  const averageCompletionRate = allProgress.length > 0 ? totalCompletionRate / allProgress.length : 0;
+  const averageCompletionRate =
+    allProgress.length > 0 ? totalCompletionRate / allProgress.length : 0;
 
-  const totalTimeSpent = allProgress.reduce((sum, progress) => sum + progress.totalTimeSpent, 0);
+  const totalTimeSpent = allProgress.reduce(
+    (sum, progress) => sum + progress.totalTimeSpent,
+    0,
+  );
 
-  const achievements = allProgress.reduce((sum, progress) => sum + progress.achievements.length, 0);
+  const achievements = allProgress.reduce(
+    (sum, progress) => sum + progress.achievements.length,
+    0,
+  );
 
   // 简化统计：假设所有教程都是同一个类别
   const mostStudiedCategory = '量化交易策略';

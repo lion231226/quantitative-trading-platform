@@ -3,13 +3,9 @@
 import ErrorBoundary from '@/components/ui/error-boundary';
 
 interface ErrorProviderProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export function ErrorProvider({ children }: ErrorProviderProps) {
-  return (
-    <ErrorBoundary>
-      {children}
-    </ErrorBoundary>
-  );
+  return <ErrorBoundary>{children}</ErrorBoundary>;
 }

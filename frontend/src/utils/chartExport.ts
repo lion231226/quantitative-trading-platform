@@ -1,20 +1,23 @@
+import { ChartConfiguration, Chart as ChartJS } from 'chart.js';
 import {
-  ChartConfiguration,
-  Chart as ChartJS,
-} from 'chart.js';
-import { ChartData, ExportFormat, ExportOptions, MovingAverageLine, PricePoint } from '@/types/chart.types';
+  ChartData,
+  ExportFormat,
+  ExportOptions,
+  MovingAverageLine,
+  PricePoint,
+} from '@/types/chart.types';
 
 // 导出配置接口
 export interface ChartExportConfig {
-  format: ExportFormat
-  width?: number
-  height?: number
-  backgroundColor?: string
-  quality?: number // 图片质量 0-1
-  filename?: string
-  includeSignals?: boolean
-  includeMovingAverages?: boolean
-  includeMetadata?: boolean
+  format: ExportFormat;
+  width?: number;
+  height?: number;
+  backgroundColor?: string;
+  quality?: number; // 图片质量 0-1
+  filename?: string;
+  includeSignals?: boolean;
+  includeMovingAverages?: boolean;
+  includeMetadata?: boolean;
 }
 
 // 默认导出配置
@@ -55,13 +58,15 @@ export class ChartExporter {
 
       datasets.forEach((dataset: any, index: number) => {
         if (dataset.label === '价格') {
-          prices.push(...dataset.data.map((point: any) => ({
-            timestamp: point.x,
-            close: point.y,
-            open: point.y,
-            high: point.y,
-            low: point.y,
-          })));
+          prices.push(
+            ...dataset.data.map((point: any) => ({
+              timestamp: point.x,
+              close: point.y,
+              open: point.y,
+              high: point.y,
+              low: point.y,
+            })),
+          );
         } else if (dataset.label?.startsWith('MA')) {
           const maData = dataset.data.map((point: any) => ({
             timestamp: point.x,
@@ -70,13 +75,18 @@ export class ChartExporter {
             period: parseInt(dataset.label.replace('MA', '')) || 0,
           }));
           movingAverages.push(...maData);
-        } else if (dataset.label === '买入信号' || dataset.label === '卖出信号') {
-          signals.push(...dataset.data.map((point: any) => ({
-            timestamp: point.x,
-            price: point.y,
-            type: dataset.label === '买入信号' ? 'buy' : 'sell',
-            strategy: 'MA Strategy',
-          })));
+        } else if (
+          dataset.label === '买入信号' ||
+          dataset.label === '卖出信号'
+        ) {
+          signals.push(
+            ...dataset.data.map((point: any) => ({
+              timestamp: point.x,
+              price: point.y,
+              type: dataset.label === '买入信号' ? 'buy' : 'sell',
+              strategy: 'MA Strategy',
+            })),
+          );
         }
       });
 
@@ -106,7 +116,10 @@ export class ChartExporter {
       }
 
       // 导出图片
-      const dataURL = canvas.toDataURL(`image/${this.config.format}`, this.config.quality);
+      const dataURL = canvas.toDataURL(
+        `image/${this.config.format}`,
+        this.config.quality,
+      );
 
       // 恢复原始背景色
       canvas.style.backgroundColor = originalBg;
@@ -170,15 +183,19 @@ export class ChartExporter {
     if (!this.originalData) return null;
 
     const exportData = {
-      metadata: this.config.includeMetadata ? {
-        exportedAt: new Date().toISOString(),
-        format: this.config.format,
-        includeSignals: this.config.includeSignals,
-        includeMovingAverages: this.config.includeMovingAverages,
-      } : undefined,
+      metadata: this.config.includeMetadata
+        ? {
+            exportedAt: new Date().toISOString(),
+            format: this.config.format,
+            includeSignals: this.config.includeSignals,
+            includeMovingAverages: this.config.includeMovingAverages,
+          }
+        : undefined,
       data: {
         prices: this.originalData.prices,
-        movingAverages: this.config.includeMovingAverages ? this.originalData.movingAverages : [],
+        movingAverages: this.config.includeMovingAverages
+          ? this.originalData.movingAverages
+          : [],
         signals: this.config.includeSignals ? this.originalData.signals : [],
       },
     };
@@ -200,7 +217,7 @@ export class ChartExporter {
       const allData: any[] = [];
 
       // 添加价格数据
-      this.originalData.prices.forEach(price => {
+      this.originalData.prices.forEach((price) => {
         allData.push({
           date: price.timestamp,
           price: price.close,
@@ -213,9 +230,11 @@ export class ChartExporter {
 
       // 添加移动平均线数据
       if (this.config.includeMovingAverages) {
-        this.originalData.movingAverages.forEach(point => {
-          const existingRow = allData.find(row =>
-            new Date(row.date).getTime() === new Date(point.timestamp).getTime()
+        this.originalData.movingAverages.forEach((point) => {
+          const existingRow = allData.find(
+            (row) =>
+              new Date(row.date).getTime() ===
+              new Date(point.timestamp).getTime(),
           );
           if (existingRow) {
             const periodKey = `ma${point.period}`;
@@ -226,9 +245,11 @@ export class ChartExporter {
 
       // 添加信号数据
       if (this.config.includeSignals) {
-        this.originalData.signals.forEach(signal => {
-          const existingRow = allData.find(row =>
-            new Date(row.date).getTime() === new Date(signal.timestamp).getTime()
+        this.originalData.signals.forEach((signal) => {
+          const existingRow = allData.find(
+            (row) =>
+              new Date(row.date).getTime() ===
+              new Date(signal.timestamp).getTime(),
           );
           if (existingRow) {
             existingRow.signalType = signal.type;
@@ -238,9 +259,11 @@ export class ChartExporter {
       }
 
       // 转换为CSV行
-      allData.forEach(row => {
+      allData.forEach((row) => {
         const date = new Date(row.date).toLocaleDateString('zh-CN');
-        rows.push(`${date},${row.price},${row.ma5 || ''},${row.ma20 || ''},${row.signalType},${row.signalPrice}`);
+        rows.push(
+          `${date},${row.price},${row.ma5 || ''},${row.ma20 || ''},${row.signalType},${row.signalPrice}`,
+        );
       });
 
       return rows.join('\n');
@@ -285,7 +308,7 @@ export class ChartExporter {
   static quickExport(
     chart: ChartJS,
     format: ExportFormat = 'png',
-    filename?: string
+    filename?: string,
   ): Promise<boolean> {
     const exporter = new ChartExporter(chart, { format, filename });
     return exporter.exportAsFile();
@@ -295,7 +318,7 @@ export class ChartExporter {
   static async batchExport(
     charts: ChartJS[],
     formats: ExportFormat[],
-    filenamePrefix?: string
+    filenamePrefix?: string,
   ): Promise<boolean[]> {
     const results: boolean[] = [];
 
@@ -307,11 +330,15 @@ export class ChartExporter {
           ? `${filenamePrefix}_${Date.now()}.${format}`
           : undefined;
 
-        const success = await ChartExporter.quickExport(chart, format, filename);
+        const success = await ChartExporter.quickExport(
+          chart,
+          format,
+          filename,
+        );
         chartResults.push(success);
       }
 
-      results.push(chartResults.every(r => r));
+      results.push(chartResults.every((r) => r));
     }
 
     return results;
@@ -321,7 +348,7 @@ export class ChartExporter {
 // 工具函数：创建导出器
 export const createChartExporter = (
   chart: ChartJS,
-  config?: Partial<ChartExportConfig>
+  config?: Partial<ChartExportConfig>,
 ): ChartExporter => {
   return new ChartExporter(chart, config);
 };
@@ -332,7 +359,9 @@ export const getSupportedFormats = (): ExportFormat[] => {
 };
 
 // 工具函数：验证导出配置
-export const validateExportConfig = (config: Partial<ChartExportConfig>): boolean => {
+export const validateExportConfig = (
+  config: Partial<ChartExportConfig>,
+): boolean => {
   const supportedFormats = getSupportedFormats();
 
   if (config.format && !supportedFormats.includes(config.format)) {

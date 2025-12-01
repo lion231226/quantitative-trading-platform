@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   ParameterChangeEvent,
@@ -19,26 +25,26 @@ import {
 import { validateAllParameters } from '@/utils/parameterHelpers';
 
 interface UseRealTimeParametersOptions {
-  symbol: string
-  startDate: string
-  endDate: string
-  initialParameters?: StrategyParameters
-  onParametersChange?: (parameters: StrategyParameters) => void
-  onParameterChange?: (event: ParameterChangeEvent) => void
-  onValidationError?: (validation: ParameterValidationResult) => void
-  onResultUpdate?: (result: StrategyResult | null) => void
-  debounceDelay?: number
-  enableRealTime?: boolean
+  symbol: string;
+  startDate: string;
+  endDate: string;
+  initialParameters?: StrategyParameters;
+  onParametersChange?: (parameters: StrategyParameters) => void;
+  onParameterChange?: (event: ParameterChangeEvent) => void;
+  onValidationError?: (validation: ParameterValidationResult) => void;
+  onResultUpdate?: (result: StrategyResult | null) => void;
+  debounceDelay?: number;
+  enableRealTime?: boolean;
 }
 
 interface RealTimeParametersState {
-  parameters: StrategyParameters
-  isLoading: boolean
-  isUpdating: boolean
-  error: string | null
-  validationResult: ParameterValidationResult | null
-  strategyResult: StrategyResult | null
-  lastUpdate: Date | null
+  parameters: StrategyParameters;
+  isLoading: boolean;
+  isUpdating: boolean;
+  error: string | null;
+  validationResult: ParameterValidationResult | null;
+  strategyResult: StrategyResult | null;
+  lastUpdate: Date | null;
 }
 
 export function useRealTimeParameters({
@@ -77,20 +83,17 @@ export function useRealTimeParameters({
   // 初始化服务
   useEffect(() => {
     if (!changeDetectorRef.current) {
-      changeDetectorRef.current = new ParameterChangeDetector(
-        (params) => {
-          setState(prev => ({
-            ...prev,
-            parameters: params,
-            isUpdating: true,
-            error: null,
-            lastUpdate: new Date(),
-          }));
+      changeDetectorRef.current = new ParameterChangeDetector((params) => {
+        setState((prev) => ({
+          ...prev,
+          parameters: params,
+          isUpdating: true,
+          error: null,
+          lastUpdate: new Date(),
+        }));
 
-          onParametersChange?.(params);
-        },
-        debounceDelay,
-      );
+        onParametersChange?.(params);
+      }, debounceDelay);
     }
 
     if (!preloaderRef.current && ParameterServicePreloader) {
@@ -123,7 +126,7 @@ export function useRealTimeParameters({
   // 处理验证结果
   useEffect(() => {
     if (validationQuery.data) {
-      setState(prev => ({ ...prev, validationResult: validationQuery.data }));
+      setState((prev) => ({ ...prev, validationResult: validationQuery.data }));
       onValidationError?.(validationQuery.data);
     }
   }, [validationQuery.data, onValidationError]);
@@ -131,7 +134,7 @@ export function useRealTimeParameters({
   // 处理策略结果
   useEffect(() => {
     if (strategyResultQuery.data) {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         strategyResult: strategyResultQuery.data,
         isUpdating: false,
@@ -144,7 +147,7 @@ export function useRealTimeParameters({
   // 处理策略结果错误
   useEffect(() => {
     if (strategyResultQuery.error) {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         error: strategyResultQuery.error?.message || '策略分析失败',
         isUpdating: false,
@@ -153,33 +156,42 @@ export function useRealTimeParameters({
   }, [strategyResultQuery.error]);
 
   // 更新参数
-  const updateParameters = useCallback((newParameters: StrategyParameters) => {
-    if (changeDetectorRef.current) {
-      const hasChanged = changeDetectorRef.current.detectChange(newParameters);
+  const updateParameters = useCallback(
+    (newParameters: StrategyParameters) => {
+      if (changeDetectorRef.current) {
+        const hasChanged =
+          changeDetectorRef.current.detectChange(newParameters);
 
-      if (hasChanged && onParameterChange) {
-        // 通知参数变化事件
-        const changedKey = Object.keys(newParameters).find(
-          key => newParameters[key as keyof StrategyParameters] !== state.parameters[key as keyof StrategyParameters],
-        ) as keyof StrategyParameters;
+        if (hasChanged && onParameterChange) {
+          // 通知参数变化事件
+          const changedKey = Object.keys(newParameters).find(
+            (key) =>
+              newParameters[key as keyof StrategyParameters] !==
+              state.parameters[key as keyof StrategyParameters],
+          ) as keyof StrategyParameters;
 
-        if (changedKey) {
-          onParameterChange({
-            parameter: changedKey,
-            value: newParameters[changedKey],
-            previousValue: state.parameters[changedKey],
-          });
+          if (changedKey) {
+            onParameterChange({
+              parameter: changedKey,
+              value: newParameters[changedKey],
+              previousValue: state.parameters[changedKey],
+            });
+          }
         }
       }
-    }
-  }, [state.parameters, onParameterChange]);
+    },
+    [state.parameters, onParameterChange],
+  );
 
   // 立即更新参数（跳过防抖）
-  const updateParametersImmediate = useCallback((newParameters: StrategyParameters) => {
-    if (changeDetectorRef.current) {
-      changeDetectorRef.current.detectChange(newParameters, true);
-    }
-  }, []);
+  const updateParametersImmediate = useCallback(
+    (newParameters: StrategyParameters) => {
+      if (changeDetectorRef.current) {
+        changeDetectorRef.current.detectChange(newParameters, true);
+      }
+    },
+    [],
+  );
 
   // 重置参数
   const resetParameters = useCallback(() => {
@@ -193,7 +205,7 @@ export function useRealTimeParameters({
 
   // 切换实时更新
   const toggleRealTime = useCallback(() => {
-    setIsRealTimeEnabled(prev => !prev);
+    setIsRealTimeEnabled((prev) => !prev);
   }, []);
 
   // 强制刷新
@@ -205,11 +217,19 @@ export function useRealTimeParameters({
   }, [strategyResultQuery]);
 
   // 预加载参数组合
-  const preloadParameters = useCallback((parameters: StrategyParameters) => {
-    if (preloaderRef.current) {
-      preloaderRef.current.preloadStrategyResults(symbol, parameters, startDate, endDate);
-    }
-  }, [symbol, startDate, endDate]);
+  const preloadParameters = useCallback(
+    (parameters: StrategyParameters) => {
+      if (preloaderRef.current) {
+        preloaderRef.current.preloadStrategyResults(
+          symbol,
+          parameters,
+          startDate,
+          endDate,
+        );
+      }
+    },
+    [symbol, startDate, endDate],
+  );
 
   // 清除缓存
   const clearCache = useCallback(() => {
@@ -224,7 +244,7 @@ export function useRealTimeParameters({
   // 手动验证参数
   const validateParameters = useCallback(() => {
     const validation = validateAllParameters(state.parameters);
-    setState(prev => ({ ...prev, validationResult: validation }));
+    setState((prev) => ({ ...prev, validationResult: validation }));
     return validation;
   }, [state.parameters]);
 
@@ -260,7 +280,10 @@ export function useRealTimeParameters({
   }, [state.error, state.validationResult]);
 
   // 状态汇总
-  const isLoading = state.isLoading || validationQuery.isLoading || strategyResultQuery.isLoading;
+  const isLoading =
+    state.isLoading ||
+    validationQuery.isLoading ||
+    strategyResultQuery.isLoading;
   const isUpdating = state.isUpdating || strategyResultQuery.isFetching;
 
   return {
@@ -304,28 +327,42 @@ export function useParameterComparison(
   startDate: string,
   endDate: string,
 ) {
-  const comparisonQuery = useParameterComparison(groups, symbol, startDate, endDate);
+  const comparisonQuery = useParameterComparison(
+    groups,
+    symbol,
+    startDate,
+    endDate,
+  );
 
-  const addComparisonGroup = useCallback((newGroup: ParameterGroup) => {
-    const updatedGroups = [...groups, newGroup];
-    // 触发重新查询
-    comparisonQuery.refetch();
-    return updatedGroups;
-  }, [groups, comparisonQuery]);
+  const addComparisonGroup = useCallback(
+    (newGroup: ParameterGroup) => {
+      const updatedGroups = [...groups, newGroup];
+      // 触发重新查询
+      comparisonQuery.refetch();
+      return updatedGroups;
+    },
+    [groups, comparisonQuery],
+  );
 
-  const removeComparisonGroup = useCallback((groupId: string) => {
-    const updatedGroups = groups.filter(group => group.id !== groupId);
-    comparisonQuery.refetch();
-    return updatedGroups;
-  }, [groups, comparisonQuery]);
+  const removeComparisonGroup = useCallback(
+    (groupId: string) => {
+      const updatedGroups = groups.filter((group) => group.id !== groupId);
+      comparisonQuery.refetch();
+      return updatedGroups;
+    },
+    [groups, comparisonQuery],
+  );
 
-  const updateComparisonGroup = useCallback((groupId: string, updates: Partial<ParameterGroup>) => {
-    const updatedGroups = groups.map(group =>
-      group.id === groupId ? { ...group, ...updates } : group,
-    );
-    comparisonQuery.refetch();
-    return updatedGroups;
-  }, [groups, comparisonQuery]);
+  const updateComparisonGroup = useCallback(
+    (groupId: string, updates: Partial<ParameterGroup>) => {
+      const updatedGroups = groups.map((group) =>
+        group.id === groupId ? { ...group, ...updates } : group,
+      );
+      comparisonQuery.refetch();
+      return updatedGroups;
+    },
+    [groups, comparisonQuery],
+  );
 
   return {
     ...comparisonQuery,
@@ -344,7 +381,12 @@ export function useParameterOptimization(
   startDate: string,
   endDate: string,
 ) {
-  const suggestionsQuery = useOptimizationSuggestions(symbol, baseParameters, startDate, endDate);
+  const suggestionsQuery = useOptimizationSuggestions(
+    symbol,
+    baseParameters,
+    startDate,
+    endDate,
+  );
 
   const applySuggestion = useCallback((suggestion: any) => {
     return suggestion.parameters;
@@ -353,7 +395,9 @@ export function useParameterOptimization(
   const dismissSuggestion = useCallback((suggestionId: string) => {
     // 可以在本地存储中记录已忽略的建议
     if (typeof window !== 'undefined') {
-      const dismissed = JSON.parse(localStorage.getItem('dismissed_suggestions') || '[]');
+      const dismissed = JSON.parse(
+        localStorage.getItem('dismissed_suggestions') || '[]',
+      );
       dismissed.push(suggestionId);
       localStorage.setItem('dismissed_suggestions', JSON.stringify(dismissed));
     }

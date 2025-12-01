@@ -1,12 +1,14 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { VarietySelector } from '../VarietySelector';
 import * as api from '@/lib/api';
 
 // Mock API
 jest.mock('@/lib/api');
-const mockMarketDataAPI = api.marketDataAPI as jest.Mocked<typeof api.marketDataAPI>;
+const mockMarketDataAPI = api.marketDataAPI as jest.Mocked<
+  typeof api.marketDataAPI
+>;
 
 // Mock symbols data
 const mockSymbols = [
@@ -14,7 +16,7 @@ const mockSymbols = [
   { symbol: 'I2410', name: '铁矿石2410', sector: '金属', exchange: 'DCE' },
   { symbol: 'CU2410', name: '沪铜2410', sector: '金属', exchange: 'SHFE' },
   { symbol: 'SC2410', name: '原油2410', sector: '能源', exchange: 'INE' },
-  { symbol: 'TA2410', name: 'PTA2410', sector: '化工', exchange: 'ZCE' }
+  { symbol: 'TA2410', name: 'PTA2410', sector: '化工', exchange: 'ZCE' },
 ];
 
 describe('VarietySelector', () => {
@@ -30,11 +32,13 @@ describe('VarietySelector', () => {
       <VarietySelector
         onVarietiesSelect={mockOnVarietiesSelect}
         selectedVarieties={[]}
-      />
+      />,
     );
 
     expect(screen.getByText('多品种选择')).toBeInTheDocument();
-    expect(screen.getByText('选择要对比分析的期货品种（最多10个）')).toBeInTheDocument();
+    expect(
+      screen.getByText('选择要对比分析的期货品种（最多10个）'),
+    ).toBeInTheDocument();
     expect(screen.getByText('加载期货品种...')).toBeInTheDocument();
   });
 
@@ -43,7 +47,7 @@ describe('VarietySelector', () => {
       <VarietySelector
         onVarietiesSelect={mockOnVarietiesSelect}
         selectedVarieties={[]}
-      />
+      />,
     );
 
     await waitFor(() => {
@@ -59,7 +63,7 @@ describe('VarietySelector', () => {
       <VarietySelector
         onVarietiesSelect={mockOnVarietiesSelect}
         selectedVarieties={[]}
-      />
+      />,
     );
 
     await waitFor(() => {
@@ -82,7 +86,7 @@ describe('VarietySelector', () => {
       <VarietySelector
         onVarietiesSelect={mockOnVarietiesSelect}
         selectedVarieties={[]}
-      />
+      />,
     );
 
     await waitFor(() => {
@@ -108,7 +112,7 @@ describe('VarietySelector', () => {
       <VarietySelector
         onVarietiesSelect={mockOnVarietiesSelect}
         selectedVarieties={[]}
-      />
+      />,
     );
 
     await waitFor(() => {
@@ -116,7 +120,8 @@ describe('VarietySelector', () => {
     });
 
     // Type in search box
-    const searchInput = screen.getByPlaceholderText('搜索期货品种代码或名称...');
+    const searchInput =
+      screen.getByPlaceholderText('搜索期货品种代码或名称...');
     fireEvent.change(searchInput, { target: { value: '螺纹' } });
 
     // Should only show matching results
@@ -131,7 +136,7 @@ describe('VarietySelector', () => {
       <VarietySelector
         onVarietiesSelect={mockOnVarietiesSelect}
         selectedVarieties={[]}
-      />
+      />,
     );
 
     await waitFor(() => {
@@ -142,7 +147,11 @@ describe('VarietySelector', () => {
     const metalQuickSelect = screen.getByTitle('快速选择金属品种');
     fireEvent.click(metalQuickSelect);
 
-    expect(mockOnVarietiesSelect).toHaveBeenCalledWith(['RB2410', 'I2410', 'CU2410']);
+    expect(mockOnVarietiesSelect).toHaveBeenCalledWith([
+      'RB2410',
+      'I2410',
+      'CU2410',
+    ]);
   });
 
   it('displays selected varieties correctly', async () => {
@@ -150,7 +159,7 @@ describe('VarietySelector', () => {
       <VarietySelector
         onVarietiesSelect={mockOnVarietiesSelect}
         selectedVarieties={['RB2410', 'I2410']}
-      />
+      />,
     );
 
     await waitFor(() => {
@@ -172,7 +181,7 @@ describe('VarietySelector', () => {
       <VarietySelector
         onVarietiesSelect={mockOnVarietiesSelect}
         selectedVarieties={['RB2410', 'I2410']}
-      />
+      />,
     );
 
     await waitFor(() => {
@@ -192,7 +201,7 @@ describe('VarietySelector', () => {
         onVarietiesSelect={mockOnVarietiesSelect}
         selectedVarieties={['RB2410', 'I2410', 'CU2410']} // Already selected 3
         maxSelection={3}
-      />
+      />,
     );
 
     await waitFor(() => {
@@ -214,7 +223,7 @@ describe('VarietySelector', () => {
       <VarietySelector
         onVarietiesSelect={mockOnVarietiesSelect}
         selectedVarieties={[]}
-      />
+      />,
     );
 
     await waitFor(() => {
@@ -232,7 +241,7 @@ describe('VarietySelector', () => {
       <VarietySelector
         onVarietiesSelect={mockOnVarietiesSelect}
         selectedVarieties={[]}
-      />
+      />,
     );
 
     await waitFor(() => {
@@ -255,7 +264,7 @@ describe('VarietySelector', () => {
       <VarietySelector
         onVarietiesSelect={mockOnVarietiesSelect}
         selectedVarieties={['RB2410', 'I2410']}
-      />
+      />,
     );
 
     await waitFor(() => {
@@ -268,7 +277,7 @@ describe('VarietySelector', () => {
       <VarietySelector
         onVarietiesSelect={mockOnVarietiesSelect}
         selectedVarieties={[]}
-      />
+      />,
     );
 
     await waitFor(() => {
@@ -276,7 +285,8 @@ describe('VarietySelector', () => {
     });
 
     // Search for non-existent variety
-    const searchInput = screen.getByPlaceholderText('搜索期货品种代码或名称...');
+    const searchInput =
+      screen.getByPlaceholderText('搜索期货品种代码或名称...');
     fireEvent.change(searchInput, { target: { value: '不存在的品种' } });
 
     expect(screen.getByText('未找到匹配的期货品种')).toBeInTheDocument();

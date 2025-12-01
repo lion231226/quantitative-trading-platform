@@ -1,38 +1,52 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useCallback, useMemo, useState } from 'react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { VarietySelector } from './VarietySelector';
 import { ComparisonResults } from './ComparisonResults';
 import { Loading } from '@/components/ui/loading';
-import { useVarietyComparison, useComparisonCache } from '@/services/comparisonService';
-import { VarietyComparisonRequest, VarietyComparisonResult } from '@/types/comparison.types';
+import {
+  useComparisonCache,
+  useVarietyComparison,
+} from '@/services/comparisonService';
+import {
+  VarietyComparisonRequest,
+  VarietyComparisonResult,
+} from '@/types/comparison.types';
 import { cn } from '@/lib/utils';
 
 interface MultiVarietyComparisonProps {
-  className?: string
-  initialRequest?: Partial<VarietyComparisonRequest>
-  onConfigChange?: (config: VarietyComparisonRequest) => void
+  className?: string;
+  initialRequest?: Partial<VarietyComparisonRequest>;
+  onConfigChange?: (config: VarietyComparisonRequest) => void;
 }
 
 export function MultiVarietyComparison({
   className,
   initialRequest,
-  onConfigChange
+  onConfigChange,
 }: MultiVarietyComparisonProps) {
   // 状态管理
-  const [selectedVarieties, setSelectedVarieties] = useState<string[]>(initialRequest?.symbols || []);
+  const [selectedVarieties, setSelectedVarieties] = useState<string[]>(
+    initialRequest?.symbols || [],
+  );
   const [requestConfig, setRequestConfig] = useState<VarietyComparisonRequest>({
     symbols: initialRequest?.symbols || [],
     startDate: initialRequest?.startDate || getDefaultStartDate(),
     endDate: initialRequest?.endDate || getDefaultEndDate(),
     strategy: initialRequest?.strategy || {
       name: 'SMA',
-      params: { short_window: 5, long_window: 20 }
-    }
+      params: { short_window: 5, long_window: 20 },
+    },
   });
 
   // 对比分析查询
@@ -40,47 +54,56 @@ export function MultiVarietyComparison({
     data: comparisonResults,
     isLoading: isComparisonLoading,
     error: comparisonError,
-    refetch: runComparison
+    refetch: runComparison,
   } = useVarietyComparison(requestConfig);
 
   // 缓存管理
   const { clearComparisonCache } = useComparisonCache();
 
   // 处理品种选择变化
-  const handleVarietiesSelect = useCallback((varieties: string[]) => {
-    setSelectedVarieties(varieties);
+  const handleVarietiesSelect = useCallback(
+    (varieties: string[]) => {
+      setSelectedVarieties(varieties);
 
-    const newConfig = {
-      ...requestConfig,
-      symbols: varieties
-    };
+      const newConfig = {
+        ...requestConfig,
+        symbols: varieties,
+      };
 
-    setRequestConfig(newConfig);
-    onConfigChange?.(newConfig);
-  }, [requestConfig, onConfigChange]);
+      setRequestConfig(newConfig);
+      onConfigChange?.(newConfig);
+    },
+    [requestConfig, onConfigChange],
+  );
 
   // 处理策略配置变化
-  const handleStrategyChange = useCallback((strategy: VarietyComparisonRequest['strategy']) => {
-    const newConfig = {
-      ...requestConfig,
-      strategy
-    };
+  const handleStrategyChange = useCallback(
+    (strategy: VarietyComparisonRequest['strategy']) => {
+      const newConfig = {
+        ...requestConfig,
+        strategy,
+      };
 
-    setRequestConfig(newConfig);
-    onConfigChange?.(newConfig);
-  }, [requestConfig, onConfigChange]);
+      setRequestConfig(newConfig);
+      onConfigChange?.(newConfig);
+    },
+    [requestConfig, onConfigChange],
+  );
 
   // 处理日期范围变化
-  const handleDateRangeChange = useCallback((startDate: string, endDate: string) => {
-    const newConfig = {
-      ...requestConfig,
-      startDate,
-      endDate
-    };
+  const handleDateRangeChange = useCallback(
+    (startDate: string, endDate: string) => {
+      const newConfig = {
+        ...requestConfig,
+        startDate,
+        endDate,
+      };
 
-    setRequestConfig(newConfig);
-    onConfigChange?.(newConfig);
-  }, [requestConfig, onConfigChange]);
+      setRequestConfig(newConfig);
+      onConfigChange?.(newConfig);
+    },
+    [requestConfig, onConfigChange],
+  );
 
   // 运行对比分析
   const handleRunComparison = useCallback(() => {
@@ -100,8 +123,8 @@ export function MultiVarietyComparison({
       endDate: getDefaultEndDate(),
       strategy: {
         name: 'SMA',
-        params: { short_window: 5, long_window: 20 }
-      }
+        params: { short_window: 5, long_window: 20 },
+      },
     };
 
     setSelectedVarieties([]);
@@ -114,12 +137,12 @@ export function MultiVarietyComparison({
   const stats = useMemo(() => {
     if (!comparisonResults) return null;
 
-    const successful = comparisonResults.results.filter(r => !r.error).length;
-    const failed = comparisonResults.results.filter(r => r.error).length;
+    const successful = comparisonResults.results.filter((r) => !r.error).length;
+    const failed = comparisonResults.results.filter((r) => r.error).length;
     const bestPerformer = comparisonResults.results
-      .filter(r => !r.error)
+      .filter((r) => !r.error)
       .reduce((best, current) =>
-        current.metrics.totalReturn > best.metrics.totalReturn ? current : best
+        current.metrics.totalReturn > best.metrics.totalReturn ? current : best,
       );
 
     return {
@@ -128,7 +151,7 @@ export function MultiVarietyComparison({
       failed,
       bestPerformer,
       averageReturn: comparisonResults.summary.averageReturn,
-      averageSharpe: comparisonResults.summary.averageSharpeRatio
+      averageSharpe: comparisonResults.summary.averageSharpeRatio,
     };
   }, [comparisonResults]);
 
@@ -230,7 +253,9 @@ export function MultiVarietyComparison({
             <div className="text-center">
               <div className="text-red-600 font-medium mb-2">对比分析失败</div>
               <div className="text-sm text-red-500">
-                {comparisonError instanceof Error ? comparisonError.message : '未知错误'}
+                {comparisonError instanceof Error
+                  ? comparisonError.message
+                  : '未知错误'}
               </div>
               <Button
                 variant="outline"
@@ -253,15 +278,21 @@ export function MultiVarietyComparison({
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{stats.total}</div>
+                <div className="text-2xl font-bold text-blue-600">
+                  {stats.total}
+                </div>
                 <div className="text-sm text-muted-foreground">总品种数</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">{stats.successful}</div>
+                <div className="text-2xl font-bold text-green-600">
+                  {stats.successful}
+                </div>
                 <div className="text-sm text-muted-foreground">成功分析</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-red-600">{stats.failed}</div>
+                <div className="text-2xl font-bold text-red-600">
+                  {stats.failed}
+                </div>
                 <div className="text-sm text-muted-foreground">分析失败</div>
               </div>
               <div className="text-center">
@@ -274,7 +305,9 @@ export function MultiVarietyComparison({
                 <div className="text-2xl font-bold text-orange-600">
                   {stats.averageSharpe.toFixed(2)}
                 </div>
-                <div className="text-sm text-muted-foreground">平均夏普比率</div>
+                <div className="text-sm text-muted-foreground">
+                  平均夏普比率
+                </div>
               </div>
             </div>
 
@@ -282,13 +315,19 @@ export function MultiVarietyComparison({
               <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium text-green-800">最佳表现品种</div>
+                    <div className="font-medium text-green-800">
+                      最佳表现品种
+                    </div>
                     <div className="text-sm text-green-600">
                       {stats.bestPerformer.symbol} - {stats.bestPerformer.name}
                     </div>
                   </div>
-                  <Badge variant="secondary" className="bg-green-100 text-green-800">
-                    {(stats.bestPerformer.metrics.totalReturn * 100).toFixed(1)}%
+                  <Badge
+                    variant="secondary"
+                    className="bg-green-100 text-green-800"
+                  >
+                    {(stats.bestPerformer.metrics.totalReturn * 100).toFixed(1)}
+                    %
                   </Badge>
                 </div>
               </div>
@@ -326,7 +365,7 @@ export function MultiVarietyComparison({
 // 策略配置面板组件
 function StrategyConfigPanel({
   strategy,
-  onChange
+  onChange,
 }: {
   strategy: VarietyComparisonRequest['strategy'];
   onChange: (strategy: VarietyComparisonRequest['strategy']) => void;
@@ -354,10 +393,15 @@ function StrategyConfigPanel({
             <input
               type="number"
               value={strategy.params.window || 20}
-              onChange={(e) => onChange({
-                ...strategy,
-                params: { ...strategy.params, window: parseInt(e.target.value) }
-              })}
+              onChange={(e) =>
+                onChange({
+                  ...strategy,
+                  params: {
+                    ...strategy.params,
+                    window: parseInt(e.target.value),
+                  },
+                })
+              }
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
               min="5"
               max="200"
@@ -373,10 +417,15 @@ function StrategyConfigPanel({
             <input
               type="number"
               value={strategy.params.short_window || 5}
-              onChange={(e) => onChange({
-                ...strategy,
-                params: { ...strategy.params, short_window: parseInt(e.target.value) }
-              })}
+              onChange={(e) =>
+                onChange({
+                  ...strategy,
+                  params: {
+                    ...strategy.params,
+                    short_window: parseInt(e.target.value),
+                  },
+                })
+              }
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
               min="1"
               max="50"
@@ -387,10 +436,15 @@ function StrategyConfigPanel({
             <input
               type="number"
               value={strategy.params.long_window || 20}
-              onChange={(e) => onChange({
-                ...strategy,
-                params: { ...strategy.params, long_window: parseInt(e.target.value) }
-              })}
+              onChange={(e) =>
+                onChange({
+                  ...strategy,
+                  params: {
+                    ...strategy.params,
+                    long_window: parseInt(e.target.value),
+                  },
+                })
+              }
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
               min="10"
               max="200"
@@ -406,7 +460,7 @@ function StrategyConfigPanel({
 function DateRangePanel({
   startDate,
   endDate,
-  onChange
+  onChange,
 }: {
   startDate: string;
   endDate: string;
@@ -417,7 +471,7 @@ function DateRangePanel({
     { label: '最近3个月', days: 90 },
     { label: '最近6个月', days: 180 },
     { label: '最近1年', days: 365 },
-    { label: '今年至今', days: 'ytd' }
+    { label: '今年至今', days: 'ytd' },
   ];
 
   const handlePresetClick = (days: number | string) => {
@@ -432,7 +486,7 @@ function DateRangePanel({
 
     onChange(
       start.toISOString().split('T')[0],
-      end.toISOString().split('T')[0]
+      end.toISOString().split('T')[0],
     );
   };
 

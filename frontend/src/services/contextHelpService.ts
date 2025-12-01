@@ -1,5 +1,10 @@
-import { UseQueryOptions, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useMemo, useRef, useEffect } from 'react';
+import {
+  UseQueryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 // 帮助内容类型定义
 export interface HelpContent {
@@ -62,7 +67,8 @@ export interface UserBehavior {
 // 查询键常量
 export const CONTEXT_HELP_QUERY_KEYS = {
   helpContent: ['helpContent'] as const,
-  recommendations: (context: UserContext) => ['helpRecommendations', context] as const,
+  recommendations: (context: UserContext) =>
+    ['helpRecommendations', context] as const,
   search: (query: string) => ['helpSearch', query] as const,
   userBehavior: ['userBehavior'] as const,
   popularContent: ['popularContent'] as const,
@@ -90,7 +96,8 @@ const HELP_CONTENT_DATABASE: HelpContent[] = [
   {
     id: 'ma-concept',
     title: '移动平均线 (MA)',
-    content: '移动平均线是技术分析中最常用的指标之一，通过计算特定周期内的平均价格来平滑价格波动，帮助识别趋势方向。简单移动平均线(SMA)给予所有价格相同权重，而指数移动平均线(EMA)给予近期价格更高权重。',
+    content:
+      '移动平均线是技术分析中最常用的指标之一，通过计算特定周期内的平均价格来平滑价格波动，帮助识别趋势方向。简单移动平均线(SMA)给予所有价格相同权重，而指数移动平均线(EMA)给予近期价格更高权重。',
     category: 'concept',
     relatedTerms: ['SMA', 'EMA', '趋势', '技术指标', '价格平滑'],
     priority: 'high',
@@ -103,11 +110,15 @@ const HELP_CONTENT_DATABASE: HelpContent[] = [
   {
     id: 'golden-cross',
     title: '金叉信号',
-    content: '当短期移动平均线从下向上穿过长期移动平均线时，形成金叉，通常被视为买入信号。这表明短期趋势正在转为上升，市场动能可能增强。金叉的有效性需要结合成交量和市场环境来验证。',
+    content:
+      '当短期移动平均线从下向上穿过长期移动平均线时，形成金叉，通常被视为买入信号。这表明短期趋势正在转为上升，市场动能可能增强。金叉的有效性需要结合成交量和市场环境来验证。',
     category: 'concept',
     relatedTerms: ['买入信号', '趋势反转', '移动平均线', '技术分析'],
     priority: 'high',
-    context: { component: 'GoldenDeathCrossAnimation', action: 'identify_signal' },
+    context: {
+      component: 'GoldenDeathCrossAnimation',
+      action: 'identify_signal',
+    },
     difficulty: 'beginner',
     estimatedReadTime: 30,
     viewCount: 0,
@@ -116,11 +127,15 @@ const HELP_CONTENT_DATABASE: HelpContent[] = [
   {
     id: 'death-cross',
     title: '死叉信号',
-    content: '当短期移动平均线从上向下穿过长期移动平均线时，形成死叉，通常被视为卖出信号。这表明短期趋势正在转为下降，投资者应该考虑减仓或止损。死叉信号在下跌市场中通常更可靠。',
+    content:
+      '当短期移动平均线从上向下穿过长期移动平均线时，形成死叉，通常被视为卖出信号。这表明短期趋势正在转为下降，投资者应该考虑减仓或止损。死叉信号在下跌市场中通常更可靠。',
     category: 'concept',
     relatedTerms: ['卖出信号', '趋势反转', '移动平均线', '风险控制'],
     priority: 'high',
-    context: { component: 'GoldenDeathCrossAnimation', action: 'identify_signal' },
+    context: {
+      component: 'GoldenDeathCrossAnimation',
+      action: 'identify_signal',
+    },
     difficulty: 'beginner',
     estimatedReadTime: 30,
     viewCount: 0,
@@ -131,7 +146,8 @@ const HELP_CONTENT_DATABASE: HelpContent[] = [
   {
     id: 'backtesting',
     title: '策略回测',
-    content: '回测是使用历史数据验证交易策略有效性的过程。通过模拟过去的市场条件来评估策略的表现，包括收益率、最大回撤、夏普比率等关键指标。回测结果仅供参考，实盘表现可能存在差异。',
+    content:
+      '回测是使用历史数据验证交易策略有效性的过程。通过模拟过去的市场条件来评估策略的表现，包括收益率、最大回撤、夏普比率等关键指标。回测结果仅供参考，实盘表现可能存在差异。',
     category: 'feature',
     relatedTerms: ['历史数据', '策略验证', '性能评估', '模拟交易'],
     priority: 'medium',
@@ -143,7 +159,8 @@ const HELP_CONTENT_DATABASE: HelpContent[] = [
   {
     id: 'parameter-optimization',
     title: '参数优化',
-    content: '通过系统性地测试不同参数组合来找到策略的最优参数设置。常用的方法包括网格搜索、遗传算法等。需要注意避免过度拟合，即参数在历史数据上表现很好，但在未来数据上表现较差。',
+    content:
+      '通过系统性地测试不同参数组合来找到策略的最优参数设置。常用的方法包括网格搜索、遗传算法等。需要注意避免过度拟合，即参数在历史数据上表现很好，但在未来数据上表现较差。',
     category: 'feature',
     relatedTerms: ['参数调优', '策略优化', '过度拟合', '网格搜索'],
     priority: 'medium',
@@ -157,7 +174,8 @@ const HELP_CONTENT_DATABASE: HelpContent[] = [
   {
     id: 'risk-management',
     title: '风险管理',
-    content: '风险管理是量化交易中最重要的环节，包括止损设置、仓位控制和资金管理。建议单笔交易风险不超过总资金的2%，设置合理的止损位，避免情绪化交易，保持交易纪律。',
+    content:
+      '风险管理是量化交易中最重要的环节，包括止损设置、仓位控制和资金管理。建议单笔交易风险不超过总资金的2%，设置合理的止损位，避免情绪化交易，保持交易纪律。',
     category: 'best-practice',
     relatedTerms: ['止损', '仓位控制', '资金管理', '交易纪律'],
     priority: 'high',
@@ -169,7 +187,8 @@ const HELP_CONTENT_DATABASE: HelpContent[] = [
   {
     id: 'portfolio-diversification',
     title: '投资组合多样化',
-    content: '通过在不同资产类别、行业和地区之间分散投资来降低整体风险。多样化可以减少单一资产对组合表现的影响，提高风险调整后的收益。建议不要将所有资金投入单一策略或资产。',
+    content:
+      '通过在不同资产类别、行业和地区之间分散投资来降低整体风险。多样化可以减少单一资产对组合表现的影响，提高风险调整后的收益。建议不要将所有资金投入单一策略或资产。',
     category: 'best-practice',
     relatedTerms: ['分散投资', '风险控制', '资产配置', '相关性'],
     priority: 'medium',
@@ -183,7 +202,8 @@ const HELP_CONTENT_DATABASE: HelpContent[] = [
   {
     id: 'common-mistakes',
     title: '常见交易错误',
-    content: '新手常犯的错误包括：过度交易、追涨杀跌、没有止损计划、情绪化决策、忽视风险管理、过度依赖单一指标等。了解这些错误有助于建立良好的交易习惯。',
+    content:
+      '新手常犯的错误包括：过度交易、追涨杀跌、没有止损计划、情绪化决策、忽视风险管理、过度依赖单一指标等。了解这些错误有助于建立良好的交易习惯。',
     category: 'troubleshooting',
     relatedTerms: ['交易错误', '新手陷阱', '心理偏差', '交易纪律'],
     priority: 'high',
@@ -195,7 +215,8 @@ const HELP_CONTENT_DATABASE: HelpContent[] = [
   {
     id: 'data-quality-issues',
     title: '数据质量问题',
-    content: '在使用市场数据进行回测时，需要注意数据质量问题：缺失数据、错误数据、未来函数、幸存者偏差等。低质量的数据会导致回测结果不可靠，影响策略实盘表现。',
+    content:
+      '在使用市场数据进行回测时，需要注意数据质量问题：缺失数据、错误数据、未来函数、幸存者偏差等。低质量的数据会导致回测结果不可靠，影响策略实盘表现。',
     category: 'troubleshooting',
     relatedTerms: ['数据清洗', '缺失数据', '未来函数', '幸存者偏差'],
     priority: 'medium',
@@ -203,7 +224,7 @@ const HELP_CONTENT_DATABASE: HelpContent[] = [
     estimatedReadTime: 70,
     viewCount: 0,
     helpfulRating: 0,
-  }
+  },
 ];
 
 // 本地存储键名
@@ -247,13 +268,13 @@ class ContextHelpService {
     try {
       localStorage.setItem(
         STORAGE_KEYS.USER_BEHAVIOR,
-        JSON.stringify(this.userBehaviorCache)
+        JSON.stringify(this.userBehaviorCache),
       );
 
       const ratingsObject = Object.fromEntries(this.contentRatingsCache);
       localStorage.setItem(
         STORAGE_KEYS.CONTENT_RATINGS,
-        JSON.stringify(ratingsObject)
+        JSON.stringify(ratingsObject),
       );
     } catch (error) {
       console.warn('Failed to save user data to storage:', error);
@@ -285,22 +306,32 @@ class ContextHelpService {
     }
 
     // 基于用户操作分析意图
-    let userIntent: 'learning' | 'troubleshooting' | 'optimization' | 'exploration' = 'learning';
+    let userIntent:
+      | 'learning'
+      | 'troubleshooting'
+      | 'optimization'
+      | 'exploration' = 'learning';
 
-    if (userContext.userAction.toLowerCase().includes('error') ||
-        userContext.errorsEncountered.length > 0) {
+    if (
+      userContext.userAction.toLowerCase().includes('error') ||
+      userContext.errorsEncountered.length > 0
+    ) {
       userIntent = 'troubleshooting';
-    } else if (userContext.userAction.toLowerCase().includes('optimize') ||
-               userContext.userAction.toLowerCase().includes('improve')) {
+    } else if (
+      userContext.userAction.toLowerCase().includes('optimize') ||
+      userContext.userAction.toLowerCase().includes('improve')
+    ) {
       userIntent = 'optimization';
-    } else if (userContext.userAction.toLowerCase().includes('explore') ||
-               userContext.timeSpentOnStep < 30) {
+    } else if (
+      userContext.userAction.toLowerCase().includes('explore') ||
+      userContext.timeSpentOnStep < 30
+    ) {
       userIntent = 'exploration';
     }
 
     // 分析复杂度
-    const complexity = complexityScore <= 2 ? 'low' :
-                      complexityScore <= 4 ? 'medium' : 'high';
+    const complexity =
+      complexityScore <= 2 ? 'low' : complexityScore <= 4 ? 'medium' : 'high';
 
     // 计算置信度
     let confidence = 0.3; // 基础置信度
@@ -314,17 +345,17 @@ class ContextHelpService {
       relevantTopics: [...new Set(relevantTopics)],
       userIntent,
       complexity,
-      confidence
+      confidence,
     };
   }
 
   // 智能推荐算法
   generateRecommendations(
     userContext: UserContext,
-    maxResults: number = 5
+    maxResults: number = 5,
   ): RecommendationResult[] {
     const contextAnalysis = this.analyzeContext(userContext);
-    const scored = HELP_CONTENT_DATABASE.map(content => {
+    const scored = HELP_CONTENT_DATABASE.map((content) => {
       let score = 0;
       let reason = '';
 
@@ -345,11 +376,12 @@ class ContextHelpService {
       }
 
       // 3. 基于相关主题匹配的评分
-      const topicMatches = contextAnalysis.relevantTopics.filter(topic =>
-        content.relatedTerms.some(term =>
-          term.toLowerCase().includes(topic.toLowerCase()) ||
-          topic.toLowerCase().includes(term.toLowerCase())
-        )
+      const topicMatches = contextAnalysis.relevantTopics.filter((topic) =>
+        content.relatedTerms.some(
+          (term) =>
+            term.toLowerCase().includes(topic.toLowerCase()) ||
+            topic.toLowerCase().includes(term.toLowerCase()),
+        ),
       ).length;
       score += topicMatches * 2;
 
@@ -358,20 +390,37 @@ class ContextHelpService {
       }
 
       // 4. 基于用户意图的评分
-      if (contextAnalysis.userIntent === 'troubleshooting' && content.category === 'troubleshooting') {
+      if (
+        contextAnalysis.userIntent === 'troubleshooting' &&
+        content.category === 'troubleshooting'
+      ) {
         score += 5;
         reason = reason ? `${reason}, 问题解决` : '问题解决';
-      } else if (contextAnalysis.userIntent === 'learning' && content.category === 'concept') {
+      } else if (
+        contextAnalysis.userIntent === 'learning' &&
+        content.category === 'concept'
+      ) {
         score += 4;
         reason = reason ? `${reason}, 学习相关` : '学习相关';
-      } else if (contextAnalysis.userIntent === 'optimization' && content.category === 'feature') {
+      } else if (
+        contextAnalysis.userIntent === 'optimization' &&
+        content.category === 'feature'
+      ) {
         score += 4;
         reason = reason ? `${reason}, 优化功能` : '优化功能';
       }
 
       // 5. 基于用户水平的内容适配评分
-      if (userContext.userLevel === 'beginner' && content.difficulty === 'beginner') score += 3;
-      else if (userContext.userLevel === 'intermediate' && content.difficulty !== 'advanced') score += 2;
+      if (
+        userContext.userLevel === 'beginner' &&
+        content.difficulty === 'beginner'
+      )
+        score += 3;
+      else if (
+        userContext.userLevel === 'intermediate' &&
+        content.difficulty !== 'advanced'
+      )
+        score += 2;
       else if (userContext.userLevel === 'advanced') score += 1;
 
       // 6. 基于个性化历史行为的评分
@@ -387,18 +436,30 @@ class ContextHelpService {
       }
 
       // 8. 基于复杂度匹配的评分
-      if (contextAnalysis.complexity === 'low' && content.difficulty === 'beginner') score += 2;
-      else if (contextAnalysis.complexity === 'medium' && content.difficulty === 'intermediate') score += 2;
-      else if (contextAnalysis.complexity === 'high' && content.difficulty === 'advanced') score += 2;
+      if (
+        contextAnalysis.complexity === 'low' &&
+        content.difficulty === 'beginner'
+      )
+        score += 2;
+      else if (
+        contextAnalysis.complexity === 'medium' &&
+        content.difficulty === 'intermediate'
+      )
+        score += 2;
+      else if (
+        contextAnalysis.complexity === 'high' &&
+        content.difficulty === 'advanced'
+      )
+        score += 2;
 
       // 计算置信度
-      const confidence = Math.min(contextAnalysis.confidence + (score / 30), 1.0);
+      const confidence = Math.min(contextAnalysis.confidence + score / 30, 1.0);
 
       return {
         content,
         relevanceScore: score,
         reason: reason || '通用推荐',
-        confidence
+        confidence,
       };
     });
 
@@ -415,7 +476,7 @@ class ContextHelpService {
     const searchLower = query.toLowerCase();
     const results: SearchResult[] = [];
 
-    HELP_CONTENT_DATABASE.forEach(content => {
+    HELP_CONTENT_DATABASE.forEach((content) => {
       let matchScore = 0;
       const matchedFields: string[] = [];
 
@@ -426,15 +487,17 @@ class ContextHelpService {
       }
 
       // 内容匹配
-      const contentMatches = (content.content.toLowerCase().match(new RegExp(searchLower, 'g')) || []).length;
+      const contentMatches = (
+        content.content.toLowerCase().match(new RegExp(searchLower, 'g')) || []
+      ).length;
       if (contentMatches > 0) {
         matchScore += contentMatches * 2;
         matchedFields.push('content');
       }
 
       // 相关术语匹配
-      const termMatches = content.relatedTerms.filter(term =>
-        term.toLowerCase().includes(searchLower)
+      const termMatches = content.relatedTerms.filter((term) =>
+        term.toLowerCase().includes(searchLower),
       ).length;
       if (termMatches > 0) {
         matchScore += termMatches * 5;
@@ -451,7 +514,7 @@ class ContextHelpService {
         results.push({
           content,
           matchScore,
-          matchedFields
+          matchedFields,
         });
       }
     });
@@ -482,7 +545,7 @@ class ContextHelpService {
     // 更新缓存
     this.queryClient.setQueryData(
       CONTEXT_HELP_QUERY_KEYS.userBehavior,
-      this.userBehaviorCache
+      this.userBehaviorCache,
     );
   }
 
@@ -493,7 +556,7 @@ class ContextHelpService {
     this.contentRatingsCache.set(contentId, rating);
 
     // 更新内容数据库中的评分
-    const content = HELP_CONTENT_DATABASE.find(c => c.id === contentId);
+    const content = HELP_CONTENT_DATABASE.find((c) => c.id === contentId);
     if (content) {
       content.helpfulRating = rating;
     }
@@ -506,8 +569,8 @@ class ContextHelpService {
     return [...HELP_CONTENT_DATABASE]
       .sort((a, b) => {
         // 综合考虑查看次数和用户评价
-        const scoreA = a.viewCount + (a.helpfulRating * 10);
-        const scoreB = b.viewCount + (b.helpfulRating * 10);
+        const scoreA = a.viewCount + a.helpfulRating * 10;
+        const scoreB = b.viewCount + b.helpfulRating * 10;
         return scoreB - scoreA;
       })
       .slice(0, limit);
@@ -520,7 +583,7 @@ class ContextHelpService {
 
   // 根据ID获取帮助内容
   getHelpContentById(id: string): HelpContent | undefined {
-    return HELP_CONTENT_DATABASE.find(content => content.id === id);
+    return HELP_CONTENT_DATABASE.find((content) => content.id === id);
   }
 }
 
@@ -541,7 +604,7 @@ export const useContextHelpService = () => {
 // 推荐内容 Hook
 export const useHelpRecommendations = (
   userContext: UserContext,
-  options?: UseQueryOptions<RecommendationResult[], Error>
+  options?: UseQueryOptions<RecommendationResult[], Error>,
 ) => {
   const contextHelpService = useContextHelpService();
 
@@ -557,7 +620,7 @@ export const useHelpRecommendations = (
 // 搜索 Hook
 export const useHelpSearch = (
   query: string,
-  options?: UseQueryOptions<SearchResult[], Error>
+  options?: UseQueryOptions<SearchResult[], Error>,
 ) => {
   const contextHelpService = useContextHelpService();
 
@@ -574,7 +637,7 @@ export const useHelpSearch = (
 // 热门内容 Hook
 export const usePopularContent = (
   limit: number = 5,
-  options?: UseQueryOptions<HelpContent[], Error>
+  options?: UseQueryOptions<HelpContent[], Error>,
 ) => {
   const contextHelpService = useContextHelpService();
 
@@ -610,7 +673,13 @@ export const useRateHelpContent = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ contentId, rating }: { contentId: string; rating: number }) => {
+    mutationFn: async ({
+      contentId,
+      rating,
+    }: {
+      contentId: string;
+      rating: number;
+    }) => {
       contextHelpService.rateHelpContent(contentId, rating);
       return { contentId, rating };
     },

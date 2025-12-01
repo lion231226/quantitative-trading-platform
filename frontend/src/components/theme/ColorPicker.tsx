@@ -1,15 +1,15 @@
-'use client'
+'use client';
 
-import React, { useState, useRef, useCallback } from 'react'
-import { Palette, Eye, EyeOff, RefreshCw } from 'lucide-react'
-import { useTheme } from './ThemeProvider'
-import { MarketColors } from '../../types/theme.types'
+import React, { useCallback, useRef, useState } from 'react';
+import { Eye, EyeOff, Palette, RefreshCw } from 'lucide-react';
+import { useTheme } from './ThemeProvider';
+import { MarketColors } from '../../types/theme.types';
 
 interface ColorPickerProps {
-  className?: string
-  showPreview?: boolean
-  showPresets?: boolean
-  onColorChange?: (color: MarketColors) => void
+  className?: string;
+  showPreview?: boolean;
+  showPresets?: boolean;
+  onColorChange?: (color: MarketColors) => void;
 }
 
 // 颜色预设
@@ -23,8 +23,8 @@ const COLOR_PRESETS = [
       grid: '#e5e7eb',
       background: '#ffffff',
       text: '#1f2937',
-      border: '#d1d5db'
-    }
+      border: '#d1d5db',
+    },
   },
   {
     name: '专业蓝橙',
@@ -35,8 +35,8 @@ const COLOR_PRESETS = [
       grid: '#e5e7eb',
       background: '#ffffff',
       text: '#1f2937',
-      border: '#d1d5db'
-    }
+      border: '#d1d5db',
+    },
   },
   {
     name: '护眼绿黄',
@@ -47,8 +47,8 @@ const COLOR_PRESETS = [
       grid: '#e5e7eb',
       background: '#ffffff',
       text: '#1f2937',
-      border: '#d1d5db'
-    }
+      border: '#d1d5db',
+    },
   },
   {
     name: '高对比黑白',
@@ -59,10 +59,10 @@ const COLOR_PRESETS = [
       grid: '#999999',
       background: '#f9fafb',
       text: '#111827',
-      border: '#6b7280'
-    }
-  }
-]
+      border: '#6b7280',
+    },
+  },
+];
 
 /**
  * 颜色选择器组件
@@ -71,82 +71,122 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
   className = '',
   showPreview = true,
   showPresets = true,
-  onColorChange
+  onColorChange,
 }) => {
-  const { currentTheme, applyCustomColors } = useTheme()
-  const [customColors, setCustomColors] = useState<MarketColors>(currentTheme.colors)
-  const [activeColorKey, setActiveColorKey] = useState<keyof MarketColors | null>(null)
-  const colorInputRef = useRef<HTMLInputElement>(null)
+  const { currentTheme, applyCustomColors } = useTheme();
+  const [customColors, setCustomColors] = useState<MarketColors>(
+    currentTheme.colors,
+  );
+  const [activeColorKey, setActiveColorKey] = useState<
+    keyof MarketColors | null
+  >(null);
+  const colorInputRef = useRef<HTMLInputElement>(null);
 
   // 颜色配置项
   const colorConfig = [
-    { key: 'bullish' as keyof MarketColors, label: '涨颜色', description: '上涨K线颜色' },
-    { key: 'bearish' as keyof MarketColors, label: '跌颜色', description: '下跌K线颜色' },
-    { key: 'volume' as keyof MarketColors, label: '成交量', description: '成交量柱状图颜色' },
-    { key: 'grid' as keyof MarketColors, label: '网格线', description: '图表网格线颜色' },
-    { key: 'background' as keyof MarketColors, label: '背景色', description: '图表背景颜色' },
-    { key: 'text' as keyof MarketColors, label: '文字色', description: '图表文字颜色' },
-    { key: 'border' as keyof MarketColors, label: '边框色', description: '图表边框颜色' }
-  ]
+    {
+      key: 'bullish' as keyof MarketColors,
+      label: '涨颜色',
+      description: '上涨K线颜色',
+    },
+    {
+      key: 'bearish' as keyof MarketColors,
+      label: '跌颜色',
+      description: '下跌K线颜色',
+    },
+    {
+      key: 'volume' as keyof MarketColors,
+      label: '成交量',
+      description: '成交量柱状图颜色',
+    },
+    {
+      key: 'grid' as keyof MarketColors,
+      label: '网格线',
+      description: '图表网格线颜色',
+    },
+    {
+      key: 'background' as keyof MarketColors,
+      label: '背景色',
+      description: '图表背景颜色',
+    },
+    {
+      key: 'text' as keyof MarketColors,
+      label: '文字色',
+      description: '图表文字颜色',
+    },
+    {
+      key: 'border' as keyof MarketColors,
+      label: '边框色',
+      description: '图表边框颜色',
+    },
+  ];
 
   // 处理颜色变化
-  const handleColorChange = useCallback((key: keyof MarketColors, color: string) => {
-    const newColors = { ...customColors, [key]: color }
-    setCustomColors(newColors)
-    onColorChange?.(newColors)
-  }, [customColors, onColorChange])
+  const handleColorChange = useCallback(
+    (key: keyof MarketColors, color: string) => {
+      const newColors = { ...customColors, [key]: color };
+      setCustomColors(newColors);
+      onColorChange?.(newColors);
+    },
+    [customColors, onColorChange],
+  );
 
   // 应用自定义颜色
   const handleApplyColors = useCallback(() => {
     applyCustomColors({
       enabled: true,
-      marketColors: customColors
-    })
-  }, [customColors, applyCustomColors])
+      marketColors: customColors,
+    });
+  }, [customColors, applyCustomColors]);
 
   // 重置为默认颜色
   const handleResetColors = useCallback(() => {
-    const defaultColors = currentTheme.colors
-    setCustomColors(defaultColors)
-    onColorChange?.(defaultColors)
-  }, [currentTheme.colors, onColorChange])
+    const defaultColors = currentTheme.colors;
+    setCustomColors(defaultColors);
+    onColorChange?.(defaultColors);
+  }, [currentTheme.colors, onColorChange]);
 
   // 应用预设
-  const handleApplyPreset = useCallback((preset: typeof COLOR_PRESETS[0]) => {
-    setCustomColors(preset.colors)
-    onColorChange?.(preset.colors)
-  }, [onColorChange])
+  const handleApplyPreset = useCallback(
+    (preset: (typeof COLOR_PRESETS)[0]) => {
+      setCustomColors(preset.colors);
+      onColorChange?.(preset.colors);
+    },
+    [onColorChange],
+  );
 
   // 验证颜色格式
   const isValidColor = (color: string): boolean => {
-    const colorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/
-    return colorRegex.test(color)
-  }
+    const colorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+    return colorRegex.test(color);
+  };
 
   // 计算对比度
   const calculateContrast = (color1: string, color2: string): number => {
     // 简化的对比度计算
     const getLuminance = (hex: string): number => {
-      const rgb = hexToRgb(hex)
-      return (0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b) / 255
-    }
+      const rgb = hexToRgb(hex);
+      return (0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b) / 255;
+    };
 
-    const lum1 = getLuminance(color1)
-    const lum2 = getLuminance(color2)
-    const brightest = Math.max(lum1, lum2)
-    const darkest = Math.min(lum1, lum2)
-    return (brightest + 0.05) / (darkest + 0.05)
-  }
+    const lum1 = getLuminance(color1);
+    const lum2 = getLuminance(color2);
+    const brightest = Math.max(lum1, lum2);
+    const darkest = Math.min(lum1, lum2);
+    return (brightest + 0.05) / (darkest + 0.05);
+  };
 
   // 十六进制转RGB
   const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-    return result ? {
-      r: parseInt(result[1], 16),
-      g: parseInt(result[2], 16),
-      b: parseInt(result[3], 16)
-    } : { r: 0, g: 0, b: 0 }
-  }
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result
+      ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16),
+        }
+      : { r: 0, g: 0, b: 0 };
+  };
 
   return (
     <div className={`color-picker ${className}`}>
@@ -203,7 +243,9 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
                     />
                   </div>
                 </div>
-                <div className="text-sm font-medium text-gray-900">{preset.name}</div>
+                <div className="text-sm font-medium text-gray-900">
+                  {preset.name}
+                </div>
               </button>
             ))}
           </div>
@@ -222,7 +264,9 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   {config.label}
                 </label>
-                <div className="text-xs text-gray-500">{config.description}</div>
+                <div className="text-xs text-gray-500">
+                  {config.description}
+                </div>
               </div>
               <div className="flex items-center space-x-2">
                 <div
@@ -235,19 +279,23 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
                   )}
                 </div>
                 <input
-                  ref={config.key === activeColorKey ? colorInputRef : undefined}
+                  ref={
+                    config.key === activeColorKey ? colorInputRef : undefined
+                  }
                   type="color"
                   value={customColors[config.key]}
-                  onChange={(e) => handleColorChange(config.key, e.target.value)}
+                  onChange={(e) =>
+                    handleColorChange(config.key, e.target.value)
+                  }
                   className="w-16 h-10 border border-gray-300 rounded cursor-pointer"
                 />
                 <input
                   type="text"
                   value={customColors[config.key]}
                   onChange={(e) => {
-                    const value = e.target.value
+                    const value = e.target.value;
                     if (value.length === 0 || isValidColor(value)) {
-                      handleColorChange(config.key, value || '#000000')
+                      handleColorChange(config.key, value || '#000000');
                     }
                   }}
                   placeholder="#000000"
@@ -268,53 +316,89 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
           <div className="grid grid-cols-2 gap-4">
             {/* 涨预览 */}
             <div>
-              <div className="text-sm font-medium text-gray-700 mb-1">上涨K线</div>
+              <div className="text-sm font-medium text-gray-700 mb-1">
+                上涨K线
+              </div>
               <div
                 className="h-12 rounded-lg border border-gray-300 flex items-center justify-center text-white font-bold"
                 style={{ backgroundColor: customColors.bullish }}
               >
                 涨
               </div>
-              <div className="text-xs text-gray-500 mt-1">{customColors.bullish}</div>
+              <div className="text-xs text-gray-500 mt-1">
+                {customColors.bullish}
+              </div>
             </div>
 
             {/* 跌预览 */}
             <div>
-              <div className="text-sm font-medium text-gray-700 mb-1">下跌K线</div>
+              <div className="text-sm font-medium text-gray-700 mb-1">
+                下跌K线
+              </div>
               <div
                 className="h-12 rounded-lg border border-gray-300 flex items-center justify-center text-white font-bold"
                 style={{ backgroundColor: customColors.bearish }}
               >
                 跌
               </div>
-              <div className="text-xs text-gray-500 mt-1">{customColors.bearish}</div>
+              <div className="text-xs text-gray-500 mt-1">
+                {customColors.bearish}
+              </div>
             </div>
           </div>
 
           {/* 对比度信息 */}
           <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-            <div className="text-sm font-medium text-gray-700 mb-2">对比度检查</div>
+            <div className="text-sm font-medium text-gray-700 mb-2">
+              对比度检查
+            </div>
             <div className="grid grid-cols-2 gap-4 text-xs">
               <div>
                 <span className="text-gray-600">文字对比度: </span>
-                <span className={
-                  calculateContrast(customColors.text, customColors.background) >= 4.5
-                    ? 'text-green-600'
-                    : 'text-red-600'
-                }>
-                  {calculateContrast(customColors.text, customColors.background).toFixed(2)}
-                  {calculateContrast(customColors.text, customColors.background) >= 4.5 ? ' ✓' : ' ⚠️'}
+                <span
+                  className={
+                    calculateContrast(
+                      customColors.text,
+                      customColors.background,
+                    ) >= 4.5
+                      ? 'text-green-600'
+                      : 'text-red-600'
+                  }
+                >
+                  {calculateContrast(
+                    customColors.text,
+                    customColors.background,
+                  ).toFixed(2)}
+                  {calculateContrast(
+                    customColors.text,
+                    customColors.background,
+                  ) >= 4.5
+                    ? ' ✓'
+                    : ' ⚠️'}
                 </span>
               </div>
               <div>
                 <span className="text-gray-600">涨跌对比度: </span>
-                <span className={
-                  calculateContrast(customColors.bullish, customColors.bearish) >= 3.0
-                    ? 'text-green-600'
-                    : 'text-red-600'
-                }>
-                  {calculateContrast(customColors.bullish, customColors.bearish).toFixed(2)}
-                  {calculateContrast(customColors.bullish, customColors.bearish) >= 3.0 ? ' ✓' : ' ⚠️'}
+                <span
+                  className={
+                    calculateContrast(
+                      customColors.bullish,
+                      customColors.bearish,
+                    ) >= 3.0
+                      ? 'text-green-600'
+                      : 'text-red-600'
+                  }
+                >
+                  {calculateContrast(
+                    customColors.bullish,
+                    customColors.bearish,
+                  ).toFixed(2)}
+                  {calculateContrast(
+                    customColors.bullish,
+                    customColors.bearish,
+                  ) >= 3.0
+                    ? ' ✓'
+                    : ' ⚠️'}
                 </span>
               </div>
             </div>
@@ -341,7 +425,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ColorPicker
+export default ColorPicker;

@@ -1,12 +1,12 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import {
-  MobileNavigation,
-  MobileContainer,
   MobileChartContainer,
-  MobileTable,
+  MobileContainer,
   MobileForm,
+  MobileNavigation,
+  MobileTable,
   ResponsiveLayout,
 } from '../MobileOptimizations';
 
@@ -119,7 +119,7 @@ describe('MobileContainer', () => {
     render(
       <MobileContainer>
         <div>Test Content</div>
-      </MobileContainer>
+      </MobileContainer>,
     );
 
     expect(screen.getByText('Test Content')).toBeInTheDocument();
@@ -129,7 +129,7 @@ describe('MobileContainer', () => {
     render(
       <MobileContainer className="custom-class">
         <div>Test Content</div>
-      </MobileContainer>
+      </MobileContainer>,
     );
 
     const container = screen.getByText('Test Content').parentElement;
@@ -140,12 +140,9 @@ describe('MobileContainer', () => {
 describe('MobileChartContainer', () => {
   it('renders title and description', () => {
     render(
-      <MobileChartContainer
-        title="Test Chart"
-        description="Test Description"
-      >
+      <MobileChartContainer title="Test Chart" description="Test Description">
         <div>Chart Content</div>
-      </MobileChartContainer>
+      </MobileChartContainer>,
     );
 
     expect(screen.getByText('Test Chart')).toBeInTheDocument();
@@ -160,7 +157,7 @@ describe('MobileChartContainer', () => {
         actions={<button>Action Button</button>}
       >
         <div>Chart Content</div>
-      </MobileChartContainer>
+      </MobileChartContainer>,
     );
 
     expect(screen.getByText('Action Button')).toBeInTheDocument();
@@ -190,7 +187,11 @@ describe('MobileTable', () => {
 
   it('applies custom className', () => {
     render(
-      <MobileTable data={testData} columns={columns} className="custom-class" />
+      <MobileTable
+        data={testData}
+        columns={columns}
+        className="custom-class"
+      />,
     );
 
     const table = screen.getByText('John').closest('[class*="custom-class"]');
@@ -204,7 +205,7 @@ describe('MobileForm', () => {
       <MobileForm>
         <input placeholder="Test Input" />
         <button>Submit</button>
-      </MobileForm>
+      </MobileForm>,
     );
 
     expect(screen.getByPlaceholderText('Test Input')).toBeInTheDocument();
@@ -215,7 +216,7 @@ describe('MobileForm', () => {
     render(
       <MobileForm className="custom-class">
         <div>Form Content</div>
-      </MobileForm>
+      </MobileForm>,
     );
 
     const form = screen.getByText('Form Content').parentElement;
@@ -226,12 +227,9 @@ describe('MobileForm', () => {
 describe('ResponsiveLayout', () => {
   it('renders header, sidebar, and content', () => {
     render(
-      <ResponsiveLayout
-        header={<div>Header</div>}
-        sidebar={<div>Sidebar</div>}
-      >
+      <ResponsiveLayout header={<div>Header</div>} sidebar={<div>Sidebar</div>}>
         <div>Main Content</div>
-      </ResponsiveLayout>
+      </ResponsiveLayout>,
     );
 
     expect(screen.getByText('Header')).toBeInTheDocument();
@@ -243,10 +241,12 @@ describe('ResponsiveLayout', () => {
     render(
       <ResponsiveLayout className="custom-class">
         <div>Content</div>
-      </ResponsiveLayout>
+      </ResponsiveLayout>,
     );
 
-    const layout = screen.getByText('Content').closest('[class*="custom-class"]');
+    const layout = screen
+      .getByText('Content')
+      .closest('[class*="custom-class"]');
     expect(layout).toBeInTheDocument();
   });
 });

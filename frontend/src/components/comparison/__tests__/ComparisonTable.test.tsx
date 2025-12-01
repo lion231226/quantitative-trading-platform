@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { ComparisonTable } from '../ComparisonTable';
 import { VarietyResult } from '@/types/comparison.types';
@@ -33,11 +33,11 @@ const mockResults: VarietyResult[] = [
       skewness: 0.3,
       kurtosis: 2.1,
       beta: 1.1,
-      alpha: 0.02
+      alpha: 0.02,
     },
     trades: [],
     equity: [],
-    signals: []
+    signals: [],
   },
   {
     symbol: 'I2410',
@@ -66,11 +66,11 @@ const mockResults: VarietyResult[] = [
       skewness: -0.2,
       kurtosis: 3.2,
       beta: 0.9,
-      alpha: -0.01
+      alpha: -0.01,
     },
     trades: [],
     equity: [],
-    signals: []
+    signals: [],
   },
   {
     symbol: 'SC2410',
@@ -81,30 +81,30 @@ const mockResults: VarietyResult[] = [
       totalReturn: 0.25,
       sharpeRatio: 1.8,
       maxDrawdown: -0.12,
-      volatility: 0.20,
-      winRate: 0.70,
+      volatility: 0.2,
+      winRate: 0.7,
       totalTrades: 30,
       profitFactor: 2.5,
-      annualizedReturn: 0.30,
+      annualizedReturn: 0.3,
       cagr: 0.28,
       downsideDeviation: 0.16,
       sortinoRatio: 2.0,
       calmarRatio: 2.5,
       winningTrades: 21,
       losingTrades: 9,
-      averageWin: 0.030,
-      averageLoss: -0.020,
+      averageWin: 0.03,
+      averageLoss: -0.02,
       averageTrade: 0.015,
       var95: -0.04,
       skewness: 0.1,
       kurtosis: 2.8,
       beta: 1.3,
-      alpha: 0.05
+      alpha: 0.05,
     },
     trades: [],
     equity: [],
-    signals: []
-  }
+    signals: [],
+  },
 ];
 
 describe('ComparisonTable', () => {
@@ -176,7 +176,8 @@ describe('ComparisonTable', () => {
     render(<ComparisonTable results={mockResults} />);
 
     // Type in search box
-    const searchInput = screen.getByPlaceholderText('搜索品种代码、名称或版块...');
+    const searchInput =
+      screen.getByPlaceholderText('搜索品种代码、名称或版块...');
     fireEvent.change(searchInput, { target: { value: 'RB' } });
 
     // Should only show RB2410
@@ -212,7 +213,8 @@ describe('ComparisonTable', () => {
     render(<ComparisonTable results={mockResults} />);
 
     // Search for specific variety
-    const searchInput = screen.getByPlaceholderText('搜索品种代码、名称或版块...');
+    const searchInput =
+      screen.getByPlaceholderText('搜索品种代码、名称或版块...');
     fireEvent.change(searchInput, { target: { value: 'RB' } });
 
     expect(screen.getByText('显示 1 / 3 个品种')).toBeInTheDocument();
@@ -228,7 +230,7 @@ describe('ComparisonTable', () => {
     const mockLink = {
       href: '',
       download: '',
-      click: jest.fn()
+      click: jest.fn(),
     };
     jest.spyOn(document, 'createElement').mockReturnValue(mockLink as any);
 
@@ -255,7 +257,8 @@ describe('ComparisonTable', () => {
     render(<ComparisonTable results={mockResults} />);
 
     // Search for non-existent variety
-    const searchInput = screen.getByPlaceholderText('搜索品种代码、名称或版块...');
+    const searchInput =
+      screen.getByPlaceholderText('搜索品种代码、名称或版块...');
     fireEvent.change(searchInput, { target: { value: '不存在的品种' } });
 
     expect(screen.getByText('没有找到匹配的品种')).toBeInTheDocument();
@@ -277,7 +280,9 @@ describe('ComparisonTable', () => {
   it('hides filter when filterable prop is false', () => {
     render(<ComparisonTable results={mockResults} filterable={false} />);
 
-    expect(screen.queryByPlaceholderText('搜索品种代码、名称或版块...')).not.toBeInTheDocument();
+    expect(
+      screen.queryByPlaceholderText('搜索品种代码、名称或版块...'),
+    ).not.toBeInTheDocument();
     expect(screen.queryByText('全部')).not.toBeInTheDocument();
   });
 

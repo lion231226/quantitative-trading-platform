@@ -1,5 +1,12 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor, cleanup, act } from '@testing-library/react';
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { UserPreferences } from '../UserPreferences';
 import { StrategyParameters } from '@/types/parameter.types';
@@ -26,11 +33,15 @@ const createLocalStorageMock = () => {
     setItem: jest.fn((key: string, value: string) => {
       store[key] = value;
     }),
-    removeItem: jest.fn((key: string) => { delete store[key]; }),
-    clear: jest.fn(() => {
-      Object.keys(store).forEach(key => delete store[key]);
+    removeItem: jest.fn((key: string) => {
+      delete store[key];
     }),
-    get length() { return Object.keys(store).length; },
+    clear: jest.fn(() => {
+      Object.keys(store).forEach((key) => delete store[key]);
+    }),
+    get length() {
+      return Object.keys(store).length;
+    },
     key: jest.fn((index: number) => Object.keys(store)[index] || null),
     _getStore: () => ({ ...store }),
   };
@@ -42,7 +53,6 @@ Object.defineProperty(window, 'localStorage', { value: mockLocalStorage });
 // Mock URL.createObjectURL
 global.URL.createObjectURL = jest.fn(() => 'mock-url');
 global.URL.revokeObjectURL = jest.fn();
-
 
 // Setup and cleanup before each test
 beforeEach(() => {
@@ -86,32 +96,51 @@ describe('UserPreferences', () => {
 
   it('should load preferences from localStorage', async () => {
     const mockPreferences = {
-      defaultParameters: { movingAveragePeriod: 30, stopLoss: 7, takeProfit: 15 },
+      defaultParameters: {
+        movingAveragePeriod: 30,
+        stopLoss: 7,
+        takeProfit: 15,
+      },
       autoSave: false,
       showAdvanced: true,
-      chartPreferences: { showGrid: false, showVolume: true, animationDuration: 500 },
+      chartPreferences: {
+        showGrid: false,
+        showVolume: true,
+        animationDuration: 500,
+      },
     };
 
     // Set up the mock to return our preferences when getItem is called
-    mockLocalStorage.setItem('strategy_user_preferences', JSON.stringify(mockPreferences));
+    mockLocalStorage.setItem(
+      'strategy_user_preferences',
+      JSON.stringify(mockPreferences),
+    );
     mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockPreferences));
 
     // Wait for localStorage to be fully processed
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
     render(<UserPreferences {...mockProps} />);
 
-    await waitFor(() => {
-      expect(screen.getByDisplayValue('30')).toBeInTheDocument(); // moving average period
-      expect(screen.getByDisplayValue('7')).toBeInTheDocument(); // stop loss
-      expect(screen.getByDisplayValue('15')).toBeInTheDocument(); // take profit
-    }, { timeout: 5000 });
+    await waitFor(
+      () => {
+        expect(screen.getByDisplayValue('30')).toBeInTheDocument(); // moving average period
+        expect(screen.getByDisplayValue('7')).toBeInTheDocument(); // stop loss
+        expect(screen.getByDisplayValue('15')).toBeInTheDocument(); // take profit
+      },
+      { timeout: 5000 },
+    );
   });
 
   it('should update default parameters correctly', async () => {
     const onParametersChange = jest.fn();
 
-    render(<UserPreferences {...mockProps} onParametersChange={onParametersChange} />);
+    render(
+      <UserPreferences
+        {...mockProps}
+        onParametersChange={onParametersChange}
+      />,
+    );
 
     // Since DOM events are problematic in the current test environment,
     // let's test the localStorage functionality directly
@@ -135,16 +164,21 @@ describe('UserPreferences', () => {
     };
 
     // Simulate the real preferences saving (what should happen when updateDefaultParameters is called)
-    mockLocalStorage.setItem('strategy_user_preferences', JSON.stringify(mockPreferences));
+    mockLocalStorage.setItem(
+      'strategy_user_preferences',
+      JSON.stringify(mockPreferences),
+    );
 
     // Verify the localStorage was called correctly
     expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
       'strategy_user_preferences',
-      expect.stringContaining('"movingAveragePeriod":25')
+      expect.stringContaining('"movingAveragePeriod":25'),
     );
 
     // Verify the mock was called exactly once for this key
-    const calls = mockLocalStorage.setItem.mock.calls.filter(call => call[0] === 'strategy_user_preferences');
+    const calls = mockLocalStorage.setItem.mock.calls.filter(
+      (call) => call[0] === 'strategy_user_preferences',
+    );
     expect(calls).toHaveLength(1);
 
     // Verify the content contains the expected data
@@ -180,17 +214,20 @@ describe('UserPreferences', () => {
     };
 
     // 模拟保存图表偏好更新
-    mockLocalStorage.setItem('strategy_user_preferences', JSON.stringify(chartPreferencesUpdate));
+    mockLocalStorage.setItem(
+      'strategy_user_preferences',
+      JSON.stringify(chartPreferencesUpdate),
+    );
 
     // 验证localStorage调用
     expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
       'strategy_user_preferences',
-      expect.stringContaining('"showGrid":false')
+      expect.stringContaining('"showGrid":false'),
     );
 
     expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
       'strategy_user_preferences',
-      expect.stringContaining('"animationDuration":500')
+      expect.stringContaining('"animationDuration":500'),
     );
   });
 
@@ -220,12 +257,15 @@ describe('UserPreferences', () => {
     };
 
     // 模拟保存自动保存设置更新
-    mockLocalStorage.setItem('strategy_user_preferences', JSON.stringify(autoSaveUpdate));
+    mockLocalStorage.setItem(
+      'strategy_user_preferences',
+      JSON.stringify(autoSaveUpdate),
+    );
 
     // 验证localStorage调用
     expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
       'strategy_user_preferences',
-      expect.stringContaining('"autoSave":false')
+      expect.stringContaining('"autoSave":false'),
     );
   });
 
@@ -270,24 +310,32 @@ describe('UserPreferences', () => {
     };
 
     // 模拟导出配置保存
-    mockLocalStorage.setItem('strategy_user_preferences_export', JSON.stringify(exportData));
+    mockLocalStorage.setItem(
+      'strategy_user_preferences_export',
+      JSON.stringify(exportData),
+    );
 
     // 验证导出功能
     expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
       'strategy_user_preferences_export',
-      expect.stringContaining('"exportedAt"')
+      expect.stringContaining('"exportedAt"'),
     );
 
     expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
       'strategy_user_preferences_export',
-      expect.stringContaining('"version":"1.0.0"')
+      expect.stringContaining('"version":"1.0.0"'),
     );
   });
 
   it('should import configuration correctly', async () => {
     const onParametersChange = jest.fn();
 
-    render(<UserPreferences {...mockProps} onParametersChange={onParametersChange} />);
+    render(
+      <UserPreferences
+        {...mockProps}
+        onParametersChange={onParametersChange}
+      />,
+    );
 
     // Wait for component to load
     await waitFor(() => {
@@ -322,7 +370,12 @@ describe('UserPreferences', () => {
   it('should reset to defaults correctly', async () => {
     const onParametersChange = jest.fn();
 
-    render(<UserPreferences {...mockProps} onParametersChange={onParametersChange} />);
+    render(
+      <UserPreferences
+        {...mockProps}
+        onParametersChange={onParametersChange}
+      />,
+    );
 
     // Mock window.confirm after render
     window.confirm = jest.fn(() => true);
@@ -348,7 +401,12 @@ describe('UserPreferences', () => {
   it('should not reset when user cancels confirmation', async () => {
     const onParametersChange = jest.fn();
 
-    render(<UserPreferences {...mockProps} onParametersChange={onParametersChange} />);
+    render(
+      <UserPreferences
+        {...mockProps}
+        onParametersChange={onParametersChange}
+      />,
+    );
 
     // Mock window.confirm after render
     window.confirm = jest.fn(() => false);
@@ -387,9 +445,12 @@ describe('UserPreferences', () => {
     fireEvent.click(saveButton);
 
     // Check that save was called (any call to localStorage for preferences)
-    await waitFor(() => {
-      expect(mockLocalStorage.setItem).toHaveBeenCalled();
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        expect(mockLocalStorage.setItem).toHaveBeenCalled();
+      },
+      { timeout: 3000 },
+    );
   });
 
   it('should display backup history correctly', async () => {
@@ -398,15 +459,26 @@ describe('UserPreferences', () => {
       {
         timestamp: '2023-01-01T00:00:00.000Z',
         preferences: { autoSave: true, showAdvanced: false },
-        currentParameters: { movingAveragePeriod: 15, stopLoss: 5.0, takeProfit: 10.0 },
+        currentParameters: {
+          movingAveragePeriod: 15,
+          stopLoss: 5.0,
+          takeProfit: 10.0,
+        },
       },
       {
         timestamp: '2023-01-02T00:00:00.000Z',
         preferences: { autoSave: false, showAdvanced: true },
-        currentParameters: { movingAveragePeriod: 25, stopLoss: 7.0, takeProfit: 15.0 },
+        currentParameters: {
+          movingAveragePeriod: 25,
+          stopLoss: 7.0,
+          takeProfit: 15.0,
+        },
       },
     ];
-    mockLocalStorage.setItem('strategy_backup_history', JSON.stringify(backupHistory));
+    mockLocalStorage.setItem(
+      'strategy_backup_history',
+      JSON.stringify(backupHistory),
+    );
 
     render(<UserPreferences {...mockProps} />);
 
@@ -422,29 +494,50 @@ describe('UserPreferences', () => {
   it('should show loading state initially', async () => {
     // Mock localStorage to simulate initial loading with valid data
     const mockPreferences = {
-      defaultParameters: { movingAveragePeriod: 25, stopLoss: 6.0, takeProfit: 12.0 },
+      defaultParameters: {
+        movingAveragePeriod: 25,
+        stopLoss: 6.0,
+        takeProfit: 12.0,
+      },
       autoSave: true,
       showAdvanced: false,
-      chartPreferences: { showGrid: true, showVolume: false, animationDuration: 300 },
+      chartPreferences: {
+        showGrid: true,
+        showVolume: false,
+        animationDuration: 300,
+      },
     };
 
     // Set up initial localStorage data
-    mockLocalStorage.setItem('strategy_user_preferences', JSON.stringify(mockPreferences));
+    mockLocalStorage.setItem(
+      'strategy_user_preferences',
+      JSON.stringify(mockPreferences),
+    );
     mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockPreferences));
 
     render(<UserPreferences {...mockProps} />);
 
     // Check that component renders and loads preferences
-    await waitFor(() => {
-      expect(screen.getByText('用户偏好设置')).toBeInTheDocument();
-      expect(mockLocalStorage.getItem).toHaveBeenCalledWith('strategy_user_preferences');
-    }, { timeout: 5000 });
+    await waitFor(
+      () => {
+        expect(screen.getByText('用户偏好设置')).toBeInTheDocument();
+        expect(mockLocalStorage.getItem).toHaveBeenCalledWith(
+          'strategy_user_preferences',
+        );
+      },
+      { timeout: 5000 },
+    );
   });
 
   // Additional simplified interaction tests
   it('should handle parameter change interactions', async () => {
     const onParametersChange = jest.fn();
-    render(<UserPreferences {...mockProps} onParametersChange={onParametersChange} />);
+    render(
+      <UserPreferences
+        {...mockProps}
+        onParametersChange={onParametersChange}
+      />,
+    );
 
     await waitFor(() => {
       expect(screen.getByText('默认参数设置')).toBeInTheDocument();
@@ -518,9 +611,12 @@ describe('UserPreferences', () => {
     const advancedToggle = screen.getByText('显示高级选项');
     fireEvent.click(advancedToggle);
 
-    await waitFor(() => {
-      // Should show advanced settings panel or updated UI
-      expect(screen.getByText('显示高级选项')).toBeInTheDocument();
-    }, { timeout: 5000 });
+    await waitFor(
+      () => {
+        // Should show advanced settings panel or updated UI
+        expect(screen.getByText('显示高级选项')).toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
   });
 });

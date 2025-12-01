@@ -1,18 +1,18 @@
-'use client'
+'use client';
 
-import React, { useMemo } from 'react'
-import { PerformanceMetrics } from '../../types/kline.types'
-import { useTheme } from '../theme/ThemeProvider'
+import React, { useMemo } from 'react';
+import { PerformanceMetrics } from '../../types/kline.types';
+import { useTheme } from '../theme/ThemeProvider';
 
 interface PerformanceMetricsPanelProps {
   metricsData: Array<{
-    curveId: string
-    curveName: string
-    metrics: PerformanceMetrics
-  }>
-  className?: string
-  showDetails?: boolean
-  compact?: boolean
+    curveId: string;
+    curveName: string;
+    metrics: PerformanceMetrics;
+  }>;
+  className?: string;
+  showDetails?: boolean;
+  compact?: boolean;
 }
 
 /**
@@ -23,30 +23,37 @@ const PerformanceMetricsPanel: React.FC<PerformanceMetricsPanelProps> = ({
   metricsData,
   className = '',
   showDetails = false,
-  compact = false
+  compact = false,
 }) => {
-  const { currentTheme } = useTheme()
+  const { currentTheme } = useTheme();
 
   // 格式化百分比
   const formatPercent = (value: number, decimals: number = 2): string => {
-    return `${value >= 0 ? '+' : ''}${value.toFixed(decimals)}%`
-  }
+    return `${value >= 0 ? '+' : ''}${value.toFixed(decimals)}%`;
+  };
 
   // 格式化比率
   const formatRatio = (value: number, decimals: number = 3): string => {
-    return value.toFixed(decimals)
-  }
+    return value.toFixed(decimals);
+  };
 
   // 获取指标颜色
-  const getMetricColor = (value: number, isHigherBetter: boolean = true): string => {
-    if (value === 0) return currentTheme.colors.text
+  const getMetricColor = (
+    value: number,
+    isHigherBetter: boolean = true,
+  ): string => {
+    if (value === 0) return currentTheme.colors.text;
 
     if (isHigherBetter) {
-      return value > 0 ? currentTheme.colors.bullish : currentTheme.colors.bearish
+      return value > 0
+        ? currentTheme.colors.bullish
+        : currentTheme.colors.bearish;
     } else {
-      return value > 0 ? currentTheme.colors.bearish : currentTheme.colors.bullish
+      return value > 0
+        ? currentTheme.colors.bearish
+        : currentTheme.colors.bullish;
     }
-  }
+  };
 
   // 主要指标（紧凑模式显示）
   const PrimaryMetrics = ({ metrics }: { metrics: PerformanceMetrics }) => (
@@ -79,7 +86,7 @@ const PerformanceMetricsPanel: React.FC<PerformanceMetricsPanelProps> = ({
         </div>
       </div>
     </div>
-  )
+  );
 
   // 详细指标
   const DetailedMetrics = ({ metrics }: { metrics: PerformanceMetrics }) => (
@@ -175,16 +182,14 @@ const PerformanceMetricsPanel: React.FC<PerformanceMetricsPanelProps> = ({
         </div>
       )}
     </div>
-  )
+  );
 
   if (metricsData.length === 0) {
     return (
       <div className={`performance-metrics-panel ${className}`}>
-        <div className="text-center text-gray-500 py-4">
-          暂无资金曲线数据
-        </div>
+        <div className="text-center text-gray-500 py-4">暂无资金曲线数据</div>
       </div>
-    )
+    );
   }
 
   return (
@@ -193,20 +198,27 @@ const PerformanceMetricsPanel: React.FC<PerformanceMetricsPanelProps> = ({
       style={{
         backgroundColor: currentTheme.colors.background,
         borderColor: currentTheme.colors.grid,
-        color: currentTheme.colors.text
+        color: currentTheme.colors.text,
       }}
     >
-      <div className="border-b pb-2 mb-4" style={{ borderColor: currentTheme.colors.grid }}>
+      <div
+        className="border-b pb-2 mb-4"
+        style={{ borderColor: currentTheme.colors.grid }}
+      >
         <h3 className="text-lg font-semibold">性能指标</h3>
       </div>
 
       {/* 多条曲线的指标 */}
       <div className="space-y-6">
         {metricsData.map(({ curveId, curveName, metrics }) => (
-          <div key={curveId} className="p-3 rounded-lg border" style={{
-            backgroundColor: currentTheme.colors.background,
-            borderColor: currentTheme.colors.grid
-          }}>
+          <div
+            key={curveId}
+            className="p-3 rounded-lg border"
+            style={{
+              backgroundColor: currentTheme.colors.background,
+              borderColor: currentTheme.colors.grid,
+            }}
+          >
             <h4 className="font-medium mb-3">{curveName}</h4>
 
             {compact ? (
@@ -220,13 +232,18 @@ const PerformanceMetricsPanel: React.FC<PerformanceMetricsPanelProps> = ({
 
       {/* 基准比较（如果有多个曲线） */}
       {metricsData.length > 1 && (
-        <div className="mt-6 pt-4 border-t" style={{ borderColor: currentTheme.colors.grid }}>
+        <div
+          className="mt-6 pt-4 border-t"
+          style={{ borderColor: currentTheme.colors.grid }}
+        >
           <h4 className="text-sm font-medium mb-2 text-gray-700">对比分析</h4>
           <div className="grid grid-cols-2 gap-3 text-sm">
             {metricsData.map(({ curveId, curveName, metrics }) => {
-              const baselineMetrics = metricsData[0].metrics // 使用第一条曲线作为基准
-              const returnDiff = metrics.returnRate - baselineMetrics.returnRate
-              const sharpeDiff = metrics.sharpeRatio - baselineMetrics.sharpeRatio
+              const baselineMetrics = metricsData[0].metrics; // 使用第一条曲线作为基准
+              const returnDiff =
+                metrics.returnRate - baselineMetrics.returnRate;
+              const sharpeDiff =
+                metrics.sharpeRatio - baselineMetrics.sharpeRatio;
 
               return (
                 <div key={curveId} className="flex justify-between">
@@ -237,18 +254,19 @@ const PerformanceMetricsPanel: React.FC<PerformanceMetricsPanelProps> = ({
                     </span>
                     <span className="mx-1">|</span>
                     <span style={{ color: getMetricColor(sharpeDiff) }}>
-                      夏普 {returnDiff > 0 ? '+' : ''}{sharpeDiff.toFixed(3)}
+                      夏普 {returnDiff > 0 ? '+' : ''}
+                      {sharpeDiff.toFixed(3)}
                     </span>
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export { PerformanceMetricsPanel }
-export default PerformanceMetricsPanel
+export { PerformanceMetricsPanel };
+export default PerformanceMetricsPanel;

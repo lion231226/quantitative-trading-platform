@@ -2,7 +2,10 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { ParameterControls } from '../ParameterControls';
-import { ParameterChangeEvent, StrategyParameters } from '@/types/parameter.types';
+import {
+  ParameterChangeEvent,
+  StrategyParameters,
+} from '@/types/parameter.types';
 
 // 辅助函数：查找包含特定文本的元素，即使文本被分割
 const findByTextContent = (text: string) => {
@@ -10,7 +13,7 @@ const findByTextContent = (text: string) => {
     const hasText = (node: Element) => node.textContent === text;
     const nodeHasText = hasText(element!);
     const childrenDontHaveText = Array.from(element?.children || []).every(
-      child => !hasText(child)
+      (child) => !hasText(child),
     );
     return nodeHasText && childrenDontHaveText;
   };
@@ -18,11 +21,7 @@ const findByTextContent = (text: string) => {
 
 // Mock子组件
 jest.mock('../MovingAverageSlider', () => {
-  return function MockMovingAverageSlider({
-    value,
-    onChange,
-    disabled,
-  }: any) {
+  return function MockMovingAverageSlider({ value, onChange, disabled }: any) {
     return (
       <div data-testid="moving-average-slider">
         <span>{value}</span>
@@ -71,14 +70,23 @@ jest.mock('../ParameterPresets', () => {
   }: any) {
     return (
       <div data-testid="parameter-presets">
-        <span>Current params: MA{parameters.movingAveragePeriod} SL{parameters.stopLoss}% TP{parameters.takeProfit}%</span>
+        <span>
+          Current params: MA{parameters.movingAveragePeriod} SL
+          {parameters.stopLoss}% TP{parameters.takeProfit}%
+        </span>
         <button
-          onClick={() => onPresetSelect({
-            id: 'test-preset',
-            name: 'Test Preset',
-            description: 'Test',
-            parameters: { movingAveragePeriod: 30, stopLoss: 3, takeProfit: 9 },
-          })}
+          onClick={() =>
+            onPresetSelect({
+              id: 'test-preset',
+              name: 'Test Preset',
+              description: 'Test',
+              parameters: {
+                movingAveragePeriod: 30,
+                stopLoss: 3,
+                takeProfit: 9,
+              },
+            })
+          }
           disabled={disabled}
           data-testid="apply-preset"
         >
@@ -109,7 +117,9 @@ describe('ParameterControls', () => {
     expect(screen.getByText('策略参数配置')).toBeInTheDocument();
     expect(screen.getByTestId('moving-average-slider')).toBeInTheDocument();
     expect(screen.getByTestId('percentage-input-stopLoss')).toBeInTheDocument();
-    expect(screen.getByTestId('percentage-input-takeProfit')).toBeInTheDocument();
+    expect(
+      screen.getByTestId('percentage-input-takeProfit'),
+    ).toBeInTheDocument();
   });
 
   it('应该显示当前参数值', () => {
@@ -130,7 +140,7 @@ describe('ParameterControls', () => {
     expect(screen.getByText('止损:')).toBeInTheDocument();
     expect(screen.getByText('止盈:')).toBeInTheDocument();
     expect(screen.getByText('20')).toBeInTheDocument();
-    expect(screen.getByText('5%')).toBeInTheDocument();  // compact模式显示不带小数点的格式
+    expect(screen.getByText('5%')).toBeInTheDocument(); // compact模式显示不带小数点的格式
     expect(screen.getByText('10%')).toBeInTheDocument(); // compact模式显示不带小数点的格式
   });
 
@@ -175,7 +185,12 @@ describe('ParameterControls', () => {
 
   it('应该处理参数变化事件', () => {
     const onParameterChange = jest.fn();
-    render(<ParameterControls {...defaultProps} onParameterChange={onParameterChange} />);
+    render(
+      <ParameterControls
+        {...defaultProps}
+        onParameterChange={onParameterChange}
+      />,
+    );
 
     const changeButton = screen.getByTestId('ma-slider-change');
     fireEvent.click(changeButton);
@@ -262,7 +277,9 @@ describe('ParameterControls', () => {
       takeProfit: 9.0,
     };
 
-    rerender(<ParameterControls {...defaultProps} parameters={newParameters} />);
+    rerender(
+      <ParameterControls {...defaultProps} parameters={newParameters} />,
+    );
 
     expect(screen.getByText('30')).toBeInTheDocument();
     expect(screen.getByText('止损设置')).toBeInTheDocument();
@@ -308,7 +325,13 @@ describe('ParameterControls', () => {
       takeProfit: 0,
     };
 
-    render(<ParameterControls {...defaultProps} parameters={parametersWithNoTP} showAdvanced />);
+    render(
+      <ParameterControls
+        {...defaultProps}
+        parameters={parametersWithNoTP}
+        showAdvanced
+      />,
+    );
 
     // 点击高级设置按钮展开面板
     const advancedButton = screen.getByText('高级设置');
@@ -324,7 +347,9 @@ describe('ParameterControls', () => {
       takeProfit: 80, // 大于最大值
     };
 
-    render(<ParameterControls {...defaultProps} parameters={invalidParameters} />);
+    render(
+      <ParameterControls {...defaultProps} parameters={invalidParameters} />,
+    );
 
     // 应该显示验证错误信息
     expect(screen.getByText(/参数错误/)).toBeInTheDocument();
@@ -337,7 +362,9 @@ describe('ParameterControls', () => {
       takeProfit: 5,
     };
 
-    render(<ParameterControls {...defaultProps} parameters={warningParameters} />);
+    render(
+      <ParameterControls {...defaultProps} parameters={warningParameters} />,
+    );
 
     // 应该显示参数警告信息
     expect(screen.getByText(/参数建议/)).toBeInTheDocument();
@@ -351,7 +378,9 @@ describe('ParameterControls', () => {
         takeProfit: 0,
       };
 
-      render(<ParameterControls {...defaultProps} parameters={emptyParameters} />);
+      render(
+        <ParameterControls {...defaultProps} parameters={emptyParameters} />,
+      );
 
       expect(screen.getByText('0')).toBeInTheDocument();
     });
@@ -363,7 +392,9 @@ describe('ParameterControls', () => {
         takeProfit: 50,
       };
 
-      render(<ParameterControls {...defaultProps} parameters={extremeParameters} />);
+      render(
+        <ParameterControls {...defaultProps} parameters={extremeParameters} />,
+      );
 
       expect(screen.getByText('200')).toBeInTheDocument();
       expect(screen.getByText('止损设置')).toBeInTheDocument();
@@ -379,7 +410,9 @@ describe('ParameterControls', () => {
         takeProfit: 10.25,
       };
 
-      render(<ParameterControls {...defaultProps} parameters={decimalParameters} />);
+      render(
+        <ParameterControls {...defaultProps} parameters={decimalParameters} />,
+      );
 
       expect(screen.getByText('止损设置')).toBeInTheDocument();
       expect(screen.getByText('5.15%')).toBeInTheDocument(); // Mock显示原始值

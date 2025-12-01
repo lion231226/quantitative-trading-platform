@@ -1,5 +1,5 @@
 // Add any custom config to be passed to Jest
-const coverageConfig = require('./jest.coverage.config')
+const coverageConfig = require('./jest.coverage.config');
 
 const customJestConfig = {
   testEnvironment: '<rootDir>/jest.env.happy-dom.js',
@@ -10,7 +10,7 @@ const customJestConfig = {
     width: 1024,
     height: 768,
     deviceScaleFactor: 1,
-    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   moduleNameMapper: {
@@ -42,6 +42,6 @@ const customJestConfig = {
   forceExit: true,
   // 超时设置
   testTimeout: 10000,
-}
+};
 
-module.exports = customJestConfig
+module.exports = customJestConfig;

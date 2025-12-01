@@ -18,24 +18,24 @@ import {
 } from 'lucide-react';
 
 interface ChartControlsProps {
-  config: ChartConfig
-  onConfigChange: (config: Partial<ChartConfig>) => void
-  onReset: () => void
-  onZoomIn?: () => void
-  onZoomOut?: () => void
-  onZoomReset?: () => void
-  onPanToggle?: () => void
-  onExport?: (format: ExportFormat) => void
-  onToggleFullscreen?: () => void
-  onNavigatePrevious?: () => void
-  onNavigateNext?: () => void
-  disabled?: boolean
-  isPanning?: boolean
-  isFullscreen?: boolean
-  showNavigation?: boolean
-  showExport?: boolean
-  showZoom?: boolean
-  compact?: boolean
+  config: ChartConfig;
+  onConfigChange: (config: Partial<ChartConfig>) => void;
+  onReset: () => void;
+  onZoomIn?: () => void;
+  onZoomOut?: () => void;
+  onZoomReset?: () => void;
+  onPanToggle?: () => void;
+  onExport?: (format: ExportFormat) => void;
+  onToggleFullscreen?: () => void;
+  onNavigatePrevious?: () => void;
+  onNavigateNext?: () => void;
+  disabled?: boolean;
+  isPanning?: boolean;
+  isFullscreen?: boolean;
+  showNavigation?: boolean;
+  showExport?: boolean;
+  showZoom?: boolean;
+  compact?: boolean;
 }
 
 export function ChartControls({
@@ -187,7 +187,9 @@ export function ChartControls({
                 type="checkbox"
                 id="show-signals"
                 checked={config.showSignals}
-                onChange={(e) => onConfigChange({ showSignals: e.target.checked })}
+                onChange={(e) =>
+                  onConfigChange({ showSignals: e.target.checked })
+                }
                 disabled={disabled}
                 className="rounded"
               />
@@ -201,7 +203,9 @@ export function ChartControls({
                 type="checkbox"
                 id="show-ma"
                 checked={config.showMovingAverages}
-                onChange={(e) => onConfigChange({ showMovingAverages: e.target.checked })}
+                onChange={(e) =>
+                  onConfigChange({ showMovingAverages: e.target.checked })
+                }
                 disabled={disabled}
                 className="rounded"
               />
@@ -215,7 +219,9 @@ export function ChartControls({
                 type="checkbox"
                 id="show-volume"
                 checked={config.showVolume}
-                onChange={(e) => onConfigChange({ showVolume: e.target.checked })}
+                onChange={(e) =>
+                  onConfigChange({ showVolume: e.target.checked })
+                }
                 disabled={disabled}
                 className="rounded"
               />
@@ -274,7 +280,9 @@ export function ChartControls({
               <span className="text-sm font-medium">导出:</span>
               <select
                 value={exportFormat}
-                onChange={(e) => setExportFormat(e.target.value as ExportFormat)}
+                onChange={(e) =>
+                  setExportFormat(e.target.value as ExportFormat)
+                }
                 className="border rounded px-2 py-1 text-sm"
                 disabled={disabled}
               >
@@ -318,7 +326,12 @@ export function ChartControls({
               高级设置
             </Button>
 
-            <Button variant="outline" size="sm" onClick={onReset} disabled={disabled}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onReset}
+              disabled={disabled}
+            >
               重置
             </Button>
           </div>
@@ -330,7 +343,9 @@ export function ChartControls({
             {/* 移动平均线配置 */}
             {config.showMovingAverages && (
               <div className="flex items-center space-x-4">
-                <h4 className="text-sm font-medium text-muted-foreground">移动平均线:</h4>
+                <h4 className="text-sm font-medium text-muted-foreground">
+                  移动平均线:
+                </h4>
                 <div className="flex items-center space-x-2">
                   <label htmlFor="ma-type" className="text-sm">
                     类型:
@@ -338,7 +353,11 @@ export function ChartControls({
                   <select
                     id="ma-type"
                     value={config.movingAverageType}
-                    onChange={(e) => onConfigChange({ movingAverageType: e.target.value as 'SMA' | 'EMA' })}
+                    onChange={(e) =>
+                      onConfigChange({
+                        movingAverageType: e.target.value as 'SMA' | 'EMA',
+                      })
+                    }
                     disabled={disabled}
                     className="border rounded px-2 py-1 text-sm"
                   >
@@ -355,7 +374,11 @@ export function ChartControls({
                     id="ma-period"
                     type="number"
                     value={config.movingAveragePeriod}
-                    onChange={(e) => onConfigChange({ movingAveragePeriod: parseInt(e.target.value) || 20 })}
+                    onChange={(e) =>
+                      onConfigChange({
+                        movingAveragePeriod: parseInt(e.target.value) || 20,
+                      })
+                    }
                     disabled={disabled}
                     min="5"
                     max="200"
@@ -367,7 +390,9 @@ export function ChartControls({
 
             {/* 动画控制 */}
             <div className="flex items-center space-x-4">
-              <h4 className="text-sm font-medium text-muted-foreground">动画:</h4>
+              <h4 className="text-sm font-medium text-muted-foreground">
+                动画:
+              </h4>
               <div className="flex items-center space-x-2">
                 <label htmlFor="animation" className="text-sm">
                   时长(ms):
@@ -376,7 +401,11 @@ export function ChartControls({
                   id="animation"
                   type="number"
                   value={config.animationDuration}
-                  onChange={(e) => onConfigChange({ animationDuration: parseInt(e.target.value) || 1000 })}
+                  onChange={(e) =>
+                    onConfigChange({
+                      animationDuration: parseInt(e.target.value) || 1000,
+                    })
+                  }
                   disabled={disabled}
                   min="0"
                   max="5000"
@@ -389,7 +418,9 @@ export function ChartControls({
             {/* 导航控制 */}
             {showNavigation && (
               <div className="flex items-center space-x-4">
-                <h4 className="text-sm font-medium text-muted-foreground">导航:</h4>
+                <h4 className="text-sm font-medium text-muted-foreground">
+                  导航:
+                </h4>
                 <div className="flex items-center space-x-2">
                   <Button
                     variant="outline"
