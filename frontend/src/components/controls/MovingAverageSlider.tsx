@@ -139,18 +139,43 @@ export function MovingAverageSlider({
         {/* 主滑块 */}
         <div className="space-y-4">
           <div className="relative">
+            <label htmlFor="ma-slider" className="sr-only">
+              移动平均周期滑块，当前值{value}天，范围5到200天
+            </label>
             <input
+              id="ma-slider"
               type="range"
               min="5"
               max="200"
               step="1"
               value={value}
               onChange={(e) => handleChange(parseInt(e.target.value))}
+              onKeyDown={(e) => {
+                // 增强键盘导航
+                if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+                  e.preventDefault();
+                  handleChange(Math.max(5, value - 1));
+                } else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+                  e.preventDefault();
+                  handleChange(Math.min(200, value + 1));
+                } else if (e.key === 'Home') {
+                  e.preventDefault();
+                  handleChange(5);
+                } else if (e.key === 'End') {
+                  e.preventDefault();
+                  handleChange(200);
+                }
+              }}
               onMouseDown={() => setIsDragging(true)}
               onMouseUp={() => setIsDragging(false)}
               onTouchStart={() => setIsDragging(true)}
               onTouchEnd={() => setIsDragging(false)}
               disabled={disabled}
+              aria-label={`移动平均周期滑块，当前值${value}天，范围5到200天`}
+              aria-valuemin={5}
+              aria-valuemax={200}
+              aria-valuenow={value}
+              aria-disabled={disabled}
               className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-thumb"
               style={{
                 background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${sliderPercentage}%, #e5e7eb ${sliderPercentage}%, #e5e7eb 100%)`,
@@ -169,13 +194,15 @@ export function MovingAverageSlider({
 
           {/* 快速选择按钮 */}
           <div className="space-y-3">
-            <p className="text-sm font-medium text-muted-foreground">
+            <h4 className="text-sm font-medium text-muted-foreground">
               快速选择
-            </p>
-            <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+            </h4>
+            <div className="grid grid-cols-3 md:grid-cols-6 gap-2" role="group" aria-label="移动平均周期快速选择">
               {QUICK_PRESETS.map((preset) => {
                 const Icon = preset.icon;
                 const isActive = value === preset.value;
+                const description = MA_DESCRIPTIONS[preset.value as keyof typeof MA_DESCRIPTIONS];
+
                 return (
                   <Button
                     key={preset.value}
@@ -183,9 +210,11 @@ export function MovingAverageSlider({
                     size="sm"
                     onClick={() => handleQuickSelect(preset.value)}
                     disabled={disabled}
+                    aria-label={`选择${preset.label}移动平均线${description ? `，${description.type}策略` : ''}`}
+                    aria-pressed={isActive}
                     className="flex flex-col items-center space-y-1 h-auto py-3"
                   >
-                    <Icon className="h-4 w-4" />
+                    <Icon className="h-4 w-4" aria-hidden="true" />
                     <span className="text-xs">{preset.label}</span>
                   </Button>
                 );
@@ -197,14 +226,16 @@ export function MovingAverageSlider({
         {/* 高级信息 */}
         {showAdvanced && (
           <div className="mt-6 pt-6 border-t space-y-4">
+            <h3 className="text-lg font-semibold mb-4">高级分析信息</h3>
+
             {/* 当前设置说明 */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4" role="region" aria-label="移动平均线分析">
               <Card className="p-4">
                 <div className="flex items-center space-x-2 mb-2">
-                  <BarChart3 className="h-4 w-4 text-blue-600" />
-                  <span className="font-medium text-sm">类型</span>
+                  <BarChart3 className="h-4 w-4 text-blue-600" aria-hidden="true" />
+                  <h4 className="font-medium text-sm">策略类型</h4>
                 </div>
-                <div className="text-lg font-semibold">
+                <div className="text-lg font-semibold" role="status">
                   {currentDescription.type}
                 </div>
                 <div className="text-sm text-muted-foreground mt-1">
@@ -214,11 +245,13 @@ export function MovingAverageSlider({
 
               <Card className="p-4">
                 <div className="flex items-center space-x-2 mb-2">
-                  <AlertTriangle className="h-4 w-4 text-orange-600" />
-                  <span className="font-medium text-sm">风险等级</span>
+                  <AlertTriangle className="h-4 w-4 text-orange-600" aria-hidden="true" />
+                  <h4 className="font-medium text-sm">风险等级</h4>
                 </div>
                 <div
+                  role="status"
                   className={`inline-flex px-3 py-1 rounded-full text-sm font-medium ${getRiskColor(currentDescription.risk)}`}
+                  aria-label={`风险等级：${currentDescription.risk}`}
                 >
                   {currentDescription.risk}
                 </div>
@@ -226,10 +259,10 @@ export function MovingAverageSlider({
 
               <Card className="p-4">
                 <div className="flex items-center space-x-2 mb-2">
-                  <Activity className="h-4 w-4 text-green-600" />
-                  <span className="font-medium text-sm">预期信号</span>
+                  <Activity className="h-4 w-4 text-green-600" aria-hidden="true" />
+                  <h4 className="font-medium text-sm">预期信号频率</h4>
                 </div>
-                <div className="text-lg font-semibold">
+                <div className="text-lg font-semibold" role="status">
                   {value <= 10 ? '频繁' : value <= 50 ? '中等' : '稀少'}
                 </div>
                 <div className="text-sm text-muted-foreground mt-1">

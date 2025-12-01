@@ -1,0 +1,256 @@
+/**
+ * 可访问性样式
+ * 包含高对比度、焦点指示器和屏幕阅读器专用样式
+ */
+
+/* 屏幕阅读器专用样式 */
+.sr-only,
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* 仅在键盘导航时显示的元素 */
+.focus-only:not(:focus) {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* 跳过链接样式 */
+.skip-links a {
+  position: absolute !important;
+  top: -40px !important;
+  left: 6px !important;
+  background: #000 !important;
+  color: #fff !important;
+  padding: 8px !important;
+  text-decoration: none !important;
+  border-radius: 4px !important;
+  z-index: 9999 !important;
+  transition: top 0.3s ease !important;
+}
+
+.skip-links a:focus {
+  top: 6px !important;
+}
+
+/* 高对比度焦点样式 - 符合WCAG AA标准 */
+.focus-visible {
+  outline: 2px solid #000 !important;
+  outline-offset: 2px !important;
+}
+
+/* 暗色主题的焦点样式 */
+@media (prefers-color-scheme: dark) {
+  .focus-visible {
+    outline: 2px solid #fff !important;
+    outline-offset: 2px !important;
+  }
+}
+
+/* 高对比度模式支持 */
+@media (prefers-contrast: high) {
+  /* 增强焦点指示器 */
+  :focus,
+  :focus-visible {
+    outline: 3px solid !important;
+    outline-offset: 2px !important;
+  }
+
+  /* 确保按钮和链接有足够的对比度 */
+  button,
+  [role="button"],
+  a {
+    border: 2px solid !important;
+  }
+
+  button:focus,
+  [role="button"]:focus,
+  a:focus {
+    border-color: #000 !important;
+    outline: 3px solid #000 !important;
+    outline-offset: 2px !important;
+  }
+
+  /* 暗色高对比度 */
+  @media (prefers-color-scheme: dark) {
+    button:focus,
+    [role="button"]:focus,
+    a:focus {
+      border-color: #fff !important;
+      outline: 3px solid #fff !important;
+    }
+  }
+}
+
+/* 减少动画偏好 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .skip-links a {
+    transition: none !important;
+  }
+}
+
+/* 键盘导航增强 */
+.keyboard-nav *:focus {
+  outline: 2px solid #0066cc !important;
+  outline-offset: 2px !important;
+}
+
+/* 表单控件焦点样式 */
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #0066cc !important;
+  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.25) !important;
+}
+
+/* 按钮焦点样式 */
+button:focus,
+[role="button"]:focus {
+  border-color: #0066cc !important;
+  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.25) !important;
+}
+
+/* 链接焦点样式 */
+a:focus {
+  outline: 2px solid #0066cc !important;
+  outline-offset: 2px !important;
+}
+
+/* 可访问的数据表格样式 */
+table {
+  border-collapse: collapse !important;
+}
+
+th,
+td {
+  border: 1px solid !important;
+  padding: 8px !important;
+}
+
+th {
+  background-color: #f5f5f5 !important;
+  font-weight: bold !important;
+}
+
+/* 可访问的表单样式 */
+fieldset {
+  border: 2px solid #ccc !important;
+  padding: 1rem !important;
+}
+
+legend {
+  font-weight: bold !important;
+  padding: 0 0.5rem !important;
+}
+
+/* 错误消息样式 */
+.error-message {
+  color: #d32f2f !important;
+  background-color: #ffebee !important;
+  border: 1px solid #f8bbd9 !important;
+  padding: 8px 12px !important;
+  border-radius: 4px !important;
+  display: block !important;
+}
+
+/* 成功消息样式 */
+.success-message {
+  color: #2e7d32 !important;
+  background-color: #e8f5e8 !important;
+  border: 1px solid #c8e6c9 !important;
+  padding: 8px 12px !important;
+  border-radius: 4px !important;
+  display: block !important;
+}
+
+/* 警告消息样式 */
+.warning-message {
+  color: #f57c00 !important;
+  background-color: #fff3e0 !important;
+  border: 1px solid #ffe0b2 !important;
+  padding: 8px 12px !important;
+  border-radius: 4px !important;
+  display: block !important;
+}
+
+/* 信息消息样式 */
+.info-message {
+  color: #0288d1 !important;
+  background-color: #e1f5fe !important;
+  border: 1px solid #b3e5fc !important;
+  padding: 8px 12px !important;
+  border-radius: 4px !important;
+  display: block !important;
+}
+
+/* 屏幕阅读器专用aria-live区域 */
+.aria-live-region {
+  position: absolute !important;
+  left: -10000px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+}
+
+/* 响应式可访问性调整 */
+@media (max-width: 768px) {
+  /* 在移动设备上增加触摸目标大小 */
+  button,
+  [role="button"],
+  a,
+  input,
+  select,
+  textarea {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+
+  /* 增大焦点指示器 */
+  :focus,
+  :focus-visible {
+    outline-width: 3px !important;
+    outline-offset: 3px !important;
+  }
+}
+
+/* 打印样式 - 确保可访问性 */
+@media print {
+  .skip-links,
+  .keyboard-nav-indicator {
+    display: none !important;
+  }
+
+  /* 确保链接在打印时可见 */
+  a::after {
+    content: " (" attr(href) ")" !important;
+  }
+
+  /* 确保abbr有完整文本 */
+  abbr::after {
+    content: " (" attr(title) ")" !important;
+  }
+}

@@ -1,4 +1,8 @@
 import '@testing-library/jest-dom';
+import { toHaveNoViolations } from 'jest-axe';
+
+// Add jest-axe custom matcher
+expect.extend(toHaveNoViolations);
 
 // Fix DOM environment for React 18
 Object.defineProperty(window, 'document', {

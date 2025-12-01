@@ -15,6 +15,8 @@ Project: 量化交易单均线策略分析平台
 | 2025-11-01 | 2.2 | 2 | Bug | High | TBD | Open | 修复OptimizationSuggestions组件测试 - act()包装问题 |
 | 2025-11-01 | 2.2 | 2 | TechDebt | Medium | TBD | Open | 优化测试覆盖 - 确保关键组件测试通过 |
 | 2025-11-01 | 2.2 | 2 | Enhancement | Medium | TBD | Open | 验证性能要求 - 确认参数更新响应时间<500ms |
+| 2025-12-01 | 4.3 | 4 | Task | Low | TBD | Open | 在GitHub Actions中添加可访问性测试步骤 - CI/CD集成 |
+| 2025-12-01 | 4.3 | 4 | Enhancement | Low | TBD | Open | 添加可访问性文档到用户指南 - Documentation |
 
 ## 优先级说明
 - **High**: 阻塞性问题，需要立即解决

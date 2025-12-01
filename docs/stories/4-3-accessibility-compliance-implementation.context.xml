@@ -1,0 +1,109 @@
+<story-context id="4-3-accessibility-compliance-implementation" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>3</storyId>
+    <title>可访问性合规全面实现</title>
+    <status>drafted</status>
+    <generatedAt>2025-12-01</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/4-3-accessibility-compliance-implementation.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>产品团队</asA>
+    <iWant>应用完全符合WCAG 2.1 AA标准</iWant>
+    <soThat>所有用户都能无障碍使用我们的量化交易平台</soThat>
+    <tasks>Task 1: WCAG 2.1 AA合规性审计和修复 (AC: 1)
+- Subtask 1.1: axe-automated可访问性测试集成
+- Subtask 1.2: 可访问性问题识别和修复
+- Subtask 1.3: 手动可访问性测试
+Task 2: 键盘导航完整实现 (AC: 2)
+- Subtask 2.1: 键盘导航基础设施
+- Subtask 2.2: 交互元素键盘可访问性
+- Subtask 2.3: 键盘导航测试和验证
+Task 3: 屏幕阅读器优化 (AC: 3)
+- Subtask 3.1: ARIA labels和属性实现
+- Subtask 3.2: 语义化HTML结构优化
+- Subtask 3.3: 屏幕阅读器测试和优化
+Task 4: 颜色对比度视觉优化 (AC: 4)
+- Subtask 4.1: 颜色对比度分析和修复
+- Subtask 4.2: 可访问性友好的颜色设计
+- Subtask 4.3: 主题和样式的可访问性增强
+Task 5: 可访问性测试自动化和CI集成 (AC: 5)
+- Subtask 5.1: Jest-axe测试集成
+- Subtask 5.2: CI/CD可访问性检查
+- Subtask 5.3: 可访问性监控和维护</tasks>
+  </story>
+
+  <acceptanceCriteria>1. WCAG 2.1 AA合规 - axe-automated和手动测试100%通过
+2. 键盘导航完整 - 所有交互元素键盘可访问
+3. 屏幕阅读器优化 - 适当ARIA labels，语义化HTML
+4. 颜色对比度优化 - WCAG AA级别对比度 (4.5:1)
+5. 可访问性测试自动化 - Jest-axe集成，CI自动检查</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/tech-spec.md" title="量化交易单均线策略分析平台技术规格" section="Project Structure and Technology Stack" snippet="Next.js 14 + FastAPI + TypeScript 全栈架构，前端使用Chart.js 4.4+进行数据可视化，后端使用SQLite 3.44+和Redis 7.2+进行数据存储和缓存"/>
+      <doc path="docs/epics.md" title="史诗分解文档" section="Epic 4: 技术债务清理与质量保障全面提升" snippet="Epic 4专注于将项目的技术健康度从当前评估全面提升到企业级生产就绪标准的10分满分"/>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4技术规格" section="可访问性合规全面实现" snippet="Story 4.3: 可访问性合规全面实现 - 实现WCAG 2.1 AA标准合规，支持键盘导航和屏幕阅读器优化"/>
+      <doc path="docs/test-layering-strategy.md" title="测试分层策略文档" section="Jest + jest-axe集成测试" snippet="使用Jest + React Testing Library进行单元测试，支持可访问性测试，覆盖率要求90%以上，测试文件结构包含组件单元测试目录"/>
+      <doc path="docs/state-management-best-practices.md" title="状态管理最佳实践指南" section="可访问性状态管理模式" snippet="localStorage包装模式用于可访问性偏好设置，错误边界和状态不可变性原则确保可访问性功能的稳定性"/>
+      <doc path="docs/stories/4-2-1-business-logic-test-fixes-and-state-management.md" title="前序故事学习记录" section="测试基础设施和组件状态管理" snippet="happy-dom + React 18兼容环境已建立，可用于可访问性测试，UserPreferences组件测试100%通过的经验可应用于可访问性功能"/>
+      <doc path="docs/sprint-status.yaml" title="Sprint状态跟踪" section="Epic 4进度" snippet="4-3-accessibility-compliance-implementation状态为ready-for-dev，依赖前序故事4-2-1完成"/>
+    </docs>
+    <code>
+      <file path="frontend/src/components/ui/button.tsx" kind="ui-component" symbol="Button" lines="36-42" reason="基础UI组件，已有焦点样式但需要增强可访问性属性"/>
+      <file path="frontend/src/components/controls/MovingAverageSlider.tsx" kind="form-component" symbol="MovingAverageSlider" lines="142-158" reason="表单控件，需要键盘导航和ARIA属性"/>
+      <file path="frontend/src/components/layout/Layout.tsx" kind="layout-component" symbol="Layout" lines="25-45" reason="页面布局组件，需要语义化HTML结构和skip links"/>
+      <file path="frontend/src/components/theme/ThemeController.tsx" kind="theme-component" symbol="ThemeController" lines="78-95" reason="主题控制，需要颜色对比度优化和高对比度模式支持"/>
+      <file path="frontend/src/components/charts/PriceChart.tsx" kind="chart-component" symbol="PriceChart" lines="1-50" reason="Chart.js图表组件，需要键盘导航、ARIA描述和数据表格替代"/>
+      <file path="frontend/src/components/charts/KlineChart.tsx" kind="chart-component" symbol="KlineChart" lines="35-60" reason="K线图组件，需要可访问性数据标签和键盘交互支持"/>
+      <file path="frontend/src/components/controls/UserPreferences.tsx" kind="settings-component" symbol="UserPreferences" lines="1-30" reason="用户偏好设置，已有localStorage包装模式，需要可访问性增强"/>
+      <file path="frontend/src/components/ui/card.tsx" kind="ui-component" symbol="Card" lines="22-35" reason="卡片容器组件，需要语义化标题和ARIA属性"/>
+      <file path="frontend/src/components/ui/form.tsx" kind="form-component" symbol="Form" lines="45-65" reason="表单组件，需要标签关联、验证消息可访问性"/>
+    </code>
+    <dependencies>
+      <framework name="Next.js" version="14.2.33" usage="前端框架，需要可访问性配置"/>
+      <framework name="React" version="18" usage="UI库，需要ARIA属性和语义化HTML"/>
+      <framework name="Chart.js" version="4.4.2" usage="图表库，需要键盘导航支持"/>
+      <framework name="Radix UI" version="multiple" usage="无头组件库，已包含基础可访问性"/>
+      <framework name="Tailwind CSS" version="3.4.1" usage="样式框架，需要可访问性配置优化"/>
+      <testing name="Jest" version="29.7.0" usage="单元测试，需要集成jest-axe"/>
+      <testing name="React Testing Library" version="15.0.7" usage="React测试，需要可访问性测试工具"/>
+      <testing name="happy-dom" version="14.12.3" usage="测试环境，支持可访问性测试"/>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint name="WCAG 2.1 AA合规" description="所有UI组件必须达到WCAG 2.1 AA级别可访问性标准"/>
+    <constraint name="测试覆盖" description="所有组件必须有可访问性测试，使用jest-axe进行自动化验证"/>
+    <constraint name="键盘导航" description="所有交互元素必须支持键盘操作，Tab顺序逻辑清晰"/>
+    <constraint name="颜色对比度" description="文本和背景对比度必须达到4.5:1，大文本3:1"/>
+    <constraint name="语义化HTML" description="使用适当的HTML5语义元素和ARIA属性"/>
+    <constraint name="现有架构兼容" description="保持现有Next.js + TypeScript + Tailwind架构"/>
+    <constraint name="性能影响最小" description="可访问性改进不应显著影响应用性能"/>
+    <constraint name="CI/CD集成" description="可访问性检查必须集成到GitHub Actions中"/>
+  </constraints>
+  <interfaces>
+    <interface name="useKeyboardNavigation" kind="React Hook" signature="() => { handleKeyDown: (event: KeyboardEvent) => void }" path="frontend/src/hooks/useAccessibility.ts"/>
+    <interface name="AccessibleButtonProps" kind="TypeScript Interface" signature="extends React.ButtonHTMLAttributes<HTMLButtonElement> { 'aria-label': string; 'aria-describedby'?: string }" path="frontend/src/types/accessibility.ts"/>
+    <interface name="AccessibilityUtils" kind="Utility Class" signature="static checkColorContrast(foreground: string, background: string): boolean; static generateUniqueId(): string" path="frontend/src/utils/accessibilityHelpers.ts"/>
+    <interface name="useScreenReader" kind="React Hook" signature="() => { announce: (message: string) => void; setPoliteness: (politeness: 'polite' | 'assertive') => void }" path="frontend/src/hooks/useAccessibility.ts"/>
+  </interfaces>
+  <tests>
+    <standards>使用Jest + jest-axe进行自动化可访问性测试，React Testing Library进行用户交互测试，happy-dom测试环境支持。所有组件必须有可访问性测试覆盖，包括键盘导航、屏幕阅读器支持和颜色对比度验证。</standards>
+    <locations>
+      <location path="frontend/src/components/__tests__/accessibility/" description="可访问性集成测试"/>
+      <location path="frontend/src/components/ui/__tests__/" description="UI组件单元测试"/>
+      <location path="frontend/src/components/controls/__tests__/" description="表单控件可访问性测试"/>
+      <location path="frontend/__tests__/e2e/accessibility/" description="端到端可访问性测试"/>
+    </locations>
+    <ideas>
+      <test idea="Jest-axe自动化扫描" target="AC1" description="使用jest-axe扫描所有组件，确保100%通过WCAG检查"/>
+      <test idea="键盘导航测试" target="AC2" description="测试所有交互元素的Tab导航和键盘操作"/>
+      <test idea="屏幕阅读器测试" target="AC3" description="验证ARIA标签和语义化HTML的正确性"/>
+      <test idea="颜色对比度测试" target="AC4" description="验证所有文本和背景的对比度符合WCAG AA标准"/>
+      <test idea="CI集成测试" target="AC5" description="在GitHub Actions中添加可访问性检查步骤"/>
+    </ideas>
+  </tests>
+</story-context>

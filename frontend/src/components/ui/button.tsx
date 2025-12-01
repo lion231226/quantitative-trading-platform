@@ -37,17 +37,54 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
+  /** 为仅图标的按钮提供描述性标签 */
+  iconLabel?: string;
+  /** 按钮的用途描述，增强屏幕阅读器体验 */
+  ariaDescription?: string;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({
+    className,
+    variant,
+    size,
+    asChild = false,
+    iconLabel,
+    ariaDescription,
+    children,
+    disabled,
+    ...props
+  }, ref) => {
     const Comp = asChild ? Slot : 'button';
+
+    // 构建可访问性属性
+    const accessibilityProps: React.ButtonHTMLAttributes<HTMLButtonElement> = {};
+
+    // 为仅图标按钮添加标签
+    if (iconLabel && !children) {
+      accessibilityProps['aria-label'] = props['aria-label'] || iconLabel;
+    }
+
+    // 添加描述
+    if (ariaDescription) {
+      accessibilityProps['aria-describedby'] = ariaDescription;
+    }
+
+    // 确保disabled状态的可访问性
+    if (disabled) {
+      accessibilityProps['aria-disabled'] = 'true';
+    }
+
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
+        disabled={disabled}
+        {...accessibilityProps}
         {...props}
-      />
+      >
+        {children}
+      </Comp>
     );
   },
 );
