@@ -1,0 +1,60 @@
+name: Minimal Security Scan
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  minimal-security:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Install dependencies (without lock file)
+      working-directory: ./frontend
+      run: |
+        echo "Installing dependencies without package-lock.json..."
+        npm install --no-package-lock
+        echo "Installation completed"
+
+    - name: Create reports directory
+      working-directory: ./frontend
+      run: |
+        mkdir -p security-reports
+        echo "Reports directory created"
+
+    - name: Run security check
+      working-directory: ./frontend
+      run: |
+        echo "Running security audit..."
+        npm audit --audit-level moderate > security-reports/audit-result.txt 2>&1 || echo "Some vulnerabilities found"
+
+    - name: Create summary report
+      working-directory: ./frontend
+      run: |
+        cat > security-reports/summary.md << 'EOF'
+        # Security Scan Summary
+
+        **Scan Date:** $(date)
+        **Scanner:** NPM Audit
+
+        **Results:**
+        ```
+        EOF
+        cat security-reports/audit-result.txt >> security-reports/summary.md 2>/dev/null || echo "No audit results available" >> security-reports/summary.md
+        echo '```' >> security-reports/summary.md
+
+    - name: Upload security reports
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: minimal-security-reports
+        path: frontend/security-reports/
+        retention-days: 30

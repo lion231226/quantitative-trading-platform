@@ -1,0 +1,73 @@
+name: Debug Installation Issues
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Check directory structure
+      run: |
+        echo "Current directory: $(pwd)"
+        echo "Directory contents:"
+        ls -la
+        echo ""
+        echo "Frontend directory contents:"
+        ls -la frontend/ || echo "Frontend directory not found"
+        echo ""
+        echo "Looking for package files:"
+        find . -name "package.json" -o -name "package-lock.json" | head -10
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Check Node/NPM
+      run: |
+        echo "Node version: $(node --version)"
+        echo "NPM version: $(npm --version)"
+        echo "NPM location: $(which npm)"
+        echo "Node location: $(which node)"
+
+    - name: Navigate to frontend and test NPM
+      working-directory: ./frontend
+      run: |
+        echo "Current working directory: $(pwd)"
+        echo "Files in this directory:"
+        ls -la
+        echo ""
+        if [ -f package.json ]; then
+          echo "package.json found"
+          head -5 package.json
+        else
+          echo "ERROR: package.json not found!"
+          exit 1
+        fi
+
+    - name: Try npm ls
+      working-directory: ./frontend
+      run: |
+        echo "Testing npm ls..."
+        npm ls --depth=0 || echo "npm ls failed"
+
+    - name: Create simple report directory
+      working-directory: ./frontend
+      run: |
+        mkdir -p security-reports
+        echo "Debug report created at $(date)" > security-reports/debug.txt
+        echo "Directory created successfully"
+
+    - name: Upload debug report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: debug-report
+        path: frontend/security-reports/
+        retention-days: 1
