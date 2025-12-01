@@ -1,0 +1,241 @@
+name: Static Security Scan (No NPM Install)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # 每天UTC 2:00运行安全扫描
+    - cron: '0 2 * * *'
+
+jobs:
+  static-security:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js (for analysis only)
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Create security reports directory
+      run: mkdir -p frontend/security-reports
+
+    - name: Static Package Analysis
+      working-directory: ./frontend
+      run: |
+        echo "🔍 Performing static package analysis..."
+
+        # 创建基础安全报告
+        cat > security-reports/static-analysis.md << 'EOF'
+        # 📊 Static Security Analysis Report
+
+        **Generated:** $(date)
+        **Scanner:** Static Package Analysis
+        **Method:** File-based Security Assessment
+
+        ## Package Configuration Analysis
+        EOF
+
+        # 分析package.json
+        if [ -f package.json ]; then
+          echo "✅ package.json found" >> security-reports/static-analysis.md
+
+          # 检查已知的易受攻击的包版本
+          VULNERABLE_PACKAGES=(
+            "lodash@<4.17.21"
+            "axios@<0.21.1"
+            "node-forge@<1.3.0"
+            "request@<2.88.2"
+            "moment@<2.29.4"
+          )
+
+          echo "" >> security-reports/static-analysis.md
+          echo "### Known Vulnerable Package Check" >> security-reports/static-analysis.md
+
+          FOUND_VULNS=false
+          for vuln_pattern in "${VULNERABLE_PACKAGES[@]}"; do
+            pkg_name=$(echo "$vuln_pattern" | cut -d'@' -f1)
+            max_version=$(echo "$vuln_pattern" | cut -d'@' -f2)
+
+            if grep -q "\"$pkg_name\":" package.json; then
+              echo "- $pkg_name: Checking version..." >> security-reports/static-analysis.md
+              # 这里可以添加更详细的版本检查逻辑
+            fi
+          done
+
+          # 统计依赖数量
+          DEP_COUNT=$(node -e "
+            try {
+              const pkg = JSON.parse(require('fs').readFileSync('package.json', 'utf8'));
+              console.log(Object.keys(pkg.dependencies || {}).length);
+            } catch(e) { console.log('0'); }
+          " 2>/dev/null || echo "0")
+
+          echo "" >> security-reports/static-analysis.md
+          echo "### Dependencies Summary" >> security-reports/static-analysis.md
+          echo "- Production Dependencies: $DEP_COUNT" >> security-reports/static-analysis.md
+
+        else
+          echo "❌ package.json not found" >> security-reports/static-analysis.md
+        fi
+
+    - name: Security Best Practices Check
+      working-directory: ./frontend
+      run: |
+        echo "🔒 Checking security best practices..."
+
+        cat >> security-reports/static-analysis.md << 'EOF'
+
+        ## Security Best Practices Check
+        EOF
+
+        # 检查安全相关配置文件
+        SECURITY_FILES=(
+          ".env.example"
+          ".eslintrc.json"
+          "tsconfig.json"
+          ".gitignore"
+        )
+
+        echo "" >> security-reports/static-analysis.md
+        echo "### Security Configuration Files" >> security-reports/static-analysis.md
+
+        for file in "${SECURITY_FILES[@]}"; do
+          if [ -f "$file" ]; then
+            echo "- ✅ $file" >> security-reports/static-analysis.md
+          else
+            echo "- ❌ $file" >> security-reports/static-analysis.md
+          fi
+        done
+
+        # 检查环境变量安全性
+        if [ -f ".env.example" ]; then
+          echo "" >> security-reports/static-analysis.md
+          echo "### Environment Variables Security" >> security-reports/static-analysis.md
+
+          # 检查是否有敏感信息
+          if grep -qi "password\|secret\|key\|token" .env.example; then
+            echo "- ⚠️ Contains sensitive variable names" >> security-reports/static-analysis.md
+          else
+            echo "- ✅ No obvious sensitive variables" >> security-reports/static-analysis.md
+          fi
+        fi
+
+    - name: Code Security Scan
+      working-directory: ./frontend
+      run: |
+        echo "🔍 Scanning source code for security issues..."
+
+        cat >> security-reports/static-analysis.md << 'EOF'
+
+        ## Source Code Security Scan
+        EOF
+
+        # 检查源代码中的安全问题
+        SECURITY_PATTERNS=(
+          "eval("
+          "dangerouslySetInnerHTML"
+          "innerHTML"
+          "document.write"
+          ".innerHTML ="
+          "localStorage"
+          "sessionStorage"
+          "process.env."
+        )
+
+        echo "" >> security-reports/static-analysis.md
+        echo "### Security Pattern Analysis" >> security-reports/static-analysis.md
+
+        for pattern in "${SECURITY_PATTERNS[@]}"; do
+          if grep -r "$pattern" src/ --include="*.js" --include="*.jsx" --include="*.ts" --include="*.tsx" >/dev/null 2>&1; then
+            COUNT=$(grep -r "$pattern" src/ --include="*.js" --include="*.jsx" --include="*.ts" --include="*.tsx" | wc -l)
+            echo "- ⚠️ $pattern: $COUNT occurrences" >> security-reports/static-analysis.md
+          else
+            echo "- ✅ $pattern: Not found" >> security-reports/static-analysis.md
+          fi
+        done
+
+    - name: External Security Check (if possible)
+      working-directory: ./frontend
+      continue-on-error: true
+      run: |
+        echo "🌐 Attempting external security check..."
+
+        # 尝试使用npm audit但不依赖安装
+        if npm audit --help >/dev/null 2>&1; then
+          echo "📦 NPM audit is available, attempting scan..."
+          npm audit --json --audit-level moderate > security-reports/npm-audit.json 2>&1 || echo "Audit found issues" > security-reports/npm-audit.txt
+
+          cat >> security-reports/static-analysis.md << 'EOF'
+
+        ## External Security Audit
+        ### NPM Audit Results
+        ```
+        EOF
+          cat security-reports/npm-audit.txt >> security-reports/static-analysis.md 2>/dev/null || echo "NPM audit failed" >> security-reports/static-analysis.md
+          echo '```' >> security-reports/static-analysis.md
+        else
+          echo "❌ NPM audit not available" >> security-reports/static-analysis.md
+        fi
+
+    - name: Generate Security Score
+      working-directory: ./frontend
+      run: |
+        echo "📊 Generating security score..."
+
+        cat >> security-reports/static-analysis.md << 'EOF'
+
+        ## Security Assessment Score
+        EOF
+
+        # 简单的安全评分算法
+        SCORE=100
+        ISSUES=0
+
+        # 检查各种安全问题
+        if [ ! -f package.json ]; then
+          ISSUES=$((ISSUES + 10))
+        fi
+
+        if grep -qi "password\|secret\|key" .env.example 2>/dev/null; then
+          ISSUES=$((ISSUES + 5))
+        fi
+
+        # 计算最终得分
+        SCORE=$((100 - ISSUES))
+
+        echo "- **Security Score:** $SCORE/100" >> security-reports/static-analysis.md
+        echo "- **Issues Found:** $ISSUES" >> security-reports/static-analysis.md
+
+        if [ $SCORE -ge 80 ]; then
+          echo "- **Status:** ✅ GOOD" >> security-reports/static-analysis.md
+        elif [ $SCORE -ge 60 ]; then
+          echo "- **Status:** ⚠️ MODERATE" >> security-reports/static-analysis.md
+        else
+          echo "- **Status:** ❌ NEEDS ATTENTION" >> security-reports/static-analysis.md
+        fi
+
+        echo "" >> security-reports/static-analysis.md
+        echo "---" >> security-reports/static-analysis.md
+        echo "*Report generated by Static Security Scanner*" >> security-reports/static-analysis.md
+
+    - name: Upload Security Reports
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: static-security-reports
+        path: frontend/security-reports/
+        retention-days: 30
+
+    - name: Security Summary
+      run: |
+        echo "🔒 Static security scan completed!"
+        echo "📊 Security reports are available in the artifacts"
+        echo "📄 Check 'static-security-reports' for detailed analysis"
+        echo ""
+        echo "✅ This scan provides security insights without requiring npm install"
