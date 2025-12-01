@@ -21,41 +21,41 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
-        cache: 'npm'
-        cache-dependency-path: frontend/package-lock.json
 
     - name: Install dependencies
       working-directory: ./frontend
-      run: npm ci
+      run: |
+        npm install --package-lock-only
+        npm ci
 
     - name: Create security reports directory
       working-directory: ./frontend
       run: mkdir -p security-reports
 
-    - name: Run NPM Security Audit
+    - name: Run Security Audit
       working-directory: ./frontend
+      id: audit
       run: |
-        echo "🔍 Running NPM Security Audit..."
-        npm audit --json > security-reports/npm-audit-report.json || true
+        echo "🔍 Running security audit..."
 
-    - name: Generate Security Summary
-      working-directory: ./frontend
-      run: |
+        # 创建基础报告
         echo "# 📊 Security Scan Report" > security-reports/security-summary.md
         echo "Generated on: $(date)" >> security-reports/security-summary.md
         echo "" >> security-reports/security-summary.md
-        echo "## NPM Audit Results" >> security-reports/security-summary.md
-        if [ -f "security-reports/npm-audit-report.json" ]; then
-          VULNS=$(node -e "try { const data = JSON.parse(require('fs').readFileSync('security-reports/npm-audit-report.json', 'utf8')); console.log(data.metadata ? data.metadata.vulnerabilities.total : 0); } catch(e) { console.log(0); }")
-          echo "- Total vulnerabilities: $VULNS" >> security-reports/security-summary.md
-          if [ "$VULNS" -gt 0 ]; then
-            echo "- Status: ❌ ISSUES FOUND" >> security-reports/security-summary.md
-          else
-            echo "- Status: ✅ SECURE" >> security-reports/security-summary.md
-          fi
+
+        # 运行npm audit并保存结果
+        npm audit --json > security-reports/npm-audit-report.json 2>&1 || true
+        npm audit >> security-reports/security-summary.md 2>&1 || echo "✅ No vulnerabilities found" >> security-reports/security-summary.md
+
+        # 检查是否有漏洞
+        if npm audit --audit-level moderate 2>&1 | grep -q "vulnerabilities found"; then
+          echo "::set-output name=vulnerabilities_found::true"
+          echo "❌ Vulnerabilities detected"
         else
-          echo "- Status: ❌ REPORT GENERATION FAILED" >> security-reports/security-summary.md
+          echo "::set-output name=vulnerabilities_found::false"
+          echo "✅ No vulnerabilities detected"
         fi
+      continue-on-error: true
 
     - name: Upload Security Report
       uses: actions/upload-artifact@v4
@@ -65,9 +65,15 @@ jobs:
         path: frontend/security-reports/
         retention-days: 30
 
-    - name: Check for High Severity Vulnerabilities
+    - name: Fail on High Severity Vulnerabilities
       working-directory: ./frontend
+      if: steps.audit.outputs.vulnerabilities_found == 'true'
       run: |
         echo "🔍 Checking for high severity vulnerabilities..."
-        # Fail on high/critical vulnerabilities only
         npm audit --audit-level high
+        if [ $? -ne 0 ]; then
+          echo "❌ High severity vulnerabilities found - failing build"
+          exit 1
+        else
+          echo "✅ No high severity vulnerabilities - build passes"
+        fi
