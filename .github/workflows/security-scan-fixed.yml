@@ -1,0 +1,118 @@
+name: Fixed Security Scan
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Verify npm and Node.js
+      run: |
+        echo "Node.js version: $(node --version)"
+        echo "NPM version: $(npm --version)"
+
+    - name: Validate package.json
+      working-directory: ./frontend
+      run: |
+        echo "🔍 Validating package.json..."
+        node -e "
+          try {
+            const pkg = JSON.parse(require('fs').readFileSync('package.json', 'utf8'));
+            console.log('✅ package.json is valid JSON');
+            console.log('📦 Package name:', pkg.name);
+            console.log('📦 Package version:', pkg.version);
+            console.log('📦 Dependencies count:', Object.keys(pkg.dependencies || {}).length);
+            console.log('📦 Dev dependencies count:', Object.keys(pkg.devDependencies || {}).length);
+          } catch(e) {
+            console.error('❌ package.json error:', e.message);
+            process.exit(1);
+          }
+        "
+
+    - name: Clean install dependencies
+      working-directory: ./frontend
+      run: |
+        echo "🧹 Cleaning any existing dependencies..."
+        rm -rf node_modules package-lock.json || true
+
+        echo "📦 Installing dependencies..."
+        npm install --verbose
+
+    - name: Create security reports directory
+      working-directory: ./frontend
+      run: mkdir -p security-reports
+
+    - name: Run security audit
+      working-directory: ./frontend
+      id: audit
+      run: |
+        echo "🔍 Running security audit..."
+
+        # 运行审计并保存结果
+        npm audit --json > security-reports/audit-report.json 2>&1 || true
+        npm audit --audit-level moderate > security-reports/audit-summary.txt 2>&1 || true
+
+        # 创建markdown报告
+        cat > security-reports/security-summary.md << EOF
+        # 📊 Security Scan Report
+
+        **Generated:** $(date)
+        **Scanner:** NPM Audit
+        **Node.js:** $(node --version)
+        **NPM:** $(npm --version)
+
+        ## Audit Results
+
+        \`\`\`
+        EOF
+
+        cat security-reports/audit-summary.txt >> security-reports/security-summary.md 2>&1 || echo "No audit results available" >> security-reports/security-summary.md
+        echo '\`\`\`' >> security-reports/security-report.md
+
+        # 检查是否有高危漏洞
+        if npm audit --audit-level high 2>/dev/null | grep -q "high"; then
+          echo "has_high_vulnerabilities=true" >> $GITHUB_OUTPUT
+          echo "- **High Severity:** ❌ DETECTED" >> security-reports/security-report.md
+        else
+          echo "has_high_vulnerabilities=false" >> $GITHUB_OUTPUT
+          echo "- **High Severity:** ✅ NONE" >> security-reports/security-report.md
+        fi
+
+        echo "- **Report Location:** \`frontend/security-reports/\`" >> security-reports/security-report.md
+
+    - name: Upload security reports
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: security-scan-report
+        path: frontend/security-reports/
+        retention-days: 30
+
+    - name: Security Check Results
+      working-directory: ./frontend
+      if: steps.audit.outputs.has_high_vulnerabilities == 'true'
+      run: |
+        echo "❌ High severity vulnerabilities detected!"
+        echo "Please review the security reports and update dependencies."
+        npm audit --audit-level high
+        exit 1
+
+    - name: Security Success
+      if: steps.audit.outputs.has_high_vulnerabilities != 'true'
+      run: |
+        echo "✅ Security scan completed successfully!"
+        echo "📊 No high severity vulnerabilities found."
+        echo "📄 Security reports are available in the artifacts."

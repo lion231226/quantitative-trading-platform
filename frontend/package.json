@@ -12,7 +12,7 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "test:cygwin": "/c/Program\\ Files/nodejs/node.exe ./node_modules/.bin/jest",
+    "test:cygwin": "npx jest",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug",

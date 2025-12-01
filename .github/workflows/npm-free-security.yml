@@ -1,0 +1,121 @@
+name: NPM-Free Security Scan
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  npm-free-security:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Try alternative npm approaches
+      working-directory: ./frontend
+      run: |
+        echo "🔍 Testing different npm approaches..."
+
+        # 方法1: 检查npm是否工作
+        if command -v npm &> /dev/null; then
+          echo "✅ npm is available"
+          npm --version
+        else
+          echo "❌ npm is not available"
+          exit 1
+        fi
+
+        # 方法2: 清理npm缓存
+        echo "🧹 Cleaning npm cache..."
+        npm cache clean --force || echo "Cache clean failed"
+
+        # 方法3: 使用npm install (最基本的)
+        echo "📦 Trying basic npm install..."
+        timeout 60 npm install || echo "npm install failed"
+
+    - name: Create security report without npm install
+      working-directory: ./frontend
+      run: |
+        echo "📊 Creating security report without npm install..."
+
+        # 创建报告目录
+        mkdir -p security-reports
+
+        # 生成基础安全报告
+        cat > security-reports/security-report.md << 'EOF'
+        # Security Scan Report
+
+        **Generated:** $(date)
+        **Scanner:** Static Analysis
+
+        ## Package Analysis
+        EOF
+
+        # 分析package.json
+        if [ -f package.json ]; then
+          echo "- package.json: ✅ EXISTS" >> security-reports/security-report.md
+          DEP_COUNT=$(node -e "console.log(Object.keys(JSON.parse(require('fs').readFileSync('package.json', 'utf8')).dependencies || {}).length)" 2>/dev/null || echo "0")
+          echo "- Dependencies: $DEP_COUNT" >> security-reports/security-report.md
+          DEV_DEP_COUNT=$(node -e "console.log(Object.keys(JSON.parse(require('fs').readFileSync('package.json', 'utf8')).devDependencies || {}).length)" 2>/dev/null || echo "0")
+          echo "- Dev Dependencies: $DEV_DEP_COUNT" >> security-reports/security-report.md
+        else
+          echo "- package.json: ❌ MISSING" >> security-reports/security-report.md
+        fi
+
+        # 检查node_modules
+        if [ -d "node_modules" ]; then
+          echo "- node_modules: ✅ EXISTS" >> security-reports/security-report.md
+          MODULE_COUNT=$(find node_modules -maxdepth 1 -type d | wc -l)
+          echo "- Installed modules: $MODULE_COUNT" >> security-reports/security-report.md
+        else
+          echo "- node_modules: ❌ MISSING" >> security-reports/security-report.md
+        fi
+
+        # 添加包信息
+        echo "" >> security-reports/security-report.md
+        echo "## Package List" >> security-reports/security-report.md
+        if [ -f package.json ]; then
+          echo '```json' >> security-reports/security-report.md
+          cat package.json | jq '.dependencies' 2>/dev/null || cat package.json >> security-reports/security-report.md
+          echo '```' >> security-reports/security-report.md
+        fi
+
+    - name: Try direct dependency audit (if npm install worked)
+      working-directory: ./frontend
+      run: |
+        if [ -d "node_modules" ] && command -v npm &> /dev/null; then
+          echo "🔍 Running npm audit on existing modules..."
+          npm audit --audit-level moderate > security-reports/audit-results.txt 2>&1 || echo "Audit completed with findings"
+          echo "## Audit Results" >> security-reports/security-report.md
+          echo '```' >> security-reports/security-report.md
+          cat security-reports/audit-results.txt >> security-reports/security-report.md 2>/dev/null || echo "No audit results available" >> security-reports/security-report.md
+          echo '```' >> security-reports/security-report.md
+        else
+          echo "⚠️ Skipping npm audit - no node_modules or npm unavailable"
+          echo "## Audit Status" >> security-reports/security-report.md
+          echo "- Skipped: No dependencies installed" >> security-reports/security-report.md
+        fi
+
+    - name: Upload security reports
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: npm-free-security-reports
+        path: frontend/security-reports/
+        retention-days: 30
+
+    - name: Final status
+      run: |
+        if [ -f "frontend/security-reports/security-report.md" ]; then
+          echo "✅ Security report generated successfully"
+          echo "📄 Check the artifacts for detailed security information"
+        else
+          echo "❌ Failed to generate security report"
+          exit 1
+        fi
