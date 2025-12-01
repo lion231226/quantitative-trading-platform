@@ -1,0 +1,137 @@
+<story-context id="frontend/src/docs/sprint-artifacts/4-4-performance-optimization-and-monitoring.context.xml" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>4</storyId>
+    <title>性能优化与监控体系建立</title>
+    <status>drafted</status>
+    <generatedAt>2025-12-01</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/4-4-performance-optimization-and-monitoring.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>系统架构师</asA>
+    <iWant>实现全面的性能优化和监控体系</iWant>
+    <soThat>确保量化交易平台达到企业级性能标准并具备实时性能可观测性</soThat>
+    <tasks>
+      Task 1: Core Web Vitals优化实施 (AC: 1)
+      - Subtask 1.1: 性能基线测量和目标设定 (CRITICAL)
+      - Subtask 1.2: Largest Contentful Paint (LCP) 优化
+      - Subtask 1.3: First Input Delay (FID) 优化
+      - Subtask 1.4: Cumulative Layout Shift (CLS) 优化
+
+      Task 2: Bundle优化和代码分割 (AC: 2)
+      - Subtask 2.1: Bundle分析和优化策略
+      - Subtask 2.2: 代码分割实现
+      - Subtask 2.3: 资源优化和压缩
+
+      Task 3: 图表性能优化和基准测试 (AC: 3)
+      - Subtask 3.1: Chart.js性能优化
+      - Subtask 3.2: 数据处理性能优化
+      - Subtask 3.3: 性能基准测试框架
+
+      Task 4: 性能监控和APM集成 (AC: 4)
+      - Subtask 4.1: Sentry Performance集成
+      - Subtask 4.2: Web Vitals实时监控
+      - Subtask 4.3: 自定义性能指标
+
+      Task 5: 性能预算CI检查和自动化 (AC: 5)
+      - Subtask 5.1: Lighthouse CI集成
+      - Subtask 5.2: Bundle大小CI检查
+      - Subtask 5.3: 性能监控仪表板
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. Core Web Vitals优化 - LCP < 2.5s, FID < 100ms, CLS < 0.1
+    2. Bundle大小减少20% - JavaScript包优化，代码分割
+    3. 图表性能基准 - 大数据量渲染性能优化
+    4. 性能监控集成 - Sentry Performance + Web Vitals
+    5. 性能预算CI检查 - 自动化性能回归检测
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/PRD.md" title="产品需求文档" section="Non-Functional Requirements" snippet="系统性能 - 页面加载时间必须小于 3 秒，策略回测响应时间必须小于 10 秒" />
+      <doc path="docs/epics/epic-4-technical-debt-cleanup-and-quality-enhancement.md" title="Epic 4 技术债务清理与质量保障全面提升" section="Story 4.4: 性能优化与监控体系建立" snippet="当前问题：缺少性能监控和基准测试，Bundle 大小可能优化空间，图表渲染性能需要进一步优化，缺少性能预算和检查" />
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4 技术规格" section="Non-Functional Requirements" snippet="Core Web Vitals 目标 - Largest Contentful Paint (LCP): < 2.5秒，First Input Delay (FID): < 100毫秒，Cumulative Layout Shift (CLS): < 0.1" />
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4 技术规格" section="Performance" snippet="Bundle 大小限制 - 主Bundle: ≤ 500KB (gzipped)，总JavaScript大小: ≤ 1MB (gzipped)，首屏关键资源: ≤ 250KB" />
+    </docs>
+
+    <code>
+      <artifact path="frontend/src/services/performanceService.ts" kind="service" symbol="PerformanceService" lines="1-651" reason="现有的性能监控服务，包含指标收集、缓存管理和性能变更检测功能" />
+      <artifact path="frontend/src/components/charts/PerformanceMonitor.tsx" kind="component" symbol="PerformanceMonitor" lines="1-267" reason="实时性能监控组件，显示FPS、渲染时间、内存使用等关键指标" />
+      <artifact path="frontend/src/components/charts/PerformanceMetricsPanel.tsx" kind="component" symbol="PerformanceMetricsPanel" reason="性能指标面板组件，用于展示详细的性能分析数据" />
+      <artifact path="frontend/src/components/charts/PerformanceBenchmark.tsx" kind="component" symbol="PerformanceBenchmark" reason="性能基准测试组件，用于对比不同配置下的性能表现" />
+      <artifact path="frontend/src/utils/performanceHelpers.ts" kind="utility" symbol="performanceHelpers" reason="性能相关的辅助函数和工具集合" />
+      <artifact path="frontend/src/services/adaptivePerformanceService.ts" kind="service" symbol="AdaptivePerformanceService" reason="自适应性能优化服务，根据系统状态动态调整性能参数" />
+      <artifact path="frontend/src/types/performance.types.ts" kind="types" symbol="PerformanceTypes" reason="性能相关的TypeScript类型定义，包括性能指标和配置接口" />
+      <artifact path="frontend/package.json" kind="config" symbol="package.json" lines="24-80" reason="项目依赖配置，包含现有的性能相关库和构建配置" />
+      <artifact path="frontend/next.config.js" kind="config" symbol="next.config.js" lines="1-28" reason="Next.js配置文件，需要添加性能优化配置" />
+    </code>
+
+    <dependencies>
+      <ecosystem name="node">
+        <package name="next" version="^14.2.33" />
+        <package name="react" version="^18" />
+        <package name="@tanstack/react-query" version="^5.40.0" />
+        <package name="chart.js" version="^4.4.2" />
+        <package name="lightweight-charts" version="^5.0.9" />
+      </ecosystem>
+
+      <ecosystem name="dev">
+        <package name="@next/bundle-analyzer" version="^14.0.0" />
+        <package name="lighthouse" version="^12.0.0" />
+        <package name="web-vitals" version="^4.0.0" />
+        <package name="@sentry/react" version="^8.0.0" />
+        <package name="webpack-bundle-analyzer" version="^4.9.0" />
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture" description="必须遵循现有的Next.js 14 + TypeScript + Chart.js架构模式" />
+    <constraint type="performance" description="Core Web Vitals必须达到Google推荐标准：LCP < 2.5s, FID < 100ms, CLS < 0.1" />
+    <constraint type="bundle" description="主Bundle大小限制：≤ 500KB (gzipped)，总JavaScript大小：≤ 1MB (gzipped)" />
+    <constraint type="compatibility" description="必须保持与现有Chart.js 4.4+集成的兼容性" />
+    <constraint type="testing" description="所有性能优化必须通过回归测试，确保不影响现有功能" />
+    <constraint type="monitoring" description="必须集成Sentry Performance监控，提供实时性能数据" />
+    <constraint type="accessibility" description="性能优化不能降低可访问性标准，必须维持WCAG 2.1 AA合规" />
+    <constraint type="budget" description="建立性能预算和CI检查，防止性能回归" />
+  </constraints>
+
+  <interfaces>
+    <interface name="PerformanceMonitoringService" kind="service-interface" signature="interface PerformanceMonitoringService { trackWebVitals(): Promise<WebVitalsMetrics>; trackCustomMetric(name: string, value: number, tags?: Record<string, string>): void; analyzePerformanceTrends(timeRange: TimeRange): Promise<PerformanceTrend>; setupPerformanceAlerts(thresholds: PerformanceThresholds): void; }" path="frontend/src/services/performanceService.ts" />
+
+    <interface name="WebVitalsMetrics" kind="type-interface" signature="interface WebVitalsMetrics { lcp: number; fid: number; cls: number; fcp: number; ttfb: number; }" path="frontend/src/types/performance.types.ts" />
+
+    <interface name="PerformanceThresholds" kind="type-interface" signature="interface PerformanceThresholds { lcp: number; fid: number; cls: number; renderTime: number; memoryUsage: number; }" path="frontend/src/types/performance.types.ts" />
+
+    <interface name="PerformanceAnalysisRequest" kind="type-interface" signature="interface PerformanceAnalysisRequest { strategyId: string; returnType: string; initialCapital: number; positionSize: number; riskFreeRate: number; includeCosts: boolean; startDate?: string; endDate?: string; benchmarkId?: string; }" path="frontend/src/types/performance.types.ts" />
+  </interfaces>
+
+  <tests>
+    <standards>
+      基于Epic 4技术规格建立的测试标准：使用Jest + React Testing Library进行组件测试，Lighthouse CI进行性能审计，Jest-axe进行可访问性测试。测试覆盖率目标≥85%，性能基准测试包含大数据量场景（10,000+数据点），CI/CD管道总执行时间<10分钟。
+    </standards>
+
+    <locations>
+      <location pattern="__tests__/performance/" description="性能测试套件目录" />
+      <location pattern="__tests__/bundles/" description="Bundle分析测试目录" />
+      <location pattern="components/charts/__tests__/" description="图表组件性能测试目录" />
+      <location pattern="services/__tests__/" description="性能服务测试目录" />
+      <location pattern=".github/workflows/" description="CI/CD性能检查配置" />
+    </locations>
+
+    <ideas>
+      <test idea="AC1" description="Core Web Vitals测试 - 使用Lighthouse CI自动化测试LCP、FID、CLS指标" />
+      <test idea="AC2" description="Bundle大小测试 - 使用webpack-bundle-analyzer验证Bundle大小减少20%" />
+      <test idea="AC3" description="图表性能测试 - 大数据量（10,000+数据点）渲染性能基准测试" />
+      <test idea="AC4" description="性能监控集成测试 - 验证Sentry Performance集成和Web Vitals数据收集" />
+      <test idea="AC5" description="性能预算测试 - CI/CD管道中的性能回归检测自动化测试" />
+      <test idea="custom" description="内存泄漏测试 - 长时间运行下的内存使用监控" />
+      <test idea="custom" description="并发用户测试 - 多用户同时访问时的性能表现测试" />
+      <test idea="custom" description="设备兼容性测试 - 不同设备和网络条件下的性能测试" />
+    </ideas>
+  </tests>
+</story-context>

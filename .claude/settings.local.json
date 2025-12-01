@@ -74,7 +74,12 @@
       "Bash(cd:*)",
       "Bash(xmllint:*)",
       "Bash(npx eslint:*)",
-      "Bash(npx prettier:*)"
+      "Bash(npx prettier:*)",
+      "Bash(/c/Program Files/nodejs/node.exe node_modules/.bin/jest:*)",
+      "Bash(npx:*)",
+      "Bash(echo:*)",
+      "Bash(/c/Program Files/nodejs/node.exe:*)",
+      "Bash(jest:*)"
     ],
     "deny": [],
     "ask": []
