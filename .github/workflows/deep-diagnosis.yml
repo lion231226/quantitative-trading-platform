@@ -1,0 +1,181 @@
+name: Deep Diagnosis of CI/CD Issues
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deep-diagnosis:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js (try different version)
+      uses: actions/setup-node@v4
+      with:
+        node-version: '16'
+
+    - name: System information
+      run: |
+        echo "=== System Information ==="
+        echo "OS: $(uname -a)"
+        echo "Disk space: $(df -h .)"
+        echo "Memory: $(free -h)"
+        echo "Node.js: $(node --version)"
+        echo "NPM: $(npm --version)"
+
+    - name: Test basic npm commands
+      working-directory: ./frontend
+      run: |
+        echo "=== Testing Basic NPM Commands ==="
+        echo "npm config list:"
+        npm config list || echo "npm config failed"
+        echo ""
+        echo "npm root:"
+        npm root || echo "npm root failed"
+        echo ""
+        echo "npm cache verify:"
+        npm cache verify || echo "npm cache verify failed"
+
+    - name: Analyze package.json dependencies
+      working-directory: ./frontend
+      run: |
+        echo "=== Analyzing Dependencies ==="
+        echo "package.json size: $(wc -c < package.json)"
+        echo ""
+        echo "Dependencies:"
+        node -e "const pkg = JSON.parse(require('fs').readFileSync('package.json', 'utf8')); Object.entries(pkg.dependencies || {}).forEach(([name, version]) => console.log(name + ': ' + version));"
+        echo ""
+        echo "Dev Dependencies:"
+        node -e "const pkg = JSON.parse(require('fs').readFileSync('package.json', 'utf8')); Object.entries(pkg.devDependencies || {}).forEach(([name, version]) => console.log(name + ': ' + version));"
+
+    - name: Try individual package installations
+      working-directory: ./frontend
+      run: |
+        echo "=== Testing Individual Package Installations ==="
+
+        # Test installing core packages one by one
+        CORE_PACKAGES=("react@18" "next@14" "typescript@5")
+
+        for package in "${CORE_PACKAGES[@]}"; do
+          echo "Installing $package..."
+          npm install $package --no-save || echo "Failed to install $package"
+        done
+
+    - name: Try clean npm install with debug
+      working-directory: ./frontend
+      continue-on-error: true
+      run: |
+        echo "=== Trying Clean NPM Install with Debug ==="
+
+        # Set debug mode
+        export npm_config_debug=true
+        export npm_config_loglevel=verbose
+
+        echo "Clearing npm cache..."
+        npm cache clean --force
+
+        echo "Removing node_modules and package-lock.json..."
+        rm -rf node_modules package-lock.json
+
+        echo "Installing with debug info..."
+        timeout 120 npm install --verbose --loglevel silly || echo "npm install failed"
+
+    - name: Check for conflicting versions
+      working-directory: ./frontend
+      run: |
+        echo "=== Checking for Version Conflicts ==="
+
+        # Look for potential conflicts in package.json
+        node -e "
+          const pkg = JSON.parse(require('fs').readFileSync('package.json', 'utf8'));
+          const allDeps = { ...pkg.dependencies, ...pkg.devDependencies };
+
+          // Check for common conflict patterns
+          const conflicts = [];
+
+          // Check React versions
+          const reactPackages = Object.keys(allDeps).filter(name => name.includes('react'));
+          if (reactPackages.length > 3) conflicts.push('Too many React-related packages');
+
+          // Check Next.js versions
+          const nextPackages = Object.keys(allDeps).filter(name => name.includes('next'));
+          if (nextPackages.length > 1) conflicts.push('Multiple Next.js packages');
+
+          // Check for beta/alpha versions
+          Object.entries(allDeps).forEach(([name, version]) => {
+            if (version.includes('beta') || version.includes('alpha')) {
+              conflicts.push('Beta/Alpha version detected: ' + name + '@' + version);
+            }
+          });
+
+          if (conflicts.length > 0) {
+            console.log('⚠️ Potential conflicts found:');
+            conflicts.forEach(conflict => console.log('- ' + conflict));
+          } else {
+            console.log('✅ No obvious conflicts detected');
+          }
+        "
+
+    - name: Create minimal test package
+      working-directory: ./frontend
+      run: |
+        echo "=== Creating Minimal Test Package ==="
+
+        # Backup original package.json
+        cp package.json package.json.backup
+
+        # Create minimal package.json
+        cat > package.json << 'EOF'
+        {
+          "name": "test-frontend",
+          "version": "0.1.0",
+          "private": true,
+          "dependencies": {
+            "react": "^18",
+            "react-dom": "^18"
+          },
+          "devDependencies": {
+            "typescript": "^5",
+            "@types/react": "^18"
+          }
+        }
+        EOF
+
+        echo "Created minimal package.json. Testing npm install..."
+        timeout 60 npm install || echo "Minimal package install also failed"
+
+        # Restore original
+        mv package.json.backup package.json
+
+    - name: Final diagnosis report
+      if: always()
+      run: |
+        echo "=== Diagnosis Report ===" > diagnosis-report.txt
+        echo "Timestamp: $(date)" >> diagnosis-report.txt
+        echo "Node.js version: $(node --version)" >> diagnosis-report.txt
+        echo "NPM version: $(npm --version)" >> diagnosis-report.txt
+        echo "" >> diagnosis-report.txt
+
+        if [ -f "frontend/package.json" ]; then
+          echo "package.json exists" >> diagnosis-report.txt
+          echo "package.json size: $(wc -c < frontend/package.json)" >> diagnosis-report.txt
+        else
+          echo "package.json missing" >> diagnosis-report.txt
+        fi
+
+        if [ -d "frontend/node_modules" ]; then
+          echo "node_modules exists" >> diagnosis-report.txt
+          echo "node_modules count: $(find frontend/node_modules -maxdepth 1 -type d | wc -l)" >> diagnosis-report.txt
+        else
+          echo "node_modules missing" >> diagnosis-report.txt
+        fi
+
+    - name: Upload diagnosis report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: diagnosis-report
+        path: diagnosis-report.txt

@@ -1,0 +1,79 @@
+name: Minimal Package Test
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  minimal-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Test with minimal package.json
+      working-directory: ./frontend
+      run: |
+        echo "🧪 Testing with minimal package.json..."
+
+        # Backup original package.json
+        cp package.json package.json.original
+
+        # Use minimal version
+        cp package.json.minimal package.json
+
+        echo "📄 Minimal package.json:"
+        cat package.json
+
+        echo ""
+        echo "🗑️ Cleaning up..."
+        rm -rf node_modules package-lock.json
+
+        echo "📦 Installing dependencies..."
+        npm install --verbose
+
+        echo "✅ Minimal package test completed successfully!"
+
+    - name: Verify installation
+      working-directory: ./frontend
+      run: |
+        echo "🔍 Verifying installation..."
+        echo "Node modules exist: $(test -d node_modules && echo 'YES' || echo 'NO')"
+        echo "Package lock exists: $(test -f package-lock.json && echo 'YES' || echo 'NO')"
+        echo "Next.js installed: $(test -d node_modules/next && echo 'YES' || echo 'NO')"
+        echo "React installed: $(test -d node_modules/react && echo 'YES' || echo 'NO')"
+
+    - name: Run security check on minimal setup
+      working-directory: ./frontend
+      run: |
+        echo "🔒 Running security check..."
+        npm audit --audit-level moderate || echo "Some vulnerabilities found"
+
+    - name: Create minimal security report
+      working-directory: ./frontend
+      run: |
+        mkdir -p security-reports
+        echo "# Minimal Security Report" > security-reports/minimal-report.md
+        echo "Generated: $(date)" >> security-reports/minimal-report.md
+        echo "Status: Minimal package test completed" >> security-reports/minimal-report.md
+
+    - name: Upload minimal test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: minimal-test-results
+        path: frontend/security-reports/
+        retention-days: 7
+
+    - name: Restore original package.json
+      working-directory: ./frontend
+      if: always()
+      run: |
+        cp package.json.original package.json
+        echo "📄 Restored original package.json"
