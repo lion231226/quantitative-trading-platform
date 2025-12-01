@@ -21,59 +21,84 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+
+    - name: Create security reports directory
+      run: mkdir -p frontend/security-reports
 
     - name: Install dependencies
       working-directory: ./frontend
       run: |
-        npm install --package-lock-only
-        npm ci
-
-    - name: Create security reports directory
-      working-directory: ./frontend
-      run: mkdir -p security-reports
+        echo "📦 Installing dependencies..."
+        npm ci --verbose
 
     - name: Run Security Audit
       working-directory: ./frontend
-      id: audit
+      id: security
       run: |
         echo "🔍 Running security audit..."
 
-        # 创建基础报告
-        echo "# 📊 Security Scan Report" > security-reports/security-summary.md
-        echo "Generated on: $(date)" >> security-reports/security-summary.md
-        echo "" >> security-reports/security-summary.md
+        # 创建安全报告
+        cat > security-reports/security-summary.md << EOF
+        # 📊 Security Scan Report
 
-        # 运行npm audit并保存结果
-        npm audit --json > security-reports/npm-audit-report.json 2>&1 || true
-        npm audit >> security-reports/security-summary.md 2>&1 || echo "✅ No vulnerabilities found" >> security-reports/security-summary.md
+        **Generated:** $(date)
+        **Node.js version:** $(node --version)
+        **NPM version:** $(npm --version)
 
-        # 检查是否有漏洞
-        if npm audit --audit-level moderate 2>&1 | grep -q "vulnerabilities found"; then
-          echo "::set-output name=vulnerabilities_found::true"
-          echo "❌ Vulnerabilities detected"
+        ## Dependencies Analysis
+
+        EOF
+
+        # 运行审计并检查结果
+        if npm audit --json > security-reports/audit-report.json 2>&1; then
+          echo "✅ NPM audit completed successfully"
+          echo "- Audit Status: ✅ COMPLETED" >> security-reports/security-summary.md
         else
-          echo "::set-output name=vulnerabilities_found::false"
-          echo "✅ No vulnerabilities detected"
+          echo "⚠️ NPM audit found vulnerabilities"
+          echo "- Audit Status: ⚠️ VULNERABILITIES FOUND" >> security-reports/security-summary.md
         fi
-      continue-on-error: true
 
-    - name: Upload Security Report
+        # 简单检查是否有高危漏洞
+        if npm audit --audit-level high 2>/dev/null | grep -q "high"; then
+          echo "has_high_vulns=true" >> $GITHUB_OUTPUT
+          echo "- High Severity: ❌ DETECTED" >> security-reports/security-summary.md
+        else
+          echo "has_high_vulns=false" >> $GITHUB_OUTPUT
+          echo "- High Severity: ✅ NONE" >> security-reports/security-summary.md
+        fi
+
+        echo "" >> security-reports/security-summary.md
+        echo "## Package Information" >> security-reports/security-summary.md
+        echo "- Dependencies: $(cat package.json | jq '.dependencies | keys | length' 2>/dev/null || echo 'N/A')" >> security-reports/security-summary.md
+        echo "- Dev Dependencies: $(cat package.json | jq '.devDependencies | keys | length' 2>/dev/null || echo 'N/A')" >> security-reports/security-summary.md
+
+    - name: Generate Dependency Report
+      working-directory: ./frontend
+      run: |
+        echo "📋 Generating dependency report..."
+        npm list --depth=0 > security-reports/dependency-list.txt 2>/dev/null || echo "Unable to list dependencies" > security-reports/dependency-list.txt
+
+    - name: Upload Security Reports
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: security-report
+        name: security-reports
         path: frontend/security-reports/
         retention-days: 30
 
-    - name: Fail on High Severity Vulnerabilities
+    - name: Check Security Status
       working-directory: ./frontend
-      if: steps.audit.outputs.vulnerabilities_found == 'true'
+      if: steps.security.outputs.has_high_vulns == 'true'
       run: |
-        echo "🔍 Checking for high severity vulnerabilities..."
+        echo "❌ High severity vulnerabilities detected!"
+        echo "Please review the security reports and update dependencies."
         npm audit --audit-level high
-        if [ $? -ne 0 ]; then
-          echo "❌ High severity vulnerabilities found - failing build"
-          exit 1
-        else
-          echo "✅ No high severity vulnerabilities - build passes"
-        fi
+        exit 1
+
+    - name: Security Success
+      if: steps.security.outputs.has_high_vulns != 'true'
+      run: |
+        echo "✅ Security scan completed successfully"
+        echo "No high severity vulnerabilities found."

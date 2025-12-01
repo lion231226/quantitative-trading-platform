@@ -1,0 +1,57 @@
+name: Simple Security Scan
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  simple-security:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Test NPM installation
+      working-directory: ./frontend
+      run: |
+        echo "Node version: $(node --version)"
+        echo "NPM version: $(npm --version)"
+        echo "Package.json exists: $(test -f package.json && echo 'YES' || echo 'NO')"
+        echo "Package-lock.json exists: $(test -f package-lock.json && echo 'YES' || echo 'NO')"
+
+    - name: Install dependencies safely
+      working-directory: ./frontend
+      run: |
+        set -e
+        echo "Installing dependencies..."
+        npm install
+        echo "Dependencies installed successfully"
+
+    - name: Run basic security check
+      working-directory: ./frontend
+      run: |
+        echo "🔍 Running security check..."
+        mkdir -p security-reports
+
+        # 简单的安全检查
+        npm audit || echo "⚠️ Some vulnerabilities found"
+
+        # 创建基础报告
+        echo "Security Scan Report - $(date)" > security-reports/report.txt
+        npm list --depth=0 >> security-reports/report.txt 2>&1 || true
+
+    - name: Upload security report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: security-report
+        path: frontend/security-reports/
+        retention-days: 7
