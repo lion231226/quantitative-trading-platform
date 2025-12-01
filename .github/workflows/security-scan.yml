@@ -28,10 +28,34 @@ jobs:
       working-directory: ./frontend
       run: npm ci
 
+    - name: Create security reports directory
+      working-directory: ./frontend
+      run: mkdir -p security-reports
+
     - name: Run NPM Security Audit
       working-directory: ./frontend
       run: |
-        node ../../scripts/security-audit.js --no-fail --generate-report
+        echo "🔍 Running NPM Security Audit..."
+        npm audit --json > security-reports/npm-audit-report.json || true
+
+    - name: Generate Security Summary
+      working-directory: ./frontend
+      run: |
+        echo "# 📊 Security Scan Report" > security-reports/security-summary.md
+        echo "Generated on: $(date)" >> security-reports/security-summary.md
+        echo "" >> security-reports/security-summary.md
+        echo "## NPM Audit Results" >> security-reports/security-summary.md
+        if [ -f "security-reports/npm-audit-report.json" ]; then
+          VULNS=$(node -e "try { const data = JSON.parse(require('fs').readFileSync('security-reports/npm-audit-report.json', 'utf8')); console.log(data.metadata ? data.metadata.vulnerabilities.total : 0); } catch(e) { console.log(0); }")
+          echo "- Total vulnerabilities: $VULNS" >> security-reports/security-summary.md
+          if [ "$VULNS" -gt 0 ]; then
+            echo "- Status: ❌ ISSUES FOUND" >> security-reports/security-summary.md
+          else
+            echo "- Status: ✅ SECURE" >> security-reports/security-summary.md
+          fi
+        else
+          echo "- Status: ❌ REPORT GENERATION FAILED" >> security-reports/security-summary.md
+        fi
 
     - name: Upload Security Report
       uses: actions/upload-artifact@v4
@@ -41,37 +65,9 @@ jobs:
         path: frontend/security-reports/
         retention-days: 30
 
-    - name: Check Security Thresholds
+    - name: Check for High Severity Vulnerabilities
       working-directory: ./frontend
       run: |
-        node ../../scripts/security-audit.js
-
-    - name: Attempt Auto-fix (only on develop branch)
-      working-directory: ./frontend
-      if: github.ref == 'refs/heads/develop'
-      run: |
-        node ../../scripts/security-audit.js --auto-fix --no-fail
-
-    - name: Create Pull Request for Security Fixes
-      if: github.ref == 'refs/heads/develop'
-      uses: peter-evans/create-pull-request@v5
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        commit-message: "🔒 Auto-fix security vulnerabilities"
-        title: "🔒 Automated Security Vulnerability Fixes"
-        body: |
-          🤖 此PR由安全扫描自动生成，包含依赖漏洞修复。
-
-          ## 修复内容
-          - 自动修复npm audit发现的漏洞
-          - 更新依赖包到安全版本
-
-          ## 验证步骤
-          1. 检查更新的依赖包
-          2. 运行完整测试套件
-          3. 确认功能正常工作
-
-          ---
-          *此PR由安全扫描工作流自动创建*
-        branch: security/auto-fix
-        delete-branch: true
+        echo "🔍 Checking for high severity vulnerabilities..."
+        # Fail on high/critical vulnerabilities only
+        npm audit --audit-level high
