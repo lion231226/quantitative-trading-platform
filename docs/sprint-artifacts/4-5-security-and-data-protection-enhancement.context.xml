@@ -1,0 +1,230 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>5</storyId>
+    <title>安全性与数据保护强化</title>
+    <status>drafted</status>
+    <generatedAt>2025-12-02</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/4-5-security-and-data-protection-enhancement.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>量化交易平台的用户和系统管理员</asA>
+    <iWant>应用安全可靠，数据得到充分保护</iWant>
+    <soThat>能够信任平台并安全地使用量化交易功能</soThat>
+    <tasks>Task 1: 依赖安全扫描和漏洞管理 (AC: 1)
+- Subtask 1.1: NPM Audit 集成和自动化扫描
+- Subtask 1.2: Snyk 安全扫描集成
+- Subtask 1.3: 前端依赖安全加固
+
+Task 2: API 安全增强和输入验证 (AC: 2)
+- Subtask 2.1: Rate Limiting 实现
+- Subtask 2.2: CORS 策略优化
+- Subtask 2.3: 输入验证和清理
+
+Task 3: 数据加密和传输安全 (AC: 3)
+- Subtask 3.1: 传输层加密 (HTTPS)
+- Subtask 3.2: 敏感数据存储加密
+- Subtask 3.3: 环境变量和配置安全
+
+Task 4: 安全头配置和浏览器防护 (AC: 4)
+- Subtask 4.1: 内容安全策略 (CSP) 配置
+- Subtask 4.2: HSTS 和传输安全头
+- Subtask 4.3: 点击劫持和框架保护
+
+Task 5: 安全测试自动化和监控 (AC: 5)
+- Subtask 5.1: OWASP ZAP 集成
+- Subtask 5.2: 安全测试套件
+- Subtask 5.3: 安全监控和告警</tasks>
+  </story>
+
+  <acceptanceCriteria>1. 依赖安全扫描 - Snyk/NPM Audit 集成，0 高危漏洞
+2. API 安全增强 - Rate limiting, CORS 优化, 输入验证
+3. 数据加密 - 敏感数据存储加密，传输 HTTPS
+4. 安全头配置 - CSP, HSTS, X-Frame-Options 等
+5. 安全测试自动化 - OWASP ZAP 基础扫描</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4 Technical Specification - 安全性与数据保护强化" section="深度防御策略">
+        深度防御策略：
+        - 第一层：网络安全（HTTPS、CORS、Rate Limiting）
+        - 第二层：应用安全（输入验证、安全头、依赖安全）
+        - 第三层：数据安全（加密存储、传输保护）
+        - 第四层：监控安全（扫描、告警、事件响应）
+      </doc>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4 Technical Specification - 安全自动化原则" section="安全自动化原则">
+        安全自动化原则：
+        - 安全左移：在开发阶段集成安全检查
+        - 持续监控：7x24小时安全状态监控
+        - 快速响应：自动化漏洞修复和告警
+      </doc>
+      <doc path="docs/architecture-one-click-launch.md" title="系统架构文档 - 安全架构" section="安全架构设计">
+        安全架构设计：
+        - 权限管理：基于角色的访问控制和权限验证
+        - 网络安全：HTTPS强制传输、CORS策略配置
+        - 输入验证：全面的参数验证和数据清理机制
+        - 错误处理：安全的错误信息返回，避免信息泄露
+      </doc>
+      <doc path="docs/tech-spec.md" title="技术规格 - API安全设计" section="API安全设计原则">
+        API安全设计原则：
+        - RESTful API安全端点设计
+        - JWT身份验证和授权机制
+        - 错误响应标准化，不泄露敏感信息
+        - 输入参数严格验证和类型检查
+      </doc>
+      <doc path="docs/stories/4-4-performance-optimization-and-monitoring.md" title="前序故事 - 监控集成经验" section="监控集成模式">
+        监控集成模式（可应用于安全监控）：
+        - Sentry APM集成模式
+        - CI/CD自动化检查集成
+        - 实时监控系统架构
+        - 自动化报告和告警机制
+      </doc>
+    </docs>
+    <code>
+      <artifact path="backend/app/core/middleware.py" kind="middleware" symbol="SecurityMiddleware" lines="1-50" reason="现有安全头配置实现，包含XSS保护、点击劫持防护等基础安全措施"/>
+      <artifact path="backend/app/core/middleware.py" kind="middleware" symbol="RateLimitMiddleware" lines="50-100" reason="现有API速率限制实现，可作为增强基础"/>
+      <artifact path="frontend/src/lib/api.ts" kind="service" symbol="ApiService" lines="1-50" reason="现有API客户端配置，包含错误处理和超时机制"/>
+      <artifact path="frontend/src/lib/validation.ts" kind="utility" symbol="validationSchema" lines="1-100" reason="现有输入验证框架，可扩展安全验证规则"/>
+      <artifact path="backend/app/core/config.py" kind="config" symbol="Settings" lines="1-80" reason="现有配置管理系统，包含JWT和安全配置"/>
+      <artifact path=".pre-commit-config.yaml" kind="config" symbol="bandit" lines="1-20" reason="现有Bandit安全扫描配置，可作为依赖安全扫描基础"/>
+      <artifact path="backend/requirements.txt" kind="dependencies" symbol="security-packages" lines="1-50" reason="现有Python安全依赖包，包含JWT和密码加密"/>
+      <artifact path="frontend/package.json" kind="dependencies" symbol="frontend-deps" lines="1-50" reason="前端依赖配置，需要安全扫描集成"/>
+    </code>
+    <dependencies>
+      <ecosystem name="frontend-npm">
+        <package name="next" version="^14.2.33" security-critical="true"/>
+        <package name="react" version="^18" security-critical="true"/>
+        <package name="axios" version="^1.7.2" security-critical="true"/>
+        <package name="@sentry/react" version="^10.27.0" security-relevant="true"/>
+        <package name="@tanstack/react-query" version="^5.40.0" security-relevant="true"/>
+
+        <!-- Security packages to be added -->
+        <package name="helmet" version="^7.0.0" required="true" reason="Security headers configuration"/>
+        <package name="express-rate-limit" version="^7.0.0" required="true" reason="API rate limiting"/>
+        <package name="cors" version="^2.8.5" required="true" reason="CORS policy configuration"/>
+        <package name="express-validator" version="^7.0.0" required="true" reason="Input validation"/>
+        <package name="bcrypt" version="^5.1.0" required="true" reason="Password encryption"/>
+        <package name="snyk" version="^8.0.0" required="true" reason="Dependency vulnerability scanning"/>
+      </ecosystem>
+
+      <ecosystem name="backend-python">
+        <package name="fastapi" version="0.111.0" security-critical="true"/>
+        <package name="pydantic" version="2.7.3" security-critical="true"/>
+        <package name="python-jose[cryptography]" version="3.3.0" security-relevant="true"/>
+        <package name="passlib[bcrypt]" version="1.7.4" security-relevant="true"/>
+        <package name="httpx" version="0.27.0" security-critical="true"/>
+
+        <!-- Security tools already present -->
+        <package name="bandit" version="1.7.5" present="true" reason="Python security vulnerability scanning"/>
+      </ecosystem>
+
+      <ecosystem name="testing">
+        <package name="jest" version="^29.7.0" security-relevant="true"/>
+        <package name="@testing-library/react" version="^15.0.7" security-relevant="true"/>
+        <package name="supertest" version="^6.3.0" required="true" reason="API security testing"/>
+        <package name="pytest" version="8.2.1" security-relevant="true"/>
+        <package name="pytest-cov" version="5.0.0" security-relevant="true"/>
+      </ecosystem>
+
+      <ecosystem name="development-tools">
+        <package name="eslint" version="^8" security-relevant="true"/>
+        <package name="eslint-plugin-jsx-a11y" version="^6.10.2" security-relevant="true"/>
+        <package name="typescript" version="^5" security-relevant="true"/>
+
+        <!-- Security linting to be added -->
+        <package name="eslint-plugin-security" version="^1.7.1" required="true" reason="Security linting rules"/>
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture" name="深度防御安全架构">
+      必须遵循四层防御架构：
+      - 第一层：网络安全（HTTPS、CORS、Rate Limiting）
+      - 第二层：应用安全（输入验证、安全头、依赖安全）
+      - 第三层：数据安全（加密存储、传输保护）
+      - 第四层：监控安全（扫描、告警、事件响应）
+    </constraint>
+    <constraint type="development" name="安全自动化原则">
+      必须实现三个自动化原则：
+      - 安全左移：在开发阶段集成安全检查
+      - 持续监控：7x24小时安全状态监控
+      - 快速响应：自动化漏洞修复和告警
+    </constraint>
+    <constraint type="frontend" name="Next.js + React安全要求">
+      所有用户输入必须经过验证和清理
+      实现内容安全策略防止XSS攻击
+      使用安全的Cookie配置（HttpOnly、Secure、SameSite）
+      敏感操作需要CSRF保护
+    </constraint>
+    <constraint type="api" name="API安全约束">
+      所有API端点必须实现速率限制
+      输入参数必须进行类型和格式验证
+      错误响应不能泄露敏感信息
+      关键操作需要身份验证和授权
+    </constraint>
+    <constraint type="testing" name="安全测试标准">
+      安全功能测试覆盖率≥80%
+      遵循OWASP安全测试指南
+      所有安全检查必须通过CI/CD管道
+      依赖漏洞：0个高危漏洞
+    </constraint>
+  </constraints>
+  <interfaces>
+    <interface name="SecurityMiddleware" kind="Python Middleware" signature="class SecurityMiddleware: def __init__(self, app); def __call__(self, scope, receive, send)" path="backend/app/core/middleware.py"/>
+    <interface name="RateLimitMiddleware" kind="Python Middleware" signature="class RateLimitMiddleware: def __init__(self, app, calls=100, period=60); def __call__(self, scope, receive, send)" path="backend/app/core/middleware.py"/>
+    <interface name="API Rate Limiting" kind="REST API" signature="GET /api/v1/* with Rate-Limit headers" path="backend/app/core/middleware.py"/>
+    <interface name="Input Validation" kind="TypeScript Schema" signature="interface ValidationSchema { validate(data: any): boolean }" path="frontend/src/lib/validation.ts"/>
+    <interface name="JWT Settings" kind="Configuration" signature="SECRET_KEY: str, ALGORITHM: str = 'HS256', ACCESS_TOKEN_EXPIRE_MINUTES: int = 30" path="backend/app/core/config.py"/>
+  </interfaces>
+  <tests>
+    <standards>
+      遵循OWASP安全测试指南，安全功能测试覆盖率≥80%。
+      前端使用Jest + React Testing Library，后端使用Pytest框架。
+      所有安全检查必须通过CI/CD管道，依赖漏洞要求0个高危漏洞。
+      代码质量遵循ESLint + Prettier规范，Python使用Black + isort格式化。
+      已有安全扫描工具：Bandit（Python）、detect-secrets（密钥检测）、ESLint Security Plugin。
+    </standards>
+    <locations>
+      前端测试：frontend/src/**/__tests__/**/*.{js,jsx,ts,tsx}
+      后端测试：backend/tests/test_*.py
+      安全测试：frontend/src/__tests__/security/, backend/tests/security/
+      覆盖率报告：frontend/coverage/, backend/coverage/
+      E2E测试：frontend/tests/e2e/
+    </locations>
+    <ideas>
+      <test idea="AC1: 依赖安全扫描">
+        - NPM Audit自动化扫描测试
+        - Snyk深度漏洞扫描集成测试
+        - 高危漏洞自动阻止机制验证
+        - 依赖更新和补丁管理流程测试
+      </test>
+      <test idea="AC2: API安全增强">
+        - Rate Limiting中间件功能测试
+        - CORS策略配置验证测试
+        - 输入验证和清理功能测试
+        - API端点安全防护集成测试
+      </test>
+      <test idea="AC3: 数据加密和传输安全">
+        - HTTPS强制传输验证测试
+        - 敏感数据存储加密功能测试
+        - 环境变量加密机制测试
+        - 密钥管理流程验证测试
+      </test>
+      <test idea="AC4: 安全头配置">
+        - CSP头部配置有效性测试
+        - HSTS强制HTTPS测试
+        - X-Frame-Options防点击劫持测试
+        - 安全头部组合防护测试
+      </test>
+      <test idea="AC5: 安全测试自动化">
+        - OWASP ZAP自动化扫描测试
+        - 安全测试套件执行测试
+        - 安全监控告警功能测试
+        - 7x24小时安全事件监控测试
+      </test>
+    </ideas>
+  </tests>
+</story-context>

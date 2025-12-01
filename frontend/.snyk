@@ -1,0 +1,119 @@
+# Snyk configuration file for frontend
+
+# API version
+version: v1.0.0
+
+# Exclude files from dependency scanning
+exclude:
+  - node_modules/**
+  - coverage/**
+  - build/**
+  - .next/**
+  - out/**
+  - dist/**
+
+# Ignore certain vulnerabilities (temporary)
+# Use with caution - only for vulnerabilities that cannot be fixed
+ignore: {}
+
+# Severity levels to report
+severity-threshold: high
+
+# Organization settings
+org: your-org-name
+
+# Project settings
+project:
+  name: quant-trading-frontend
+  type: npm
+  path: .
+
+# Monitor settings
+monitor:
+  # Enable continuous monitoring
+  enabled: true
+
+  # Auto-remediation settings
+  autoRemediation:
+    # Enable automatic dependency updates
+    enabled: true
+
+    # Only auto-update patch versions
+    patchOnly: true
+
+    # Create pull requests for fixes
+    createPullRequest: true
+
+    # PR settings
+    pr:
+      title: "🔒 Snyk: Automated security fix"
+      body: |
+        🤖 This pull request was automatically created by Snyk to fix security vulnerabilities.
+
+        ## Changes
+        - Updated vulnerable dependencies to secure versions
+        - No breaking changes expected (patch updates only)
+
+        ## Validation
+        - [ ] All tests pass
+        - [ ] Manual testing completed
+        - [ ] No functional regressions detected
+
+# Reporting settings
+report:
+  # Include license issues
+  includeLicenses: true
+
+  # Include outdated dependencies
+  includeOutdated: true
+
+  # Custom report format
+  format: json
+
+# Integration settings
+integrations:
+  # GitHub integration
+  github:
+    # Enable PR checks
+    pullRequestChecks: true
+
+    # Block merge on high severity vulnerabilities
+    blockMergeOnHigh: true
+
+    # Add security status badges
+    badge: true
+
+  # Slack notifications (optional)
+  slack:
+    enabled: false
+    webhookUrl: ${SLACK_WEBHOOK_URL}
+    channel: '#security'
+
+# Policy settings
+policy:
+  # Enforce license compliance
+  licensePolicy:
+    allowed:
+      - MIT
+      - Apache-2.0
+      - BSD-2-Clause
+      - BSD-3-Clause
+      - ISC
+
+    forbidden:
+      - GPL-2.0
+      - GPL-3.0
+      - AGPL-1.0
+      - AGPL-3.0
+
+  # Custom rules
+  customRules:
+    - name: "No development dependencies in production"
+      description: "Ensure no dev dependencies are used in production builds"
+      severity: medium
+      condition: "devDependencyInProduction"
+
+    - name: "Prefer stable versions"
+      description: "Avoid pre-release versions in production"
+      severity: low
+      condition: "preReleaseVersion"

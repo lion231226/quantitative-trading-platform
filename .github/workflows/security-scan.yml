@@ -1,0 +1,77 @@
+name: Security Scan Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # 每天UTC 2:00运行安全扫描
+    - cron: '0 2 * * *'
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+
+    - name: Install dependencies
+      working-directory: ./frontend
+      run: npm ci
+
+    - name: Run NPM Security Audit
+      working-directory: ./frontend
+      run: |
+        node ../../scripts/security-audit.js --no-fail --generate-report
+
+    - name: Upload Security Report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: security-report
+        path: frontend/security-reports/
+        retention-days: 30
+
+    - name: Check Security Thresholds
+      working-directory: ./frontend
+      run: |
+        node ../../scripts/security-audit.js
+
+    - name: Attempt Auto-fix (only on develop branch)
+      working-directory: ./frontend
+      if: github.ref == 'refs/heads/develop'
+      run: |
+        node ../../scripts/security-audit.js --auto-fix --no-fail
+
+    - name: Create Pull Request for Security Fixes
+      if: github.ref == 'refs/heads/develop'
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: "🔒 Auto-fix security vulnerabilities"
+        title: "🔒 Automated Security Vulnerability Fixes"
+        body: |
+          🤖 此PR由安全扫描自动生成，包含依赖漏洞修复。
+
+          ## 修复内容
+          - 自动修复npm audit发现的漏洞
+          - 更新依赖包到安全版本
+
+          ## 验证步骤
+          1. 检查更新的依赖包
+          2. 运行完整测试套件
+          3. 确认功能正常工作
+
+          ---
+          *此PR由安全扫描工作流自动创建*
+        branch: security/auto-fix
+        delete-branch: true
