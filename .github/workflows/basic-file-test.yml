@@ -1,0 +1,163 @@
+name: Basic File System Test
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  basic-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Test basic file operations
+      run: |
+        echo "🔍 Testing basic file system operations..."
+
+        # 测试当前目录
+        echo "Current directory: $(pwd)"
+        echo "Directory contents:"
+        ls -la
+
+        # 测试frontend目录
+        echo ""
+        echo "Frontend directory:"
+        if [ -d "frontend" ]; then
+          echo "✅ frontend directory exists"
+          ls -la frontend/
+
+          # 检查package.json
+          if [ -f "frontend/package.json" ]; then
+            echo "✅ package.json exists"
+            wc -c frontend/package.json
+          else
+            echo "❌ package.json does not exist"
+          fi
+        else
+          echo "❌ frontend directory does not exist"
+        fi
+
+    - name: Create simple report without complex logic
+      run: |
+        echo "📊 Creating simple security report..."
+
+        # 创建报告目录
+        mkdir -p reports
+
+        # 最简单的报告创建
+        echo "Security Report" > reports/security.txt
+        echo "Generated: $(date)" >> reports/security.txt
+        echo "Status: Basic file operations successful" >> reports/security.txt
+
+        echo "✅ Simple report created"
+
+    - name: Upload simple report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: basic-report
+        path: reports/
+        retention-days: 7
+
+    - name: Try Node.js without npm
+      run: |
+        echo "🔍 Testing Node.js without npm..."
+
+        if command -v node &> /dev/null; then
+          echo "✅ Node.js is available: $(node --version)"
+
+          # 创建简单的Node.js脚本
+          cat > check-package.js << 'EOF'
+          const fs = require('fs');
+
+          try {
+            if (fs.existsSync('frontend/package.json')) {
+              const content = fs.readFileSync('frontend/package.json', 'utf8');
+              console.log('✅ Can read package.json');
+              console.log('File size:', content.length, 'characters');
+
+              // 尝试解析JSON
+              try {
+                const pkg = JSON.parse(content);
+                console.log('✅ Valid JSON');
+                console.log('Package name:', pkg.name || 'undefined');
+                console.log('Dependencies:', Object.keys(pkg.dependencies || {}).length);
+              } catch(e) {
+                console.log('❌ Invalid JSON:', e.message);
+              }
+            } else {
+              console.log('❌ package.json not found');
+            }
+          } catch(e) {
+            console.log('❌ File system error:', e.message);
+          }
+          EOF
+
+          node check-package.js
+        else
+          echo "❌ Node.js not available"
+        fi
+
+    - name: Create frontend report directly
+      if: always()
+      run: |
+        echo "📁 Creating frontend security report..."
+
+        if [ -d "frontend" ]; then
+          mkdir -p frontend/reports
+
+          # 最简单的安全报告
+          cat > frontend/reports/simple-security.md << 'EOF'
+        # Simple Security Report
+
+        Generated: DATE
+        Method: File system analysis
+
+        Status: Report generated successfully
+
+        Files checked:
+        - package.json: EXISTS
+        - .env.example: CHECKED
+
+        Note: This is a basic security report generated without npm install.
+        EOF
+
+          # 替换日期
+          sed -i "s/DATE/$(date)/" frontend/reports/simple-security.md
+
+          # 检查文件
+          if [ -f "frontend/package.json" ]; then
+            sed -i 's/- package.json: EXISTS/- package.json: ✅ FOUND/' frontend/reports/simple-security.md
+          else
+            sed -i 's/- package.json: EXISTS/- package.json: ❌ MISSING/' frontend/reports/simple-security.md
+          fi
+
+          if [ -f "frontend/.env.example" ]; then
+            sed -i 's/- .env.example: CHECKED/- .env.example: ✅ FOUND/' frontend/reports/simple-security.md
+          else
+            sed -i 's/- .env.example: CHECKED/- .env.example: ❌ MISSING/' frontend/reports/simple-security.md
+          fi
+
+          echo "✅ Frontend report created"
+        else
+          echo "❌ Frontend directory not found"
+        fi
+
+    - name: Upload frontend report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: frontend-simple-report
+        path: frontend/reports/
+        retention-days: 7
+
+    - name: Final status
+      run: |
+        echo "📊 Basic file test completed"
+        echo "✅ Check the artifacts for generated reports"
+        echo ""
+        echo "Reports created:"
+        echo "- basic-report: General file system test"
+        echo "- frontend-simple-report: Frontend-specific analysis"

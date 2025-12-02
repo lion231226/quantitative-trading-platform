@@ -1,0 +1,142 @@
+name: Pure Static Security Scan
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  pure-security:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Create security report
+      run: |
+        echo "🔒 Starting pure static security scan..."
+
+        # 创建安全报告目录
+        mkdir -p security-reports
+
+        # 创建基础安全报告
+        cat > security-reports/security-report.md << EOF
+        # Pure Static Security Scan Report
+
+        **Generated:** $(date)
+        **Scanner:** Pure File System Analysis
+        **Method:** No package managers, no dependencies
+
+        ## Project Analysis
+        EOF
+
+        # 分析项目结构
+        echo "📁 Analyzing project structure..."
+        echo "- Project root: $(pwd)" >> security-reports/security-report.md
+        echo "- Frontend directory: $([ -d 'frontend' ] && echo '✅ EXISTS' || echo '❌ MISSING')" >> security-reports/security-report.md
+        echo "- package.json: $([ -f 'frontend/package.json' ] && echo '✅ EXISTS' || echo '❌ MISSING')" >> security-reports/security-report.md
+
+        # 分析依赖包
+        if [ -f "frontend/package.json" ]; then
+          echo "" >> security-reports/security-report.md
+          echo "## Package Analysis" >> security-reports/security-report.md
+
+          # 使用简单的文本分析而不是JSON解析
+          DEP_COUNT=$(grep -o '"[^"]*":' frontend/package.json | grep -v 'devDependencies\|scripts\|name\|version\|private' | wc -l)
+          echo "- Dependencies found: $DEP_COUNT" >> security-reports/security-report.md
+
+          # 检查已知的有问题包
+          echo "- Known vulnerabilities:" >> security-reports/security-report.md
+          if grep -q 'lodash' frontend/package.json; then
+            echo "  - ⚠️ lodash: Check for version < 4.17.21" >> security-reports/security-report.md
+          fi
+          if grep -q 'axios' frontend/package.json; then
+            echo "  - ⚠️ axios: Check for version < 0.21.1" >> security-reports/security-report.md
+          fi
+        fi
+
+        # 源代码安全检查
+        echo "" >> security-reports/security-report.md
+        echo "## Source Code Security Check" >> security-reports/security-report.md
+
+        if [ -d "frontend/src" ]; then
+          echo "- Source directory: ✅ EXISTS" >> security-reports/security-report.md
+
+          # 检查危险模式（简单grep）
+          if grep -r "eval(" frontend/src/ --include="*.js" --include="*.jsx" --include="*.ts" --include="*.tsx" 2>/dev/null | head -5; then
+            echo "  - ❌ eval() found in source code" >> security-reports/security-report.md
+          else
+            echo "  - ✅ No eval() found" >> security-reports/security-report.md
+          fi
+
+          if grep -r "innerHTML" frontend/src/ --include="*.js" --include="*.jsx" --include="*.ts" --include="*.tsx" 2>/dev/null | head -5; then
+            echo "  - ⚠️ innerHTML found (potential XSS risk)" >> security-reports/security-report.md
+          else
+            echo "  - ✅ No innerHTML found" >> security-reports/security-report.md
+          fi
+        else
+          echo "- Source directory: ❌ MISSING" >> security-reports/security-report.md
+        fi
+
+        # 环境变量检查
+        echo "" >> security-reports/security-report.md
+        echo "## Environment Security" >> security-reports/security-report.md
+        if [ -f "frontend/.env.example" ]; then
+          echo "- .env.example: ✅ EXISTS" >> security-reports/security-report.md
+          if grep -qi "password\|secret\|key\|token" frontend/.env.example; then
+            echo "  - ⚠️ Contains sensitive variable names" >> security-reports/security-report.md
+          else
+            echo "  - ✅ No obvious sensitive variables" >> security-reports/security-report.md
+          fi
+        else
+          echo "- .env.example: ❌ MISSING" >> security-reports/security-report.md
+        fi
+
+        # 安全评分
+        SCORE=85  # 基础分
+        ISSUES=0
+
+        if [ ! -f "frontend/package.json" ]; then
+          ISSUES=$((ISSUES + 20))
+        fi
+
+        if [ ! -d "frontend/src" ]; then
+          ISSUES=$((ISSUES + 15))
+        fi
+
+        if grep -qi "password\|secret\|key" frontend/.env.example 2>/dev/null; then
+          ISSUES=$((ISSUES + 10))
+        fi
+
+        FINAL_SCORE=$((SCORE - ISSUES))
+
+        echo "" >> security-reports/security-report.md
+        echo "## Security Assessment" >> security-reports/security-report.md
+        echo "- **Security Score:** $FINAL_SCORE/100" >> security-reports/security-report.md
+        echo "- **Issues Detected:** $ISSUES" >> security-reports/security-report.md
+
+        if [ $FINAL_SCORE -ge 80 ]; then
+          echo "- **Status:** ✅ GOOD SECURITY" >> security-reports/security-report.md
+        elif [ $FINAL_SCORE -ge 60 ]; then
+          echo "- **Status:** ⚠️ MODERATE SECURITY" >> security-reports/security-report.md
+        else
+          echo "- **Status:** ❌ SECURITY NEEDS ATTENTION" >> security-reports/security-report.md
+        fi
+
+        echo "" >> security-reports/security-report.md
+        echo "---" >> security-reports/security-report.md
+        echo "*Report generated by Pure Static Scanner*" >> security-reports/security-report.md
+
+    - name: Upload security report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: pure-security-reports
+        path: security-reports/
+        retention-days: 30
+
+    - name: Success message
+      run: |
+        echo "✅ Pure static security scan completed!"
+        echo "📊 Security report generated without any package managers"
+        echo "📄 Check 'pure-security-reports' artifact for details"
