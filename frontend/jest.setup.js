@@ -1,4 +1,9 @@
+// Jest setup file for test environment configuration
+
+// Import Jest DOM matchers
 import '@testing-library/jest-dom';
+
+// Import jest-axe for accessibility testing
 import { toHaveNoViolations } from 'jest-axe';
 
 // Add jest-axe custom matcher

@@ -1,0 +1,51 @@
+{
+  "timestamp": "2025-12-02T06:02:19.272Z",
+  "results": {
+    "jest": {
+      "status": "passed",
+      "details": [
+        "✅ jest.config.js exists",
+        "✅ jest.setup.js exists",
+        "✅ jest.config.optimized.js exists",
+        "✅ All required test dependencies installed",
+        "✅ Test directories found: frontend/src/__tests__, frontend/src/components/__tests__, frontend/src/services/__tests__, frontend/src/utils/__tests__",
+        "✅ Example test file exists"
+      ]
+    },
+    "pytest": {
+      "status": "failed",
+      "details": [
+        "✅ pytest.ini exists",
+        "✅ Backend test directories found: backend/tests",
+        "❌ Missing pytest dependencies: pytest-mock"
+      ]
+    },
+    "coverage": {
+      "status": "warning",
+      "details": [
+        "✅ jest.coverage.config.js exists",
+        "⚠️ Coverage threshold not configured",
+        "⚠️ Coverage collection not configured",
+        "⚠️ Pytest coverage not configured"
+      ]
+    },
+    "mocking": {
+      "status": "passed",
+      "details": [
+        "✅ Jest mocks directory exists",
+        "✅ Mocks configured: 5 features",
+        "⚠️ MSW API mocking not configured"
+      ]
+    },
+    "ciIntegration": {
+      "status": "warning",
+      "details": [
+        "✅ All CI scripts present",
+        "✅ Main CI/CD workflow: ci-cd.yml",
+        "⚠️ No quality gate workflow found",
+        "✅ Docker configs found: 2 of 2"
+      ]
+    }
+  },
+  "isComplete": false
+}

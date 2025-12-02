@@ -1,0 +1,72 @@
+# Multi-stage optimized Dockerfile for CI/CD
+# Generated: 2025-12-02T05:58:19.694Z
+
+# Build stage with optimized caching
+FROM node:18-alpine AS base
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+# Copy package files
+COPY package.json package-lock.json* ./
+COPY frontend/package.json frontend/package-lock.json* ./frontend/
+COPY backend/requirements*.txt ./backend/
+
+# Install dependencies
+RUN npm ci --only=production && npm cache clean --force
+WORKDIR /app/frontend
+RUN npm ci --only=production && npm cache clean --force
+WORKDIR /app
+
+# Install Python dependencies
+WORKDIR /app/backend
+RUN python -m pip install --no-cache-dir -r requirements.txt
+WORKDIR /app
+
+# Build stage
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/frontend/node_modules ./frontend/node_modules
+COPY --from=deps /app/backend /app/backend
+
+# Copy source code
+COPY . .
+
+# Build frontend
+WORKDIR /app/frontend
+ENV NEXT_TELEMETRY_DISABLED 1
+RUN npm run build
+
+# Build backend (if needed)
+WORKDIR /app/backend
+RUN python -m py_compile || true
+
+# Production stage
+FROM node:18-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV production
+ENV NEXT_TELEMETRY_DISABLED 1
+
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy built application
+COPY --from=builder --chown=nextjs:nodejs /app/frontend/public ./frontend/public
+COPY --from=builder --chown=nextjs:nodejs /app/frontend/.next/standalone ./frontend/.next
+COPY --from=builder --chown=nextjs:nodejs /app/frontend/.next/static ./frontend/.next
+
+# Copy backend
+COPY --from=builder --chown=nextjs:nodejs /app/backend ./backend
+
+USER nextjs
+
+EXPOSE 3000
+
+ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
+
+CMD ["node", "frontend/server.js"]

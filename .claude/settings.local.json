@@ -79,7 +79,8 @@
       "Bash(npx:*)",
       "Bash(echo:*)",
       "Bash(/c/Program Files/nodejs/node.exe:*)",
-      "Bash(jest:*)"
+      "Bash(jest:*)",
+      "Bash(scripts/ci/run-frontend-shard.bat --help)"
     ],
     "deny": [],
     "ask": []

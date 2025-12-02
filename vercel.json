@@ -1,0 +1,141 @@
+{
+  "version": 2,
+  "name": "quant-trading-platform",
+  "framework": "nextjs",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "installCommand": "npm ci",
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "http://localhost:8000/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "env": {
+    "NEXT_PUBLIC_APP_ENV": "production",
+    "NODE_ENV": "production"
+  },
+  "functions": {
+    "pages/api/**/*.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "regions": ["hkg1", "sfo1"],
+  "domains": [
+    "quant-trading-demo.vercel.app"
+  ],
+  "github": {
+    "silent": true
+  },
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "develop": false
+    }
+  },
+  "deployments": {
+    "preview": {
+      "environment": "preview",
+      "autoAssignment": false,
+      "githubComment": false
+    },
+    "production": {
+      "environment": "production",
+      "autoAssignment": true,
+      "githubComment": true,
+      "target": "production",
+      "strategy": "bluegreen",
+      "alias": [
+        "quant-trading-demo.vercel.app"
+      ],
+      "healthCheck": {
+        "path": "/api/health",
+        "timeout": 30000,
+        "retries": 3
+      },
+      "rollback": {
+        "automatic": true,
+        "conditions": [
+          {
+            "type": "health_check",
+            "threshold": 3
+          },
+          {
+            "type": "performance_score",
+            "threshold": 90
+          },
+          {
+            "type": "error_rate",
+            "threshold": 0.05
+          }
+        ]
+      }
+    }
+  },
+  "alias": [
+    "quant-trading-demo.vercel.app"
+  ],
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/_next/static/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/health",
+      "destination": "/api/health"
+    },
+    {
+      "source": "/api/ready",
+      "destination": "/api/ready"
+    }
+  ]
+}

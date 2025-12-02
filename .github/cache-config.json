@@ -1,0 +1,41 @@
+{
+  "version": "2.0",
+  "caches": {
+    "node-modules": {
+      "key": "${{ env.CACHE_VERSION }}-${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}",
+      "restoreKeys": [
+        "${{ env.CACHE_VERSION }}-${{ runner.os }}-node-modules-"
+      ],
+      "paths": [
+        "**/node_modules",
+        "~/.npm"
+      ]
+    },
+    "nextjs-build": {
+      "key": "${{ env.CACHE_VERSION }}-${{ runner.os }}-nextjs-${{ hashFiles('frontend/package-lock.json', 'frontend/next.config.js') }}",
+      "restoreKeys": [
+        "${{ env.CACHE_VERSION }}-${{ runner.os }}-nextjs-"
+      ],
+      "paths": [
+        "frontend/.next/cache",
+        "frontend/.next/static"
+      ]
+    },
+    "python-deps": {
+      "key": "${{ env.CACHE_VERSION }}-${{ runner.os }}-python-${{ hashFiles('backend/requirements*.txt') }}",
+      "restoreKeys": [
+        "${{ env.CACHE_VERSION }}-${{ runner.os }}-python-"
+      ],
+      "paths": [
+        "~/.cache/pip",
+        "backend/.pytest_cache"
+      ]
+    },
+    "docker-layers": {
+      "key": "${{ env.CACHE_VERSION }}-${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile*') }}",
+      "paths": [
+        "/tmp/.buildx-cache"
+      ]
+    }
+  }
+}

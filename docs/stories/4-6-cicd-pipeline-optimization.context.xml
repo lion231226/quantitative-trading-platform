@@ -1,0 +1,273 @@
+<story-context id="story-context" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>6</storyId>
+    <title>CI/CD 管道全面优化</title>
+    <status>drafted</status>
+    <generatedAt>2025-12-02</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/4-6-cicd-pipeline-optimization.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>开发团队</asA>
+    <iWant>拥有快速可靠的自动化部署流水线</iWant>
+    <soThat>支持高质量的功能交付和快速迭代</soThat>
+    <tasks>### Task 1: 流水线性能优化和执行时间优化 (AC: 1)
+- [ ] **Subtask 1.1**: 流水线执行时间分析和基准测试
+  - [ ] 分析当前CI/CD流水线执行时间瓶颈
+  - [ ] 建立各阶段的执行时间基准和监控
+  - [ ] 识别耗时最长的测试和构建步骤
+  - [ ] 设定总体执行时间&lt;10分钟的目标和分解
+
+- [ ] **Subtask 1.2**: 构建优化和缓存策略
+  - [ ] 实现Docker层缓存和依赖缓存优化
+  - [ ] 配置Next.js构建缓存和增量构建
+  - [ ] 优化npm包安装时间和构建并行度
+  - [ ] 实现构建产物的智能缓存和复用
+
+- [ ] **Subtask 1.3**: 流水线步骤并行化和优化
+  - [ ] 识别可并行执行的流水线步骤
+  - [ ] 实现测试套件的并行执行策略
+  - [ ] 优化代码质量检查和安全扫描的执行顺序
+  - [ ] 配置智能的流水线阶段依赖和跳过机制
+
+### Task 2: 并行测试执行和测试套件优化 (AC: 2)
+- [ ] **Subtask 2.1**: Jest并行测试配置
+  - [ ] 配置Jest的多进程并行执行
+  - [ ] 实现测试文件的智能分片和负载均衡
+  - [ ] 优化测试数据隔离和清理机制
+  - [ ] 实现测试结果的聚合和报告合并
+
+- [ ] **Subtask 2.2**: 测试分层和并行策略
+  - [ ] 实现单元测试、集成测试的并行执行
+  - [ ] 配置E2E测试的并行化执行策略
+  - [ ] 建立测试优先级和关键路径识别
+  - [ ] 实现测试失败时的快速反馈机制
+
+- [ ] **Subtask 2.3**: 测试基础设施优化
+  - [ ] 优化测试数据库和数据准备时间
+  - [ ] 实现测试环境的快速启动和销毁
+  - [ ] 配置并行测试的资源隔离和竞争避免
+  - [ ] 建立测试执行时间的监控和分析
+
+### Task 3: 质量门禁集成和自动化检查 (AC: 3)
+- [ ] **Subtask 3.1**: 代码质量检查自动化
+  - [ ] 集成ESLint、TypeScript编译检查到质量门禁
+  - [ ] 配置代码覆盖率阈值的自动检查
+  - [ ] 实现代码复杂度和重复率的自动检查
+  - [ ] 建立质量门禁失败时的自动反馈机制
+
+- [ ] **Subtask 3.2**: 安全扫描自动化集成
+  - [ ] 集成Snyk安全扫描到质量门禁流程
+  - [ ] 配置OWASP ZAP安全扫描的自动执行
+  - [ ] 实现依赖漏洞的自动检查和阻止机制
+  - [ ] 建立安全合规性的自动检查和报告
+
+- [ ] **Subtask 3.3**: 性能检查和回归检测
+  - [ ] 集成Lighthouse性能审计到CI/CD流程
+  - [ ] 配置Bundle大小和性能指标的自动检查
+  - [ ] 实现性能回归的自动检测和告警
+  - [ ] 建立性能基准和趋势分析机制
+
+### Task 4: 环境一致性保障和配置管理 (AC: 4)
+- [ ] **Subtask 4.1**: Docker容器化环境标准化
+  - [ ] 创建统一的Docker镜像和容器配置
+  - [ ] 实现开发、测试、生产环境的容器一致性
+  - [ ] 配置环境变量和配置文件的版本管理
+  - [ ] 建立容器镜像的版本控制和安全扫描
+
+- [ ] **Subtask 4.2**: 基础设施即代码(IaC)实现
+  - [ ] 使用Docker Compose定义开发环境
+  - [ ] 实现测试环境和生产环境的自动化配置
+  - [ ] 配置数据库和服务的版本一致性
+  - [ ] 建立环境配置的验证和测试机制
+
+- [ ] **Subtask 4.3**: 依赖管理和版本控制
+  - [ ] 实现npm依赖版本的锁定和一致性检查
+  - [ ] 配置Node.js、Python等运行时版本的一致性
+  - [ ] 建立第三方服务版本的一致性管理
+  - [ ] 实现环境差异的检测和自动修正
+
+### Task 5: 部署策略优化和发布管理 (AC: 5)
+- [ ] **Subtask 5.1**: 蓝绿部署策略实现
+  - [ ] 配置Vercel的蓝绿部署流程
+  - [ ] 实现生产环境的无缝切换机制
+  - [ ] 建立部署失败时的自动回滚机制
+  - [ ] 配置部署前的健康检查和验证
+
+- [ ] **Subtask 5.2**: 滚动更新和渐进式部署
+  - [ ] 实现前端应用的渐进式发布策略
+  - [ ] 配置功能开关和灰度发布机制
+  - [ ] 建立用户流量分割和A/B测试支持
+  - [ ] 实现部署监控和实时状态反馈
+
+- [ ] **Subtask 5.3**: 发布流程和通知机制
+  - [ ] 建立自动化的发布流程和审批机制
+  - [ ] 配置部署状态的多渠道通知(邮件、Slack等)
+  - [ ] 实现发布记录和版本管理的自动化
+  - [ ] 建立发布后的监控和问题快速响应机制</tasks>
+  </story>
+
+  <acceptanceCriteria>1. 流水线性能优化 - 总执行时间 &lt; 10 分钟
+2. 并行测试执行 - 测试套件并行化，50%+ 时间节省
+3. 质量门禁集成 - 代码质量、安全、性能检查自动化
+4. 环境一致性保障 - 开发/测试/生产环境完全一致
+5. 部署策略优化 - 蓝绿部署或滚动更新支持</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/epics/epic-4-technical-debt-cleanup-and-quality-enhancement.md</path>
+        <title>Epic 4: 技术债务清理与质量保障全面提升</title>
+        <section>Story 4.6 Overview</section>
+        <snippet>作为开发团队，我们希望拥有快速可靠的自动化部署流水线，以便支持高质量的功能交付和快速迭代。Acceptance Criteria: 1. 流水线性能优化 - 总执行时间 &lt; 10 分钟 2. 并行测试执行 - 测试套件并行化，50%+ 时间节省</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-4.md</path>
+        <title>Epic Technical Specification: 技术债务清理与质量保障全面提升</title>
+        <section>CI/CD Optimization Strategy</section>
+        <snippet>#### 新增测试依赖 (Story 4.1) {
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.4.6",
+    "@testing-library/react": "^15.0.7",
+    "jest-performance-testing": "^1.0.0"
+  }
+}</snippet>
+      </doc>
+      <doc>
+        <path>docs/bmm-product-brief-量化交易单均线策略分析平台-2025-11-01.md</path>
+        <title>Product Brief: 量化交易单均线策略分析平台</title>
+        <section>Executive Summary</section>
+        <snippet>本项目旨在开发一个基于Web的量化交易策略分析平台，专门展示单均线策略在中国期货市场各版块高波动性品种上的收益表现。作为GLM Coding大师赛的参赛作品，该项目不仅是一个功能完整的金融分析工具，更是一个完整的技术教程。</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture-one-click-launch.md</path>
+        <title>一键启动脚本 Decision Architecture</title>
+        <section>Decision Summary</section>
+        <snippet>| 核心引擎 | Python 3.11 | 3.11.14+ | Epic 1, 2, 3 | 最稳定的LTS版本，跨平台兼容性最佳 | | 系统监控 | psutil | 7.1.3+ | Epic 1, 3 | 跨平台进程和系统资源监控标准库 | | CLI界面 | rich | 13.9.4+ | Epic 3 | 美观的命令行界面，进度条和表格支持 |</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/4-4-performance-optimization-and-monitoring.md</path>
+        <title>Story 4.4: 性能优化与监控体系建立</title>
+        <section>Acceptance Criteria</section>
+        <snippet>1. Core Web Vitals优化 - LCP < 2.5s, FID < 100ms, CLS < 0.1 2. Bundle大小减少20% - JavaScript包优化，代码分割 3. 图表性能基准 - 大数据量渲染性能优化 4. 性能监控集成 - Sentry Performance + Web Vitals</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/4-5-security-and-data-protection-enhancement.md</path>
+        <title>Story 4.5: 安全性和数据保护增强</title>
+        <section>Security Enhancement Context</section>
+        <snippet>安全增强为CI/CD管道提供基础保障，包括依赖安全扫描、代码安全检查、部署安全验证等多个层面的自动化安全检测</snippet>
+      </doc>
+      <doc>
+        <path>.bmad/bmm/workflows/2-plan-workflows/prd/prd-template.md</path>
+        <title>PRD Template - Product Requirements Document</title>
+        <section>Quality Gates and Automation</section>
+        <snippet>定义产品质量门禁标准，包括性能指标、安全标准、用户体验要求等自动化检查机制</snippet>
+      </doc>
+      <doc>
+        <path>.bmad/bmm/workflows/2-plan-workflows/create-ux-design/ux-design-template.md</path>
+        <title>UX Design Template</title>
+        <section>DevOps UX Guidelines</section>
+        <snippet>开发运维体验设计原则，确保CI/CD工具链的用户友好性和操作效率</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>.github/workflows</path>
+        <kind>workflow</kind>
+        <symbol>ci-cd.yml</symbol>
+        <lines>1-50</lines>
+        <reason>Main CI/CD pipeline configuration for quality gates and parallel execution</reason>
+      </artifact>
+      <artifact>
+        <path>scripts/ci</path>
+        <kind>directory</kind>
+        <symbol>build-optimizer.js</symbol>
+        <lines>1-100</lines>
+        <reason>Build optimization script for CI/CD pipeline performance improvement</reason>
+      </artifact>
+      <artifact>
+        <path>scripts/ci</path>
+        <kind>directory</kind>
+        <symbol>test-parallelizer.js</symbol>
+        <lines>1-80</lines>
+        <reason>Parallel test execution configuration and optimization script</reason>
+      </artifact>
+      <artifact>
+        <path>scripts/ci</path>
+        <kind>directory</kind>
+        <symbol>quality-checker.js</symbol>
+        <lines>1-120</lines>
+        <reason>Quality gate automation script for code quality, security, and performance checks</reason>
+      </artifact>
+      <artifact>
+        <path>docker</path>
+        <kind>directory</kind>
+        <symbol>Dockerfile.ci</symbol>
+        <lines>1-60</lines>
+        <reason>CI environment specific Docker configuration for consistent build environment</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <ecosystem>node</ecosystem>
+      <packages>
+        <package name="@actions/cache" version="^3.0.0" purpose="GitHub Actions dependency and build caching" />
+        <package name="jest" version="^29.0.0" purpose="Parallel test execution framework" />
+        <package name="lighthouse-ci" version="^0.12.0" purpose="Performance checking and regression detection" />
+        <package name="bundle-analyzer" version="^0.1.0" purpose="Bundle size analysis and optimization" />
+        <package name="eslint" version="^8.57.0" purpose="Code quality checking and automation" />
+        <package name="prettier" version="^3.2.4" purpose="Code formatting standardization" />
+        <package name="snyk" version="^8.0.0" purpose="Security scanning and vulnerability detection" />
+        <package name="docker" version="^20.0.0" purpose="Containerization for environment consistency" />
+      </packages>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="performance">Total CI/CD pipeline execution time must be less than 10 minutes</constraint>
+    <constraint type="testing">Test suite must be parallelized with 50%+ time savings</constraint>
+    <constraint type="quality">All code quality, security, and performance checks must be automated</constraint>
+    <constraint type="environment">Development, testing, and production environments must be fully consistent</constraint>
+    <constraint type="deployment">Must support blue-green deployment or rolling update strategies</constraint>
+    <constraint type="architecture">Follow existing GitHub Actions + Vercel deployment architecture</constraint>
+    <constraint type="tech-stack">Compatible with Next.js 14 + FastAPI + TypeScript stack</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="Quality Gate API" kind="REST endpoint">
+      <signature>POST /api/quality-gate - Automated quality check validation</signature>
+      <path>docs/sprint-artifacts/tech-spec-epic-4.md</path>
+    </interface>
+    <interface name="Performance Metrics API" kind="REST endpoint">
+      <signature>GET /api/monitoring/performance - Real-time performance data collection</signature>
+      <path>docs/sprint-artifacts/tech-spec-epic-4.md</path>
+    </interface>
+    <interface name="Security Scan API" kind="REST endpoint">
+      <signature>GET /api/security/scan-results - Vulnerability and compliance status</signature>
+      <path>docs/sprint-artifacts/tech-spec-epic-4.md</path>
+    </interface>
+    <interface name="Health Check Endpoints" kind="REST endpoints">
+      <signature>GET /health, GET /ready, GET /metrics - System health monitoring</signature>
+      <path>docs/sprint-artifacts/tech-spec-epic-4.md</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Tests should achieve ≥85% code coverage with Jest + React Testing Library. E2E tests using Playwright for critical user flows. Performance tests with Lighthouse CI for Core Web Vitals. Security tests with Snyk and OWASP ZAP integration. Accessibility tests with jest-axe for WCAG 2.1 AA compliance.</standards>
+    <locations>
+      <location>frontend/__tests__/unit/</location>
+      <location>frontend/__tests__/integration/</location>
+      <location>frontend/__tests__/e2e/</location>
+      <location>scripts/ci/test-*.js</location>
+      <location>.github/workflows/</location>
+    </locations>
+    <ideas>
+      <test idea="Pipeline performance test" ac="1">Verify complete CI/CD pipeline executes in under 10 minutes</test>
+      <test idea="Parallel execution test" ac="2">Measure test execution time reduction with parallelization strategy</test>
+      <test idea="Quality gate automation test" ac="3">Verify all quality checks run automatically and block/fail appropriately</test>
+      <test idea="Environment consistency test" ac="4">Validate Docker containers maintain consistency across environments</test>
+      <test idea="Blue-green deployment test" ac="5">Test seamless deployment switching and rollback mechanisms</test>
+    </ideas>
+  </tests>
+</story-context>

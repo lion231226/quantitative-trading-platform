@@ -1,0 +1,753 @@
+{
+  "timestamp": "2025-12-02T06:02:24.700Z",
+  "analysis": {
+    "workflows": [
+      {
+        "name": "Optimized CI/CD Pipeline",
+        "fileName": "ci-cd.yml",
+        "estimatedTime": 1680,
+        "jobs": [
+          {
+            "name": "push",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "pull_request",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "workflow_dispatch",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "jobs",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "cache",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "outputs",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "steps",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "tests",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "security",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "frontend",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "quality",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "strategy",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "matrix",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "steps",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "scan",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "strategy",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "matrix",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "steps",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "frontend",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "steps",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "backend",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "services",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "redis",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "ports",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "steps",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "frontend",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "steps",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "check",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "steps",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "status",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "steps",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          }
+        ],
+        "triggers": []
+      },
+      {
+        "name": "测试覆盖率报告",
+        "fileName": "coverage.yml",
+        "estimatedTime": 690,
+        "jobs": [
+          {
+            "name": "push",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "pull_request",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "workflow_dispatch",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "jobs",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "tests",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "services",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "redis",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "ports",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "strategy",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "matrix",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "steps",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "tests",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "steps",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "summary",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "steps",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          }
+        ],
+        "triggers": []
+      },
+      {
+        "name": "Disable Docker Automation",
+        "fileName": "disable-docker.yml",
+        "estimatedTime": 150,
+        "jobs": [
+          {
+            "name": "push",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "pull_request",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "jobs",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "docker",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "steps",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          }
+        ],
+        "triggers": []
+      },
+      {
+        "name": "Pure Static Security Scan",
+        "fileName": "pure-static-scan.yml",
+        "estimatedTime": 150,
+        "jobs": [
+          {
+            "name": "push",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "jobs",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "security",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "steps",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          }
+        ],
+        "triggers": []
+      },
+      {
+        "name": "Security Scan",
+        "fileName": "security.yml",
+        "estimatedTime": 210,
+        "jobs": [
+          {
+            "name": "push",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "pull_request",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "schedule",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "jobs",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "security",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "steps",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          },
+          {
+            "name": "with",
+            "estimatedTime": 30,
+            "steps": 0,
+            "runsOn": "ubuntu-latest",
+            "strategies": null
+          }
+        ],
+        "triggers": []
+      }
+    ],
+    "totalEstimatedTime": 2880,
+    "bottlenecks": [],
+    "recommendations": [
+      {
+        "category": "pipeline_parallelization",
+        "priority": "high",
+        "title": "Implement Parallel Job Execution",
+        "description": "Jobs can run in parallel to reduce total pipeline time",
+        "estimatedSavings": "864s"
+      },
+      {
+        "category": "dependency_caching",
+        "priority": "high",
+        "title": "Implement Smart Dependency Caching",
+        "description": "Cache npm/pip dependencies based on hash of lock files",
+        "estimatedSavings": "120s"
+      },
+      {
+        "category": "test_parallelization",
+        "priority": "high",
+        "title": "Parallel Test Execution",
+        "description": "Split test suite and run in parallel across multiple runners",
+        "estimatedSavings": "180s"
+      },
+      {
+        "category": "conditional_execution",
+        "priority": "medium",
+        "title": "Implement Conditional Workflow Steps",
+        "description": "Skip unnecessary steps based on file changes",
+        "estimatedSavings": "60s"
+      }
+    ]
+  },
+  "targetExecutionTime": 600,
+  "status": "exceeds_target"
+}
