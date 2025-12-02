@@ -1,0 +1,284 @@
+{
+  "dashboard": {
+    "title": "量化交易平台性能监控仪表板",
+    "description": "全面的平台性能监控，包含API响应时间、策略计算性能、数据获取状态等关键指标",
+    "tags": ["quant-trading", "performance", "monitoring"],
+    "timezone": "Asia/Shanghai",
+    "panels": [
+      {
+        "id": 1,
+        "title": "API响应时间趋势",
+        "type": "graph",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "P50响应时间"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "P95响应时间"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "P99响应时间"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "响应时间 (秒)",
+            "min": 0
+          }
+        ],
+        "alert": {
+          "conditions": [
+            {
+              "evaluator": {
+                "params": [
+                  2,
+                  5
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "and"
+              },
+              "query": {
+                "params": [
+                  "A",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            }
+          ],
+          "executionErrorState": "alerting",
+          "for": "5m",
+          "frequency": "1m",
+          "handler": 1,
+          "name": "API响应时间过高",
+          "noDataState": "no_data",
+          "notifications": []
+        }
+      },
+      {
+        "id": 2,
+        "title": "策略计算性能",
+        "type": "graph",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(strategy_calculation_duration_seconds_bucket[5m]))",
+            "legendFormat": "P50计算时间"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(strategy_calculation_duration_seconds_bucket[5m]))",
+            "legendFormat": "P95计算时间"
+          },
+          {
+            "expr": "rate(strategy_calculations_total[5m])",
+            "legendFormat": "每秒计算次数"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "计算时间 (秒)",
+            "min": 0
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "错误率监控",
+        "type": "singlestat",
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 0,
+          "y": 8
+        },
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total{status_code=~\"5..\"}[5m])) / sum(rate(http_requests_total[5m]))",
+            "legendFormat": "5xx错误率"
+          }
+        ],
+        "valueMaps": [
+          {
+            "value": "null",
+            "text": "N/A"
+          }
+        ],
+        "thresholds": "0.01,0.05,0.1",
+        "color": {
+          "value": "thresholds",
+          "fill": true,
+          "reverse": false,
+          "pattern": [
+            {
+              "colorMode": "value",
+              "colors": [
+                "#299c46",
+                "#f2cc0c",
+                "#c7d0d0"
+              ],
+              "thresholds": [
+                {
+                  "colorMode": "value",
+                  "value": "null",
+                  "fillColor": "#c7d0d0"
+                },
+                {
+                  "colorMode": "value",
+                  "value": 0,
+                  "fillColor": "#299c46"
+                },
+                {
+                  "colorMode": "value",
+                  "value": 0.01,
+                  "fillColor": "#f2cc0c"
+                },
+                {
+                  "colorMode": "value",
+                  "value": 0.05,
+                  "fillColor": "#d44a3a"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": 4,
+        "title": "数据库查询性能",
+        "type": "graph",
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 6,
+          "y": 8
+        },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(db_query_duration_seconds_bucket[5m]))",
+            "legendFormat": "P95查询时间"
+          },
+          {
+            "expr": "rate(db_query_duration_seconds_count[5m])",
+            "legendFormat": "每秒查询数"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "数据源可用性",
+        "type": "stat",
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 12,
+          "y": 8
+        },
+        "targets": [
+          {
+            "expr": "sum(rate(akshare_requests_total{status=\"success\"}[5m])) / sum(rate(akshare_requests_total[5m]))",
+            "legendFormat": "AKShare成功率"
+          },
+          {
+            "expr": "sum(rate(redis_operations_total{status=\"success\"}[5m])) / sum(rate(redis_operations_total[5m]))",
+            "legendFormat": "Redis成功率"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "系统资源使用",
+        "type": "graph",
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 18,
+          "y": 8
+        },
+        "targets": [
+          {
+            "expr": "cpu_usage_percent",
+            "legendFormat": "CPU使用率"
+          },
+          {
+            "expr": "memory_usage_percent",
+            "legendFormat": "内存使用率"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "使用率 (%)",
+            "max": 100,
+            "min": 0
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "API请求量",
+        "type": "graph",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 16
+        },
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total[5m])) by (method)",
+            "legendFormat": "{{method}}请求"
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "用户活跃度",
+        "type": "graph",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 16
+        },
+        "targets": [
+          {
+            "expr": "active_users",
+            "legendFormat": "活跃用户数"
+          },
+          {
+            "expr": "data_processing_queue_size",
+            "legendFormat": "数据处理队列"
+          }
+        ]
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "30s",
+    "schemaVersion": 16,
+    "version": 1,
+    "links": []
+  }
+}

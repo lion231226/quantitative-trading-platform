@@ -1,0 +1,350 @@
+# Log Aggregation Configuration
+# 日志聚合和集中化处理配置
+
+# 聚合基础设施
+infrastructure:
+  # 日志收集器配置
+  collector:
+    name: "log-collector"
+    version: "1.0.0"
+    port: 8080
+    max_connections: 1000
+    buffer_size: "1GB"
+
+  # 消息队列配置
+  message_queue:
+    type: "redis"  # 或 "kafka", "rabbitmq"
+    host: "localhost"
+    port: 6379
+    topic: "logs"
+    max_message_size: "10MB"
+
+  # 存储配置
+  storage:
+    type: "elasticsearch"  # 或 "opensearch"
+    host: "localhost"
+    port: 9200
+    index_template: "quant-trading-logs-%Y.%m.%d"
+    retention_period: "90 days"
+    shard_count: 3
+    replica_count: 1
+
+# 日志处理器配置
+processors:
+  # 结构化处理器
+  structured_processor:
+    enabled: true
+    input_format: "json"
+    output_format: "json"
+    field_mapping:
+      timestamp: "@timestamp"
+      level: "log_level"
+      message: "message"
+      service: "service_name"
+      trace_id: "trace_id"
+      span_id: "span_id"
+
+  # 时间戳处理器
+  timestamp_processor:
+    enabled: true
+    input_formats:
+      - "iso8601"
+      - "unix_timestamp"
+      - "rfc3339"
+    output_format: "iso8601"
+    timezone: "UTC"
+
+  # 地理位置处理器
+  geoip_processor:
+    enabled: true
+    source_field: "ip_address"
+    target_field: "geo_location"
+    database_path: "/etc/geoip/GeoLite2-City.mmdb"
+
+  # 用户代理解析器
+  user_agent_processor:
+    enabled: true
+    source_field: "user_agent"
+    target_field: "parsed_user_agent"
+
+# 日志过滤规则
+filters:
+  # 级别过滤
+  level_filter:
+    enabled: true
+    min_level: "INFO"
+    debug_environments: ["development", "staging"]
+
+  # 重复日志过滤
+  duplicate_filter:
+    enabled: true
+    window_size: "5m"
+    max_duplicates: 10
+    key_fields: ["message", "level", "service"]
+
+  # 敏感数据过滤
+  sensitive_filter:
+    enabled: true
+    patterns:
+      - name: "password"
+        pattern: "password[:=]\\s*[\"']?[\\w\\-@#$%^&*+]{8,}[\"']?"
+        replacement: "[REDACTED]"
+      - name: "token"
+        pattern: "token[:=]\\s*[\"']?[\\w\\-\\.]{20,}[\"']?"
+        replacement: "[REDACTED]"
+      - name: "api_key"
+        pattern: "api[_-]?key[:=]\\s*[\"']?[A-Za-z0-9+/]{32,}[\"']?"
+        replacement: "[REDACTED]"
+
+  # 服务过滤器
+  service_filter:
+    enabled: true
+    allowed_services:
+      - "quant-trading-backend"
+      - "quant-trading-frontend"
+      - "data-processor"
+      - "strategy-engine"
+
+# 日志路由规则
+routing:
+  # 错误日志路由
+  error_routing:
+    condition: "level >= ERROR"
+    destinations:
+      - type: "elasticsearch"
+        index: "quant-trading-errors"
+      - type: "alert"
+        webhook: "http://alert-manager:9093/api/v1/alerts"
+      - type: "email"
+        recipients: ["ops@company.com"]
+
+  # 安全日志路由
+  security_routing:
+    condition: "logger == 'security.event'"
+    destinations:
+      - type: "elasticsearch"
+        index: "quant-trading-security"
+      - type: "siem"
+        endpoint: "http://siem-system:8080/ingest"
+
+  # 审计日志路由
+  audit_routing:
+    condition: "tags contains 'audit'"
+    destinations:
+      - type: "elasticsearch"
+        index: "quant-trading-audit"
+      - type: "file"
+        path: "/var/log/audit/quant-trading.log"
+
+  # 性能日志路由
+  performance_routing:
+    condition: "logger == 'performance.metric'"
+    destinations:
+      - type: "elasticsearch"
+        index: "quant-trading-metrics"
+      - type: "prometheus"
+        gateway: "http://prometheus:9090"
+
+# 数据增强规则
+enrichment:
+  # 环境信息增强
+  environment_enrichment:
+    enabled: true
+    fields:
+      - name: "environment"
+        value: "${NODE_ENV}"
+      - name: "region"
+        value: "${AWS_REGION}"
+      - name: "availability_zone"
+        value: "${AWS_AZ}"
+
+  # 服务信息增强
+  service_enrichment:
+    enabled: true
+    lookup_table:
+      "api-server":
+        version: "1.2.3"
+        team: "backend"
+        owner: "backend-team@company.com"
+      "web-frontend":
+        version: "2.1.0"
+        team: "frontend"
+        owner: "frontend-team@company.com"
+
+  # 用户信息增强
+  user_enrichment:
+    enabled: true
+    data_source: "user-service"
+    api_endpoint: "http://user-service:8080/api/users/{user_id}"
+    fields: ["role", "department", "location"]
+
+# 索引配置
+indexing:
+  # 时间序列索引
+  time_series_indices:
+    - name: "logs"
+      pattern: "quant-trading-logs-%Y.%m.%d"
+      time_field: "@timestamp"
+      rollover_period: "1d"
+      retention_period: "90d"
+
+    - name: "errors"
+      pattern: "quant-trading-errors-%Y.%m"
+      time_field: "@timestamp"
+      rollover_period: "1M"
+      retention_period: "1y"
+
+    - name: "audit"
+      pattern: "quant-trading-audit-%Y"
+      time_field: "@timestamp"
+      rollover_period: "1y"
+      retention_period: "7y"
+
+  # 索引模板
+  index_templates:
+    - name: "logs-template"
+      pattern: "quant-trading-logs-*"
+      settings:
+        number_of_shards: 3
+        number_of_replicas: 1
+        refresh_interval: "5s"
+      mappings:
+        properties:
+          "@timestamp":
+            type: "date"
+          level:
+            type: "keyword"
+          service:
+            type: "keyword"
+          trace_id:
+            type: "keyword"
+          span_id:
+            type: "keyword"
+          user_id:
+            type: "keyword"
+          message:
+            type: "text"
+            analyzer: "standard"
+          metadata:
+            type: "object"
+            dynamic: true
+
+# 查询优化
+query_optimization:
+  # 字段数据缓存
+  field_data_cache:
+    enabled: true
+    max_size: "1GB"
+    expire_time: "30m"
+
+  # 查询缓存
+  query_cache:
+    enabled: true
+    max_size: "512MB"
+    expire_time: "5m"
+
+  # 索引生命周期管理
+  ilm_policies:
+    - name: "logs-policy"
+      phases:
+        hot:
+          actions:
+            rollover:
+              max_size: "10GB"
+              max_age: "1d"
+        warm:
+          min_age: "7d"
+          actions:
+            allocate:
+              number_of_replicas: 0
+        cold:
+          min_age: "30d"
+          actions:
+            allocate:
+              number_of_replicas: 0
+        delete:
+          min_age: "90d"
+
+# 监控和告警
+monitoring:
+  # 聚合服务监控
+  service_metrics:
+    - name: "logs_ingested_rate"
+      query: "sum(rate(logs_ingested_total[5m]))"
+      threshold: 1000
+      severity: "warning"
+
+    - name: "log_processing_latency"
+      query: "histogram_quantile(0.95, rate(log_processing_duration_seconds_bucket[5m]))"
+      threshold: 1.0
+      severity: "warning"
+
+    - name: "storage_usage"
+      query: "elasticsearch_indices_docs_count / elasticsearch_indices_store_size_bytes"
+      threshold: 0.8
+      severity: "critical"
+
+  # 健康检查
+  health_checks:
+    - name: "collector_health"
+      endpoint: "http://log-collector:8080/health"
+      interval: "30s"
+      timeout: "5s"
+
+    - name: "elasticsearch_health"
+      endpoint: "http://elasticsearch:9200/_cluster/health"
+      interval: "30s"
+      timeout: "5s"
+
+# 安全配置
+security:
+  # 访问控制
+  access_control:
+    enabled: true
+    authentication:
+      type: "jwt"
+      secret: "${JWT_SECRET}"
+    authorization:
+      roles:
+        - name: "admin"
+          permissions: ["read", "write", "delete", "manage"]
+        - name: "analyst"
+          permissions: ["read"]
+        - name: "service"
+          permissions: ["write"]
+
+  # 数据加密
+  encryption:
+    enabled: true
+    at_rest: true
+    in_transit: true
+    encryption_key: "${LOG_ENCRYPTION_KEY}"
+
+  # 审计日志
+  audit:
+    enabled: true
+    log_access: true
+    log_modifications: true
+    log_deletions: true
+
+# 性能调优
+performance:
+  # 批处理配置
+  batch_processing:
+    enabled: true
+    batch_size: 100
+    batch_timeout: "5s"
+    max_retries: 3
+    retry_backoff: "1s"
+
+  # 并发配置
+  concurrency:
+    worker_count: 4
+    queue_size: 10000
+    max_connections: 100
+
+  # 内存配置
+  memory:
+    heap_size: "2GB"
+    direct_memory: "512MB"
+    gc_tuning: "G1GC"

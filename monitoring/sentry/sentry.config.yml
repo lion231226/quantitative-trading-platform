@@ -1,0 +1,70 @@
+# Sentry Configuration for Production
+# DSN should be set via environment variables for security
+dsn: "${SENTRY_DSN}"
+
+# Environment settings
+environment: "${NODE_ENV:development}"
+
+# Release information
+release: "${RELEASE_VERSION:latest}"
+
+# Performance monitoring
+traces_sample_rate: 0.1
+profiles_sample_rate: 0.1
+
+# Debug settings
+debug: false
+
+# Error filtering
+ignore_errors:
+  - "Network request failed"
+  - "Failed to fetch"
+  - "Load failed"
+  - "Non-Error promise rejection captured"
+  - "ResizeObserver loop limit exceeded"
+
+# URL filtering
+deny_urls:
+  - "/extensions\\//i"
+  - "^file:\\/\\//i"
+
+# Before send hook configuration
+before_send:
+  enabled: true
+  filter_development: true
+  add_performance_context: true
+
+# Integrations
+integrations:
+  - browser_tracing
+  - replay
+  - feedback
+
+# Session replay settings
+replay:
+  session_sample_rate: 0.1
+  error_sample_rate: 1.0
+
+# Performance settings
+performance:
+  browser_tracing:
+    routing_instrumentation: true
+    user_interaction_instrumentation: true
+  web_vitals:
+    enabled: true
+
+# Feedback settings
+feedback:
+  enabled: true
+  auto_enroll: false
+
+# Security and privacy
+security:
+  send_default_pii: false
+  attach_stacktrace: true
+  max_breadcrumbs: 100
+
+# Rate limiting
+rate_limits:
+  error: 10
+  transaction: 10

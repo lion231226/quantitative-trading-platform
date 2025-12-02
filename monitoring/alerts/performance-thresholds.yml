@@ -1,0 +1,230 @@
+# Performance Thresholds and Alerting Rules
+# 定义关键性能指标阈值和告警规则
+
+# API性能阈值
+api_performance:
+  response_time:
+    # 响应时间阈值 (毫秒)
+    p50_warning: 500    # P50 < 500ms
+    p50_critical: 1000  # P50 < 1000ms
+    p95_warning: 2000   # P95 < 2s
+    p95_critical: 5000  # P95 < 5s
+    p99_warning: 5000   # P99 < 5s
+    p99_critical: 10000 # P99 < 10s
+
+  error_rate:
+    # 错误率阈值
+    warning: 0.01       # 1%
+    critical: 0.05      # 5%
+
+  throughput:
+    # 吞吐量阈值 (每秒请求数)
+    min_expected: 10    # 最小期望吞吐量
+    max_expected: 1000  # 最大期望吞吐量
+
+# 数据库性能阈值
+database_performance:
+  query_time:
+    # 查询时间阈值 (秒)
+    p95_warning: 1      # P95 < 1s
+    p95_critical: 2     # P95 < 2s
+    slow_query: 5       # 慢查询阈值
+
+  connection_pool:
+    # 连接池使用率
+    warning: 80         # 80%
+    critical: 90        # 90%
+
+  throughput:
+    # 每秒查询数
+    warning: 100        # 100 qps
+    critical: 200       # 200 qps
+
+# 策略计算性能阈值
+strategy_performance:
+  calculation_time:
+    # 计算时间阈值 (秒)
+    p95_warning: 5      # P95 < 5s
+    p95_critical: 10    # P95 < 10s
+    timeout: 30         # 超时阈值
+
+  success_rate:
+    # 成功率
+    warning: 0.95       # 95%
+    critical: 0.90      # 90%
+
+  throughput:
+    # 每分钟策略计算数
+    warning: 10         # 10/min
+    critical: 5         # 5/min
+
+# 数据源性能阈值
+data_source_performance:
+  akshare_api:
+    # AKShare API响应时间 (秒)
+    p95_warning: 10     # P95 < 10s
+    p95_critical: 30    # P95 < 30s
+    timeout: 60         # 超时阈值
+
+    success_rate:
+      warning: 0.95     # 95%
+      critical: 0.90    # 90%
+
+    rate_limit:
+      # 请求频率限制 (每分钟)
+      warning: 100      # 100/min
+      critical: 200     # 200/min
+
+  redis:
+    # Redis操作响应时间 (毫秒)
+    p95_warning: 10     # P95 < 10ms
+    p95_critical: 50    # P95 < 50ms
+
+    success_rate:
+      warning: 0.99     # 99%
+      critical: 0.95    # 95%
+
+# 系统资源阈值
+system_resources:
+  cpu_usage:
+    warning: 70         # 70%
+    critical: 85        # 85%
+
+  memory_usage:
+    warning: 75         # 75%
+    critical: 90        # 90%
+
+  disk_usage:
+    warning: 80         # 80%
+    critical: 90        # 90%
+
+  network_io:
+    # 网络I/O (MB/s)
+    warning: 100        # 100 MB/s
+    critical: 500       # 500 MB/s
+
+# 业务指标阈值
+business_metrics:
+  user_activity:
+    # 活跃用户数
+    min_expected: 1     # 最小期望活跃用户
+    max_expected: 1000  # 最大期望活跃用户
+
+  strategy_analysis:
+    # 策略分析完成率
+    success_rate_warning: 0.90  # 90%
+    success_rate_critical: 0.80 # 80%
+
+    completion_time:
+      # 分析完成时间 (秒)
+      warning: 30       # 30s
+      critical: 60      # 60s
+
+# 用户体验指标
+user_experience:
+  web_vitals:
+    # Core Web Vitals 阈值
+    lcp:
+      good: 2500        # < 2.5s
+      needs_improvement: 4000  # 2.5s - 4s
+      poor: 4000        # > 4s
+
+    fid:
+      good: 100         # < 100ms
+      needs_improvement: 300   # 100ms - 300ms
+      poor: 300         # > 300ms
+
+    cls:
+      good: 0.1         # < 0.1
+      needs_improvement: 0.25  # 0.1 - 0.25
+      poor: 0.25        # > 0.25
+
+# 告警规则配置
+alerting_rules:
+  # 高优先级告警
+  high_priority:
+    - name: "API错误率过高"
+      condition: "error_rate > api_performance.error_rate.critical"
+      severity: "critical"
+      notification_channels: ["email", "slack"]
+      cooldown: "5m"
+
+    - name: "API响应时间过长"
+      condition: "p95_response_time > api_performance.response_time.p95_critical"
+      severity: "critical"
+      notification_channels: ["email", "slack"]
+      cooldown: "5m"
+
+    - name: "系统资源耗尽"
+      condition: "cpu_usage > system_resources.cpu_usage.critical AND memory_usage > system_resources.memory_usage.critical"
+      severity: "critical"
+      notification_channels: ["email", "slack", "sms"]
+      cooldown: "2m"
+
+    - name: "数据源不可用"
+      condition: "akshare_success_rate < data_source_performance.akshare_api.success_rate.critical"
+      severity: "critical"
+      notification_channels: ["email", "slack"]
+      cooldown: "3m"
+
+  # 中等优先级告警
+  medium_priority:
+    - name: "策略计算性能下降"
+      condition: "strategy_calculation_p95 > strategy_performance.calculation_time.p95_critical"
+      severity: "warning"
+      notification_channels: ["email", "slack"]
+      cooldown: "10m"
+
+    - name: "数据库查询缓慢"
+      condition: "db_query_p95 > database_performance.query_time.p95_warning"
+      severity: "warning"
+      notification_channels: ["email"]
+      cooldown: "15m"
+
+    - name: "系统资源紧张"
+      condition: "cpu_usage > system_resources.cpu_usage.warning OR memory_usage > system_resources.memory_usage.warning"
+      severity: "warning"
+      notification_channels: ["email"]
+      cooldown: "10m"
+
+  # 低优先级告警
+  low_priority:
+    - name: "用户体验下降"
+      condition: "lcp > user_experience.web_vitals.lcp.needs_improvement"
+      severity: "info"
+      notification_channels: ["slack"]
+      cooldown: "30m"
+
+    - name: "活跃用户数异常"
+      condition: "active_users < business_metrics.user_activity.min_expected"
+      severity: "info"
+      notification_channels: ["email"]
+      cooldown: "1h"
+
+# 告警抑制规则
+suppression_rules:
+  - name: "维护窗口"
+    condition: "maintenance_mode = true"
+    suppress_all: true
+
+  - name: "部署期间"
+    condition: "deployment_in_progress = true"
+    suppressed_alerts: ["API错误率过高", "API响应时间过长"]
+
+  - name: "数据源维护"
+    condition: "akshare_maintenance = true"
+    suppressed_alerts: ["数据源不可用"]
+
+# 告警升级规则
+escalation_rules:
+  - level: 1
+    delay: "5m"
+    channels: ["email"]
+
+  - level: 2
+    delay: "15m"
+    channels: ["email", "slack"]
+
+  - level: 3
+    delay: "30m"
+    channels: ["email", "slack", "sms"]

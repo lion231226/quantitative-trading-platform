@@ -1,0 +1,420 @@
+# Alert Rules Configuration
+# Comprehensive alerting rules for the quant trading platform
+
+# Alert rule groups
+groups:
+  # System health alerts
+  - name: system_health
+    rules:
+      - alert: HighErrorRate
+        expr: sum(rate(http_requests_total{status_code=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+          service: api-server
+          team: backend
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }} over the last 5 minutes"
+          runbook_url: "https://runbooks.company.com/high-error-rate"
+
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          service: api-server
+          team: backend
+        annotations:
+          summary: "High API response time"
+          description: "95th percentile response time is {{ $value }}s"
+
+      - alert: DatabaseDown
+        expr: health_check_status{component="database"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: database
+          team: backend
+        annotations:
+          summary: "Database is down"
+          description: "Database health check has been failing for more than 1 minute"
+
+      - alert: RedisDown
+        expr: health_check_status{component="redis"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: cache
+          team: backend
+        annotations:
+          summary: "Redis is down"
+          description: "Redis health check has been failing for more than 1 minute"
+
+      - alert: HighCPUUsage
+        expr: system_cpu_usage_percent > 80
+        for: 5m
+        labels:
+          severity: warning
+          service: system
+          team: ops
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is {{ $value }}%"
+
+      - alert: CriticalCPUUsage
+        expr: system_cpu_usage_percent > 90
+        for: 2m
+        labels:
+          severity: critical
+          service: system
+          team: ops
+        annotations:
+          summary: "Critical CPU usage"
+          description: "CPU usage is {{ $value }}%"
+
+      - alert: HighMemoryUsage
+        expr: system_memory_usage_percent > 85
+        for: 5m
+        labels:
+          severity: warning
+          service: system
+          team: ops
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is {{ $value }}%"
+
+      - alert: CriticalMemoryUsage
+        expr: system_memory_usage_percent > 95
+        for: 2m
+        labels:
+          severity: critical
+          service: system
+          team: ops
+        annotations:
+          summary: "Critical memory usage"
+          description: "Memory usage is {{ $value }}%"
+
+      - alert: LowDiskSpace
+        expr: system_disk_usage_percent > 85
+        for: 10m
+        labels:
+          severity: warning
+          service: system
+          team: ops
+        annotations:
+          summary: "Low disk space"
+          description: "Disk usage is {{ $value }}%"
+
+      - alert: CriticalDiskSpace
+        expr: system_disk_usage_percent > 95
+        for: 2m
+        labels:
+          severity: critical
+          service: system
+          team: ops
+        annotations:
+          summary: "Critical disk space"
+          description: "Disk usage is {{ $value }}%"
+
+  # Application performance alerts
+  - name: application_performance
+    rules:
+      - alert: SlowDatabaseQueries
+        expr: histogram_quantile(0.95, rate(db_query_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+          service: database
+          team: backend
+        annotations:
+          summary: "Slow database queries detected"
+          description: "95th percentile query time is {{ $value }}s"
+
+      - alert: StrategyCalculationSlow
+        expr: histogram_quantile(0.95, rate(strategy_calculation_duration_seconds_bucket[5m])) > 10
+        for: 5m
+        labels:
+          severity: warning
+          service: strategy-engine
+          team: backend
+        annotations:
+          summary: "Slow strategy calculations"
+          description: "95th percentile calculation time is {{ $value }}s"
+
+      - alert: StrategyCalculationFailureRate
+        expr: rate(strategy_calculations_total{status="error"}[5m]) / rate(strategy_calculations_total[5m]) > 0.1
+        for: 3m
+        labels:
+          severity: critical
+          service: strategy-engine
+          team: backend
+        annotations:
+          summary: "High strategy calculation failure rate"
+          description: "Strategy calculation failure rate is {{ $value | humanizePercentage }}"
+
+      - alert: AKShareAPIUnavailable
+        expr: health_check_status{component="akshare_api"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: external-api
+          team: backend
+        annotations:
+          summary: "AKShare API is unavailable"
+          description: "AKShare API health check has been failing for more than 2 minutes"
+
+      - alert: AKShareAPISlow
+        expr: health_check_response_time_seconds{component="akshare_api"} > 15
+        for: 5m
+        labels:
+          severity: warning
+          service: external-api
+          team: backend
+        annotations:
+          summary: "AKShare API is slow"
+          description: "AKShare API response time is {{ $value }}s"
+
+  # Business metrics alerts
+  - name: business_metrics
+    rules:
+      - alert: NoActiveUsers
+        expr: active_users == 0
+        for: 15m
+        labels:
+          severity: warning
+          service: application
+          team: product
+        annotations:
+          summary: "No active users detected"
+          description: "There have been no active users for more than 15 minutes"
+
+      - alert: LowUserActivity
+        expr: active_users < 5
+        for: 30m
+        labels:
+          severity: info
+          service: application
+          team: product
+        annotations:
+          summary: "Low user activity"
+          description: "Active user count is {{ $value }}"
+
+      - alert: DataProcessingQueueBacklog
+        expr: data_processing_queue_size > 100
+        for: 10m
+        labels:
+          severity: warning
+          service: data-processor
+          team: backend
+        annotations:
+          summary: "Data processing queue backlog"
+          description: "Queue size is {{ $value }} items"
+
+  # Security alerts
+  - name: security
+    rules:
+      - alert: HighFailedLoginRate
+        expr: rate(security_events_total{event_type="failed_login", success="false"}[5m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+          service: security
+          team: security
+        annotations:
+          summary: "High failed login rate"
+          description: "Failed login rate is {{ $value }} per minute"
+
+      - alert: BruteForceAttack
+        expr: rate(security_events_total{event_type="failed_login", success="false"}[1m]) > 50
+        for: 1m
+        labels:
+          severity: critical
+          service: security
+          team: security
+        annotations:
+          summary: "Possible brute force attack"
+          description: "Failed login rate is {{ $value }} per minute"
+
+      - alert: UnauthorizedAccessAttempts
+        expr: rate(security_events_total{event_type="unauthorized_access"}[5m]) > 5
+        for: 3m
+        labels:
+          severity: warning
+          service: security
+          team: security
+        annotations:
+          summary: "Unauthorized access attempts detected"
+          description: "Unauthorized access attempts rate is {{ $value }} per minute"
+
+  # Frontend performance alerts
+  - name: frontend_performance
+    rules:
+      - alert: HighErrorRateFrontend
+        expr: sum(rate(frontend_errors_total[5m])) / sum(rate(frontend_page_views_total[5m])) > 0.05
+        for: 3m
+        labels:
+          severity: warning
+          service: web-frontend
+          team: frontend
+        annotations:
+          summary: "High frontend error rate"
+          description: "Frontend error rate is {{ $value | humanizePercentage }}"
+
+      - alert: SlowPageLoad
+        expr: histogram_quantile(0.95, rate(page_load_duration_seconds_bucket[5m])) > 5
+        for: 5m
+        labels:
+          severity: warning
+          service: web-frontend
+          team: frontend
+        annotations:
+          summary: "Slow page load times"
+          description: "95th percentile page load time is {{ $value }}s"
+
+      - alert: PoorWebVitals
+        expr: web_vitals_score{metric="lcp"} < 50 or web_vitals_score{metric="fid"} < 50 or web_vitals_score{metric="cls"} < 50
+        for: 10m
+        labels:
+          severity: warning
+          service: web-frontend
+          team: frontend
+        annotations:
+          summary: "Poor Core Web Vitals"
+          description: "Web Vitals scores are below acceptable thresholds"
+
+# Alert suppression rules
+suppressions:
+  # Maintenance window suppression
+  - name: maintenance_window
+    matchers:
+      - name: maintenance_mode
+        value: "true"
+    duration: 8h
+
+  # Deployment suppression
+  - name: deployment
+    matchers:
+      - name: deployment_in_progress
+        value: "true"
+    duration: 30m
+    target_alerts:
+      - "HighErrorRate"
+      - "HighResponseTime"
+
+  # Known issue suppression
+  - name: known_issue
+    matchers:
+      - name: known_issue
+        value: "true"
+    target_alerts:
+      - "DatabaseDown"
+      - "RedisDown"
+
+# Alert routing rules
+routing:
+  # Critical alerts route to all channels
+  - severity: critical
+    channels:
+      - email
+      - slack
+      - sms
+      - pagerduty
+    escalation:
+      - delay: 5m
+        channels: [email, slack]
+      - delay: 15m
+        channels: [sms, pagerduty]
+      - delay: 30m
+        channels: [phone]
+
+  # Warning alerts route to email and slack
+  - severity: warning
+    channels:
+      - email
+      - slack
+    escalation:
+      - delay: 15m
+        channels: [slack]
+      - delay: 30m
+        channels: [email]
+
+  # Info alerts route to slack only
+  - severity: info
+    channels:
+      - slack
+
+# Alert template configuration
+templates:
+  email:
+    subject_template: "[{{ .Labels.severity | upper }}] {{ .Labels.alertname }} - {{ .Annotations.summary }}"
+    body_template: |
+      Alert: {{ .Labels.alertname }}
+      Severity: {{ .Labels.severity }}
+      Service: {{ .Labels.service }}
+      Team: {{ .Labels.team }}
+
+      Description: {{ .Annotations.description }}
+
+      Runbook: {{ .Annotations.runbook_url }}
+
+      Details:
+      {{ range .Labels.SortedPairs }}{{ .Name }}: {{ .Value }}
+      {{ end }}
+
+      Dashboard: https://grafana.company.com/d/{{ .DashboardUID }}
+
+  slack:
+    template: |
+      {
+        "blocks": [
+          {
+            "type": "header",
+            "text": {
+              "type": "plain_text",
+              "text": "{{ .Labels.severity | upper }}: {{ .Labels.alertname }}"
+            }
+          },
+          {
+            "type": "section",
+            "fields": [
+              {"type": "mrkdwn", "text": "*Service:*\n{{ .Labels.service }}"},
+              {"type": "mrkdwn", "text": "*Team:*\n{{ .Labels.team }}"},
+              {"type": "mrkdwn", "text": "*Severity:*\n{{ .Labels.severity }}"},
+              {"type": "mrkdwn", "text": "*Value:*\n{{ .Value }}"}
+            ]
+          },
+          {
+            "type": "section",
+            "text": {"type": "mrkdwn", "text": "{{ .Annotations.description }}"}
+          },
+          {
+            "type": "actions",
+            "elements": [
+              {"type": "button", "text": {"type": "plain_text", "text": "View Dashboard"}, "url": "https://grafana.company.com/d/{{ .DashboardUID }}"},
+              {"type": "button", "text": {"type": "plain_text", "text": "Runbook"}, "url": "{{ .Annotations.runbook_url }}"}
+            ]
+          }
+        ]
+      }
+
+  sms:
+    template: "{{ .Labels.severity | upper }}: {{ .Labels.alertname }} on {{ .Labels.service }}. {{ .Annotations.summary }}"
+
+  pagerduty:
+    template: |
+      {
+        "routing_key": "{{ .PagerDutyKey }}",
+        "event_action": "trigger",
+        "payload": {
+          "summary": "{{ .Labels.alertname }}",
+          "severity": "{{ .Labels.severity }}",
+          "source": "{{ .Labels.service }}",
+          "component": "{{ .Labels.team }}",
+          "class": "{{ .Labels.alertname }}",
+          "custom_details": {
+            "description": "{{ .Annotations.description }}",
+            "runbook": "{{ .Annotations.runbook_url }}"
+          }
+        }
+      }

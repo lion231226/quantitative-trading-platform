@@ -1,0 +1,191 @@
+{
+  "dashboard": {
+    "title": "错误分析和调试仪表板",
+    "description": "全面的错误追踪、分析和调试工具",
+    "tags": ["errors", "debugging", "sentry"],
+    "timezone": "Asia/Shanghai",
+    "panels": [
+      {
+        "id": 1,
+        "title": "错误趋势分析",
+        "type": "graph",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        },
+        "targets": [
+          {
+            "expr": "sum(rate(sentry_errors_total[5m])) by (environment)",
+            "legendFormat": "{{environment}}环境错误率"
+          },
+          {
+            "expr": "sum(rate(sentry_transactions_total[5m])) by (environment)",
+            "legendFormat": "{{environment}}环境事务率"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "错误/事务率 (每分钟)",
+            "min": 0
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "错误分布",
+        "type": "piechart",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        },
+        "targets": [
+          {
+            "expr": "sum by (error_type) (sentry_errors_total)",
+            "legendFormat": "{{error_type}}"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "热点错误统计",
+        "type": "table",
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 8
+        },
+        "targets": [
+          {
+            "expr": "topk(10, sum by (error_message, service) (sentry_errors_total))",
+            "format": "table",
+            "instant": true
+          }
+        ],
+        "columns": [
+          {"text": "服务", "value": "service"},
+          {"text": "错误消息", "value": "error_message"},
+          {"text": "频次", "value": "Value"},
+          {"text": "影响用户", "value": "affected_users"},
+          {"text": "首次出现", "value": "first_seen"},
+          {"text": "最后出现", "value": "last_seen"}
+        ]
+      },
+      {
+        "id": 4,
+        "title": "错误影响范围分析",
+        "type": "graph",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 16
+        },
+        "targets": [
+          {
+            "expr": "sum by (error_type) (sentry_users_affected_total)",
+            "legendFormat": "{{error_type}}"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "错误解决时间分析",
+        "type": "heatmap",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 16
+        },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(sentry_error_resolution_duration_seconds_bucket[5m]))",
+            "legendFormat": "95%解决时间"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "性能错误关联",
+        "type": "graph",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 24
+        },
+        "targets": [
+          {
+            "expr": "rate(sentry_errors_total{error_type=~\".*Timeout.*\"}[5m])",
+            "legendFormat": "超时错误"
+          },
+          {
+            "expr": "rate(sentry_errors_total{error_type=~\".*Memory.*\"}[5m])",
+            "legendFormat": "内存错误"
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "用户代理分析",
+        "type": "table",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 24
+        },
+        "targets": [
+          {
+            "expr": "topk(10, sum by (user_agent, browser) (sentry_errors_total))",
+            "format": "table",
+            "instant": true
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "错误修复趋势",
+        "type": "graph",
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 32
+        },
+        "targets": [
+          {
+            "expr": "sum(rate(sentry_errors_resolved_total[5m]))",
+            "legendFormat": "已解决错误"
+          },
+          {
+            "expr": "sum(rate(sentry_errors_unresolved_total[5m]))",
+            "legendFormat": "未解决错误"
+          }
+        ]
+      }
+    ],
+    "time": {
+      "from": "now-24h",
+      "to": "now"
+    },
+    "refresh": "1m",
+    "schemaVersion": 16,
+    "version": 1,
+    "links": [
+      {
+        "title": "Sentry Dashboard",
+        "url": "https://sentry.io"
+      },
+      {
+        "title": "Error Runbooks",
+        "url": "https://wiki.company.com/runbooks/errors"
+      }
+    ]
+  }
+}

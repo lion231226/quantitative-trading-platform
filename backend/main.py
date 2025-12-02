@@ -1,8 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.responses import PlainTextResponse
 from contextlib import asynccontextmanager
 import structlog
+import time
+from datetime import datetime
 
 from app.core.config import settings
 from app.core.logging import setup_logging
@@ -16,6 +19,8 @@ from app.core.middleware import (
 )
 from app.api.v1.api import api_router
 from app.utils.errors import setup_exception_handlers
+from app.monitoring.metrics_endpoint import metrics_router
+from app.monitoring.health import health_router
 
 # 设置结构化日志
 setup_logging()
@@ -86,6 +91,10 @@ setup_exception_handlers(app)
 # 包含API路由
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
+# 包含监控路由
+app.include_router(metrics_router)
+app.include_router(health_router, prefix="/health")
+
 @app.get("/")
 async def root():
     """根路径健康检查"""
@@ -105,6 +114,58 @@ async def health_check():
         "environment": settings.ENVIRONMENT,
         "api_version": settings.API_V1_STR
     }
+
+@app.get("/metrics", response_class=PlainTextTextResponse)
+async def metrics_redirect():
+    """Prometheus metrics endpoint - direct mapping for AC3 compliance"""
+    from app.monitoring.metrics_endpoint import metrics_exposer
+    return await metrics_exposer.collect_metrics()
+
+@app.get("/ready")
+async def ready_check():
+    """Readiness check - verify application is ready to handle traffic"""
+    from app.monitoring.health import health_checker
+    try:
+        checks = await health_checker.run_all_checks()
+        overall_status = health_checker.get_overall_status(checks)
+
+        return {
+            "status": overall_status.value,
+            "ready": overall_status.value in ["healthy", "degraded"],
+            "timestamp": datetime.utcnow().isoformat(),
+            "checks": len(checks)
+        }
+    except Exception as e:
+        return {
+            "status": "unhealthy",
+            "ready": False,
+            "timestamp": datetime.utcnow().isoformat(),
+            "error": str(e)
+        }
+
+@app.get("/status")
+async def status_check():
+    """Detailed system status - complete system information"""
+    from app.monitoring.health import health_checker
+    try:
+        checks = await health_checker.run_all_checks()
+        overall_status = health_checker.get_overall_status(checks)
+
+        return {
+            "status": overall_status.value,
+            "version": "1.0.0",
+            "environment": settings.ENVIRONMENT,
+            "uptime_seconds": time.time() - health_checker.start_time,
+            "timestamp": datetime.utcnow().isoformat(),
+            "components": {check.name: check.status.value for check in checks},
+            "api_version": settings.API_V1_STR
+        }
+    except Exception as e:
+        return {
+            "status": "unhealthy",
+            "error": str(e),
+            "timestamp": datetime.utcnow().isoformat()
+        }
 
 if __name__ == "__main__":
     import uvicorn
